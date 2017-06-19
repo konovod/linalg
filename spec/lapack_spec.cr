@@ -44,7 +44,4 @@ describe LAPACK do
     b,
     2)
   pp info, b
-  it "works" do
-    false.should eq(true)
-  end
 end
