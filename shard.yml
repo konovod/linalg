@@ -1,0 +1,9 @@
+name: lapack
+version: 0.1.0
+
+authors:
+  - Konovod <konovod@gmail.com>
+
+crystal: 0.22.0
+
+license: MIT
