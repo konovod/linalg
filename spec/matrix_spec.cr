@@ -30,4 +30,15 @@ describe LAPACK::Matrix do
     # commented as it causes a compile error, as it should
     # m = Matrix(Int32).new(3, 3)
   end
+
+  it "access to members works and is zero-based" do
+    m = Matrix(Float64).new(5, 4)
+    m[4, 3] = 1.0
+    m[4, 3].should eq 1.0
+  end
+
+  pending "indexes are checked" do
+    m = Matrix(Float64).new(5, 4)
+    expect_raises(IndexError) { m[5, 4] = 1.0 }
+  end
 end
