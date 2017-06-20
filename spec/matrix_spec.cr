@@ -43,8 +43,9 @@ describe LAPACK::Matrix do
   it "can multiply matrices" do
     m1 = Matrix(Float64).new(3, 4) { |i, j| i + j }
     m2 = Matrix(Float64).new(4, 2) { |i, j| i - j }
+    pp m1, m2
     m = m1*m2
-    m.should eq Matrix(Float64).new(3, 2, [14.0, 8.0, 20.0, 11.0, 26.0, 14.0])
+    m.should eq Matrix(Float64).new(3, 2, [14.0, 8.0, 20.0, 10.0, 26.0, 12.0])
     expect_raises(ArgumentError) { Matrix(Float64).new(3, 4) * Matrix(Float64).new(3, 4) }
   end
 

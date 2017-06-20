@@ -71,7 +71,7 @@ module LAPACK
     def *(m : Matrix(T))
       raise ArgumentError.new("matrix size should match") if @columns != m.rows
       result = Matrix(T).new(@rows, m.columns) do |i, j|
-        (1...@columns).sum { |k| self.[i, k]*m[k, j] }
+        (0...@columns).sum { |k| self.[i, k]*m[k, j] }
       end
     end
 
@@ -90,6 +90,10 @@ module LAPACK
       result = Matrix(T).new(@rows, m.columns) do |i, j|
         self.[i, j] + m[i, j]
       end
+    end
+
+    def self.identity(n)
+      new(n, n) { |i, j| i == j ? 1 : 0 }
     end
   end
 end
