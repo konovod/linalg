@@ -69,9 +69,26 @@ module LAPACK
     end
 
     def *(m : Matrix(T))
-      raise "matrix size should match" if @columns != m.rows
+      raise ArgumentError.new("matrix size should match") if @columns != m.rows
       result = Matrix(T).new(@rows, m.columns) do |i, j|
-        (1..@columns).sum { |k| self.[i, k]*m[k, j] }
+        (1...@columns).sum { |k| self.[i, k]*m[k, j] }
+      end
+    end
+
+    def *(k : Int | Float)
+      result = Matrix(T).new(@rows, @columns) do |i, j|
+        self.[i, k]*k
+      end
+    end
+
+    def ==(other : Matrix(T))
+      @rows == other.rows && @columns == other.columns && @raw == other.raw
+    end
+
+    def +(m : Matrix(T))
+      raise ArgumentError.new("matrix size should match") if @columns != m.columns || @rows != m.rows
+      result = Matrix(T).new(@rows, m.columns) do |i, j|
+        self.[i, j] + m[i, j]
       end
     end
   end
