@@ -77,7 +77,7 @@ module LAPACK
 
     def *(k : Int | Float)
       result = Matrix(T).new(@rows, @columns) do |i, j|
-        self.[i, k]*k
+        self.[i, j]*k
       end
     end
 

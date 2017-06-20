@@ -47,4 +47,12 @@ describe LAPACK::Matrix do
     m.should eq Matrix(Float64).new(3, 2, [14.0, 8.0, 20.0, 11.0, 26.0, 14.0])
     expect_raises(ArgumentError) { Matrix(Float64).new(3, 4) * Matrix(Float64).new(3, 4) }
   end
+
+  it "can do sum and scalar multiply" do
+    m1 = Matrix(Float64).new(3, 4) { |i, j| i }
+    m2 = Matrix(Float64).new(3, 4) { |i, j| j }
+    m = m1 + m2*2
+    m.should eq Matrix(Float64).new(3, 4) { |i, j| i + 2*j }
+    expect_raises(ArgumentError) { Matrix(Float64).new(3, 4) + Matrix(Float64).new(4, 4) }
+  end
 end
