@@ -62,6 +62,15 @@ describe LAPACK do
   #   out tau)
   # pp info, tau, matrix
 
+  it "high-level: solve linear equations" do
+    a = Matrix(Float32).new(
+      [[2, 4],
+       [2, 8]]
+    )
+    b = Matrix(Float32).new([[2], [4]])
+    solve(a, b).should eq (a.inv * b)
+  end
+  # solve
   # // solve a system of linear equations
   # var a = [
   # 	[2, 4],
@@ -74,18 +83,4 @@ describe LAPACK do
   # console.log(result.X);
   # console.log(result.P);
 
-  a = [2.0, 4.0, 2.0, 8.0]
-  b = [2.0, 4.0]
-
-  piv = [0, 0]
-  info = LibLAPACKE.dgesv(
-    LibLAPACKE::ROW_MAJOR,
-    2,
-    1,
-    a,
-    2,
-    piv,
-    b,
-    2)
-  pp info, b
 end

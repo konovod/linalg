@@ -118,5 +118,9 @@ module LAPACK
     def self.identity(n)
       new(n, n) { |i, j| i == j ? 1 : 0 }
     end
+
+    def square?
+      rows == columns
+    end
   end
 end
