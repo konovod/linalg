@@ -1,5 +1,15 @@
 require "complex"
 
+struct Complex
+  def self.new(value : Complex)
+    new(value.real, value.imag)
+  end
+
+  def self.new(value)
+    new(value, 0.0)
+  end
+end
+
 module LAPACK
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
@@ -73,7 +83,11 @@ module LAPACK
     end
 
     def to_unsafe
-      @raw.to_unsafe
+      {% if T == Complex %}
+        @raw.to_unsafe.as(LibLAPACKE::DoubleComplex*)
+      {% else %}
+        @raw.to_unsafe
+      {% end %}
     end
 
     def *(m : Matrix(T))

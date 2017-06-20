@@ -11,23 +11,23 @@ lib LibLAPACKE
   LAPACK_WORK_MEMORY_ERROR      = -1010
   LAPACK_TRANSPOSE_MEMORY_ERROR = -1011
 
-  fun make_complex_double = lapack_make_complex_double(re : LibC::Double, im : LibC::Double) : DoubleComplex
-
   struct DoubleComplex
     re : LibC::Double
     im : LibC::Double
   end
+
+  struct FloatComplex
+    re : LibC::Float
+    im : LibC::Float
+  end
+
+  fun make_complex_double = lapack_make_complex_double(re : LibC::Double, im : LibC::Double) : DoubleComplex
 
   fun sbdsdc = LAPACKE_sbdsdc(matrix_layout : MatrixLayout, uplo : LibC::Char, compq : LibC::Char, n : LibC::Int, d : LibC::Float*, e : LibC::Float*, u : LibC::Float*, ldu : LibC::Int, vt : LibC::Float*, ldvt : LibC::Int, q : LibC::Float*, iq : LibC::Int*) : LibC::Int
   fun dbdsdc = LAPACKE_dbdsdc(matrix_layout : MatrixLayout, uplo : LibC::Char, compq : LibC::Char, n : LibC::Int, d : LibC::Double*, e : LibC::Double*, u : LibC::Double*, ldu : LibC::Int, vt : LibC::Double*, ldvt : LibC::Int, q : LibC::Double*, iq : LibC::Int*) : LibC::Int
   fun sbdsqr = LAPACKE_sbdsqr(matrix_layout : MatrixLayout, uplo : LibC::Char, n : LibC::Int, ncvt : LibC::Int, nru : LibC::Int, ncc : LibC::Int, d : LibC::Float*, e : LibC::Float*, vt : LibC::Float*, ldvt : LibC::Int, u : LibC::Float*, ldu : LibC::Int, c : LibC::Float*, ldc : LibC::Int) : LibC::Int
   fun dbdsqr = LAPACKE_dbdsqr(matrix_layout : MatrixLayout, uplo : LibC::Char, n : LibC::Int, ncvt : LibC::Int, nru : LibC::Int, ncc : LibC::Int, d : LibC::Double*, e : LibC::Double*, vt : LibC::Double*, ldvt : LibC::Int, u : LibC::Double*, ldu : LibC::Int, c : LibC::Double*, ldc : LibC::Int) : LibC::Int
   fun cbdsqr = LAPACKE_cbdsqr(matrix_layout : MatrixLayout, uplo : LibC::Char, n : LibC::Int, ncvt : LibC::Int, nru : LibC::Int, ncc : LibC::Int, d : LibC::Float*, e : LibC::Float*, vt : FloatComplex*, ldvt : LibC::Int, u : FloatComplex*, ldu : LibC::Int, c : FloatComplex*, ldc : LibC::Int) : LibC::Int
-
-  struct FloatComplex
-    re : LibC::Float
-    im : LibC::Float
-  end
 
   fun zbdsqr = LAPACKE_zbdsqr(matrix_layout : MatrixLayout, uplo : LibC::Char, n : LibC::Int, ncvt : LibC::Int, nru : LibC::Int, ncc : LibC::Int, d : LibC::Double*, e : LibC::Double*, vt : DoubleComplex*, ldvt : LibC::Int, u : DoubleComplex*, ldu : LibC::Int, c : DoubleComplex*, ldc : LibC::Int) : LibC::Int
   fun sbdsvdx = LAPACKE_sbdsvdx(matrix_layout : MatrixLayout, uplo : LibC::Char, jobz : LibC::Char, range : LibC::Char, n : LibC::Int, d : LibC::Float*, e : LibC::Float*, vl : LibC::Float, vu : LibC::Float, il : LibC::Int, iu : LibC::Int, ns : LibC::Int*, s : LibC::Float*, z : LibC::Float*, ldz : LibC::Int, superb : LibC::Int*) : LibC::Int

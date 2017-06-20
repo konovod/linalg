@@ -1,18 +1,29 @@
+require "./matrix"
+require "./libLAPACKE"
+
 module LAPACK
   # matrix inversion using xxxtrf / xxxtri
 
-  #   macro call_f(name, args)
-  #   LibLAPACKE.dgetrf(LibLAPACKE::ROW_MAJOR, 3, 3, matrix2, 3, ipiv)
-  # end
-
   class Matrix(T)
+    macro lapack(name, *args)
+      {% storage = :ge.id %}
+      {% if T == Float32
+           typ = :s.id
+         elsif T == Float64
+           typ = :d.id
+         elsif T == Complex
+           typ = :z.id
+         end %}
+       LibLAPACKE.{{typ}}{{storage}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
+    end
+
     def inv
       raise "can't invert nonsquare matrix" unless @rows == @columns
       result = clone
       n = @rows
       ipiv = Slice(Int32).new(n)
-      LibLAPACKE.dgetrf(LibLAPACKE::ROW_MAJOR, n, n, result, n, ipiv)
-      LibLAPACKE.dgetri(LibLAPACKE::ROW_MAJOR, n, result, n, ipiv)
+      lapack(trf, n, n, result, n, ipiv)
+      lapack(tri, n, result, n, ipiv)
       result
     end
   end
