@@ -1,0 +1,7 @@
+for general matrices:
+
+gebak gebal gebrd gecon geequ geequb gees geesx geev geevx gehrd gejsv
+gelqf gels gelsd gelss gelsy geqlf geqp3 geqpf geqrf geqrfp gerfs gerfsx gerqf
+gesdd gesv gesvd gesvj gesvx gesvxx getrf getri getrs ggbak ggbal gges ggesx
+ggev ggevx
+ggglm gghrd gglse ggqrf ggrqf ggsvd ggsvp

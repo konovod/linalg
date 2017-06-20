@@ -3,10 +3,10 @@ require "complex"
 module LAPACK
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
-  # general matrix, heap-allocated version
+  # general matrix, heap-allocated
   class Matrix(T)
-    getter n : Int32
-    getter m : Int32
+    getter rows : Int32
+    getter columns : Int32
     getter raw : Array(T)
 
     def check_type
@@ -15,42 +15,42 @@ module LAPACK
       {% end %}
     end
 
-    def initialize(@n, @m)
+    def initialize(@rows, @columns)
       check_type
-      @raw = Array(T).new(n*m, T.new(0))
+      @raw = Array(T).new(rows*columns, T.new(0))
     end
 
-    def initialize(@n, @m, values)
+    def initialize(@rows, @columns, values)
       check_type
-      @raw = Array(T).new(n*m) { |i| T.new(values[i]) }
+      @raw = Array(T).new(rows*columns) { |i| T.new(values[i]) }
     end
 
     def initialize(values)
       check_type
-      @m = values.size
-      @n = values[0].size
-      @raw = Array(T).new(n*m) do |index|
-        i = index / @n
-        j = index % @n
+      @rows = values.size
+      @columns = values[0].size
+      @raw = Array(T).new(rows*columns) do |index|
+        i = index / @columns
+        j = index % @columns
         T.new(values[i][j])
       end
     end
 
-    def initialize(@n, @m, &block)
+    def initialize(@rows, @columns, &block)
       check_type
-      @raw = Array(T).new(n*m) do |index|
-        i = index / @n
-        j = index % @n
+      @raw = Array(T).new(@rows*@columns) do |index|
+        i = index / @columns
+        j = index % @columns
         T.new(yield(i, j))
       end
     end
 
     def [](i, j)
-      @raw[i*n + j]
+      @raw[i*columns + j]
     end
 
     def []=(i, j, value)
-      @raw[i*n + j] = value
+      @raw[i*columns + j] = value
     end
 
     def to_unsafe

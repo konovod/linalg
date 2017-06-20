@@ -9,15 +9,15 @@ describe LAPACK::Matrix do
   end
 
   it "can be created from array with given dimension" do
-    m = Matrix(Float64).new(4, 3, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    m.n.should eq 4
+    m = Matrix(Float64).new(3, 4, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    m.rows.should eq 3
     m[1, 0].should eq 5
   end
 
   it "can be created from array of arrays" do
     m = Matrix(Float64).new({ {1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12} })
-    m.n.should eq 3
-    m.m.should eq 4
+    m.rows.should eq 4
+    m.columns.should eq 3
     m[1, 0].should eq 4
   end
 
@@ -35,10 +35,6 @@ describe LAPACK::Matrix do
     m = Matrix(Float64).new(5, 4)
     m[4, 3] = 1.0
     m[4, 3].should eq 1.0
-  end
-
-  pending "indexes are checked" do
-    m = Matrix(Float64).new(5, 4)
     expect_raises(IndexError) { m[5, 4] = 1.0 }
   end
 end
