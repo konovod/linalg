@@ -55,6 +55,14 @@ module LAPACK
       end
     end
 
+    def dup
+      Matrix(T).new(@rows, @columns, @raw)
+    end
+
+    def clone
+      dup
+    end
+
     def []=(i, j, value)
       # i isn't checked as underlying array will check it anyway
       if j >= 0 && j < @columns

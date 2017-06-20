@@ -28,6 +28,15 @@ describe LAPACK do
     (matrix1*matrix2).should eq Matrix(Float64).identity(3)
   end
 
+  it "calls functions using high level wrapper" do
+    matrix1 = Matrix(Float64).new([
+      [1, 0, 1],
+      [0, 4, 0],
+      [0, 0, 1],
+    ])
+    (matrix1*matrix1.inv).should eq Matrix(Float64).identity(3)
+  end
+
   # info = LibLAPACKE.sgeqrf(LibLAPACKE::ROW_MAJOR,
   #   3,
   #   3,
