@@ -8,12 +8,18 @@ describe LAPACK do
   #     [3, 4, 5],
   #     [5, 6, 7]
   # ]);
-  matrix = StaticArray(Float32, 9).new { |i| (i + 1).to_f32 }
+  matrix = Matrix(Float32).new([
+    [1, 2, 3],
+    [3, 4, 5],
+    [5, 6, 7],
+  ])
+
+  pp matrix
   tau = 0.0_f32
-  info = LibLAPACKE.sgeqrf(LibLAPACKE::LAPACK_ROW_MAJOR,
+  info = LibLAPACKE.sgeqrf(LibLAPACKE::ROW_MAJOR,
     3,
     3,
-    matrix.to_slice.to_unsafe,
+    matrix,
     3,
     pointerof(tau))
   pp info, tau, matrix
@@ -35,7 +41,7 @@ describe LAPACK do
 
   piv = [0, 0]
   info = LibLAPACKE.dgesv(
-    LibLAPACKE::LAPACK_ROW_MAJOR,
+    LibLAPACKE::ROW_MAJOR,
     2,
     1,
     a,
