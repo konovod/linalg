@@ -1,12 +1,13 @@
 require "complex"
 
 struct Complex
-  def self.new(value : Complex)
-    new(value.real, value.imag)
-  end
-
   def self.new(value)
-    new(value, 0.0)
+    case value
+    when Complex
+      new(value.real, value.imag)
+    else
+      new(value, 0.0)
+    end
   end
 end
 

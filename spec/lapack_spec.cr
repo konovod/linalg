@@ -46,11 +46,11 @@ describe LAPACK do
     (matrix1*matrix1.inv).should eq Matrix(Float32).identity(3)
 
     i = Complex.new(0, 1)
-    matrix1 = Matrix(Complex).new([
-      [1 + 0*i, 0 + 0*i, 1 + 0*i],
-      [0 + 0*i, 4 + 0*i, 0 + 0*i],
-      [0 + 0*i, 0 + 0*i, 1 + 0*i],
-    ])
+    matrix1 = Matrix(Complex).new({
+      {1 + 1*i, 0, 1},
+      {0, 4, 0},
+      {0, 0, 1},
+    })
     (matrix1*matrix1.inv).should eq Matrix(Complex).identity(3)
   end
 
