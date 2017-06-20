@@ -47,15 +47,32 @@ module LAPACK
     end
 
     def [](i, j)
-      @raw[i*columns + j]
+      # i isn't checked as underlying array will check it anyway
+      if j >= 0 && j < @columns
+        @raw[i*columns + j]
+      else
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{@rows}x#{@columns}")
+      end
     end
 
     def []=(i, j, value)
-      @raw[i*columns + j] = value
+      # i isn't checked as underlying array will check it anyway
+      if j >= 0 && j < @columns
+        @raw[i*columns + j] = value
+      else
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{@rows}x#{@columns}")
+      end
     end
 
     def to_unsafe
       @raw.to_unsafe
+    end
+
+    def *(m : Matrix(T))
+      raise "matrix size should match" if @columns != m.rows
+      result = Matrix(T).new(@rows, m.columns) do |i, j|
+        (1..@columns).sum { |k| self.[i, k]*m[k, j] }
+      end
     end
   end
 end

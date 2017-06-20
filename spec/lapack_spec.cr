@@ -3,25 +3,27 @@ require "./spec_helper"
 describe LAPACK do
   # TODO: Write tests
 
-  # var result = lapack.sgeqrf([
-  #     [1, 2, 3],
-  #     [3, 4, 5],
-  #     [5, 6, 7]
-  # ]);
+  it "calls functions directly" do
+    # info = LibLAPACKE.sgeqrf(LibLAPACKE::ROW_MAJOR,
+    #   3,
+    #   3,
+    #   matrix,
+    #   3,
+    #   out tau)
+  end
+
   matrix = Matrix(Float32).new([
     [1, 2, 3],
     [3, 4, 5],
     [5, 6, 7],
   ])
-  tau = 0.0_f32
   info = LibLAPACKE.sgeqrf(LibLAPACKE::ROW_MAJOR,
     3,
     3,
     matrix,
     3,
-    pointerof(tau))
+    out tau)
   pp info, tau, matrix
-
   # // solve a system of linear equations
   # var a = [
   # 	[2, 4],

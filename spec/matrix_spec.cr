@@ -37,5 +37,6 @@ describe LAPACK::Matrix do
     m[4, 3] = 1.0
     m[4, 3].should eq 1.0
     expect_raises(IndexError) { m[5, 4] = 1.0 }
+    expect_raises(IndexError) { m[0, 6] = 1.0 }
   end
 end
