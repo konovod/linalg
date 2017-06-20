@@ -70,17 +70,13 @@ describe LAPACK do
     b = Matrix(Float32).new([[2], [4]])
     solve(a, b).should eq (a.inv * b)
   end
-  # solve
-  # // solve a system of linear equations
-  # var a = [
-  # 	[2, 4],
-  # 	[2, 8]];
-  #
-  # var b = [[2],
-  # 	[4]];
-  #
-  # var result = lapack.sgesv(a, b);
-  # console.log(result.X);
-  # console.log(result.P);
 
+  it "high-level: calculate determinant" do
+    a = Matrix(Float64).new(
+      [[1, 2, 3],
+       [4, 5, 7],
+       [-1, 1, -1]]
+    )
+    a.det.should eq 9
+  end
 end

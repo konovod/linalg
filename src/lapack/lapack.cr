@@ -40,6 +40,14 @@ module LAPACK
       lapack(sv, n, b.columns, self.clone, n, ipiv, x, b.columns)
       x
     end
+
+    def det
+      raise ArgumentError.new("matrix must be square") unless square?
+      lru = self.clone
+      ipiv = Slice(Int32).new(rows)
+      lapack(trf, rows, rows, lru, rows, ipiv)
+      (0...rows).reduce(1) { |det, i| det*lru[i, i] }
+    end
   end
 
   def inv(matrix)
