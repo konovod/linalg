@@ -13,8 +13,6 @@ describe LAPACK do
     [3, 4, 5],
     [5, 6, 7],
   ])
-
-  pp matrix
   tau = 0.0_f32
   info = LibLAPACKE.sgeqrf(LibLAPACKE::ROW_MAJOR,
     3,

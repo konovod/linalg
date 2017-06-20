@@ -32,6 +32,7 @@ module LAPACK
       @raw = Array(T).new(rows*columns) do |index|
         i = index / @columns
         j = index % @columns
+        raise IndexError.new("All rows should have same size") if j == 0 && values[i].size != @columns
         T.new(values[i][j])
       end
     end

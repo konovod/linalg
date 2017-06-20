@@ -19,6 +19,7 @@ describe LAPACK::Matrix do
     m.rows.should eq 4
     m.columns.should eq 3
     m[1, 0].should eq 4
+    expect_raises(IndexError) { Matrix(Float64).new({ {1, 2, 3}, {4, 5} }) }
   end
 
   it "can be created from a dimensions and a block" do
