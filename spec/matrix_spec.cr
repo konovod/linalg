@@ -25,4 +25,9 @@ describe LAPACK::Matrix do
     m = Matrix(Float32).new(3, 3) { |i, j| i*3 + j }
     m[1, 1].should eq 4
   end
+
+  it "can't create matrix of unsupported type" do
+    # commented as it causes a compile error, as it should
+    # m = Matrix(Int32).new(3, 3)
+  end
 end
