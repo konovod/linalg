@@ -17,14 +17,17 @@ module LAPACK
        LibLAPACKE.{{typ}}{{storage}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
     end
 
-    def inv
+    def inv!
       raise "can't invert nonsquare matrix" unless @rows == @columns
-      result = clone
       n = @rows
       ipiv = Slice(Int32).new(n)
       lapack(trf, n, n, result, n, ipiv)
       lapack(tri, n, result, n, ipiv)
-      result
+      self
+    end
+
+    def inv
+      clone.inv!
     end
   end
 end
