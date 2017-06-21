@@ -2,8 +2,6 @@ require "./matrix"
 require "./libLAPACKE"
 
 module Linalg
-  # matrix inversion using xxxtrf / xxxtri
-
   enum LSMethod
     Auto       = 0
     QR
@@ -90,14 +88,17 @@ module Linalg
       raise ArgumentError.new("matrix must be square") unless square?
       a = self.clone
       {% if T == Complex %}
+        vals = Array(T).new(rows, T.new(0,0))
+        lapack(ev, 'N'.ord, 'N'.ord, rows, a, rows, vals.to_unsafe.as(LibLAPACKE::DoubleComplex*), nil, rows, nil, rows)
+        return vals
       {% else %}
         reals = Array(T).new(rows, T.new(0))
         imags = Array(T).new(rows, T.new(0))
         lapack(ev, 'N'.ord, 'N'.ord, rows, a, rows, reals, imags, nil, rows, nil, rows)
         if imags.all? &.==(0)
-          reals
+          return reals
         else
-          Array(Complex).new(rows){|i| Complex.new(reals[i], imags[i])}
+          return Array(Complex).new(rows){|i| Complex.new(reals[i], imags[i])}
         end
       {% end %}
     end

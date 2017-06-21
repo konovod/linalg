@@ -106,4 +106,11 @@ describe Linalg do
     vals[0].should be_close 1 + 2*i, 1e-3
     vals[1].should be_close 1 - 2*i, 1e-3
   end
+  it "high-level: calculate nonsymmetric eigenvalues (complex argument)" do
+    a = Matrix(Complex).new([[3, -2], [4, -1]])
+    vals = a.eigvals
+    i = Complex.new(0, 1)
+    vals[0].should be_close 1 + 2*i, 1e-3
+    vals[1].should be_close 1 - 2*i, 1e-3
+  end
 end
