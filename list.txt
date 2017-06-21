@@ -9,7 +9,7 @@ Basic routines
 -  Generalized inverse
 Decompositions
 +  Eigenvalues and eigenvectors
--  Singular value decomposition
++  Singular value decomposition
 -  LU decomposition
 -  Cholesky decomposition
 -  QR decomposition

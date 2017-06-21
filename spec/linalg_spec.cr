@@ -128,6 +128,7 @@ describe Linalg do
 
   it "high-level: calculate singular value decomposition" do
     a = Matrix(Float32).new([[1, 2, 3], [4, 5, 6]])
-    p Linalg.svd(a)
+    u, s, vt = Linalg.svd(a)
+    (u*Matrix(Float32).diag(a.rows, a.columns, s)*vt).should be_close a, 1e-4
   end
 end
