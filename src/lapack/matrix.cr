@@ -91,8 +91,10 @@ module LAPACK
       {% end %}
     end
 
-    def *(m : Matrix(T))
-      raise ArgumentError.new("matrix size should match") if @columns != m.rows
+    def *(m : self)
+      if @columns != m.rows
+        raise ArgumentError.new("matrix size should match ([#{@rows}x#{@columns}] * [#{m.rows}x#{m.columns}]")
+      end
       result = Matrix(T).new(@rows, m.columns) do |i, j|
         (0...@columns).sum { |k| self.[i, k]*m[k, j] }
       end
@@ -104,14 +106,25 @@ module LAPACK
       end
     end
 
-    def ==(other : Matrix(T))
+    def ==(other : self)
       @rows == other.rows && @columns == other.columns && @raw == other.raw
     end
 
-    def +(m : Matrix(T))
-      raise ArgumentError.new("matrix size should match") if @columns != m.columns || @rows != m.rows
+    def +(m : self)
+      if @columns != m.columns || @rows != m.rows
+        raise ArgumentError.new("matrix size should match ([#{@rows}x#{@columns}] + [#{m.rows}x#{m.columns}]")
+      end
       result = Matrix(T).new(@rows, m.columns) do |i, j|
         self.[i, j] + m[i, j]
+      end
+    end
+
+    def -(m : self)
+      if @columns != m.columns || @rows != m.rows
+        raise ArgumentError.new("matrix size should match ([#{@rows}x#{@columns}] - [#{m.rows}x#{m.columns}]")
+      end
+      result = Matrix(T).new(@rows, m.columns) do |i, j|
+        self.[i, j] - m[i, j]
       end
     end
 
@@ -143,6 +156,12 @@ module LAPACK
 
     def self.repmat(a : self, rows, columns)
       a.repmat(rows, columns)
+    end
+
+    # TODO - proper norms
+    # TODO - iteration on cols\rows
+    def abs
+      (0...@rows).map { |r| (0...@columns).sum { |c| self[r, c].abs } }.max
     end
   end
 end

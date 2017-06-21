@@ -68,7 +68,7 @@ describe LAPACK do
        [2, 8]]
     )
     b = Matrix(Float32).new([[2], [4]])
-    solve(a, b).should eq (a.inv * b)
+    LAPACK.solve(a, b).should eq (a.inv * b)
   end
 
   it "high-level: calculate determinant" do
@@ -81,10 +81,12 @@ describe LAPACK do
   end
   it "high-level: solve linear least square" do
     a = Matrix(Float32).new(
-      [[2, 4, 6, 1],
-       [2, 8, 3, 2]]
+      [[1, 2, 0],
+       [0, 4, 3]]
     )
-    b = Matrix(Float32).new([[2], [4]])
-    p lstsq(a, b)
+    b = Matrix(Float32).new([[8], [18]])
+    x = LAPACK.lstsq(a, b)
+    x_octave = Matrix(Float32).new(3, 1, [0.918032, 3.54098, 1.27869])
+    x.should be_close(x_octave, 1e-3)
   end
 end
