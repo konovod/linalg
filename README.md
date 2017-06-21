@@ -1,6 +1,10 @@
 # lapack
+Linear algebra library in Crystal, uses LAPACKE.
+- direct access to LAPACK methods
+- convenient Matrix class, supports Float32, Float64 and Complex variations.
+- high-level interface similar to scipy.linalg or MATLAB. (WIP)
 
-TODO: Write a description here
+Killing SciPy, one module at time.
 
 ## Installation
 
@@ -9,7 +13,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   lapack:
-    github: [your-github-name]/lapack
+    github: konovod/lapack
 ```
 
 ## Usage
@@ -19,19 +23,23 @@ require "lapack"
 ```
 
 TODO: Write usage instructions here
+Check spec directory for some examples
 
 ## Development
 
 TODO: Write development instructions here
 
+PRs are welcome)
+
 ## Contributing
 
-1. Fork it ( https://github.com/[your-github-name]/lapack/fork )
+1. Fork it ( https://github.com/konovod/lapack/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
 5. Create a new Pull Request
 
+
 ## Contributors
 
-- [[your-github-name]](https://github.com/[your-github-name]) Konovod - creator, maintainer
+- [[your-github-name]](https://github.com/konovod) Konovod - creator, maintainer
