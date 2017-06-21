@@ -118,9 +118,11 @@ describe Linalg do
   it "high-level: calculate nonsymmetric eigenvectors" do
     a = Matrix(Float32).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals, vectors = a.eigs
-    pp vectors
+    raise "" if vals.is_a? Array(Complex)
+    vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
+
     a = Matrix(Complex).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals, vectors = a.eigs(left: true)
-    pp vectors
+    vals.each { |e| (vectors*a - vectors*e).det.should be_close 0, 1e-6 }
   end
 end

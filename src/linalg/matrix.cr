@@ -104,7 +104,7 @@ module Linalg
       end
     end
 
-    def *(k : Int | Float)
+    def *(k : Int | Float | Complex)
       result = Matrix(T).new(@rows, @columns) do |i, j|
         self.[i, j]*k
       end
