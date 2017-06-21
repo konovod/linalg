@@ -207,5 +207,15 @@ module Linalg
         raise "not implemented yet"
       end
     end
+
+    def kron(b : self)
+      Matrix(T).kron(self, b)
+    end
+
+    def self.kron(a, b)
+      new(a.rows*b.rows, a.columns*b.columns) do |i, j|
+        a[i / b.rows, j / b.columns] * b[i % b.rows, j % b.columns]
+      end
+    end
   end
 end

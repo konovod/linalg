@@ -119,4 +119,13 @@ describe Linalg::Matrix do
     m.transpose!
     m.should eq Matrix(Float64).new([[1, 5], [2, 6], [3, 7], [4, 8]])
   end
+
+  it "has kron operation" do
+    a = Matrix(Float64).new([[1, 2], [3, 4]])
+    b = Matrix(Float64).new([[1, -1, 1]])
+    Matrix(Float64).kron(a, b).should eq Matrix(Float64).new([
+      [1, -1, 1, 2, -2, 2],
+      [3, -3, 3, 4, -4, 4],
+    ])
+  end
 end
