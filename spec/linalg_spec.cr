@@ -91,6 +91,7 @@ describe Linalg do
     x.should be_close(x_octave, 1e-3)
   end
 
+  # sadly, spec is order-depentent
   it "high-level: calculate nonsymmetric eigenvalues" do
     a = Matrix(Float32).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals = a.eigvals
@@ -112,5 +113,14 @@ describe Linalg do
     i = Complex.new(0, 1)
     vals[0].should be_close 1 + 2*i, 1e-3
     vals[1].should be_close 1 - 2*i, 1e-3
+  end
+
+  it "high-level: calculate nonsymmetric eigenvectors" do
+    a = Matrix(Float32).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    vals, vectors = a.eigs
+    pp vectors
+    a = Matrix(Complex).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    vals, vectors = a.eigs(left: true)
+    pp vectors
   end
 end
