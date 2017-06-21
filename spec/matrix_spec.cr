@@ -128,4 +128,26 @@ describe Linalg::Matrix do
       [3, -3, 3, 4, -4, 4],
     ])
   end
+
+  it "have tril and triu functions" do
+    a = Matrix(Float32).new([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
+    a.tril(-1).should eq Matrix(Float32).new([
+      [0, 0, 0],
+      [4, 0, 0],
+      [7, 8, 0],
+      [10, 11, 12],
+    ])
+    a.triu.should eq Matrix(Float32).new([
+      [1, 2, 3],
+      [0, 5, 6],
+      [0, 0, 9],
+      [0, 0, 0],
+    ])
+    a.triu(-1).should eq Matrix(Float32).new([
+      [1, 2, 3],
+      [4, 5, 6],
+      [0, 8, 9],
+      [0, 0, 12],
+    ])
+  end
 end

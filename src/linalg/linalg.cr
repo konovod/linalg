@@ -137,6 +137,30 @@ module Linalg
       lapack(sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
       return {u, s, vt}
     end
+
+    def balance!(*, permute = true, scale = true, separate = false)
+      raise ArgumentError.new("matrix must be square") unless square?
+      n = @rows
+      job = if permute && scale
+              'B'
+            elsif permute
+              'P'
+            elsif scale
+              'S'
+            else
+              # don't call anything, return identity matrix
+              return separate ? Matrix(T).ones(1, n) : Matrix(T).identity(n)
+            end
+      s = Matrix(T).new(1, n)
+      lapack(bal, job.ord, n, self, n, out ilo, out ihi, s)
+      separate ? s : Matrix(T).diag(s.raw)
+    end
+
+    def balance(*, permute = true, scale = true, separate = false)
+      a = clone
+      s = a.balance!(permute: permute, scale: scale, separate: separate)
+      {a, s}
+    end
   end
 
   def self.inv(matrix)

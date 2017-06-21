@@ -12,6 +12,7 @@ struct Complex
 end
 
 module Linalg
+  # TODO - Complex64?
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
   # general matrix, heap-allocated
@@ -19,6 +20,8 @@ module Linalg
   # TODO - module functions for easier creation
   # TODO - constructing from matlab-like [1,2,3;3,4,6;1,1,3]
   # TODO - saving/loading to files
+  # TODO - pretty print
+  # TODO - sums on cols\rows, check numpy for more
   class Matrix(T)
     getter rows : Int32
     getter columns : Int32
@@ -173,7 +176,7 @@ module Linalg
     end
 
     def self.diag(values)
-      new(values.size, values.size, values)
+      diag(values.size, values.size, values)
     end
 
     def self.diag(arows, acolumns, &block)
