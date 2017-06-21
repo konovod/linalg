@@ -177,8 +177,8 @@ module Linalg
     end
 
     def self.diag(arows, acolumns, &block)
-      new(rows*arows, columns*acolumns) do |i, j|
-        i == j ? block.call(i) : 0
+      new(arows, acolumns) do |i, j|
+        i == j ? yield(i) : 0
       end
     end
 

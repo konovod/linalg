@@ -98,5 +98,8 @@ describe Linalg::Matrix do
   # def self.diag(arows, acolumns, values)
   # def self.diag(arows, acolumns, &block)
   it "can be constructed with diagonal elements" do
+    Matrix(Float32).diag(2, 2, 5).should eq Matrix(Float32).new([[5, 0], [0, 5]])
+    Matrix(Float32).diag(3, 2) { |i| -i - 1 }.should eq Matrix(Float32).new([[-1, 0], [0, -2], [0, 0]])
+    Matrix(Float32).diag(2, 3, [14, 15]).should eq Matrix(Float32).new([[14, 0, 0], [0, 15, 0]])
   end
 end
