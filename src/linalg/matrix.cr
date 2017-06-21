@@ -186,5 +186,26 @@ module Linalg
     def abs
       (0...@rows).map { |r| (0...@columns).sum { |c| self[r, c].abs } }.max
     end
+
+    def transpose
+      Matrix(T).new(@columns, @rows) do |i, j|
+        self[j, i]
+      end
+    end
+
+    def transpose!
+      if square?
+        (0..@rows - 2).each do |i|
+          (i + 1..@columns - 1).each do |j|
+            a = self[i, j]
+            self[i, j] = self[j, i]
+            self[j, i] = a
+          end
+        end
+      else
+        # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
+        raise "not implemented yet"
+      end
+    end
   end
 end

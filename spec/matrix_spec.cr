@@ -94,12 +94,29 @@ describe Linalg::Matrix do
     ])
   end
 
-  # def self.diag(arows, acolumns, value : Int | Float | Complex)
-  # def self.diag(arows, acolumns, values)
-  # def self.diag(arows, acolumns, &block)
   it "can be constructed with diagonal elements" do
     Matrix(Float32).diag(2, 2, 5).should eq Matrix(Float32).new([[5, 0], [0, 5]])
     Matrix(Float32).diag(3, 2) { |i| -i - 1 }.should eq Matrix(Float32).new([[-1, 0], [0, -2], [0, 0]])
     Matrix(Float32).diag(2, 3, [14, 15]).should eq Matrix(Float32).new([[14, 0, 0], [0, 15, 0]])
+  end
+
+  it "can be trasposed" do
+    m = Matrix(Float64).new([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    mt = m.transpose
+    mt.should eq Matrix(Float64).new([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
+
+    m = Matrix(Float64).new([[1, 2, 3, 4], [5, 6, 7, 8]])
+    mt = m.transpose
+    mt.should eq Matrix(Float64).new([[1, 5], [2, 6], [3, 7], [4, 8]])
+  end
+  it "can be trasposed inplace (square case)" do
+    m = Matrix(Float64).new([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    m.transpose!
+    m.should eq Matrix(Float64).new([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
+  end
+  pending "can be trasposed inplace (rectangular case)" do
+    m = Matrix(Float64).new([[1, 2, 3, 4], [5, 6, 7, 8]])
+    m.transpose!
+    m.should eq Matrix(Float64).new([[1, 5], [2, 6], [3, 7], [4, 8]])
   end
 end
