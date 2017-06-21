@@ -1,7 +1,7 @@
 require "./spec_helper"
 
-include LAPACK
-describe LAPACK::Matrix do
+include Linalg
+describe Linalg::Matrix do
   it "can be created with given size" do
     m = Matrix(Float64).new(10, 15)
     m.raw.size.should eq 10*15

@@ -1,7 +1,7 @@
 require "./matrix"
 require "./libLAPACKE"
 
-module LAPACK
+module Linalg
   # matrix inversion using xxxtrf / xxxtri
 
   enum LSMethod

@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe LAPACK do
+describe Linalg do
   it "calls LAPACK functions directly" do
     m = [
       1.0, 0.0, 1.0,
@@ -58,7 +58,7 @@ describe LAPACK do
        [2, 8]]
     )
     b = Matrix(Float32).new([[2], [4]])
-    LAPACK.solve(a, b).should eq (a.inv * b)
+    Linalg.solve(a, b).should eq (a.inv * b)
   end
 
   it "high-level: calculate determinant" do
@@ -75,7 +75,7 @@ describe LAPACK do
        [0, 4, 3]]
     )
     b = Matrix(Float32).new([[8], [18]])
-    x = LAPACK.lstsq(a, b)
+    x = Linalg.lstsq(a, b)
     x_octave = Matrix(Float32).new(3, 1, [0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end
@@ -86,7 +86,7 @@ describe LAPACK do
        [0, 4, 3]]
     )
     b = Matrix(Complex).new([[8], [18]])
-    x = LAPACK.lstsq(a, b)
+    x = Linalg.lstsq(a, b)
     x_octave = Matrix(Complex).new(3, 1, [0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end

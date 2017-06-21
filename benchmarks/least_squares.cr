@@ -1,23 +1,23 @@
 require "benchmark"
-require "../src/lapack"
+require "../src/linalg"
 
 METHODS = {
-  LAPACK::LSMethod::QR,
-  LAPACK::LSMethod::Orthogonal,
-  LAPACK::LSMethod::SVD,
+  Linalg::LSMethod::QR,
+  Linalg::LSMethod::Orthogonal,
+  Linalg::LSMethod::SVD,
 }
 
 def test(n)
-  basea = LAPACK::Matrix(Float32).rand(n/2, n/2)*10
+  basea = Linalg::Matrix(Float32).rand(n/2, n/2)*10
   until basea.det.abs > 0.01
-    basea = LAPACK::Matrix(Float32).rand(n/2, n/2)*10
+    basea = Linalg::Matrix(Float32).rand(n/2, n/2)*10
   end
-  a = LAPACK::Matrix(Float32).new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
-  b = LAPACK::Matrix(Float32).rand(n/2, 1)
+  a = Linalg::Matrix(Float32).new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
+  b = Linalg::Matrix(Float32).rand(n/2, 1)
   puts "*********N = #{n}*************"
   Benchmark.ips do |bench|
     METHODS.each do |method|
-      bench.report(method.to_s) { LAPACK.lstsq(a, b, method) }
+      bench.report(method.to_s) { Linalg.lstsq(a, b, method) }
     end
   end
 end

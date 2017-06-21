@@ -11,7 +11,7 @@ struct Complex
   end
 end
 
-module LAPACK
+module Linalg
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
   # general matrix, heap-allocated
@@ -26,7 +26,7 @@ module LAPACK
 
     def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}
-        {% raise "Wrong matrix members type: #{T}. Types supported by LAPACK are: #{SUPPORTED_TYPES}" %}
+        {% raise "Wrong matrix members type: #{T}. Types supported by Linalg are: #{SUPPORTED_TYPES}" %}
       {% end %}
     end
 
