@@ -1,9 +1,21 @@
-for general matrices:
-  Linear Solve:
-    sgels sgelsd sgelss sgelsx sgelsy sgesv sgesvx sgesvxx
-  Eigenvalues:
-    sgees sgeesx sgeev sgeevx sgegs sgegv sgges sgges3 sggesx sggev sggev3 sggevx
-  Singular Value:
-    sgejsv sgesdd sgesvd sgesvdx sggsvd3
-  Computational:
-    many
+Basic routines
++  Finding Inverse
++  Solving linear system
++  Finding Determinant
+  Computing norms
++  Solving linear least-squares problems and pseudo-inverses
+  Generalized inverse
+  Decompositions
+  Eigenvalues and eigenvectors
+  Singular value decomposition
+  LU decomposition
+  Cholesky decomposition
+  QR decomposition
+  Schur decomposition
+  Interpolative Decomposition
+Matrix Functions
+  Exponential and logarithm functions
+  Trigonometric functions
+  Hyperbolic trigonometric functions
+  Arbitrary function
+Special matrices
