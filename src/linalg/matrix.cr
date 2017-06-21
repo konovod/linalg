@@ -232,6 +232,17 @@ module Linalg
         i <= j - k ? self[i, j] : 0
       end
     end
+
+    def reshape!(arows, acolumns)
+      raise ArgumentError.new("number of elements should not change") if arows*acolumns != @raw.size
+      @rows = arows
+      @columns = acolumns
+      self
+    end
+
+    def reshape(arows, acolumns)
+      clone.reshape!(arows, acolumns)
+    end
   end
 
   alias Mat = Matrix(Float64)

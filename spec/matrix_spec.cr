@@ -150,4 +150,14 @@ describe Linalg::Matrix do
       [0, 0, 12],
     ])
   end
+
+  it "can be reshaped" do
+    a = Mat.new([[1, 2, 3, 4, 5, 6]])
+    a.reshape!(3, 2)
+    a.should eq Mat.new([[1, 2], [3, 4], [5, 6]])
+    a.reshape(2, 3).should eq Mat.new([[1, 2, 3], [4, 5, 6]])
+    expect_raises(ArgumentError) do
+      a.reshape(1, 4)
+    end
+  end
 end
