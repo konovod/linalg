@@ -125,4 +125,9 @@ describe Linalg do
     vals, vectors = a.eigs(left: true)
     vals.each { |e| (vectors*a - vectors*e).det.should be_close 0, 1e-6 }
   end
+
+  it "high-level: calculate singular value decomposition" do
+    a = Matrix(Float32).new([[1, 2, 3], [4, 5, 6]])
+    p Linalg.svd(a)
+  end
 end

@@ -126,6 +126,17 @@ module Linalg
         {values, eigvectors}
       {% end %}
     end
+
+    def svd
+      a = self.clone
+      m = rows
+      n = columns
+      s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
+      u = Matrix(T).new(m, m)
+      vt = Matrix(T).new(n, n)
+      lapack(sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
+      return {u, s, vt}
+    end
   end
 
   def self.inv(matrix)
@@ -138,5 +149,9 @@ module Linalg
 
   def self.lstsq(a, b, method : LSMethod = LSMethod::Auto)
     a.solvels(b, method)
+  end
+
+  def self.svd(matrix)
+    matrix.svd
   end
 end

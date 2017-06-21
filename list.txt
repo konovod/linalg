@@ -8,7 +8,7 @@ Basic routines
 +-  Solving linear least-squares problems and pseudo-inverses
 -  Generalized inverse
 Decompositions
-+-  Eigenvalues and eigenvectors
++  Eigenvalues and eigenvectors
 -  Singular value decomposition
 -  LU decomposition
 -  Cholesky decomposition
