@@ -217,5 +217,17 @@ module Linalg
         a[i / b.rows, j / b.columns] * b[i % b.rows, j % b.columns]
       end
     end
+
+    def tril(k = 0)
+      Matrix(T).new(@rows, @columns) do |i, j|
+        i >= j - k ? self[i, j] : 0
+      end
+    end
+
+    def triu(k = 0)
+      Matrix(T).new(@rows, @columns) do |i, j|
+        i <= j - k ? self[i, j] : 0
+      end
+    end
   end
 end
