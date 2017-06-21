@@ -138,4 +138,10 @@ describe Linalg do
     b, s = a.balance(separate: true)
     s.should eq Mat32.new([[0.5, 1, 1]])
   end
+
+  it "high-level: LU factorization" do
+    a = Mat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [1, 2, 10, 0], [50, 6, 7, 8], [1, 21, 1, 0]])
+    p, l, u = a.lu
+    (p*l*u).should be_close a, 1e-4
+  end
 end

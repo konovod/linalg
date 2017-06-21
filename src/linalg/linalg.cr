@@ -12,6 +12,22 @@ module Linalg
     LSD        = SVD
   end
 
+  def self.inv(matrix)
+    matrix.inv
+  end
+
+  def self.solve(a, b)
+    a.solve(b)
+  end
+
+  def self.lstsq(a, b, method : LSMethod = LSMethod::Auto)
+    a.solvels(b, method)
+  end
+
+  def self.svd(matrix)
+    matrix.svd
+  end
+
   class Matrix(T)
     macro lapack(name, *args)
       {% storage = :ge.id %}
@@ -161,21 +177,44 @@ module Linalg
       s = a.balance!(permute: permute, scale: scale, separate: separate)
       {a, s}
     end
-  end
 
-  def self.inv(matrix)
-    matrix.inv
-  end
-
-  def self.solve(a, b)
-    a.solve(b)
-  end
-
-  def self.lstsq(a, b, method : LSMethod = LSMethod::Auto)
-    a.solvels(b, method)
-  end
-
-  def self.svd(matrix)
-    matrix.svd
+    def lu
+      a = clone
+      m = rows
+      n = columns
+      k = {rows, columns}.min
+      ipiv = Slice(Int32).new(m)
+      lapack(trf, rows, columns, a, columns, ipiv)
+      # TODO - better solution?
+      # apply all transformation of piv to "own" piv
+      piv = (1..m).to_a
+      k.times do |i|
+        tmp = piv[i]
+        piv[i] = piv[ipiv[i] - 1]
+        piv[ipiv[i] - 1] = tmp
+      end
+      p = Matrix(T).new(m, m)
+      m.times do |i|
+        p[piv[i] - 1, i] = T.new(1)
+      end
+      l = Matrix(T).new(m, k) do |i, j|
+        case i <=> j
+        when 0
+          T.new(1)
+        when 1
+          a[i, j]
+        else
+          T.new(0)
+        end
+      end
+      u = Matrix(T).new(k, n) do |i, j|
+        if i <= j
+          a[i, j]
+        else
+          T.new(0)
+        end
+      end
+      {p, l, u}
+    end
   end
 end
