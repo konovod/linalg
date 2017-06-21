@@ -79,4 +79,12 @@ describe LAPACK do
     )
     a.det.should eq 9
   end
+  it "high-level: solve linear least square" do
+    a = Matrix(Float32).new(
+      [[2, 4, 6, 1],
+       [2, 8, 3, 2]]
+    )
+    b = Matrix(Float32).new([[2], [4]])
+    p lstsq(a, b)
+  end
 end
