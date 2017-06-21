@@ -60,15 +60,20 @@ module LAPACK
     end
 
     def solvels(b : self, method : LSMethod = LSMethod::Auto)
+      raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
       if method.auto?
-        # pretty arbitrary, from figures at http://rsusu1.rnd.runnet.ru/libraries/LAPACK/lug/node71.html
-        method = rows < 700 ? LSMethod::Orthogonal : LSMethod::QR
+        method = LSMethod::QR
       end
       a = self.clone
-      x = b.clone
+      if columns > rows
+        # make room for residuals
+        x = Matrix(T).new(columns, b.columns) { |r, c| r < rows ? b[r, c] : T.new(0) }
+      else
+        x = b.clone
+      end
       case method
       when .ls?
-        lapack(ls, 'N', rows, columns, b.columns, a, columns, x, x.columns)
+        lapack(ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
       when .lsd?
         s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({rows, columns}.min)
         rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(-1)
@@ -82,15 +87,15 @@ module LAPACK
     end
   end
 
-  def inv(matrix)
+  def self.inv(matrix)
     matrix.inv
   end
 
-  def solve(a, b)
+  def self.solve(a, b)
     a.solve(b)
   end
 
-  def lstsq(a, b)
-    a.solvels(b)
+  def self.lstsq(a, b, method : LSMethod = LSMethod::Auto)
+    a.solvels(b, method)
   end
 end

@@ -122,5 +122,27 @@ module LAPACK
     def square?
       rows == columns
     end
+
+    def self.rand(rows, columns, rng = Random::DEFAULT)
+      new(rows, columns) { |i, j| rng.rand }
+    end
+
+    def self.zeros(rows, columns)
+      new(rows, columns)
+    end
+
+    def self.ones(rows, columns)
+      new(rows, columns) { |i, j| 1 }
+    end
+
+    def repmat(arows, acolumns)
+      new(rows*arows, columns*acolumns) do |i, j|
+        self[i % rows, j % columns]
+      end
+    end
+
+    def self.repmat(a : self, rows, columns)
+      a.repmat(rows, columns)
+    end
   end
 end
