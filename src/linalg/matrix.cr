@@ -153,13 +153,33 @@ module Linalg
     end
 
     def repmat(arows, acolumns)
-      new(rows*arows, columns*acolumns) do |i, j|
+      Matrix(T).new(rows*arows, columns*acolumns) do |i, j|
         self[i % rows, j % columns]
       end
     end
 
     def self.repmat(a : self, rows, columns)
       a.repmat(rows, columns)
+    end
+
+    def self.diag(arows, acolumns, value : Int | Float | Complex)
+      diag(arows, acolumns) { value }
+    end
+
+    def self.diag(arows, acolumns, values)
+      new(arows, acolumns) do |i, j|
+        i == j ? values[i] : 0
+      end
+    end
+
+    def self.diag(values)
+      new(values.size, values.size, values)
+    end
+
+    def self.diag(arows, acolumns, &block)
+      new(rows*arows, columns*acolumns) do |i, j|
+        i == j ? block.call(i) : 0
+      end
     end
 
     # TODO - proper norms

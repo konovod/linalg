@@ -55,4 +55,48 @@ describe Linalg::Matrix do
     m.should eq Matrix(Float64).new(3, 4) { |i, j| i + 2*j }
     expect_raises(ArgumentError) { Matrix(Float64).new(3, 4) + Matrix(Float64).new(4, 4) }
   end
+
+  it "can checks if it is square" do
+    Matrix(Float64).new(3, 4).square?.should be_false
+    Matrix(Complex).new(30, 30).square?.should be_true
+  end
+
+  it "can be initialized with zeros and ones" do
+    m = Matrix(Float64).identity(3).should eq Matrix(Float64).new([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    m = Matrix(Float64).zeros(2, 2).should eq Matrix(Float64).new([[0, 0], [0, 0]])
+    m = Matrix(Float64).ones(1, 3).should eq Matrix(Float64).new([[1, 1, 1]])
+  end
+
+  it "can be initialized with random vales" do
+    rng1 = Random.new(1)
+    m1 = Matrix(Complex).rand(5, 5, rng1)
+    rng2 = Random.new(1)
+    m2 = Matrix(Complex).rand(5, 5, rng2)
+    m3 = Matrix(Complex).rand(5, 5)
+    m1.should eq m2
+    m1.should_not eq m3
+  end
+
+  it "can be constructed using repmat" do
+    a = Matrix(Float64).new([[1, 2]])
+    b = a.repmat(5, 3)
+    b.should eq Matrix(Float64).new([
+      [1, 2, 1, 2, 1, 2],
+      [1, 2, 1, 2, 1, 2],
+      [1, 2, 1, 2, 1, 2],
+      [1, 2, 1, 2, 1, 2],
+      [1, 2, 1, 2, 1, 2],
+    ])
+    c = Matrix(Float64).repmat(a, 2, 1)
+    c.should eq Matrix(Float64).new([
+      [1, 2],
+      [1, 2],
+    ])
+  end
+
+  # def self.diag(arows, acolumns, value : Int | Float | Complex)
+  # def self.diag(arows, acolumns, values)
+  # def self.diag(arows, acolumns, &block)
+  it "can be constructed with diagonal elements" do
+  end
 end
