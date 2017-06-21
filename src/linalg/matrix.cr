@@ -22,7 +22,7 @@ module Linalg
   class Matrix(T)
     getter rows : Int32
     getter columns : Int32
-    getter raw : Array(T)
+    getter raw : Slice(T)
 
     def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}
@@ -32,19 +32,19 @@ module Linalg
 
     def initialize(@rows, @columns)
       check_type
-      @raw = Array(T).new(rows*columns, T.new(0))
+      @raw = Slice(T).new(rows*columns, T.new(0))
     end
 
     def initialize(@rows, @columns, values)
       check_type
-      @raw = Array(T).new(rows*columns) { |i| T.new(values[i]) }
+      @raw = Slice(T).new(rows*columns) { |i| T.new(values[i]) }
     end
 
     def initialize(values)
       check_type
       @rows = values.size
       @columns = values[0].size
-      @raw = Array(T).new(rows*columns) do |index|
+      @raw = Slice(T).new(rows*columns) do |index|
         i = index / @columns
         j = index % @columns
         raise IndexError.new("All rows should have same size") if j == 0 && values[i].size != @columns
@@ -54,7 +54,7 @@ module Linalg
 
     def initialize(@rows, @columns, &block)
       check_type
-      @raw = Array(T).new(@rows*@columns) do |index|
+      @raw = Slice(T).new(@rows*@columns) do |index|
         i = index / @columns
         j = index % @columns
         T.new(yield(i, j))
