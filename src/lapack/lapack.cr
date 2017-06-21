@@ -25,7 +25,7 @@ module LAPACK
            typ = :z.id
          end %}
        info = LibLAPACKE.{{typ}}{{storage}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
-       raise "lapack returned #{info}" if info != 0
+       raise "LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}" if info != 0
     end
 
     def inv!
@@ -84,6 +84,22 @@ module LAPACK
         lapack(lsy, rows, columns, b.columns, a, columns, x, x.columns, jpvt, rcond, out rank2)
       end
       x
+    end
+
+    def eigvals
+      raise ArgumentError.new("matrix must be square") unless square?
+      a = self.clone
+      {% if T == Complex %}
+      {% else %}
+        reals = Array(T).new(rows, T.new(0))
+        imags = Array(T).new(rows, T.new(0))
+        lapack(ev, 'N'.ord, 'N'.ord, rows, a, rows, reals, imags, nil, rows, nil, rows)
+        if imags.all? &.==(0)
+          reals
+        else
+          Array(Complex).new(rows){|i| Complex.new(reals[i], imags[i])}
+        end
+      {% end %}
     end
   end
 

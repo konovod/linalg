@@ -15,6 +15,10 @@ module LAPACK
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
   # general matrix, heap-allocated
+  # TODO - iteration on cols\rows
+  # TODO - module functions for easier creation
+  # TODO - constructing from matlab-like [1,2,3;3,4,6;1,1,3]
+  # TODO - saving/loading to files
   class Matrix(T)
     getter rows : Int32
     getter columns : Int32
@@ -159,7 +163,6 @@ module LAPACK
     end
 
     # TODO - proper norms
-    # TODO - iteration on cols\rows
     def abs
       (0...@rows).map { |r| (0...@columns).sum { |c| self[r, c].abs } }.max
     end

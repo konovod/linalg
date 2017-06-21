@@ -5,7 +5,7 @@ Basic routines
   Computing norms
 +  Solving linear least-squares problems and pseudo-inverses
   Generalized inverse
-  Decompositions
+Decompositions
   Eigenvalues and eigenvectors
   Singular value decomposition
   LU decomposition
