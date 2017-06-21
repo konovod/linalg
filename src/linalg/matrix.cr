@@ -233,4 +233,8 @@ module Linalg
       end
     end
   end
+
+  alias Mat = Matrix(Float64)
+  alias Mat32 = Matrix(Float32)
+  alias MatComplex = Matrix(Complex)
 end

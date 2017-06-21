@@ -14,7 +14,7 @@ describe Linalg do
   end
 
   it "calls functions using matrix class" do
-    matrix1 = Matrix(Float64).new([
+    matrix1 = Mat.new([
       [1, 0, 1],
       [0, 4, 0],
       [0, 0, 1],
@@ -23,46 +23,46 @@ describe Linalg do
     ipiv = Slice(Int32).new(3)
     LibLAPACKE.dgetrf(LibLAPACKE::ROW_MAJOR, 3, 3, matrix2, 3, ipiv).should eq 0
     LibLAPACKE.dgetri(LibLAPACKE::ROW_MAJOR, 3, matrix2, 3, ipiv).should eq 0
-    (matrix1*matrix2).should eq Matrix(Float64).identity(3)
+    (matrix1*matrix2).should eq Mat.identity(3)
   end
 
   it "calls functions using high level wrapper" do
-    matrix1 = Matrix(Float64).new([
+    matrix1 = Mat.new([
       [1, 0, 1],
       [0, 4, 0],
       [0, 0, 1],
     ])
-    (matrix1*matrix1.inv).should eq Matrix(Float64).identity(3)
+    (matrix1*matrix1.inv).should eq Mat.identity(3)
   end
 
   it "support all types" do
-    matrix1 = Matrix(Float32).new([
+    matrix1 = Mat32.new([
       [1, 0, 1],
       [0, 4, 0],
       [0, 0, 1],
     ])
-    (matrix1*matrix1.inv).should eq Matrix(Float32).identity(3)
+    (matrix1*matrix1.inv).should eq Mat32.identity(3)
 
     i = Complex.new(0, 1)
-    matrix1 = Matrix(Complex).new({
+    matrix1 = MatComplex.new({
       {1 + 1*i, 0, 1},
       {0, 4, 0},
       {0, 0, 1},
     })
-    (matrix1*matrix1.inv).should eq Matrix(Complex).identity(3)
+    (matrix1*matrix1.inv).should eq MatComplex.identity(3)
   end
 
   it "high-level: solve linear equations" do
-    a = Matrix(Float32).new(
+    a = Mat32.new(
       [[2, 4],
        [2, 8]]
     )
-    b = Matrix(Float32).new([[2], [4]])
+    b = Mat32.new([[2], [4]])
     Linalg.solve(a, b).should eq (a.inv * b)
   end
 
   it "high-level: calculate determinant" do
-    a = Matrix(Float64).new(
+    a = Mat.new(
       [[1, 2, 3],
        [4, 5, 7],
        [-1, 1, -1]]
@@ -70,30 +70,30 @@ describe Linalg do
     a.det.should eq 9
   end
   it "high-level: solve linear least square" do
-    a = Matrix(Float32).new(
+    a = Mat32.new(
       [[1, 2, 0],
        [0, 4, 3]]
     )
-    b = Matrix(Float32).new([[8], [18]])
+    b = Mat32.new([[8], [18]])
     x = Linalg.lstsq(a, b)
-    x_octave = Matrix(Float32).new(3, 1, [0.918032, 3.54098, 1.27869])
+    x_octave = Mat32.new(3, 1, [0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end
 
   it "high-level: solve linear least square (complex)" do
-    a = Matrix(Complex).new(
+    a = MatComplex.new(
       [[1, 2, 0],
        [0, 4, 3]]
     )
-    b = Matrix(Complex).new([[8], [18]])
+    b = MatComplex.new([[8], [18]])
     x = Linalg.lstsq(a, b)
-    x_octave = Matrix(Complex).new(3, 1, [0.918032, 3.54098, 1.27869])
+    x_octave = MatComplex.new(3, 1, [0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end
 
   # sadly, spec is order-depentent
   it "high-level: calculate nonsymmetric eigenvalues" do
-    a = Matrix(Float32).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = Mat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals = a.eigvals
     vals[0].should be_close -6, 1e-3
     vals[1].should be_close -1, 1e-3
@@ -101,14 +101,14 @@ describe Linalg do
   end
 
   it "high-level: calculate nonsymmetric eigenvalues (complex result)" do
-    a = Matrix(Float32).new([[3, -2], [4, -1]])
+    a = Mat32.new([[3, -2], [4, -1]])
     vals = a.eigvals
     i = Complex.new(0, 1)
     vals[0].should be_close 1 + 2*i, 1e-3
     vals[1].should be_close 1 - 2*i, 1e-3
   end
   it "high-level: calculate nonsymmetric eigenvalues (complex argument)" do
-    a = Matrix(Complex).new([[3, -2], [4, -1]])
+    a = MatComplex.new([[3, -2], [4, -1]])
     vals = a.eigvals
     i = Complex.new(0, 1)
     vals[0].should be_close 1 + 2*i, 1e-3
@@ -116,26 +116,26 @@ describe Linalg do
   end
 
   it "high-level: calculate nonsymmetric eigenvectors" do
-    a = Matrix(Float32).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = Mat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals, vectors = a.eigs
     raise "" if vals.is_a? Array(Complex)
     vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
 
-    a = Matrix(Complex).new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = MatComplex.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals, vectors = a.eigs(left: true)
     vals.each { |e| (vectors*a - vectors*e).det.should be_close 0, 1e-6 }
   end
 
   it "high-level: calculate singular value decomposition" do
-    a = Matrix(Float32).new([[1, 2, 3], [4, 5, 6]])
+    a = Mat32.new([[1, 2, 3], [4, 5, 6]])
     u, s, vt = Linalg.svd(a)
-    (u*Matrix(Float32).diag(a.rows, a.columns, s)*vt).should be_close a, 1e-4
+    (u*Mat32.diag(a.rows, a.columns, s)*vt).should be_close a, 1e-4
   end
 
   # TODO - proper spec
   it "high-level: balance matrix" do
-    a = Matrix(Float32).new([[1, 2, 0], [9, 1, 0.01], [1, 2, 10*Math::PI]])
+    a = Mat32.new([[1, 2, 0], [9, 1, 0.01], [1, 2, 10*Math::PI]])
     b, s = a.balance(separate: true)
-    s.should eq Matrix(Float32).new([[0.5, 1, 1]])
+    s.should eq Mat32.new([[0.5, 1, 1]])
   end
 end

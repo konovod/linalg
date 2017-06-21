@@ -8,12 +8,12 @@ METHODS = {
 }
 
 def test(n)
-  basea = Linalg::Matrix(Float32).rand(n/2, n/2)*10
+  basea = Linalg::Mat.rand(n/2, n/2)*10
   until basea.det.abs > 0.01
-    basea = Linalg::Matrix(Float32).rand(n/2, n/2)*10
+    basea = Linalg::Mat.rand(n/2, n/2)*10
   end
-  a = Linalg::Matrix(Float32).new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
-  b = Linalg::Matrix(Float32).rand(n/2, 1)
+  a = Linalg::Mat.new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
+  b = Linalg::Mat.rand(n/2, 1)
   puts "*********N = #{n}*************"
   Benchmark.ips do |bench|
     METHODS.each do |method|
@@ -28,23 +28,23 @@ test 500
 test 1000
 test 2000
 
-# *********N = 10*************8
-#         QR 179.05k (  5.59µs) (±16.34%)       fastest
-# Orthogonal  87.19k ( 11.47µs) (±13.85%)  2.05× slower
-#        SVD  52.21k ( 19.15µs) (±11.53%)  3.43× slower
-# *********N = 100*************8
-#         QR   2.26k (442.79µs) (±11.14%)       fastest
-# Orthogonal   1.37k (732.02µs) (± 6.69%)  1.65× slower
-#        SVD 696.62  (  1.44ms) (± 6.72%)  3.24× slower
-# *********N = 500*************8
-#         QR  22.86  ( 43.74ms) (± 5.45%)       fastest
-# Orthogonal  14.39  ( 69.51ms) (± 1.58%)  1.59× slower
-#        SVD  10.82  ( 92.46ms) (± 2.59%)  2.11× slower
-# *********N = 1000*************8
-#         QR   3.11  (321.32ms) (± 1.44%)       fastest
-# Orthogonal   1.93  (517.45ms) (± 0.70%)  1.61× slower
-#        SVD   1.57  (637.89ms) (± 0.20%)  1.99× slower
-# *********N = 2000*************8
-#         QR   0.36  (  2.78s ) (± 1.75%)       fastest
-# Orthogonal   0.22  (  4.51s ) (± 0.23%)  1.62× slower
-#        SVD    0.2  (  5.04s ) (± 0.00%)  1.81× slower
+# *********N = 10*************
+#         QR 141.47k (  7.07µs) (±17.05%)       fastest
+# Orthogonal  72.27k ( 13.84µs) (±17.57%)  1.96× slower
+#        SVD  38.63k ( 25.88µs) (± 8.40%)  3.66× slower
+# *********N = 100*************
+#         QR   1.88k (531.03µs) (±13.97%)       fastest
+# Orthogonal   1.07k (933.43µs) (± 9.57%)  1.76× slower
+#        SVD 482.19  (  2.07ms) (± 6.12%)  3.91× slower
+# *********N = 500*************
+#         QR  20.99  ( 47.65ms) (± 2.68%)       fastest
+# Orthogonal  13.39  ( 74.68ms) (± 1.28%)  1.57× slower
+#        SVD   9.63  (103.79ms) (± 2.39%)  2.18× slower
+# *********N = 1000*************
+#         QR   2.72  (367.56ms) (± 2.49%)       fastest
+# Orthogonal   1.68  (595.04ms) (± 0.32%)  1.62× slower
+#        SVD   1.39  (719.77ms) (± 0.89%)  1.96× slower
+# *********N = 2000*************
+#         QR   0.34  (  2.98s ) (± 0.27%)       fastest
+# Orthogonal    0.2  (  5.05s ) (± 0.00%)  1.70× slower
+#        SVD   0.17  (  5.73s ) (± 0.00%)  1.93× slower
