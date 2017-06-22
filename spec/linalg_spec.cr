@@ -35,6 +35,17 @@ describe Linalg do
     (matrix1*matrix1.inv).should eq Mat.identity(3)
   end
 
+  it "raises LinAlgError on incorrect data" do
+    matrix1 = Mat.new([
+      [1, 0, 1],
+      [0, 0, 0],
+      [0, 0, 1],
+    ])
+    expect_raises(LinAlgError) do
+      matrix1.inv!
+    end
+  end
+
   it "support all types" do
     matrix1 = Mat32.new([
       [1, 0, 1],

@@ -20,7 +20,7 @@
 - [x] triu(m[, k])	Make a copy of a matrix with elements below the k-th diagonal zeroed.
 - [ ] orthogonal_procrustes(A, B[, check_finite])	Compute the matrix solution of the orthogonal Procrustes problem.
 - [x] matrix_balance(A[, permute, scale, ...])	Compute a diagonal similarity transformation for row/column balancing.
-- [ ] LinAlgError	Generic Python-exception-derived object raised by linalg functions.
+- [x] LinAlgError	Generic Python-exception-derived object raised by linalg functions.
 
 ### Eigenvalue Problems
 

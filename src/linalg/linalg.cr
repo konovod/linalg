@@ -12,6 +12,9 @@ module Linalg
     LSD        = SVD
   end
 
+  class LinAlgError < Exception
+  end
+
   def self.inv(matrix, *, overwrite_a = false)
     matrix.inv(overwrite_a: overwrite_a)
   end
@@ -39,7 +42,7 @@ module Linalg
            typ = :z.id
          end %}
        info = LibLAPACKE.{{typ}}{{storage}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
-       raise "LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}" if info != 0
+       raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
     end
 
     def inv!
@@ -259,7 +262,7 @@ module Linalg
            typ = :z.id
          end %}
        info = LibLAPACKE.{{typ}}{{storage}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
-       raise "LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}" if info != 0
+       raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
     end
 
     def initialize(@a, @ipiv)
