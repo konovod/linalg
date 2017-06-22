@@ -4,7 +4,7 @@ Linear algebra library in Crystal, uses LAPACKE.
 - convenient Matrix(T) class, supports T=Float32, Float64 and Complex.
 - high-level interface similar to scipy.linalg or MATLAB. (WIP)
 
-Killing SciPy, one module at time.
+Killing SciPy, one module at a time.
 
 ## Installation
 
