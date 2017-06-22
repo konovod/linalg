@@ -185,4 +185,31 @@ describe Linalg::Matrix do
     m = Mat32.new([[1, 2], [3, 4], [5, 6]])
     MatComplex.from(m).should eq MatComplex.new([[1, 2], [3, 4], [5, 6]])
   end
+
+  it "can provide submatrices" do
+    m = Mat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
+    m1 = m[1..3, 2..3]
+    m1[0, 0].should eq m[1, 2]
+    m1[2, 1] = 10
+    m[3, 3].should eq 10
+    expect_raises(ArgumentError) do
+      m1[1, 3]
+    end
+    expect_raises(ArgumentError) do
+      m[-1..3, 2..3]
+    end
+    expect_raises(ArgumentError) do
+      m[0..3, 2..4]
+    end
+  end
+
+  it "has row and column functions" do
+    m = Mat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+    r1 = m.row(2)
+    r1.size.to_a.should eq [1, 4]
+    r1[0, 2].should eq m[2, 2]
+    r1 = m.column(3)
+    r1.size.to_a.should eq [3, 1]
+    r1[1, 0].should eq m[1, 3]
+  end
 end

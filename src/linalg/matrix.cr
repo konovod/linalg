@@ -53,7 +53,7 @@ module Linalg
       @raw = Slice(T).new(rows*columns, T.new(0))
     end
 
-    def initialize(@rows, @columns, values)
+    def initialize(@rows, @columns, values, @flags = MatrixFlags.new(0))
       check_type
       @raw = Slice(T).new(rows*columns) { |i| T.new(values[i]) }
     end
@@ -84,7 +84,7 @@ module Linalg
     end
 
     def [](i, j)
-      # i isn't checked as underlying array will check it anyway
+      # i isn't checked as underlying slice will check it anyway
       if j >= 0 && j < @columns
         @raw[i*columns + j]
       else
@@ -103,7 +103,7 @@ module Linalg
     def []=(i, j, value)
       # i isn't checked as underlying array will check it anyway
       if j >= 0 && j < @columns
-        @raw[i*columns + j] = value
+        @raw[i*columns + j] = T.new(value)
       else
         raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{@rows}x#{@columns}")
       end
@@ -294,20 +294,48 @@ module Linalg
         end
       end
     end
+
+    def [](rows : Range(Int32, Int32), columns : Range(Int32, Int32))
+      nrows = rows.end + (rows.excludes_end? ? 0 : 1) - rows.begin
+      ncols = columns.end + (columns.excludes_end? ? 0 : 1) - columns.begin
+      SubMatrix(T).new(self, {rows.begin, columns.begin}, {nrows, ncols})
+    end
+
+    def row(i)
+      SubMatrix(T).new(self, {i, 0}, {1, @columns})
+    end
+
+    def column(i)
+      SubMatrix(T).new(self, {0, i}, {@rows, 1})
+    end
   end
 
   alias RowColumn = {Int32, Int32}
 
-  class SubMatrix(T)
+  # it's like Slice, but for matrices.
+  # in future will be improved to provide same interface as matrix
+  struct SubMatrix(T)
+    getter offset
+    getter size
+
+    def flags
+      MatrixFlags::Virtual
+    end
+
     def initialize(@base : Matrix(T), @offset : RowColumn, @size : RowColumn)
-      @flags = MatrixFlags::Virtual
+      raise ArgumentError.new("submatrix offset can't be negative") if @offset.any? &.<(0)
+      if @offset[0] + @size[0] > @base.rows || @offset[1] + @size[1] > @base.columns
+        raise ArgumentError.new("submatrix size exceeds matrix size")
+      end
     end
 
     def []=(x, y, value)
+      raise ArgumentError.new("index out of bounds") if x >= @size[0] || y >= @size[1]
       @base[@offset[0] + x, @offset[1] + y] = value
     end
 
     def [](x, y)
+      raise ArgumentError.new("index out of bounds") if x >= @size[0] || y >= @size[1]
       @base[@offset[0] + x, @offset[1] + y]
     end
   end
