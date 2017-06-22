@@ -12,8 +12,8 @@ module Linalg
     LSD        = SVD
   end
 
-  def self.inv(matrix)
-    matrix.inv
+  def self.inv(matrix, *, overwrite_a = false)
+    matrix.inv(overwrite_a: overwrite_a)
   end
 
   def self.solve(a, b)
@@ -24,8 +24,8 @@ module Linalg
     a.solvels(b, method)
   end
 
-  def self.svd(matrix)
-    matrix.svd
+  def self.svd(matrix, *, overwrite_a = false)
+    matrix.svd(overwrite_a: overwrite_a)
   end
 
   class Matrix(T)
@@ -152,6 +152,15 @@ module Linalg
       vt = Matrix(T).new(n, n)
       lapack(sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
       return {u, s, vt}
+    end
+
+    def svdvals(*, overwrite_a = false)
+      a = overwrite_a ? self : self.clone
+      m = rows
+      n = columns
+      s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
+      lapack(sdd, 'N'.ord, m, n, a, columns, s, nil, m, nil, n)
+      s
     end
 
     def balance!(*, permute = true, scale = true, separate = false)

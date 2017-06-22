@@ -127,9 +127,14 @@ describe Linalg do
   end
 
   it "high-level: calculate singular value decomposition" do
-    a = Mat32.new([[1, 2, 3], [4, 5, 6]])
+    a = Mat.new([[1, 2, 3], [4, 5, 6]])
     u, s, vt = Linalg.svd(a)
-    (u*Mat32.diag(a.rows, a.columns, s)*vt).should be_close a, 1e-4
+    (u*Mat.diag(a.rows, a.columns, s)*vt).should be_close a, 1e-6
+
+    ac = MatComplex.new([[1, 2, 3], [4, 5, 6]])
+    s1 = ac.svdvals(overwrite_a: true)
+    s1[0].should be_close s[0], 1e-6
+    s1[1].should be_close s[1], 1e-6
   end
 
   # TODO - proper spec

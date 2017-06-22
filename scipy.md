@@ -37,7 +37,7 @@
 - [x] lu_factor(a[, overwrite_a, check_finite])	Compute pivoted LU decomposition of a matrix.
 - [x] lu_solve(lu_and_piv, b[, trans, ...])	Solve an equation system, a x = b, given the LU factorization of a
 - [x] svd(a[, full_matrices, compute_uv, ...])	Singular Value Decomposition.
-- [ ] svdvals(a[, overwrite_a, check_finite])	Compute singular values of a matrix.
+- [x] svdvals(a[, overwrite_a, check_finite])	Compute singular values of a matrix.
 - [x] diagsvd(s, M, N)	Construct the sigma matrix in SVD from singular values and size M, N.
 - [ ] orth(A)	Construct an orthonormal basis for the range of A using SVD
 - [ ] cholesky(a[, lower, overwrite_a, check_finite])	Compute the Cholesky decomposition of a matrix.
