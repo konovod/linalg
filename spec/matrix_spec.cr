@@ -172,4 +172,13 @@ describe Linalg::Matrix do
     m = Mat.new([[1, 2], [3, 4], [5, 6]])
     m.to_s.should eq "\n[1.0, 2.0]\n[3.0, 4.0]\n[5.0, 6.0]\n\n"
   end
+
+  it "converted to array" do
+    m = Mat.new([[1, 2], [3, 4], [5, 6]])
+    m.to_a.should eq [1, 2, 3, 4, 5, 6]
+  end
+  it "converted to array of arrays" do
+    m = Mat.new([[1, 2], [3, 4], [5, 6]])
+    m.to_aa.should eq [[1, 2], [3, 4], [5, 6]]
+  end
 end

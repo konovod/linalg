@@ -25,7 +25,7 @@ module Linalg
     getter columns : Int32
     getter raw : Slice(T)
 
-    def check_type
+    private def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}
         {% raise "Wrong matrix members type: #{T}. Types supported by Linalg are: #{SUPPORTED_TYPES}" %}
       {% end %}
@@ -258,6 +258,19 @@ module Linalg
     def self.tri(rows, columns, k = 0)
       new(rows, columns) do |i, j|
         i >= j - k ? 1 : 0
+      end
+    end
+
+    def to_a
+      @raw.to_a
+    end
+
+    def to_aa
+      Array(Array(T)).new(@rows) do |i|
+        Array(T).build(@columns) do |pointer|
+          pointer.to_slice(@columns).copy_from(@raw[i*@columns, @columns])
+          @columns
+        end
       end
     end
   end
