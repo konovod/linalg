@@ -99,4 +99,4 @@
 - [ ] pascal(n[, kind, exact])	Returns the n x n Pascal matrix.
 - [ ] invpascal(n[, kind, exact])	Returns the inverse of the n x n Pascal matrix.
 - [ ] toeplitz(c[, r])	Construct a Toeplitz matrix.
-- [ ] tri(N[, M, k, dtype])	Construct (N, M) matrix filled with ones at and below the k-th diagonal.
+- [x] tri(N[, M, k, dtype])	Construct (N, M) matrix filled with ones at and below the k-th diagonal.

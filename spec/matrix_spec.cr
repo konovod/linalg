@@ -160,4 +160,11 @@ describe Linalg::Matrix do
       a.reshape(1, 4)
     end
   end
+
+  it "have tri function" do
+    Mat.tri(3, 5, 2).should eq Mat.new(
+      [[1, 1, 1, 0, 0],
+       [1, 1, 1, 1, 0],
+       [1, 1, 1, 1, 1]])
+  end
 end

@@ -243,6 +243,12 @@ module Linalg
     def reshape(arows, acolumns)
       clone.reshape!(arows, acolumns)
     end
+
+    def self.tri(rows, columns, k = 0)
+      new(rows, columns) do |i, j|
+        i >= j - k ? 1 : 0
+      end
+    end
   end
 
   alias Mat = Matrix(Float64)
