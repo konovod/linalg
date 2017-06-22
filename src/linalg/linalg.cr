@@ -216,5 +216,63 @@ module Linalg
       end
       {p, l, u}
     end
+
+    def lu_factor!
+      raise ArgumentError.new("matrix must be square") unless square?
+      ipiv = Slice(Int32).new(rows)
+      lapack(trf, rows, columns, self, columns, ipiv)
+      LUMatrix(T).new(self, ipiv)
+    end
+
+    def lu_factor
+      clone.lu_factor!
+    end
+  end
+
+  enum LUTranspose
+    None          = 0
+    Transpose
+    ConjTranspose
+  end
+
+  struct LUMatrix(T)
+    @a : Matrix(T)
+    @ipiv : Slice(Int32)
+
+    # TODO - more macro magic?
+    macro lapack(name, *args)
+      {% storage = :ge.id %}
+      {% if T == Float32
+           typ = :s.id
+         elsif T == Float64
+           typ = :d.id
+         elsif T == Complex
+           typ = :z.id
+         end %}
+       info = LibLAPACKE.{{typ}}{{storage}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
+       raise "LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}" if info != 0
+    end
+
+    def initialize(@a, @ipiv)
+    end
+
+    def size
+      @a.rows
+    end
+
+    # TODO - equilibration?
+
+    def solve(b, transpose = LUTranspose::None)
+      raise ArgumentError.new("number of rows in a and b must match") unless @a.rows == b.rows
+      trans = case transpose
+              when .none?           then 'N'
+              when .transpose?      then 'T'
+              when .conj_transpose? then 'C'
+              else                       'N'
+              end.ord
+      x = b.clone
+      lapack(trs, trans, size, b.columns, @a, size, @ipiv, x, x.columns)
+      x
+    end
   end
 end

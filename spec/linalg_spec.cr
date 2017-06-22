@@ -144,4 +144,14 @@ describe Linalg do
     p, l, u = a.lu
     (p*l*u).should be_close a, 1e-4
   end
+
+  it "high-level: solve using LU" do
+    a = Mat32.new(
+      [[2, 4],
+       [2, 8]]
+    )
+    lu = a.lu_factor
+    b = Mat32.new([[2], [4]])
+    lu.solve(b).should eq (a.inv * b)
+  end
 end
