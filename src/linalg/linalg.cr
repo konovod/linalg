@@ -65,9 +65,9 @@ module Linalg
       x
     end
 
-    def det
+    def det(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      lru = self.clone
+      lru = overwrite_a ? self : self.clone
       ipiv = Slice(Int32).new(rows)
       lapack(trf, rows, rows, lru, rows, ipiv)
       (0...rows).reduce(1) { |det, i| det*lru[i, i] }
@@ -100,9 +100,9 @@ module Linalg
       x
     end
 
-    def eigvals
+    def eigvals(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      a = self.clone
+      a = overwrite_a ? self : self.clone
       {% if T == Complex %}
         vals = Array(T).new(rows, T.new(0,0))
         lapack(ev, 'N'.ord, 'N'.ord, rows, a, rows, vals.to_unsafe.as(LibLAPACKE::DoubleComplex*), nil, rows, nil, rows)
@@ -119,9 +119,9 @@ module Linalg
       {% end %}
     end
 
-    def eigs(*, left : Bool = false)
+    def eigs(*, left : Bool = false, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      a = self.clone
+      a = overwrite_a ? self : self.clone
       eigvectors = Matrix(T).new(rows, rows)
       {% if T == Complex %}
         vals = Array(T).new(rows, T.new(0,0))
@@ -143,8 +143,8 @@ module Linalg
       {% end %}
     end
 
-    def svd
-      a = self.clone
+    def svd(*, overwrite_a = false)
+      a = overwrite_a ? self : self.clone
       m = rows
       n = columns
       s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
@@ -178,8 +178,8 @@ module Linalg
       {a, s}
     end
 
-    def lu
-      a = clone
+    def lu(*, overwrite_a = false)
+      a = overwrite_a ? self : self.clone
       m = rows
       n = columns
       k = {rows, columns}.min
@@ -262,7 +262,7 @@ module Linalg
 
     # TODO - equilibration?
 
-    def solve(b, transpose = LUTranspose::None)
+    def solve(b, transpose = LUTranspose::None, *, overwrite_b = false)
       raise ArgumentError.new("number of rows in a and b must match") unless @a.rows == b.rows
       trans = case transpose
               when .none?           then 'N'
@@ -270,7 +270,7 @@ module Linalg
               when .conj_transpose? then 'C'
               else                       'N'
               end.ord
-      x = b.clone
+      x = overwrite_b ? b : b.clone
       lapack(trs, trans, size, b.columns, @a, size, @ipiv, x, x.columns)
       x
     end
