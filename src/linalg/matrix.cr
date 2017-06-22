@@ -53,6 +53,11 @@ module Linalg
       end
     end
 
+    def initialize(matrix : Matrix)
+      check_type
+      initialize(matrix.rows, matrix.columns, matrix.raw)
+    end
+
     def initialize(@rows, @columns, &block)
       check_type
       @raw = Slice(T).new(@rows*@columns) do |index|

@@ -181,4 +181,8 @@ describe Linalg::Matrix do
     m = Mat.new([[1, 2], [3, 4], [5, 6]])
     m.to_aa.should eq [[1, 2], [3, 4], [5, 6]]
   end
+  it "can be created from matrix of another type" do
+    m = Mat32.new([[1, 2], [3, 4], [5, 6]])
+    MatComplex.new(m).should eq MatComplex.new([[1, 2], [3, 4], [5, 6]])
+  end
 end
