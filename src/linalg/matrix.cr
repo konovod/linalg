@@ -16,10 +16,10 @@ module Linalg
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
   # generic matrix, heap-allocated
-  # TODO - iteration on cols\rows
-  # TODO - constructing from matlab-like [1,2,3;3,4,6;1,1,3]
-  # TODO - saving/loading to files
-  # TODO - sums on cols\rows, check numpy for more
+  # TODO - iteration on cols\rows (create row\column object to prevent allocations?)
+  # TODO - sums on cols\rows, check numpy for more (require previous point?)
+  # TODO - constructing from matlab-like string "[1,2,3;3,4,6;1,1,3]" (check regexps?)
+  # TODO - saving/loading to files (what formats? csv?)
   class Matrix(T)
     getter rows : Int32
     getter columns : Int32
