@@ -15,12 +15,10 @@ module Linalg
   # TODO - Complex64?
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
-  # general matrix, heap-allocated
+  # generic matrix, heap-allocated
   # TODO - iteration on cols\rows
-  # TODO - module functions for easier creation
   # TODO - constructing from matlab-like [1,2,3;3,4,6;1,1,3]
   # TODO - saving/loading to files
-  # TODO - pretty print
   # TODO - sums on cols\rows, check numpy for more
   class Matrix(T)
     getter rows : Int32
@@ -238,6 +236,19 @@ module Linalg
       @rows = arows
       @columns = acolumns
       self
+    end
+
+    def to_s(io)
+      io << "\n"
+      @rows.times do |i|
+        io << "["
+        @columns.times do |j|
+          io << ", " unless j == 0
+          io << self[i, j]
+        end
+        io << "]\n"
+      end
+      io << "\n"
     end
 
     def reshape(arows, acolumns)

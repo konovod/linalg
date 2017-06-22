@@ -167,4 +167,9 @@ describe Linalg::Matrix do
        [1, 1, 1, 1, 0],
        [1, 1, 1, 1, 1]])
   end
+
+  it "printed to string" do
+    m = Mat.new([[1, 2], [3, 4], [5, 6]])
+    m.to_s.should eq "\n[1.0, 2.0]\n[3.0, 4.0]\n[5.0, 6.0]\n\n"
+  end
 end
