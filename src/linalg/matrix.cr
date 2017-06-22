@@ -15,6 +15,22 @@ module Linalg
   # TODO - Complex64?
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
+  @[Flags]
+  enum MatrixFlags
+    Symmetric
+    Hermitian
+    PositiveDefinite
+    Hessenberg
+    Band
+    Diagonal
+    Bidiagonal
+    Tridiagonal
+    Triangular
+    Orthogonal
+
+    Virtual # compute values instead of storing
+  end
+
   # generic matrix, heap-allocated
   # TODO - iteration on cols\rows (create row\column object to prevent allocations?)
   # TODO - sums on cols\rows, check numpy for more (require previous point?)
@@ -24,6 +40,7 @@ module Linalg
     getter rows : Int32
     getter columns : Int32
     getter raw : Slice(T)
+    property flags : MatrixFlags = MatrixFlags.new(0)
 
     private def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}
@@ -53,9 +70,8 @@ module Linalg
       end
     end
 
-    def initialize(matrix : Matrix)
-      check_type
-      initialize(matrix.rows, matrix.columns, matrix.raw)
+    def self.from(matrix)
+      new(matrix.rows, matrix.columns, matrix.raw)
     end
 
     def initialize(@rows, @columns, &block)
@@ -277,6 +293,22 @@ module Linalg
           @columns
         end
       end
+    end
+  end
+
+  alias RowColumn = {Int32, Int32}
+
+  class SubMatrix(T)
+    def initialize(@base : Matrix(T), @offset : RowColumn, @size : RowColumn)
+      @flags = MatrixFlags::Virtual
+    end
+
+    def []=(x, y, value)
+      @base[@offset[0] + x, @offset[1] + y] = value
+    end
+
+    def [](x, y)
+      @base[@offset[0] + x, @offset[1] + y]
     end
   end
 
