@@ -88,13 +88,26 @@ other present features:
 
 - svd (`Mat##svd` or `Mat##svdvals` for just values)
 - lu decomposition (`Mat##lu`)
+```crystal
+# to just get P L U matrices
+p, l, u = a.lu
+
+# to get them in compact form and use for solving linear equations:
+a = GMat32.new(
+  [[2, 4],
+   [2, 8]]
+)
+lu = a.lu_factor # lu is LUMatrix(T) - immutable object that can return it's content and solve systems
+puts lu.solve(GMat32.new([[2], [4]]))
+```
+
 - linear least squares problem (`Linalg.solvels` to just get decision or `Linalg.lstsq` to also get rank and singular values (WIP - and residues))
 
 Other decompositions and other functions are in progress. 
 
 Plans are to support at least all features of scipy.linalg that LAPACK can provide, but better.
 
-There is/will be(WIP) also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select faster algorithms. Flags will be partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.flags<<MatrixFlags::Symmetric` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the linalg routines for symmetrical matrices will be used automatically.
+There is/will be(WIP) also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select faster algorithms. Flags will be partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.flags<<MatrixFlags::Symmetric` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically.
 
 
 Check `spec` directory for more examples.
