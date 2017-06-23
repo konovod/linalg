@@ -35,6 +35,12 @@ describe Linalg do
     (matrix1*matrix1.inv).should eq Mat.identity(3)
   end
 
+  it "ultra-highlevel - calls functions on a virtual matrices" do
+    m4 = Mat.ones(4, 4)*5 + Mat.rand(4, 4, Random.new(1))
+    m3 = m4[0..2, 0..2]
+    (m3*m3.inv).should be_close Mat.identity(3), 1e-9
+  end
+
   it "raises LinAlgError on incorrect data" do
     matrix1 = GMat.new([
       [1, 0, 1],

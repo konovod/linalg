@@ -24,17 +24,18 @@ module Linalg
   # TODO - iteration on cols\rows (create row\column object to prevent allocations?)
   # TODO - sums on cols\rows, check numpy for more (require previous point?)
   # TODO - saving/loading to files (what formats? csv?)
+  # TODO - replace [] to unsafe at most places
   module Matrix(T)
     # used in constructors to limit T at compile-time
     protected def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}
-          {% raise "Wrong matrix members type: #{T}. Types supported by Linalg are: #{SUPPORTED_TYPES}" %}
-        {% end %}
+        {% raise "Wrong matrix members type: #{T}. Types supported by Linalg are: #{SUPPORTED_TYPES}" %}
+      {% end %}
     end
 
     # to_unsafe method raises at runtime and is overriden by matrix that actually have pointer
     def to_unsafe
-      raise ArgumentError.new("Matrix can't be passed unsafe!")
+      raise ArgumentError.new("Virtual matrix can't be passed unsafe!")
     end
 
     # creates actual matrix with same content. Useful for virtual matrices
@@ -45,7 +46,7 @@ module Linalg
     end
 
     # matrix product to given m
-    def *(m : self)
+    def *(m : Matrix(T))
       if columns != m.rows
         raise ArgumentError.new("matrix size should match ([#{rows}x#{columns}] * [#{m.rows}x#{m.columns}]")
       end
@@ -62,7 +63,7 @@ module Linalg
     end
 
     # returns element-wise sum
-    def +(m : self)
+    def +(m : Matrix(T))
       if columns != m.columns || rows != m.rows
         raise ArgumentError.new("matrix size should match ([#{rows}x#{columns}] + [#{m.rows}x#{m.columns}]")
       end
@@ -72,7 +73,7 @@ module Linalg
     end
 
     # returns element-wise subtract
-    def -(m : self)
+    def -(m : Matrix(T))
       if columns != m.columns || rows != m.rows
         raise ArgumentError.new("matrix size should match ([#{rows}x#{columns}] - [#{m.rows}x#{m.columns}]")
       end
@@ -95,7 +96,7 @@ module Linalg
     end
 
     # retunrs
-    def kron(b : self)
+    def kron(b : Matrix(T))
       Matrix(T).kron(self, b)
     end
 
@@ -181,7 +182,7 @@ module Linalg
       GeneralMatrix(T).new(rows, columns) { |i, j| 1 }
     end
 
-    def self.repmat(a : self, rows, columns)
+    def self.repmat(a : Matrix(T), rows, columns)
       a.repmat(rows, columns)
     end
 
