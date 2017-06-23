@@ -40,6 +40,10 @@ module Linalg
       raise ArgumentError.new("Virtual matrix can't be passed unsafe!")
     end
 
+    def size
+      {rows, columns}
+    end
+
     # creates actual matrix with same content. Useful for virtual matrices
     def clone
       GeneralMatrix(T).new(rows, columns) do |i, j|

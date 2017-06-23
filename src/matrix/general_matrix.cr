@@ -10,12 +10,6 @@ module Linalg
     getter raw : Slice(T)
     property flags : MatrixFlags = MatrixFlags.new(0)
 
-    private def check_type
-      {% unless T == Float32 || T == Float64 || T == Complex %}
-      {% raise "Wrong matrix members type: #{T}. Types supported by Linalg are: #{SUPPORTED_TYPES}" %}
-    {% end %}
-    end
-
     def initialize(@rows, @columns)
       check_type
       @raw = Slice(T).new(rows*columns, T.new(0))
