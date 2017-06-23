@@ -29,8 +29,9 @@ Basic type aliases are
 - Mat32 = GenericMatrix(Float32)
 - MatComplex = GenericMatrix(Complex)
 
-Complex consisting of two Float32 isn't supported for now (it is easy, but I'm not sure is it useful)
-types with prefix G (GMat, GMat32, GMatComplex) are for actually allocated matrices, 
+Complex consisting of two Float32 isn't supported for now (it is easy, but I'm not sure is it useful).
+
+Types with prefix G (GMat, GMat32, GMatComplex) are for actually allocated matrices, 
 others are automatically converted to them when needed.
 
 ```crystal
@@ -78,7 +79,7 @@ r = m.column[3] # =>
 # [7]
 x = m[1..1, 1..2] # =>
 # [5 6]
-x[0,0] = 0 # m[1,1] is not 0
+x[0,0] = 0 # m[1,1] is now 0 (questionable feature? maybe should be ##[]! for modifiable submatrices and ##[] for CoW?)
 y = x.clone # now y is a separate matrix
 y[0,0] = 1 # m[1,1] is still 0
 
@@ -89,8 +90,9 @@ other present features:
 - lu decomposition (`Mat##lu`)
 - linear least squares problem (`Linalg.solvels` to just get decision or `Linalg.lstsq` to also get rank and singular values (WIP - and residues))
 
-other decompositions and other functions are in progress. 
-Plans are to at least support all features of scypi LAPACK provide.
+Other decompositions and other functions are in progress. 
+
+Plans are to support at least all features of scipy.linalg that LAPACK can provide, but better.
 
 There is/will be(WIP) also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select faster algorithms. Flags will be partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.flags<<MatrixFlags::Symmetric` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the linalg routines for symmetrical matrices will be used automatically.
 
