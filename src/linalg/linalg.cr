@@ -23,8 +23,12 @@ module Linalg
     a.solve(b)
   end
 
-  def self.lstsq(a, b, method : LSMethod = LSMethod::Auto)
-    a.solvels(b, method)
+  def self.lstsq(a, b, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
+    a.lstsq(b, method, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
+  end
+
+  def self.solvels(a, b, *, overwrite_a = false, overwrite_b = false, cond = -1)
+    a.solvels(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
   end
 
   def self.svd(matrix, *, overwrite_a = false)
@@ -76,31 +80,50 @@ module Linalg
       (0...rows).reduce(1) { |det, i| det*lru[i, i] }
     end
 
-    def solvels(b : self, method : LSMethod = LSMethod::Auto)
+    def solvels(b : self, *, overwrite_a = false, overwrite_b = false, cond = -1)
       raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
-      if method.auto?
-        method = LSMethod::QR
-      end
-      a = self.clone
+      a = overwrite_a ? self : self.clone
       if columns > rows
         # make room for residuals
         x = GeneralMatrix(T).new(columns, b.columns) { |r, c| r < rows ? b[r, c] : T.new(0) }
       else
-        x = b.clone
+        x = overwrite_b ? b : b.clone
       end
+      lapack(ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
+      x
+    end
+
+    def lstsq(b : self, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
+      raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
+      if method.auto?
+        method = LSMethod::QR
+      end
+      a = overwrite_a ? self : self.clone
+      if columns > rows
+        # make room for residuals
+        x = GeneralMatrix(T).new(columns, b.columns) { |r, c| r < rows ? b[r, c] : T.new(0) }
+      else
+        x = overwrite_b ? b : b.clone
+      end
+      rank = 0
       case method
       when .ls?
         lapack(ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
+        s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
       when .lsd?
-        s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({rows, columns}.min)
-        rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(-1)
-        lapack(lsd, rows, columns, b.columns, a, columns, x, x.columns, s, rcond, out rank1)
+        ssize = {rows, columns}.min
+        s = {% if T == Complex %} Array(Float64).new(ssize, 0.0) {% else %} Array(T).new(ssize, T.new(0)) {% end %}
+        rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(cond)
+        lapack(lsd, rows, columns, b.columns, a, columns, x, x.columns, s, rcond, pointerof(rank))
       when .lsy?
         jpvt = Slice(Int32).new(columns)
         rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(-1)
-        lapack(lsy, rows, columns, b.columns, a, columns, x, x.columns, jpvt, rcond, out rank2)
+        lapack(lsy, rows, columns, b.columns, a, columns, x, x.columns, jpvt, rcond, pointerof(rank))
+        s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
+      else
+        s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
       end
-      x
+      {x, rank, s}
     end
 
     def eigvals(*, overwrite_a = false)

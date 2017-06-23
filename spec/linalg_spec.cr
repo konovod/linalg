@@ -92,7 +92,7 @@ describe Linalg do
        [0, 4, 3]]
     )
     b = GMat32.new([[8], [18]])
-    x = Linalg.lstsq(a, b)
+    x = Linalg.solvels(a, b)
     x_octave = GMat32.new(3, 1, [0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end
@@ -103,9 +103,12 @@ describe Linalg do
        [0, 4, 3]]
     )
     b = GMatComplex.new([[8], [18]])
-    x = Linalg.lstsq(a, b)
+    x, rank, s = Linalg.lstsq(a, b, LSMethod::SVD)
     x_octave = GMatComplex.new(3, 1, [0.918032, 3.54098, 1.27869])
-    x.should be_close(x_octave, 1e-3)
+    x.should be_close(x_octave, 1e-5)
+    rank.should eq 2
+    s[0].should be_close 5.273163, 1e-5
+    s[1].should be_close 1.481132, 1e-5
   end
 
   # sadly, spec is order-depentent
