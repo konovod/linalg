@@ -56,9 +56,16 @@ module Linalg
     end
 
     # multiplies at scalar
-    def *(k : Int | Float | Complex)
+    def *(k : Number | Complex)
       result = GeneralMatrix(T).new(rows, columns) do |i, j|
         self[i, j]*k
+      end
+    end
+
+    # divides at scalar
+    def /(k : Number | Complex)
+      result = GeneralMatrix(T).new(rows, columns) do |i, j|
+        self[i, j] / k
       end
     end
 
@@ -95,23 +102,30 @@ module Linalg
       end
     end
 
-    # retunrs
+    # returns kroneker product with matrix b
     def kron(b : Matrix(T))
       Matrix(T).kron(self, b)
     end
 
+    # same as tril in scipy - returns lower triangular or trapezoidal part of matrix
     def tril(k = 0)
       GeneralMatrix(T).new(rows, columns) do |i, j|
         i >= j - k ? self[i, j] : 0
       end
     end
 
+    # same as triu in scipy - returns upper triangular or trapezoidal part of matrix
     def triu(k = 0)
       GeneralMatrix(T).new(rows, columns) do |i, j|
         i <= j - k ? self[i, j] : 0
       end
     end
 
+    # converts to string, with linefeeds before and after matrix:
+    # [1, 2, 3, .... 10]
+    # [11, 12, 13, .... 20]
+    # ...
+    # [91, 92, 93, .... 100]
     def to_s(io)
       io << "\n"
       rows.times do |i|
@@ -125,20 +139,24 @@ module Linalg
       io << "\n"
     end
 
+    # changes number of rows and columns of matrix (total number of elements must not change)
     def reshape(arows, acolumns)
       clone.reshape!(arows, acolumns)
     end
 
+    # returns True if matrix is square and False otherwise
     def square?
       rows == columns
     end
 
+    # return matrix repeated `arows` times by vertical and `acolumns` times by horizontal
     def repmat(arows, acolumns)
       GeneralMatrix(T).new(rows*arows, columns*acolumns) do |i, j|
         self[i % rows, j % columns]
       end
     end
 
+    # return submatrix over given ranges.
     def [](rows : Range(Int32, Int32), columns : Range(Int32, Int32))
       nrows = rows.end + (rows.excludes_end? ? 0 : 1) - rows.begin
       ncols = columns.end + (columns.excludes_end? ? 0 : 1) - columns.begin
@@ -186,7 +204,7 @@ module Linalg
       a.repmat(rows, columns)
     end
 
-    def self.diag(arows, acolumns, value : Int | Float | Complex)
+    def self.diag(arows, acolumns, value : Number | Complex)
       diag(arows, acolumns) { value }
     end
 

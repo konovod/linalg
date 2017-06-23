@@ -9,4 +9,14 @@ struct Complex
       new(value, 0.0)
     end
   end
+
+  def *(m : Matrix(Complex))
+    m*self
+  end
+end
+
+abstract struct Number
+  def *(m : Matrix)
+    m*self
+  end
 end

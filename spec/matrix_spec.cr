@@ -56,6 +56,16 @@ describe Linalg::Matrix do
     expect_raises(ArgumentError) { GMat.new(3, 4) + GMat.new(4, 4) }
   end
 
+  it "scalars can be left member of multiplication, can be right member of division" do
+    m1 = Mat.ones(3, 4)
+    m = 3 * m1 / 2
+    m.should eq GMat.new(3, 4) { |i, j| 1.5 }
+
+    m1 = MatComplex.ones(3, 4)
+    m = Complex.new(0, 1) * m1 / Complex.new(0, 1)
+    m.should eq GMatComplex.new(3, 4) { |i, j| 1 }
+  end
+
   it "can checks if it is square" do
     GMat.new(3, 4).square?.should be_false
     GMatComplex.new(30, 30).square?.should be_true
