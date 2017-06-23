@@ -50,7 +50,6 @@ module Linalg
 
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
-      raise ArgumentError.new("can't invert inplace virtual matrix") if flags.virtual?
       n = @rows
       ipiv = Slice(Int32).new(n)
       lapack(ge, trf, n, n, self, n, ipiv)
@@ -211,6 +210,15 @@ module Linalg
       a = clone
       s = a.balance!(permute: permute, scale: scale, separate: separate)
       {a, s}
+    end
+
+    def cholesky!
+      {% raise "Matrix must be Complex for cholesky decomposition" unless T == Complex %}
+      raise ArgumentError.new("Matrix must be positive definite for cholesky decomposition") unless flags.positive_definite?
+    end
+
+    def cholesky
+      clone.cholesky!
     end
   end
 end

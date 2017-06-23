@@ -18,8 +18,6 @@ module Linalg
     Orthogonal
 
     Upper
-
-    Virtual # compute values instead of storing, so have to be cloned before to_unsafe
   end
 
   # class that provide all utility matrix functions
@@ -44,11 +42,11 @@ module Linalg
       {rows, columns}
     end
 
-    # creates actual matrix with same content. Useful for virtual matrices
+    # creates generic matrix with same content. Useful for virtual matrices
     def clone
       GeneralMatrix(T).new(rows, columns) do |i, j|
         unsafe_at(i, j)
-      end
+      end.tap { |it| it.flags = flags }
     end
 
     # matrix product to given m

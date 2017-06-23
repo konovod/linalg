@@ -9,10 +9,7 @@ module Linalg
     include Matrix(T)
     getter offset
     getter size
-
-    def flags
-      MatrixFlags::Virtual
-    end
+    property flags = MatrixFlags.new(0)
 
     def initialize(@base : Matrix(T), @offset : RowColumn, @size : RowColumn)
       raise IndexError.new("submatrix offset can't be negative") if @offset.any? &.<(0)
