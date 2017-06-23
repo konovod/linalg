@@ -14,7 +14,7 @@ describe Linalg do
   end
 
   it "calls functions using matrix class" do
-    matrix1 = Mat.new([
+    matrix1 = GMat.new([
       [1, 0, 1],
       [0, 4, 0],
       [0, 0, 1],
@@ -27,7 +27,7 @@ describe Linalg do
   end
 
   it "calls functions using high level wrapper" do
-    matrix1 = Mat.new([
+    matrix1 = GMat.new([
       [1, 0, 1],
       [0, 4, 0],
       [0, 0, 1],
@@ -36,7 +36,7 @@ describe Linalg do
   end
 
   it "raises LinAlgError on incorrect data" do
-    matrix1 = Mat.new([
+    matrix1 = GMat.new([
       [1, 0, 1],
       [0, 0, 0],
       [0, 0, 1],
@@ -47,7 +47,7 @@ describe Linalg do
   end
 
   it "support all types" do
-    matrix1 = Mat32.new([
+    matrix1 = GMat32.new([
       [1, 0, 1],
       [0, 4, 0],
       [0, 0, 1],
@@ -55,7 +55,7 @@ describe Linalg do
     (matrix1*matrix1.inv).should eq Mat32.identity(3)
 
     i = Complex.new(0, 1)
-    matrix1 = MatComplex.new({
+    matrix1 = GMatComplex.new({
       {1 + 1*i, 0, 1},
       {0, 4, 0},
       {0, 0, 1},
@@ -64,16 +64,16 @@ describe Linalg do
   end
 
   it "high-level: solve linear equations" do
-    a = Mat32.new(
+    a = GMat32.new(
       [[2, 4],
        [2, 8]]
     )
-    b = Mat32.new([[2], [4]])
+    b = GMat32.new([[2], [4]])
     Linalg.solve(a, b).should eq (a.inv * b)
   end
 
   it "high-level: calculate determinant" do
-    a = Mat.new(
+    a = GMat.new(
       [[1, 2, 3],
        [4, 5, 7],
        [-1, 1, -1]]
@@ -81,30 +81,30 @@ describe Linalg do
     a.det.should eq 9
   end
   it "high-level: solve linear least square" do
-    a = Mat32.new(
+    a = GMat32.new(
       [[1, 2, 0],
        [0, 4, 3]]
     )
-    b = Mat32.new([[8], [18]])
+    b = GMat32.new([[8], [18]])
     x = Linalg.lstsq(a, b)
-    x_octave = Mat32.new(3, 1, [0.918032, 3.54098, 1.27869])
+    x_octave = GMat32.new(3, 1, [0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end
 
   it "high-level: solve linear least square (complex)" do
-    a = MatComplex.new(
+    a = GMatComplex.new(
       [[1, 2, 0],
        [0, 4, 3]]
     )
-    b = MatComplex.new([[8], [18]])
+    b = GMatComplex.new([[8], [18]])
     x = Linalg.lstsq(a, b)
-    x_octave = MatComplex.new(3, 1, [0.918032, 3.54098, 1.27869])
+    x_octave = GMatComplex.new(3, 1, [0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end
 
   # sadly, spec is order-depentent
   it "high-level: calculate nonsymmetric eigenvalues" do
-    a = Mat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = GMat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals = a.eigvals
     vals[0].should be_close -6, 1e-3
     vals[1].should be_close -1, 1e-3
@@ -112,14 +112,14 @@ describe Linalg do
   end
 
   it "high-level: calculate nonsymmetric eigenvalues (complex result)" do
-    a = Mat32.new([[3, -2], [4, -1]])
+    a = GMat32.new([[3, -2], [4, -1]])
     vals = a.eigvals
     i = Complex.new(0, 1)
     vals[0].should be_close 1 + 2*i, 1e-3
     vals[1].should be_close 1 - 2*i, 1e-3
   end
   it "high-level: calculate nonsymmetric eigenvalues (complex argument)" do
-    a = MatComplex.new([[3, -2], [4, -1]])
+    a = GMatComplex.new([[3, -2], [4, -1]])
     vals = a.eigvals
     i = Complex.new(0, 1)
     vals[0].should be_close 1 + 2*i, 1e-3
@@ -127,22 +127,22 @@ describe Linalg do
   end
 
   it "high-level: calculate nonsymmetric eigenvectors" do
-    a = Mat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = GMat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals, vectors = a.eigs
     raise "" if vals.is_a? Array(Complex)
     vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
 
-    a = MatComplex.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = GMatComplex.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals, vectors = a.eigs(left: true)
     vals.each { |e| (vectors*a - vectors*e).det.should be_close 0, 1e-6 }
   end
 
   it "high-level: calculate singular value decomposition" do
-    a = Mat.new([[1, 2, 3], [4, 5, 6]])
+    a = GMat.new([[1, 2, 3], [4, 5, 6]])
     u, s, vt = Linalg.svd(a)
     (u*Mat.diag(a.rows, a.columns, s)*vt).should be_close a, 1e-6
 
-    ac = MatComplex.new([[1, 2, 3], [4, 5, 6]])
+    ac = GMatComplex.new([[1, 2, 3], [4, 5, 6]])
     s1 = ac.svdvals(overwrite_a: true)
     s1[0].should be_close s[0], 1e-6
     s1[1].should be_close s[1], 1e-6
@@ -150,24 +150,24 @@ describe Linalg do
 
   # TODO - proper spec
   it "high-level: balance matrix" do
-    a = Mat32.new([[1, 2, 0], [9, 1, 0.01], [1, 2, 10*Math::PI]])
+    a = GMat32.new([[1, 2, 0], [9, 1, 0.01], [1, 2, 10*Math::PI]])
     b, s = a.balance(separate: true)
-    s.should eq Mat32.new([[0.5, 1, 1]])
+    s.should eq GMat32.new([[0.5, 1, 1]])
   end
 
   it "high-level: LU factorization" do
-    a = Mat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [1, 2, 10, 0], [50, 6, 7, 8], [1, 21, 1, 0]])
+    a = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [1, 2, 10, 0], [50, 6, 7, 8], [1, 21, 1, 0]])
     p, l, u = a.lu
     (p*l*u).should be_close a, 1e-4
   end
 
   it "high-level: solve using LU" do
-    a = Mat32.new(
+    a = GMat32.new(
       [[2, 4],
        [2, 8]]
     )
     lu = a.lu_factor
-    b = Mat32.new([[2], [4]])
+    b = GMat32.new([[2], [4]])
     lu.solve(b).should eq (a.inv * b)
   end
 end

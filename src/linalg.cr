@@ -1,3 +1,4 @@
+require "./matrix/*"
 require "./linalg/*"
 
 module Linalg

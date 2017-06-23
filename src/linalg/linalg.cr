@@ -1,4 +1,4 @@
-require "./matrix"
+require "../matrix/*"
 require "./libLAPACKE"
 
 module Linalg
@@ -31,7 +31,7 @@ module Linalg
     matrix.svd(overwrite_a: overwrite_a)
   end
 
-  class Matrix(T)
+  module Matrix(T)
     macro lapack(name, *args)
       {% storage = :ge.id %}
       {% if T == Float32
@@ -84,7 +84,7 @@ module Linalg
       a = self.clone
       if columns > rows
         # make room for residuals
-        x = Matrix(T).new(columns, b.columns) { |r, c| r < rows ? b[r, c] : T.new(0) }
+        x = GeneralMatrix(T).new(columns, b.columns) { |r, c| r < rows ? b[r, c] : T.new(0) }
       else
         x = b.clone
       end
@@ -125,7 +125,7 @@ module Linalg
     def eigs(*, left : Bool = false, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       a = overwrite_a ? self : self.clone
-      eigvectors = Matrix(T).new(rows, rows)
+      eigvectors = GeneralMatrix(T).new(rows, rows)
       {% if T == Complex %}
         vals = Array(T).new(rows, T.new(0,0))
         lapack(ev, left ? 'V'.ord : 'N'.ord, left ? 'N'.ord : 'V'.ord, rows, a, rows,
@@ -151,8 +151,8 @@ module Linalg
       m = rows
       n = columns
       s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
-      u = Matrix(T).new(m, m)
-      vt = Matrix(T).new(n, n)
+      u = GeneralMatrix(T).new(m, m)
+      vt = GeneralMatrix(T).new(n, n)
       lapack(sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
       return {u, s, vt}
     end
@@ -179,7 +179,7 @@ module Linalg
               # don't call anything, return identity matrix
               return separate ? Matrix(T).ones(1, n) : Matrix(T).identity(n)
             end
-      s = Matrix(T).new(1, n)
+      s = GeneralMatrix(T).new(1, n)
       lapack(bal, job.ord, n, self, n, out ilo, out ihi, s)
       separate ? s : Matrix(T).diag(s.raw)
     end
@@ -205,11 +205,11 @@ module Linalg
         piv[i] = piv[ipiv[i] - 1]
         piv[ipiv[i] - 1] = tmp
       end
-      p = Matrix(T).new(m, m)
+      p = GeneralMatrix(T).new(m, m)
       m.times do |i|
         p[piv[i] - 1, i] = T.new(1)
       end
-      l = Matrix(T).new(m, k) do |i, j|
+      l = GeneralMatrix(T).new(m, k) do |i, j|
         case i <=> j
         when 0
           T.new(1)
@@ -219,7 +219,7 @@ module Linalg
           T.new(0)
         end
       end
-      u = Matrix(T).new(k, n) do |i, j|
+      u = GeneralMatrix(T).new(k, n) do |i, j|
         if i <= j
           a[i, j]
         else
