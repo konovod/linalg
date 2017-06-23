@@ -192,13 +192,13 @@ describe Linalg::Matrix do
     m1[0, 0].should eq m[1, 2]
     m1[2, 1] = 10
     m[3, 3].should eq 10
-    expect_raises(ArgumentError) do
+    expect_raises(IndexError) do
       m1[1, 3]
     end
-    expect_raises(ArgumentError) do
+    expect_raises(IndexError) do
       m[-1..3, 2..3]
     end
-    expect_raises(ArgumentError) do
+    expect_raises(IndexError) do
       m[0..3, 2..4]
     end
   end
