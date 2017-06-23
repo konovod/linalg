@@ -17,6 +17,8 @@ module Linalg
     Triangular
     Orthogonal
 
+    Upper
+
     Virtual # compute values instead of storing, so have to be cloned before to_unsafe
   end
 

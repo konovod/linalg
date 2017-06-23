@@ -36,8 +36,7 @@ module Linalg
   end
 
   module Matrix(T)
-    macro lapack(name, *args)
-      {% storage = :ge.id %}
+    macro lapack(storage, name, *args)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -51,10 +50,11 @@ module Linalg
 
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
+      raise ArgumentError.new("can't invert inplace virtual matrix") if flags.virtual?
       n = @rows
       ipiv = Slice(Int32).new(n)
-      lapack(trf, n, n, self, n, ipiv)
-      lapack(tri, n, self, n, ipiv)
+      lapack(ge, trf, n, n, self, n, ipiv)
+      lapack(ge, tri, n, self, n, ipiv)
       self
     end
 
@@ -68,7 +68,7 @@ module Linalg
       x = b.clone
       n = rows
       ipiv = Slice(Int32).new(n)
-      lapack(sv, n, b.columns, self.clone, n, ipiv, x, b.columns)
+      lapack(ge, sv, n, b.columns, self.clone, n, ipiv, x, b.columns)
       x
     end
 
@@ -76,7 +76,7 @@ module Linalg
       raise ArgumentError.new("matrix must be square") unless square?
       lru = overwrite_a ? self : self.clone
       ipiv = Slice(Int32).new(rows)
-      lapack(trf, rows, rows, lru, rows, ipiv)
+      lapack(ge, trf, rows, rows, lru, rows, ipiv)
       (0...rows).reduce(1) { |det, i| det*lru[i, i] }
     end
 
@@ -89,7 +89,7 @@ module Linalg
       else
         x = overwrite_b ? b : b.clone
       end
-      lapack(ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
+      lapack(ge, ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
       x
     end
 
@@ -108,17 +108,17 @@ module Linalg
       rank = 0
       case method
       when .ls?
-        lapack(ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
+        lapack(ge, ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
         s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
       when .lsd?
         ssize = {rows, columns}.min
         s = {% if T == Complex %} Array(Float64).new(ssize, 0.0) {% else %} Array(T).new(ssize, T.new(0)) {% end %}
         rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(cond)
-        lapack(lsd, rows, columns, b.columns, a, columns, x, x.columns, s, rcond, pointerof(rank))
+        lapack(ge, lsd, rows, columns, b.columns, a, columns, x, x.columns, s, rcond, pointerof(rank))
       when .lsy?
         jpvt = Slice(Int32).new(columns)
-        rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(-1)
-        lapack(lsy, rows, columns, b.columns, a, columns, x, x.columns, jpvt, rcond, pointerof(rank))
+        rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(cond)
+        lapack(ge, lsy, rows, columns, b.columns, a, columns, x, x.columns, jpvt, rcond, pointerof(rank))
         s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
       else
         s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
@@ -131,12 +131,12 @@ module Linalg
       a = overwrite_a ? self : self.clone
       {% if T == Complex %}
         vals = Array(T).new(rows, T.new(0,0))
-        lapack(ev, 'N'.ord, 'N'.ord, rows, a, rows, vals.to_unsafe.as(LibLAPACKE::DoubleComplex*), nil, rows, nil, rows)
+        lapack(ge, ev, 'N'.ord, 'N'.ord, rows, a, rows, vals.to_unsafe.as(LibLAPACKE::DoubleComplex*), nil, rows, nil, rows)
         return vals
       {% else %}
         reals = Array(T).new(rows, T.new(0))
         imags = Array(T).new(rows, T.new(0))
-        lapack(ev, 'N'.ord, 'N'.ord, rows, a, rows, reals, imags, nil, rows, nil, rows)
+        lapack(ge, ev, 'N'.ord, 'N'.ord, rows, a, rows, reals, imags, nil, rows, nil, rows)
         if imags.all? &.==(0)
           return reals
         else
@@ -151,7 +151,7 @@ module Linalg
       eigvectors = GeneralMatrix(T).new(rows, rows)
       {% if T == Complex %}
         vals = Array(T).new(rows, T.new(0,0))
-        lapack(ev, left ? 'V'.ord : 'N'.ord, left ? 'N'.ord : 'V'.ord, rows, a, rows,
+        lapack(ge, ev, left ? 'V'.ord : 'N'.ord, left ? 'N'.ord : 'V'.ord, rows, a, rows,
                 vals.to_unsafe.as(LibLAPACKE::DoubleComplex*),
                 left ? eigvectors.to_unsafe.as(LibLAPACKE::DoubleComplex*) : nil, rows,
                 left ? nil : eigvectors.to_unsafe.as(LibLAPACKE::DoubleComplex*), rows)
@@ -159,7 +159,7 @@ module Linalg
       {% else %}
         reals = Array(T).new(rows, T.new(0))
         imags = Array(T).new(rows, T.new(0))
-        lapack(ev, left ? 'V'.ord : 'N'.ord, left ? 'N'.ord : 'V'.ord, rows, a, rows, reals, imags, left ? eigvectors.to_unsafe : nil, rows, left ? nil : eigvectors.to_unsafe, rows)
+        lapack(ge, ev, left ? 'V'.ord : 'N'.ord, left ? 'N'.ord : 'V'.ord, rows, a, rows, reals, imags, left ? eigvectors.to_unsafe : nil, rows, left ? nil : eigvectors.to_unsafe, rows)
         if imags.all? &.==(0)
           values = reals
         else
@@ -176,7 +176,7 @@ module Linalg
       s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
       u = GeneralMatrix(T).new(m, m)
       vt = GeneralMatrix(T).new(n, n)
-      lapack(sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
+      lapack(ge, sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
       return {u, s, vt}
     end
 
@@ -185,7 +185,7 @@ module Linalg
       m = rows
       n = columns
       s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
-      lapack(sdd, 'N'.ord, m, n, a, columns, s, nil, m, nil, n)
+      lapack(ge, sdd, 'N'.ord, m, n, a, columns, s, nil, m, nil, n)
       s
     end
 
@@ -203,7 +203,7 @@ module Linalg
               return separate ? Matrix(T).ones(1, n) : Matrix(T).identity(n)
             end
       s = GeneralMatrix(T).new(1, n)
-      lapack(bal, job.ord, n, self, n, out ilo, out ihi, s)
+      lapack(ge, bal, job.ord, n, self, n, out ilo, out ihi, s)
       separate ? s : Matrix(T).diag(s.raw)
     end
 
@@ -219,7 +219,7 @@ module Linalg
       n = columns
       k = {rows, columns}.min
       ipiv = Slice(Int32).new(m)
-      lapack(trf, rows, columns, a, columns, ipiv)
+      lapack(ge, trf, rows, columns, a, columns, ipiv)
       # TODO - better solution?
       # apply all transformation of piv to "own" piv
       piv = (1..m).to_a
@@ -255,7 +255,7 @@ module Linalg
     def lu_factor!
       raise ArgumentError.new("matrix must be square") unless square?
       ipiv = Slice(Int32).new(rows)
-      lapack(trf, rows, columns, self, columns, ipiv)
+      lapack(ge, trf, rows, columns, self, columns, ipiv)
       LUMatrix(T).new(self, ipiv)
     end
 
@@ -275,8 +275,7 @@ module Linalg
     @ipiv : Slice(Int32)
 
     # TODO - more macro magic?
-    macro lapack(name, *args)
-      {% storage = :ge.id %}
+    macro lapack(storage, name, *args)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -306,7 +305,7 @@ module Linalg
               else                       'N'
               end.ord
       x = overwrite_b ? b : b.clone
-      lapack(trs, trans, size, b.columns, @a, size, @ipiv, x, x.columns)
+      lapack(ge, trs, trans, size, b.columns, @a, size, @ipiv, x, x.columns)
       x
     end
   end
