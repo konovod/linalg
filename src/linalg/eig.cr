@@ -4,45 +4,41 @@ require "./libLAPACKE"
 module Linalg
   module Matrix(T)
     def eigvals(*, overwrite_a = false)
-      raise ArgumentError.new("matrix must be square") unless square?
-      a = overwrite_a ? self : self.clone
-      {% if T == Complex %}
-        vals = Array(T).new(rows, T.new(0,0))
-        lapack(ge, ev, 'N'.ord, 'N'.ord, rows, a, rows, vals.to_unsafe.as(LibLAPACKE::DoubleComplex*), nil, rows, nil, rows)
-        return vals
-      {% else %}
-        reals = Array(T).new(rows, T.new(0))
-        imags = Array(T).new(rows, T.new(0))
-        lapack(ge, ev, 'N'.ord, 'N'.ord, rows, a, rows, reals, imags, nil, rows, nil, rows)
-        if imags.all? &.==(0)
-          return reals
-        else
-          return Array(Complex).new(rows){|i| Complex.new(reals[i], imags[i])}
-        end
-      {% end %}
+      vals, aleft, aright = eigs(overwrite_a: overwrite_a, need_left: false, need_right: false)
+      vals
     end
 
-    def eigs(*, left : Bool = false, overwrite_a = false)
+    def eigs(*, left = false, overwrite_a = false)
+      vals, aleft, aright = eigs(overwrite_a: overwrite_a, need_left: left, need_right: !left)
+      v = left ? aleft : aright
+      {vals, v.not_nil!}
+    end
+
+    def eigs(*, need_left : Bool, need_right : Bool, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       a = overwrite_a ? self : self.clone
-      eigvectors = GeneralMatrix(T).new(rows, rows)
+      eigvectorsl = need_left ? GeneralMatrix(T).new(rows, rows) : nil
+      eigvectorsr = need_right ? GeneralMatrix(T).new(rows, rows) : nil
       {% if T == Complex %}
         vals = Array(T).new(rows, T.new(0,0))
-        lapack(ge, ev, left ? 'V'.ord : 'N'.ord, left ? 'N'.ord : 'V'.ord, rows, a, rows,
+        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
                 vals.to_unsafe.as(LibLAPACKE::DoubleComplex*),
-                left ? eigvectors.to_unsafe.as(LibLAPACKE::DoubleComplex*) : nil, rows,
-                left ? nil : eigvectors.to_unsafe.as(LibLAPACKE::DoubleComplex*), rows)
-        return {vals, eigvectors}
+                eigvectorsl.try &.to_unsafe, rows,
+                eigvectorsr.try &.to_unsafe, rows)
+        return {vals, eigvectorsl, eigvectorsr}
       {% else %}
         reals = Array(T).new(rows, T.new(0))
         imags = Array(T).new(rows, T.new(0))
-        lapack(ge, ev, left ? 'V'.ord : 'N'.ord, left ? 'N'.ord : 'V'.ord, rows, a, rows, reals, imags, left ? eigvectors.to_unsafe : nil, rows, left ? nil : eigvectors.to_unsafe, rows)
+        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
+                reals, imags,
+                eigvectorsl.try &.to_unsafe, rows,
+                eigvectorsr.try &.to_unsafe, rows)
         if imags.all? &.==(0)
-          values = reals
+          vals = reals
         else
-          values = Array(Complex).new(rows){|i| Complex.new(reals[i], imags[i])}
+          vals = Array(Complex).new(rows){|i| Complex.new(reals[i], imags[i])}
         end
-        {values, eigvectors}
+        return {vals, eigvectorsl, eigvectorsr}
       {% end %}
     end
   end
