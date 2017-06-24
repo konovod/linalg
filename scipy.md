@@ -40,10 +40,10 @@
 - [x] svdvals(a[, overwrite_a, check_finite])	Compute singular values of a matrix.
 - [x] diagsvd(s, M, N)	Construct the sigma matrix in SVD from singular values and size M, N.
 - [ ] orth(A)	Construct an orthonormal basis for the range of A using SVD
-- [ ] cholesky(a[, lower, overwrite_a, check_finite])	Compute the Cholesky decomposition of a matrix.
+- [x] cholesky(a[, lower, overwrite_a, check_finite])	Compute the Cholesky decomposition of a matrix.
 - [ ] cholesky_banded(ab[, overwrite_ab, lower, ...])	Cholesky decompose a banded Hermitian positive-definite matrix
-- [ ] cho_factor(a[, lower, overwrite_a, check_finite])	Compute the Cholesky decomposition of a matrix, to use in cho_solve
-- [ ] cho_solve(c_and_lower, b[, overwrite_b, ...])	Solve the linear equations A x = b, given the Cholesky factorization of A.
+- [x] cho_factor(a[, lower, overwrite_a, check_finite])	Compute the Cholesky decomposition of a matrix, to use in cho_solve
+- [x] cho_solve(c_and_lower, b[, overwrite_b, ...])	Solve the linear equations A x = b, given the Cholesky factorization of A.
 - [ ] cho_solve_banded(cb_and_lower, b[, ...])	Solve the linear equations A x = b, given the Cholesky factorization of A.
 - [ ] polar(a[, side])	Compute the polar decomposition.
 - [ ] qr(a[, overwrite_a, lwork, mode, pivoting, ...])	Compute QR decomposition of a matrix.

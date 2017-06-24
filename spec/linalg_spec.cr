@@ -189,4 +189,15 @@ describe Linalg do
     c = a.cholesky(lower: true)
     (c*c.conjtranspose).should be_close a, 1e-6
   end
+  it "high-level: using cholesky decomposition to solve equations" do
+    a = GMatComplex.new([[1, -2*j], [2*j, 5]])
+    a.flags |= MatrixFlags::PositiveDefinite
+    chol1 = a.cholesky(lower: true, dont_clean: true)
+    chol2 = a.cholesky(lower: false, dont_clean: false)
+    b = GMatComplex.new([[2], [4]])
+    x1 = chol1.cho_solve(b)
+    x2 = chol1.cho_solve(b)
+    x1.should eq x2
+    (a*x1 - b).should eq MatComplex.zeros(2, 1)
+  end
 end

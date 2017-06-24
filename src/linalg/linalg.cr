@@ -19,8 +19,12 @@ module Linalg
     matrix.inv(overwrite_a: overwrite_a)
   end
 
-  def self.solve(a, b)
-    a.solve(b)
+  def self.solve(a, b, *, overwrite_a = false, overwrite_b = false)
+    a.solve(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
+  end
+
+  def self.cho_solve(a, b, *, overwrite_b = false)
+    a.cho_solve(b, overwrite_b: overwrite_b)
   end
 
   def self.lstsq(a, b, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
@@ -65,13 +69,14 @@ module Linalg
       clone.inv!
     end
 
-    def solve(b : self)
+    def solve(b : self, *, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
       raise ArgumentError.new("a must be square") unless square?
-      x = b.clone
+      a = overwrite_b ? self : self.clone
+      x = overwrite_b ? b : b.clone
       n = rows
       ipiv = Slice(Int32).new(n)
-      lapack(ge, sv, n, b.columns, self.clone, n, ipiv, x, b.columns)
+      lapack(ge, sv, n, b.columns, a, n, ipiv, x, b.columns)
       x
     end
 
@@ -216,7 +221,7 @@ module Linalg
       {a, s}
     end
 
-    def cholesky!(*, lower : Bool = false, dont_clean : Bool = false)
+    def cholesky!(*, lower = false, dont_clean = false)
       raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
       raise ArgumentError.new("Matrix must be positive definite for cholesky decomposition") unless flags.positive_definite?
       char = lower ? 'L' : 'U'
@@ -237,8 +242,18 @@ module Linalg
       self
     end
 
-    def cholesky(*, lower : Bool = false, dont_clean : Bool = false)
+    def cholesky(*, lower = false, dont_clean = false)
       clone.cholesky!(lower: lower, dont_clean: dont_clean)
+    end
+
+    def cho_solve(b : self, *, overwrite_b = false)
+      raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
+      raise ArgumentError.new("a must be square") unless square?
+      raise ArgumentError.new("a must be triangular") unless flags.triangular?
+      x = overwrite_b ? b : b.clone
+      n = rows
+      lapack(po, trs, uplo, n, b.columns, self, n, x, b.columns)
+      x
     end
   end
 end
