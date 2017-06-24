@@ -11,7 +11,7 @@
 - [ ] solve_toeplitz(c_or_cr, b[, check_finite])	Solve a Toeplitz system using Levinson Recursion
 - [x] det(a[, overwrite_a, check_finite])	Compute the determinant of a matrix
 - [ ] norm(a[, ord, axis, keepdims])	Matrix or vector norm.
-- [ ] lstsq(a, b[, cond, overwrite_a, ...])	Compute least-squares solution to equation Ax = b.
+- [x] lstsq(a, b[, cond, overwrite_a, ...])	Compute least-squares solution to equation Ax = b.
 - [ ] pinv(a[, cond, rcond, return_rank, check_finite])	Compute the (Moore-Penrose) pseudo-inverse of a matrix.
 - [ ] pinv2(a[, cond, rcond, return_rank, ...])	Compute the (Moore-Penrose) pseudo-inverse of a matrix.
 - [ ] pinvh(a[, cond, rcond, lower, return_rank, ...])	Compute the (Moore-Penrose) pseudo-inverse of a Hermitian matrix.
