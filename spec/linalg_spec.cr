@@ -1,6 +1,8 @@
 require "./spec_helper"
 
 describe Linalg do
+  j = Complex.new(0, 1)
+
   it "calls LAPACK functions directly" do
     m = [
       1.0, 0.0, 1.0,
@@ -60,9 +62,8 @@ describe Linalg do
     ])
     (matrix1*matrix1.inv).should eq Mat32.identity(3)
 
-    i = Complex.new(0, 1)
     matrix1 = GMatComplex.new({
-      {1 + 1*i, 0, 1},
+      {1 + 1*j, 0, 1},
       {0, 4, 0},
       {0, 0, 1},
     })
@@ -123,16 +124,15 @@ describe Linalg do
   it "high-level: calculate nonsymmetric eigenvalues (complex result)" do
     a = GMat32.new([[3, -2], [4, -1]])
     vals = a.eigvals
-    i = Complex.new(0, 1)
-    vals[0].should be_close 1 + 2*i, 1e-3
-    vals[1].should be_close 1 - 2*i, 1e-3
+    vals[0].should be_close 1 + 2*j, 1e-3
+    vals[1].should be_close 1 - 2*j, 1e-3
   end
   it "high-level: calculate nonsymmetric eigenvalues (complex argument)" do
     a = GMatComplex.new([[3, -2], [4, -1]])
     vals = a.eigvals
     i = Complex.new(0, 1)
-    vals[0].should be_close 1 + 2*i, 1e-3
-    vals[1].should be_close 1 - 2*i, 1e-3
+    vals[0].should be_close 1 + 2*j, 1e-3
+    vals[1].should be_close 1 - 2*j, 1e-3
   end
 
   it "high-level: calculate nonsymmetric eigenvectors" do
@@ -178,5 +178,15 @@ describe Linalg do
     lu = a.lu_factor
     b = GMat32.new([[2], [4]])
     lu.solve(b).should eq (a.inv * b)
+  end
+
+  it "high-level: cholesky decomposition" do
+    a = GMatComplex.new([[1, -2*j], [2*j, 5]])
+    expect_raises(ArgumentError) do
+      a.cholesky!
+    end
+    a.flags |= MatrixFlags::PositiveDefinite
+    c = a.cholesky
+    (c*c.conjtranspose).should be_close a, 1e-6
   end
 end

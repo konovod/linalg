@@ -1,4 +1,5 @@
 require "./matrix"
+require "./submatrix"
 
 module Linalg
   # generic matrix, heap-allocated
@@ -55,7 +56,7 @@ module Linalg
 
     # TODO - benchmark is it faster?
     def dup
-      GeneralMatrix(T).new(@rows, @columns, @raw)
+      GeneralMatrix(T).new(@rows, @columns, @raw).tap { |it| it.flags = flags }
     end
 
     def clone

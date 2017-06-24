@@ -48,6 +48,10 @@ module Linalg
        raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
     end
 
+    private def uplo
+      flags.lower? ? 'L'.ord : 'U'.ord
+    end
+
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       n = @rows
@@ -212,9 +216,25 @@ module Linalg
       {a, s}
     end
 
-    def cholesky!
-      {% raise "Matrix must be Complex for cholesky decomposition" unless T == Complex %}
+    def cholesky!(lower : Bool = false, *, dont_clean : Bool = false)
+      raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
       raise ArgumentError.new("Matrix must be positive definite for cholesky decomposition") unless flags.positive_definite?
+      char = lower ? 'L' : 'U'
+      lapack(po, trf, char.ord, rows, self, rows)
+      if lower
+        if dont_clean
+          self.flags = MatrixFlags::Triangular | MatrixFlags::Lower
+        else
+          tril!
+        end
+      else
+        if dont_clean
+          self.flags = MatrixFlags::Triangular
+        else
+          triu!
+        end
+      end
+      self
     end
 
     def cholesky

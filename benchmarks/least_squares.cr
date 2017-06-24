@@ -12,7 +12,7 @@ def test(n)
   until basea.det.abs > 0.01
     basea = Linalg::Mat.rand(n/2, n/2)*10
   end
-  a = Linalg::Mat.new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
+  a = Linalg::GMat.new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
   b = Linalg::Mat.rand(n/2, 1)
   puts "*********N = #{n}*************"
   Benchmark.ips do |bench|

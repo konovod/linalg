@@ -17,7 +17,7 @@ module Linalg
     Triangular
     Orthogonal
 
-    Upper
+    Lower
   end
 
   # class that provide all utility matrix functions
@@ -106,6 +106,14 @@ module Linalg
       end
     end
 
+    # returns transposed matrix
+    def conjtranspose
+      {% raise "Matrix must be Complex for conjtranspose" unless T == Complex %}
+      GeneralMatrix(T).new(columns, rows) do |i, j|
+        self[j, i].conj
+      end
+    end
+
     # returns kroneker product with matrix b
     def kron(b : Matrix(T))
       Matrix(T).kron(self, b)
@@ -113,16 +121,50 @@ module Linalg
 
     # same as tril in scipy - returns lower triangular or trapezoidal part of matrix
     def tril(k = 0)
-      GeneralMatrix(T).new(rows, columns) do |i, j|
+      x = GeneralMatrix(T).new(rows, columns) do |i, j|
         i >= j - k ? self[i, j] : 0
       end
+      if k >= 0
+        x.flags = MatrixFlags::Triangular | MatrixFlags::Lower
+      end
+      x
     end
 
     # same as triu in scipy - returns upper triangular or trapezoidal part of matrix
     def triu(k = 0)
-      GeneralMatrix(T).new(rows, columns) do |i, j|
+      x = GeneralMatrix(T).new(rows, columns) do |i, j|
         i <= j - k ? self[i, j] : 0
       end
+      if k >= 0
+        x.flags = MatrixFlags::Triangular
+      end
+      x
+    end
+
+    # like a tril in scipy - remove all elements above k-diagonal
+    def tril!(k = 0)
+      (rows*columns).times do |index|
+        i = index / columns
+        j = index % columns
+        @raw[index] = T.new(0) if i < j - k
+      end
+      if k <= 0
+        self.flags = MatrixFlags::Triangular | MatrixFlags::Lower
+      end
+      self
+    end
+
+    # like a triu in scipy - remove all elements below k-diagonal
+    def triu!(k = 0)
+      (rows*columns).times do |index|
+        i = index / columns
+        j = index % columns
+        @raw[index] = T.new(0) if i > j - k
+      end
+      if k >= 0
+        self.flags = MatrixFlags::Triangular
+      end
+      self
     end
 
     # converts to string, with linefeeds before and after matrix:
