@@ -200,4 +200,14 @@ describe Linalg do
     x1.should eq x2
     (a*x1 - b).should eq MatComplex.zeros(2, 1)
   end
+
+  it "high-level: hessenberg decomposition" do
+    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    h, q = a.hessenberg(calc_q: true)
+    (a - q*h*q.conjtranspose).abs.should be_close(0, 1e-6)
+
+    a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
+    h, q = a.hessenberg(calc_q: true)
+    (a - q*h*q.transpose).abs.should be_close(0, 1e-6)
+  end
 end

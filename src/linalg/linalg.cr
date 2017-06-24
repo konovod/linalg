@@ -216,5 +216,46 @@ module Linalg
       s = a.balance!(permute: permute, scale: scale, separate: separate)
       {a, s}
     end
+
+    def hessenberg!(*, calc_q = false)
+      raise ArgumentError.new("matrix must be square") unless square?
+      # idea from scypi.
+      # no need to calculate if size <= 2
+      if rows < 2
+        q = calc_q ? Matrix(T).identity(rows) : Matrix(T).zeros(1, 1)
+        return {self, q}
+      end
+      n = rows
+      s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new(n)
+      lapack(ge, bal, 'S'.ord, n, self, n, out ilo, out ihi, s)
+      tau = GeneralMatrix(T).new(1, n)
+      lapack(ge, hrd, n, ilo, ihi, self, columns, tau)
+      if calc_q
+        q = clone
+        {% if T == Complex %}
+          lapack(un, ghr, n, ilo, ihi, q, columns, tau)
+        {% else %}
+          lapack(or, ghr, n, ilo, ihi, q, columns, tau)
+        {% end %}
+      else
+        q = Matrix(T).zeros(1, 1)
+      end
+      triu!(-1)
+      {self, q}
+    end
+
+    def hessenberg!
+      q = hessenberg!(calc_q: false)
+      self
+    end
+
+    def hessenberg(*, calc_q = false)
+      x = self.clone
+      x.hessenberg!(calc_q: calc_q)
+    end
+
+    def hessenberg
+      clone.hessenberg!
+    end
   end
 end
