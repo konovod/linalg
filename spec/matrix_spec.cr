@@ -1,6 +1,7 @@
 require "./spec_helper"
 
 include Linalg
+j = Complex.new(0, 1)
 describe Linalg::Matrix do
   it "can be created with given size" do
     m = GMat.new(10, 15)
@@ -62,7 +63,7 @@ describe Linalg::Matrix do
     m.should eq GMat.new(3, 4) { |i, j| 1.5 }
 
     m1 = MatComplex.ones(3, 4)
-    m = Complex.new(0, 1) * m1 / Complex.new(0, 1)
+    m = j * m1 / j
     m.should eq GMatComplex.new(3, 4) { |i, j| 1 }
   end
 
@@ -128,6 +129,13 @@ describe Linalg::Matrix do
     m = GMat.new([[1, 2, 3, 4], [5, 6, 7, 8]])
     m.transpose!
     m.should eq GMat.new([[1, 5], [2, 6], [3, 7], [4, 8]])
+  end
+
+  it "can be conjtrasposed" do
+    m = GMatComplex.new([[1 + j, 2 + j, 3 - j], [4, 5, 6 + 2*j]])
+    mt = m.conjtranspose
+    mt.should eq GMatComplex.new([[1 - j, 4], [2 - j, 5], [3 + j, 6 - 2*j]])
+    mt.conjtranspose.should eq m
   end
 
   it "has kron operation" do
