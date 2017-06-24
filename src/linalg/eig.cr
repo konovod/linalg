@@ -17,17 +17,6 @@ module Linalg
     private def eigsh(*, need_vectors, overwrite_a = false)
       {% if T == Complex %}
       job = need_vectors ? 'V'.ord : 'N'.ord
-      a = (need_vectors || !overwrite_a) ? clone : self
-      vals = Array(Float64).new(rows, 0.0)
-      lapack(he, ev, job, uplo, rows, a, rows, vals)
-      a.clear_flags
-      {vals, a}
-      {% end %}
-    end
-
-    private def eigsh_turbo(*, need_vectors, overwrite_a = false)
-      {% if T == Complex %}
-      job = need_vectors ? 'V'.ord : 'N'.ord
       a = overwrite_a ? self : clone
       vals = Array(Float64).new(rows, 0.0)
       vectors = a.clone
@@ -46,17 +35,6 @@ module Linalg
     private def eigs_sy(*, need_vectors, overwrite_a = false)
       {% if T != Complex %}
       job = need_vectors ? 'V'.ord : 'N'.ord
-      a = (need_vectors || !overwrite_a) ? clone : self
-      vals = Array(T).new(rows, T.new(0))
-      lapack(sy, ev, job, uplo, rows, a, rows, vals)
-      a.clear_flags
-      {vals, a}
-      {% end %}
-    end
-
-    private def eigs_sy_turbo(*, need_vectors, overwrite_a = false)
-      {% if T != Complex %}
-      job = need_vectors ? 'V'.ord : 'N'.ord
       a = overwrite_a ? self : clone
       vals = Array(T).new(rows, T.new(0))
       vectors = a.clone
@@ -72,15 +50,13 @@ module Linalg
       {% end %}
     end
 
-    def eigs(*, need_left : Bool, need_right : Bool, overwrite_a = false, turbo = true)
+    def eigs(*, need_left : Bool, need_right : Bool, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       # TODO -  hb, sb, st
       # gg, sy
       {% if T == Complex %}
       if flags.hermitian?
-        vals, vectors = turbo ?
-            eigsh_turbo(need_vectors: need_left || need_right, overwrite_a: overwrite_a) :
-            eigsh(need_vectors: need_left || need_right, overwrite_a: overwrite_a)
+        vals, vectors = eigsh(need_vectors: need_left || need_right, overwrite_a: overwrite_a)
         if need_left && need_right
           return {vals, vectors, vectors.not_nil!.clone}
         else
@@ -89,9 +65,7 @@ module Linalg
       end
       {% else %}
       if flags.symmetric?
-        vals, vectors = turbo ?
-          eigs_sy_turbo(need_vectors: need_left || need_right, overwrite_a: overwrite_a) :
-          eigs_sy(need_vectors: need_left || need_right, overwrite_a: overwrite_a)
+        vals, vectors = eigs_sy(need_vectors: need_left || need_right, overwrite_a: overwrite_a)
         if need_left && need_right
           return {vals, vectors, vectors.not_nil!.clone}
         else
