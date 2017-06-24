@@ -130,7 +130,6 @@ describe Linalg do
   it "high-level: calculate nonsymmetric eigenvalues (complex argument)" do
     a = GMatComplex.new([[3, -2], [4, -1]])
     vals = a.eigvals
-    i = Complex.new(0, 1)
     vals[0].should be_close 1 + 2*j, 1e-3
     vals[1].should be_close 1 - 2*j, 1e-3
   end
@@ -185,13 +184,13 @@ describe Linalg do
     expect_raises(ArgumentError) do
       a.cholesky!
     end
-    a.flags |= MatrixFlags::PositiveDefinite
+    a.assume! MatrixFlags::PositiveDefinite
     c = a.cholesky(lower: true)
     (c*c.conjtranspose).should be_close a, 1e-6
   end
   it "high-level: using cholesky decomposition to solve equations" do
     a = GMatComplex.new([[1, -2*j], [2*j, 5]])
-    a.flags |= MatrixFlags::PositiveDefinite
+    a.assume! MatrixFlags::PositiveDefinite
     chol1 = a.cholesky(lower: true, dont_clean: true)
     chol2 = a.cholesky(lower: false, dont_clean: false)
     b = GMatComplex.new([[2], [4]])
@@ -209,5 +208,30 @@ describe Linalg do
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     h, q = a.hessenberg(calc_q: true)
     (a - q*h*q.transpose).abs.should be_close(0, 1e-6)
+  end
+
+  it "high-level: calculate symmetric eigenvalues (real argument)" do
+    a = GMat32.new([
+      [1, 2, 3],
+      [2, 3, 4],
+      [3, 4, 5],
+    ])
+    a.assume! MatrixFlags::Symmetric
+    vals = a.eigvals
+    vals[0].should be_close -0.623475, 1e-4
+    vals[1].should be_close 0, 1e-4
+    vals[2].should be_close 9.62348, 1e-4
+  end
+  it "high-level: calculate hermitian eigenvalues (complex argument)" do
+    a = GMatComplex.new([
+      [1, 2 - j, 3 + 2*j],
+      [2 + j, 3, 4],
+      [3 - 2*j, 4, 5],
+    ])
+    a.assume! MatrixFlags::Hermitian
+    vals = a.eigvals
+    vals[0].should be_close -2.26772, 1e-5
+    vals[1].should be_close 1.48798, 1e-5
+    vals[2].should be_close 9.77974, 1e-5
   end
 end

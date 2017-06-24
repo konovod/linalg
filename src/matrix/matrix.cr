@@ -234,6 +234,15 @@ module Linalg
       end
     end
 
+    def assume!(flag : MatrixFlags)
+      @flags |= flag
+    end
+
+    # TODO - check for all flags
+    # def detect(flag : MatrixFlags)
+    #   @flags |=
+    # end
+
     def self.rand(rows, columns, rng = Random::DEFAULT)
       GeneralMatrix(T).new(rows, columns) { |i, j| rng.rand }
     end
