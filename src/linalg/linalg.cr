@@ -89,8 +89,21 @@ module Linalg
       a = overwrite_b ? self : self.clone
       x = overwrite_b ? b : b.clone
       n = rows
-      ipiv = Slice(Int32).new(n)
-      lapack(ge, sv, n, b.columns, a, n, ipiv, x, b.columns)
+      # TODO - gb, gt, pb, pt
+      if flags.positive_definite?
+        lapack(po, sv, uplo, n, b.columns, a, n, x, b.columns)
+      elsif flags.hermitian?
+        {% if T == Complex %}
+        ipiv = Slice(Int32).new(n)
+        lapack(he, sv, uplo, n, b.columns, a, n, ipiv, x, b.columns)
+        {% end %}
+      elsif flags.symmetric?
+        ipiv = Slice(Int32).new(n)
+        lapack(sy, sv, uplo, n, b.columns, a, n, ipiv, x, b.columns)
+      else
+        ipiv = Slice(Int32).new(n)
+        lapack(ge, sv, n, b.columns, a, n, ipiv, x, b.columns)
+      end
       x
     end
 

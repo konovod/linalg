@@ -3,7 +3,7 @@
 ### Basics
 
 - [x] inv(a[, overwrite_a, check_finite])	Compute the inverse of a matrix.
-- [ ] solve(a, b[, sym_pos, lower, overwrite_a, ...])	Solves the linear equation set a * x = b for the unknown x for square a matrix.
+- [x] solve(a, b[, sym_pos, lower, overwrite_a, ...])	Solves the linear equation set a * x = b for the unknown x for square a matrix.
 - [ ] solve_banded(l_and_u, ab, b[, overwrite_ab, ...])	Solve the equation a x = b for x, assuming a is banded matrix.
 - [ ] solveh_banded(ab, b[, overwrite_ab, ...])	Solve equation a x = b.
 - [ ] solve_circulant(c, b[, singular, tol, ...])	Solve C x = b for x, where C is a circulant matrix.
