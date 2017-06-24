@@ -186,7 +186,7 @@ describe Linalg do
       a.cholesky!
     end
     a.flags |= MatrixFlags::PositiveDefinite
-    c = a.cholesky
+    c = a.cholesky(lower: true)
     (c*c.conjtranspose).should be_close a, 1e-6
   end
 end

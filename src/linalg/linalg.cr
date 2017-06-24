@@ -216,7 +216,7 @@ module Linalg
       {a, s}
     end
 
-    def cholesky!(lower : Bool = false, *, dont_clean : Bool = false)
+    def cholesky!(*, lower : Bool = false, dont_clean : Bool = false)
       raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
       raise ArgumentError.new("Matrix must be positive definite for cholesky decomposition") unless flags.positive_definite?
       char = lower ? 'L' : 'U'
@@ -237,8 +237,8 @@ module Linalg
       self
     end
 
-    def cholesky
-      clone.cholesky!
+    def cholesky(*, lower : Bool = false, dont_clean : Bool = false)
+      clone.cholesky!(lower: lower, dont_clean: dont_clean)
     end
   end
 end
