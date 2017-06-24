@@ -55,9 +55,27 @@ module Linalg
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       n = @rows
-      ipiv = Slice(Int32).new(n)
-      lapack(ge, trf, n, n, self, n, ipiv)
-      lapack(ge, tri, n, self, n, ipiv)
+      # he
+      if flags.positive_definite?
+        lapack(po, trf, uplo, n, self, n)
+        lapack(po, tri, uplo, n, self, n)
+      elsif flags.hermitian?
+        {% if T == Complex %}
+        ipiv = Slice(Int32).new(n)
+        lapack(he, trf, uplo, n, self, n, ipiv)
+        lapack(he, tri, uplo, n, self, n, ipiv)
+        {% end %}
+      elsif flags.symmetric?
+        ipiv = Slice(Int32).new(n)
+        lapack(sy, trf, uplo, n, self, n, ipiv)
+        lapack(sy, tri, uplo, n, self, n, ipiv)
+      elsif flags.triangular?
+        lapack(tr, tri, uplo, 'N'.ord, n, self, n)
+      else
+        ipiv = Slice(Int32).new(n)
+        lapack(ge, trf, n, n, self, n, ipiv)
+        lapack(ge, tri, n, self, n, ipiv)
+      end
       self
     end
 

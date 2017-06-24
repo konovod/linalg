@@ -1,0 +1,270 @@
+[sdc]
+    types=sd
+    storages=bd
+[sqr]
+    types=sdcz
+    storages=bd
+[svdx]
+    types=sdcz
+    storages=bd, ge
+[sna]
+    types=sdcz
+    storages=di, tg, tr
+[brd]
+    types=sdcz
+    storages=gb, ge
+[con]
+    types=sdcz
+    storages=gb, ge, gt, he, pb, po, pt, sy, tb, tr
+[equ]
+    types=sdcz
+    storages=gb, ge, pb, po
+[equb]
+    types=sdcz
+    storages=gb, ge, he, po, sy
+[rfs]
+    types=sdcz
+    storages=gb, ge, gt, he, pb, po, pt, sy, tb, tr
+[rfsx]
+    types=sdcz
+    storages=gb, ge, he, po, sy
+[sv]
+    types=sdcz
+    storages=gb, ge, gt, he, pb, po, pt, sy
+[svx]
+    types=sdcz
+    storages=gb, ge, gt, he, pb, po, pt, sy
+[svxx]
+    types=sdcz
+    storages=gb, ge, he, po, sy
+[trf]
+    types=sdcz
+    storages=gb, ge, gt, he, pb, po, pt, sy
+[trs]
+    types=sdcz
+    storages=gb, ge, gt, he, pb, po, pt, sy, tb, tr
+[bak]
+    types=sdcz
+    storages=ge, gg
+[bal]
+    types=sdcz
+    storages=ge, gg
+[es]
+    types=sdcz
+    storages=ge, gg
+[esx]
+    types=sdcz
+    storages=ge, gg
+[ev]
+    types=sdcz
+    storages=ge, gg, hb, he, sb, st, sy
+[evx]
+    types=sdcz
+    storages=ge, gg, hb, he, sb, st, sy
+[hrd]
+    types=sdcz
+    storages=ge, gg
+[jsv]
+    types=sdcz
+    storages=ge
+[lqf]
+    types=sdcz
+    storages=ge
+[ls]
+    types=sdcz
+    storages=ge
+[lsd]
+    types=sdcz
+    storages=ge
+[lss]
+    types=sdcz
+    storages=ge
+[lsy]
+    types=sdcz
+    storages=ge
+[qlf]
+    types=sdcz
+    storages=ge
+[qpf]
+    types=sdcz
+    storages=ge
+[qrf]
+    types=sdcz
+    storages=ge, gg
+[qrfp]
+    types=sdcz
+    storages=ge
+[rqf]
+    types=sdcz
+    storages=ge, gg
+[sdd]
+    types=sdcz
+    storages=ge
+[svd]
+    types=sdcz
+    storages=ge, gg
+[svj]
+    types=sdcz
+    storages=ge
+[tri]
+    types=sdcz
+    storages=ge, he, po, sy, tr
+[glm]
+    types=sdcz
+    storages=gg
+[lse]
+    types=sdcz
+    storages=gg
+[svp]
+    types=sdcz
+    storages=gg
+[evd]
+    types=czsd
+    storages=hb, he, sb, st, sy
+[gst]
+    types=czsd
+    storages=hb, he, sb, sy
+[gv]
+    types=czsd
+    storages=hb, he, sb, sy
+[gvd]
+    types=czsd
+    storages=hb, he, sb, sy
+[gvx]
+    types=czsd
+    storages=hb, he, sb, sy
+[trd]
+    types=czsd
+    storages=hb, he, sb, sy
+[evr]
+    types=czsd
+    storages=he, st, sy
+[eqz]
+    types=sdcz
+    storages=hg
+[ein]
+    types=sdcz
+    storages=hs, st
+[eqr]
+    types=sdcz
+    storages=hs, pt, st
+[gbr]
+    types=sdcz
+    storages=or, un
+[ghr]
+    types=sdcz
+    storages=or, un
+[glq]
+    types=sdcz
+    storages=or, un
+[gql]
+    types=sdcz
+    storages=or, un
+[gqr]
+    types=sdcz
+    storages=or, un
+[grq]
+    types=sdcz
+    storages=or, un
+[gtr]
+    types=sdcz
+    storages=or, un
+[mbr]
+    types=sdcz
+    storages=or, un
+[mhr]
+    types=sdcz
+    storages=or, un
+[mlq]
+    types=sdcz
+    storages=or, un, ge
+[mql]
+    types=sdcz
+    storages=or, un
+[mqr]
+    types=sdcz
+    storages=or, un, ge
+[mrq]
+    types=sdcz
+    storages=or, un
+[mrz]
+    types=sdcz
+    storages=or, un
+[mtr]
+    types=sdcz
+    storages=or, un
+[stf]
+    types=sdcz
+    storages=pb
+[osv]
+    types=z
+    storages=cp
+[ebz]
+    types=sd
+    storages=st
+[edc]
+    types=sdcz
+    storages=st
+[egr]
+    types=sdcz
+    storages=st
+[emr]
+    types=sdcz
+    storages=st
+[erf]
+    types=sd
+    storages=st
+[evc]
+    types=sdcz
+    storages=tg, tr
+[exc]
+    types=sdcz
+    storages=tg, tr
+[sen]
+    types=sdcz
+    storages=tg, tr
+[sja]
+    types=sdcz
+    storages=tg
+[syl]
+    types=sdcz
+    storages=tg, tr
+[ttf]
+    types=sdcz
+    storages=tr
+[ttp]
+    types=sdcz
+    storages=tr
+[rzf]
+    types=sdcz
+    storages=tz
+[swapr]
+    types=cdsz
+    storages=he, sy
+[conv]
+    types=cdsz
+    storages=sy
+[bdb]
+    types=cdsz
+    storages=un, or
+[csd]
+    types=cdsz
+    storages=un, or
+[mqrt]
+    types=sdcz
+    storages=ge
+[qrt]
+    types=sdcz
+    storages=ge
+[r]
+    types=cz
+    storages=sy
+[lq]
+    types=sdcz
+    storages=ge
+[qr]
+    types=sdcz
+    storages=ge
+[tsls]
+    types=sdcz
+    storages=ge
