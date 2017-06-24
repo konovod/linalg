@@ -272,4 +272,45 @@ describe Linalg do
       (left.not_nil!.conjtranspose * a - alpha[i] / beta[i] * left.not_nil!.conjtranspose * b).det.should be_close(0, 1e-6)
     end
   end
+
+  it "high-level: generalized symmetric eigenvalues (real argument)" do
+    a = GMat.new [
+      [-2, 4, 1],
+      [4, -4, 3],
+      [1, 3, 1],
+    ]
+    b = GMat.new [
+      [2, -1, 0],
+      [-1, 2, -1],
+      [0, -1, 2],
+    ]
+    a.assume! MatrixFlags::Symmetric
+    b.assume! MatrixFlags::PositiveDefinite
+    alpha, beta, left, right = Linalg.eigs(a, b, need_left: true, need_right: true)
+    raise "complex eigenvalue" if alpha.is_a? Array(Complex)
+    3.times do |i|
+      (a * right.not_nil! - alpha[i] / beta[i] * b * right.not_nil!).det.should be_close(0, 1e-6)
+      (left.not_nil!.transpose * a - alpha[i] / beta[i] * left.not_nil!.transpose * b).det.should be_close(0, 1e-6)
+    end
+  end
+
+  it "high-level: generalized nonsymmetric eigenvalues (complex argument)" do
+    a = GMatComplex.new [
+      [-2, 4*j, 1],
+      [-4*j, -4, 0],
+      [1, 0, 1],
+    ]
+    b = GMatComplex.new [
+      [2, -1, 0],
+      [-1, 2, -1],
+      [0, -1, 2],
+    ]
+    a.assume! MatrixFlags::Hermitian
+    b.assume! MatrixFlags::PositiveDefinite
+    alpha, beta, left, right = Linalg.eigs(a, b, need_left: true, need_right: true)
+    3.times do |i|
+      (a * right.not_nil! - alpha[i] / beta[i] * b * right.not_nil!).det.should be_close(0, 1e-6)
+      (left.not_nil!.conjtranspose * a - alpha[i] / beta[i] * left.not_nil!.conjtranspose * b).det.should be_close(0, 1e-6)
+    end
+  end
 end
