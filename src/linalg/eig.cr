@@ -137,8 +137,9 @@ module Linalg
         alpha = Array(T).new(rows, T.new(0,0))
         beta = Array(T).new(rows, T.new(0,0))
         lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
-                bb, b.columns
-                vals.to_unsafe.as(LibLAPACKE::DoubleComplex*),
+                bb, b.columns,
+                alpha.to_unsafe.as(LibLAPACKE::DoubleComplex*),
+                beta.to_unsafe.as(LibLAPACKE::DoubleComplex*),
                 eigvectorsl.try &.to_unsafe, rows,
                 eigvectorsr.try &.to_unsafe, rows)
         a.clear_flags
@@ -156,7 +157,7 @@ module Linalg
         a.clear_flags
         bb.clear_flags
         if alpha_imags.all? &.==(0)
-          alpha = reals
+          alpha = alpha_reals
         else
           alpha = Array(Complex).new(rows){|i| Complex.new(alpha_reals[i], alpha_imags[i])}
         end
