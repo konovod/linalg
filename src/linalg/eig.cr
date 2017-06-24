@@ -24,6 +24,16 @@ module Linalg
       {% end %}
     end
 
+    private def eigs_sy(*, need_vectors, overwrite_a = false)
+      {% if T != Complex %}
+      job = need_vectors ? 'V'.ord : 'N'.ord
+      a = (need_vectors || !overwrite_a) ? clone : self
+      vals = Array(T).new(rows, T.new(0))
+      lapack(sy, ev, job, uplo, rows, a, rows, vals)
+      {vals, a}
+      {% end %}
+    end
+
     def eigs(*, need_left : Bool, need_right : Bool, overwrite_a = false, b : Matrix(T)? = nil)
       raise ArgumentError.new("matrix must be square") unless square?
       # TODO -  hb, sb, st
@@ -31,6 +41,15 @@ module Linalg
       {% if T == Complex %}
       if flags.hermitian?
         vals, vectors = eigsh(need_vectors: need_left || need_right, overwrite_a: overwrite_a)
+        if need_left && need_right
+          return {vals, vectors, vectors.not_nil!.clone}
+        else
+          return {vals, need_left ? vectors : nil, need_right ? vectors : nil}
+        end
+      end
+      {% else %}
+      if flags.symmetric?
+        vals, vectors = eigs_sy(need_vectors: need_left || need_right, overwrite_a: overwrite_a)
         if need_left && need_right
           return {vals, vectors, vectors.not_nil!.clone}
         else
