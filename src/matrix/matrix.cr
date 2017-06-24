@@ -16,6 +16,7 @@ module Linalg
     Tridiagonal
     Triangular
     Orthogonal
+    Unitary          = Orthogonal
 
     Lower
   end
@@ -242,6 +243,10 @@ module Linalg
     # def detect(flag : MatrixFlags)
     #   @flags |=
     # end
+
+    def clear_flags
+      @flags = MatrixFlags.new(0)
+    end
 
     def self.rand(rows, columns, rng = Random::DEFAULT)
       GeneralMatrix(T).new(rows, columns) { |i, j| rng.rand }

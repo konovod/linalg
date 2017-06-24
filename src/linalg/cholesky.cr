@@ -39,6 +39,7 @@ module Linalg
       x = overwrite_b ? b : b.clone
       n = rows
       lapack(po, trs, uplo, n, b.columns, self, n, x, b.columns)
+      b.clear_flags
       x
     end
   end

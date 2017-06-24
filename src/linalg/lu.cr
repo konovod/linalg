@@ -7,7 +7,7 @@ module Linalg
       k = {rows, columns}.min
       ipiv = Slice(Int32).new(m)
       lapack(ge, trf, rows, columns, a, columns, ipiv)
-      # TODO - better solution?
+      a.clear_flags
       # apply all transformation of piv to "own" piv
       piv = (1..m).to_a
       k.times do |i|
@@ -43,6 +43,7 @@ module Linalg
       raise ArgumentError.new("matrix must be square") unless square?
       ipiv = Slice(Int32).new(rows)
       lapack(ge, trf, rows, columns, self, columns, ipiv)
+      clear_flags
       LUMatrix(T).new(self, ipiv)
     end
 
@@ -93,6 +94,7 @@ module Linalg
               end.ord
       x = overwrite_b ? b : b.clone
       lapack(ge, trs, trans, size, b.columns, @a, size, @ipiv, x, x.columns)
+      x.clear_flags
       x
     end
   end

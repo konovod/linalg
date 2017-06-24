@@ -20,7 +20,24 @@ module Linalg
       a = (need_vectors || !overwrite_a) ? clone : self
       vals = Array(Float64).new(rows, 0.0)
       lapack(he, ev, job, uplo, rows, a, rows, vals)
+      a.clear_flags
       {vals, a}
+      {% end %}
+    end
+
+    private def eigsh_turbo(*, need_vectors, overwrite_a = false)
+      {% if T == Complex %}
+      job = need_vectors ? 'V'.ord : 'N'.ord
+      a = overwrite_a ? self : clone
+      vals = Array(Float64).new(rows, 0.0)
+      vectors = a.clone
+      #z : DoubleComplex*, ldz : LibC::Int, isuppz : LibC::Int*) : LibC::Int
+      lapack(he, evr, job, 'A'.ord, uplo, rows, a, rows,
+        'N'.ord,'N'.ord,'N'.ord,'N'.ord, -1.0,
+        out nfound, vals, )
+      a.clear_flags
+      vectors.clear_flags
+      {vals, vectors}
       {% end %}
     end
 
@@ -30,6 +47,7 @@ module Linalg
       a = (need_vectors || !overwrite_a) ? clone : self
       vals = Array(T).new(rows, T.new(0))
       lapack(sy, ev, job, uplo, rows, a, rows, vals)
+      a.clear_flags
       {vals, a}
       {% end %}
     end
@@ -66,6 +84,7 @@ module Linalg
                 vals.to_unsafe.as(LibLAPACKE::DoubleComplex*),
                 eigvectorsl.try &.to_unsafe, rows,
                 eigvectorsr.try &.to_unsafe, rows)
+        a.clear_flags
         return {vals, eigvectorsl, eigvectorsr}
       {% else %}
         reals = Array(T).new(rows, T.new(0))
@@ -74,6 +93,7 @@ module Linalg
                 reals, imags,
                 eigvectorsl.try &.to_unsafe, rows,
                 eigvectorsr.try &.to_unsafe, rows)
+        a.clear_flags
         if imags.all? &.==(0)
           vals = reals
         else
@@ -86,16 +106,19 @@ module Linalg
     # generalized eigenvalues problem
     def eigs(*, b : Matrix(T), need_left : Bool, need_right : Bool, overwrite_a = false, overwrite_b = false)
       a = overwrite_a ? self : clone
+      bb = overwrite_b ? b : b.clone
       eigvectorsl = need_left ? GeneralMatrix(T).new(rows, rows) : nil
       eigvectorsr = need_right ? GeneralMatrix(T).new(rows, rows) : nil
       {% if T == Complex %}
         alpha = Array(T).new(rows, T.new(0,0))
         beta = Array(T).new(rows, T.new(0,0))
         lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
-                overwrite_b ? b : b.clone, b.columns,
+                bb, b.columns
                 vals.to_unsafe.as(LibLAPACKE::DoubleComplex*),
                 eigvectorsl.try &.to_unsafe, rows,
                 eigvectorsr.try &.to_unsafe, rows)
+        a.clear_flags
+        bb.clear_flags
         return {alpha, beta, eigvectorsl, eigvectorsr}
       {% else %}
         alpha_reals = Array(T).new(rows, T.new(0))
@@ -106,6 +129,8 @@ module Linalg
                 alpha_reals, alpha_imags, beta,
                 eigvectorsl.try &.to_unsafe, rows,
                 eigvectorsr.try &.to_unsafe, rows)
+        a.clear_flags
+        bb.clear_flags
         if alpha_imags.all? &.==(0)
           alpha = reals
         else

@@ -103,6 +103,8 @@ module Linalg
         ipiv = Slice(Int32).new(n)
         lapack(ge, sv, n, b.columns, a, n, ipiv, x, b.columns)
       end
+      a.clear_flags
+      x.clear_flags
       x
     end
 
@@ -111,6 +113,7 @@ module Linalg
       lru = overwrite_a ? self : self.clone
       ipiv = Slice(Int32).new(rows)
       lapack(ge, trf, rows, rows, lru, rows, ipiv)
+      lru.clear_flags
       (0...rows).reduce(1) { |det, i| det*lru[i, i] }
     end
 
@@ -124,6 +127,8 @@ module Linalg
         x = overwrite_b ? b : b.clone
       end
       lapack(ge, ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
+      a.clear_flags
+      x.clear_flags
       x
     end
 
@@ -157,6 +162,8 @@ module Linalg
       else
         s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
       end
+      a.clear_flags
+      x.clear_flags
       {x, rank, s}
     end
 
@@ -164,10 +171,11 @@ module Linalg
       a = overwrite_a ? self : self.clone
       m = rows
       n = columns
-      s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
+      s = {% if T == Complex %} Array(Float64).new({m, n}.min, 0.0) {% else %} Array(T).new({m, n}.min, T.new(0)) {% end %}
       u = GeneralMatrix(T).new(m, m)
       vt = GeneralMatrix(T).new(n, n)
       lapack(ge, sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
+      a.clear_flags
       return {u, s, vt}
     end
 
@@ -175,8 +183,9 @@ module Linalg
       a = overwrite_a ? self : self.clone
       m = rows
       n = columns
-      s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new({m, n}.min)
+      s = {% if T == Complex %} Array(Float64).new({m, n}.min, 0.0) {% else %} Array(T).new({m, n}.min, T.new(0)) {% end %}
       lapack(ge, sdd, 'N'.ord, m, n, a, columns, s, nil, m, nil, n)
+      a.clear_flags
       s
     end
 
@@ -206,7 +215,7 @@ module Linalg
 
     def hessenberg!(*, calc_q = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      # idea from scypi.
+      # idea from scipy.
       # no need to calculate if size <= 2
       if rows < 2
         q = calc_q ? Matrix(T).identity(rows) : Matrix(T).zeros(1, 1)
@@ -215,6 +224,7 @@ module Linalg
       n = rows
       s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new(n)
       lapack(ge, bal, 'S'.ord, n, self, n, out ilo, out ihi, s)
+      clear_flags
       tau = GeneralMatrix(T).new(1, n)
       lapack(ge, hrd, n, ilo, ihi, self, columns, tau)
       if calc_q
@@ -224,6 +234,7 @@ module Linalg
         {% else %}
           lapack(or, ghr, n, ilo, ihi, q, columns, tau)
         {% end %}
+        q.flags = MatrixFlags::Orthogonal
       else
         q = Matrix(T).zeros(1, 1)
       end
