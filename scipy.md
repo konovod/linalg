@@ -91,7 +91,7 @@
 - [x] companion(a)	Create a companion matrix.
 - [ ] dft(n[, scale])	Discrete Fourier transform matrix.
 - [x] hadamard(n[, dtype])	Construct a Hadamard matrix.
-- [ ] hankel(c[, r])	Construct a Hankel matrix.
+- [x] hankel(c[, r])	Construct a Hankel matrix.
 - [ ] helmert(n[, full])	Create a Helmert matrix of order n.
 - [ ] hilbert(n)	Create a Hilbert matrix of order n.
 - [ ] invhilbert(n[, exact])	Compute the inverse of the Hilbert matrix of order n.

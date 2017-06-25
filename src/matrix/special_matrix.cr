@@ -66,10 +66,35 @@ module Linalg
 
     # TODO - faster implementation
     def self.hadamard(n)
-      raise ArgumentError.new("n must be power of two") unless n.popcount == 1
+      raise ArgumentError.new("size must be positive") unless n > 0
+      raise ArgumentError.new("size must be power of two") unless n.popcount == 1
       return GeneralMatrix(T).new([[1]]) if n == 1
       return GeneralMatrix(T).new([[1, 1], [1, -1]]) if n == 2
       return hadamard(n/2).kron(hadamard(2))
+    end
+
+    def self.hankel(column : Indexable | Matrix, row : Indexable | Matrix | Nil = nil)
+      row = row.to_a if row.is_a? Matrix
+      column = column.to_a if column.is_a? Matrix
+      if row
+        GeneralMatrix(T).new(column.size, row.size) do |i, j|
+          k = i + j
+          if k < column.size
+            column[k]
+          else
+            row[k - column.size + 1]
+          end
+        end
+      else
+        GeneralMatrix(T).new(column.size, column.size) do |i, j|
+          k = i + j
+          if k < column.size
+            column[k]
+          else
+            0
+          end
+        end
+      end
     end
   end
 end

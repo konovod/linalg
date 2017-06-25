@@ -66,4 +66,17 @@ describe "constructing of special matrices" do
       [1, -1, -1, 1],
     ]
   end
+
+  it "hankel matrix" do
+    Mat.hankel([1, 2, 3], [1, 4, 5, 6]).should eq GMat.new [
+      [1, 2, 3, 4],
+      [2, 3, 4, 5],
+      [3, 4, 5, 6],
+    ]
+    MatComplex.hankel(GMatComplex.new [[1.0, 2 + 3*j, 4 - j]]).should eq GMatComplex.new [
+      [1, 2 + 3*j, 4 - j],
+      [2 + 3*j, 4 - j, 0],
+      [4 - j, 0, 0],
+    ]
+  end
 end
