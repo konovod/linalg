@@ -86,7 +86,7 @@
 
 ### Special Matrices
 
-- [ ] block_diag(arrs)	Create a block diagonal matrix from provided arrays.
+- [x] block_diag(arrs)	Create a block diagonal matrix from provided arrays.
 - [ ] circulant(c)	Construct a circulant matrix.
 - [ ] companion(a)	Create a companion matrix.
 - [ ] dft(n[, scale])	Discrete Fourier transform matrix.

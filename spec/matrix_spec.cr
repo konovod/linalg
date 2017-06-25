@@ -246,19 +246,4 @@ describe Linalg::Matrix do
       [20, -1, 11, 0],
     ]
   end
-
-  it "has block_diag function" do
-    a = GMat.new [[1, 0],
-                  [0, 1]]
-    b = GMat.new [[3, 4, 5],
-                  [6, 7, 8]]
-    c = GMat.new [[7]]
-    Mat.block_diag(a, b, c).should eq GMat.new [
-      [1, 0, 0, 0, 0, 0],
-      [0, 1, 0, 0, 0, 0],
-      [0, 0, 3, 4, 5, 0],
-      [0, 0, 6, 7, 8, 0],
-      [0, 0, 0, 0, 0, 7],
-    ]
-  end
 end

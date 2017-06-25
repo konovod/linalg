@@ -19,4 +19,8 @@ abstract struct Number
   def *(m : Matrix)
     m*self
   end
+
+  def conj
+    self
+  end
 end

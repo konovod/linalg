@@ -362,20 +362,6 @@ module Linalg
     def self.identity(n)
       GeneralMatrix(T).new(n, n) { |i, j| i == j ? 1 : 0 }
     end
-
-    def self.block_diag(*args)
-      rows = args.sum &.rows
-      columns = args.sum &.columns
-      GeneralMatrix(T).new(rows, columns).tap do |result|
-        row = 0
-        column = 0
-        args.each do |arg|
-          result[row...row + arg.rows, column...column + arg.columns] = arg
-          row += arg.rows
-          column += arg.columns
-        end
-      end
-    end
   end
 
   alias Mat = Matrix(Float64)
