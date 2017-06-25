@@ -79,4 +79,16 @@ describe "constructing of special matrices" do
       [4 - j, 0, 0],
     ]
   end
+
+  it "helmert matrix" do
+    h1 = GMat.new [
+      [0.4472136, 0.4472136, 0.4472136, 0.4472136, 0.4472136],
+      [0.70710678, -0.70710678, 0, 0, 0],
+      [0.40824829, 0.40824829, -0.81649658, 0, 0],
+      [0.28867513, 0.28867513, 0.28867513, -0.8660254, 0],
+      [0.2236068, 0.2236068, 0.2236068, 0.2236068, -0.89442719],
+    ]
+    (Mat.helmert(5, true) - h1).abs.should be_close(0, 1e-6)
+    (Mat.helmert(5, false) - h1[1..4, 0..4]).abs.should be_close(0, 1e-6)
+  end
 end

@@ -96,5 +96,28 @@ module Linalg
         end
       end
     end
+
+    def self.helmert(n, full = false)
+      if full
+        result = GeneralMatrix(T).new(n, n)
+      else
+        result = GeneralMatrix(T).new(n - 1, n)
+      end
+      # first row
+      if full
+        result[0, 0...n] = T.new(Math.sqrt(1.0/n))
+        rowdelta = 1
+      else
+        rowdelta = 0
+      end
+      # rest
+      (n - 1).times do |i|
+        x = i + 1
+        v = T.new(Math.sqrt(1.0/(x + x*x)))
+        result.unsafe_set i + rowdelta, i + 1, -v*x
+        result[i + rowdelta, 0..i] = v
+      end
+      result
+    end
   end
 end
