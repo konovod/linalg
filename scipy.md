@@ -7,7 +7,7 @@
 - [ ] solve_banded(l_and_u, ab, b[, overwrite_ab, ...])	Solve the equation a x = b for x, assuming a is banded matrix.
 - [ ] solveh_banded(ab, b[, overwrite_ab, ...])	Solve equation a x = b.
 - [ ] solve_circulant(c, b[, singular, tol, ...])	Solve C x = b for x, where C is a circulant matrix.
-- [ ] solve_triangular(a, b[, trans, lower, ...])	Solve the equation a x = b for x, assuming a is a triangular matrix.
+- [x] solve_triangular(a, b[, trans, lower, ...])	Solve the equation a x = b for x, assuming a is a triangular matrix.
 - [ ] solve_toeplitz(c_or_cr, b[, check_finite])	Solve a Toeplitz system using Levinson Recursion
 - [x] det(a[, overwrite_a, check_finite])	Compute the determinant of a matrix
 - [ ] norm(a[, ord, axis, keepdims])	Matrix or vector norm.

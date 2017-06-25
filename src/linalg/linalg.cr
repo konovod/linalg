@@ -93,7 +93,9 @@ module Linalg
       x = overwrite_b ? b : b.clone
       n = rows
       # TODO - gb, gt, pb, pt
-      if flags.positive_definite?
+      if flags.triangular?
+        lapack(tr, trs, uplo, 'N'.ord, 'N'.ord, n, b.columns, a, n, x, b.columns)
+      elsif flags.positive_definite?
         lapack(po, sv, uplo, n, b.columns, a, n, x, b.columns)
       elsif flags.hermitian?
         {% if T == Complex %}
