@@ -219,6 +219,8 @@ describe Linalg::Matrix do
     expect_raises(IndexError) do
       m[0..3, 2..4]
     end
+    m[1, 2..3].should eq GMat32.new([[7, 8]])
+    m[1..2, 3].should eq GMat32.new([[8], [12]])
   end
 
   it "has row and column functions" do
@@ -229,6 +231,20 @@ describe Linalg::Matrix do
     r1 = m.column(3)
     r1.size.to_a.should eq [3, 1]
     r1[1, 0].should eq m[1, 3]
+  end
+
+  it "can override submatrices" do
+    m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+    m[1, 2..3] = 10
+    m[1..2, 0] = 20
+    m[1, 0..3] = m.row(2)
+    m[0..2, 1] = -1
+    m[0..2, 3] = m.column(2) - m.row(1).transpose[0..2, 0]
+    m.should eq GMat32.new [
+      [1, -1, 3, -17],
+      [20, -1, 11, 12],
+      [20, -1, 11, 0],
+    ]
   end
 
   it "has block_diag function" do

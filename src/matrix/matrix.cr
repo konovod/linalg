@@ -186,6 +186,38 @@ module Linalg
       io << "\n"
     end
 
+    def each(&block)
+      rows.times do |row|
+        columns.times do |column|
+          yield self.unsafe_at(row, column)
+        end
+      end
+    end
+
+    def each_index(&block)
+      rows.times do |row|
+        columns.times do |column|
+          yield row
+        end
+      end
+    end
+
+    def each_with_index(&block)
+      rows.times do |row|
+        columns.times do |column|
+          yield self.unsafe_at(row, column), row, column
+        end
+      end
+    end
+
+    def ==(other)
+      return false unless rows == other.rows && columns == other.columns
+      each_with_index do |value, row, column|
+        return false if other.unsafe_at(row, column) != value
+      end
+      true
+    end
+
     # changes number of rows and columns of matrix (total number of elements must not change)
     def reshape(arows, acolumns)
       clone.reshape!(arows, acolumns)
