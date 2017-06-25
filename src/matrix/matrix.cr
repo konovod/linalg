@@ -362,6 +362,26 @@ module Linalg
     def self.identity(n)
       GeneralMatrix(T).new(n, n) { |i, j| i == j ? 1 : 0 }
     end
+
+    def self.eye(n)
+      self.identity(n)
+    end
+
+    def t
+      transpose
+    end
+
+    def t!
+      transpose!
+    end
+
+    def conjt
+      conjtranspose
+    end
+
+    def conjt!
+      conjtranspose!
+    end
   end
 
   alias Mat = Matrix(Float64)
