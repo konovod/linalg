@@ -258,27 +258,5 @@ module Linalg
     def hessenberg
       clone.hessenberg!
     end
-
-    def schur(*, overwrite_a = false)
-      raise ArgumentError.new("matrix must be square") unless square?
-      a = overwrite_a ? self : clone
-      {% if T == Complex %}
-        w = Slice(T).new(rows, T.new(0))
-        z = GeneralMatrix(T).new(*size)
-        lapack(ge, es, 'V'.ord, 'N'.ord, nil, rows, a, columns, out sdim, w.to_unsafe.as(LibLAPACKE::DoubleComplex*), z, columns)
-        a.clear_flags
-        a.assume! MatrixFlags::Triangular
-        z.assume! MatrixFlags::Orthogonal
-        return {a, z}
-      {% else %}
-      wr = Slice(T).new(rows)
-      wi = Slice(T).new(rows)
-      z = GeneralMatrix(T).new(*size)
-      lapack(ge, es, 'V'.ord, 'N'.ord, nil, rows, a, columns, out sdim, wr, wi, z, columns)
-      a.clear_flags
-      z.assume! MatrixFlags::Orthogonal
-      return {a, z}
-      {% end %}
-    end
   end
 end

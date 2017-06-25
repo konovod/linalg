@@ -216,7 +216,7 @@ describe Linalg do
     r1.should be_close(r, 1e-9)
   end
 
-  it "high-level: lq ql decomposition" do
+  it "high-level: lq and ql decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     l, q = a.lq
     (q*q.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
@@ -226,5 +226,41 @@ describe Linalg do
     q, l = a.ql
     (q*q.transpose).should be_close(Mat32.identity(3), 1e-4)
     (a - q*l).abs.should be_close(0, 1e-4)
+  end
+
+  it "high-level: qz decomposition (real argument)" do
+    a = GMat.new [
+      [-2, 4, 1],
+      [2, -4, 1],
+      [1, 1, 1],
+    ]
+    b = GMat.new [
+      [-2, 4, 0],
+      [2, -3, 1],
+      [2, 1, 1],
+    ]
+    aa, bb, vl, vr = Linalg.qz(a, b)
+    (vl*vl.transpose).should be_close(Mat.identity(3), 1e-6)
+    (vr*vr.transpose).should be_close(Mat.identity(3), 1e-6)
+    (a - vl*aa*vr.transpose).abs.should be_close(0, 1e-6)
+    (b - vl*bb*vr.transpose).abs.should be_close(0, 1e-6)
+  end
+
+  it "high-level: qz decomposition (complex argument)" do
+    a = GMatComplex.new [
+      [-2, 4*j, 1],
+      [3, -4*j, 1],
+      [1, 0, 1 - j],
+    ]
+    b = GMatComplex.new [
+      [-2, 4, 0],
+      [2, -3, -2*j],
+      [1, 1 - j, 1 + j],
+    ]
+    aa, bb, vl, vr = Linalg.qz(a, b)
+    (vl*vl.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
+    (vr*vr.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
+    (a - vl*aa*vr.conjtranspose).abs.should be_close(0, 1e-6)
+    (b - vl*bb*vr.conjtranspose).abs.should be_close(0, 1e-6)
   end
 end

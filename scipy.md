@@ -52,7 +52,7 @@
 - [ ] qr_delete(Q, R, k, int p=1[, which, ...])	QR downdate on row or column deletions
 - [ ] qr_insert(Q, R, u, k[, which, rcond, ...])	QR update on row or column insertions
 - [x] rq(a[, overwrite_a, lwork, mode, check_finite])	Compute RQ decomposition of a matrix.
-- [ ] qz(A, B[, output, lwork, sort, overwrite_a, ...])	QZ decomposition for generalized eigenvalues of a pair of matrices.
+- [x] qz(A, B[, output, lwork, sort, overwrite_a, ...])	QZ decomposition for generalized eigenvalues of a pair of matrices.
 - [ ] ordqz(A, B[, sort, output, overwrite_a, ...])	QZ decomposition for a pair of matrices with reordering.
 - [x] schur(a[, output, lwork, overwrite_a, sort, ...])	Compute Schur decomposition of a matrix.
 - [ ] rsf2csf(T, Z[, check_finite])	Convert real Schur form to complex Schur form.
