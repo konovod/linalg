@@ -26,7 +26,7 @@ module Linalg
       a = overwrite_a ? self : clone
       tau, pvt = qr_initial(a, pivoting)
       a.triu!
-      {a, tau, pvt}
+      {a, pvt}
     end
 
     def qr(*, overwrite_a = false, pivoting = false)

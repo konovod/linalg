@@ -205,4 +205,14 @@ describe Linalg do
     # pivoted TODO - spec?
     q, r, pvt = a.qr(pivoting: true)
   end
+
+  it "high-level: rq decomposition" do
+    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    r, q = a.rq
+    (q*q.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
+    (a - r*q).abs.should be_close(0, 1e-6)
+    # only r
+    r1 = a.rq_r
+    r1.should be_close(r, 1e-9)
+  end
 end
