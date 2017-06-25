@@ -215,4 +215,16 @@ describe Linalg do
     r1 = a.rq_r
     r1.should be_close(r, 1e-9)
   end
+
+  it "high-level: lq ql decomposition" do
+    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    l, q = a.lq
+    (q*q.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
+    (a - l*q).abs.should be_close(0, 1e-6)
+
+    a = GMat32.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
+    l, q = a.ql
+    (q*q.transpose).should be_close(Mat32.identity(3), 1e-4)
+    (a - q*l).abs.should be_close(0, 1e-4)
+  end
 end

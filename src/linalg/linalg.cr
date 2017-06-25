@@ -48,7 +48,12 @@ module Linalg
          elsif T == Complex
            typ = :z.id
          end %}
-       info = LibLAPACKE.{{typ}}{{storage}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
+       {% if T == Complex && storage.id == :or.id
+            st = :un.id
+          else
+            st = storage
+          end %}
+       info = LibLAPACKE.{{typ}}{{st}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
        raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
     end
 
@@ -235,11 +240,7 @@ module Linalg
       lapack(ge, hrd, n, ilo, ihi, self, columns, tau)
       if calc_q
         q = clone
-        {% if T == Complex %}
-          lapack(un, ghr, n, ilo, ihi, q, columns, tau)
-        {% else %}
-          lapack(or, ghr, n, ilo, ihi, q, columns, tau)
-        {% end %}
+        lapack(or, ghr, n, ilo, ihi, q, columns, tau)
         q.flags = MatrixFlags::Orthogonal
       else
         q = Matrix(T).zeros(1, 1)

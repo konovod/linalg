@@ -34,17 +34,10 @@ module Linalg
       tau, pvt = qr_initial(a, pivoting)
       r = a.clone
       r.triu!
-      {% if T == Complex %}
-        m = a.rows
-        n = a.columns
-        k = {m,n}.min
-        lapack(un, gqr, m, n, k, a, a.columns, tau)
-      {% else %}
-        m = a.rows
-        n = a.columns
-        k = {m,n}.min
-        lapack(or, gqr, m, n, k, a, a.columns, tau)
-      {% end %}
+      m = a.rows
+      n = a.columns
+      k = {m, n}.min
+      lapack(or, gqr, m, n, k, a, a.columns, tau)
       a.assume! MatrixFlags::Orthogonal
       {a, r, pvt}
     end
