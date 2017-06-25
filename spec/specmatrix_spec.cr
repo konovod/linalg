@@ -55,4 +55,15 @@ describe "constructing of special matrices" do
       [0, 1, 0],
     ]
   end
+  it "hadamard matrix" do
+    expect_raises(ArgumentError) do
+      Mat.hadamard(1000)
+    end
+    Mat.hadamard(4).should eq GMat.new [
+      [1, 1, 1, 1],
+      [1, -1, 1, -1],
+      [1, 1, -1, -1],
+      [1, -1, -1, 1],
+    ]
+  end
 end

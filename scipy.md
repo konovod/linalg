@@ -90,7 +90,7 @@
 - [x] circulant(c)	Construct a circulant matrix.
 - [x] companion(a)	Create a companion matrix.
 - [ ] dft(n[, scale])	Discrete Fourier transform matrix.
-- [ ] hadamard(n[, dtype])	Construct a Hadamard matrix.
+- [x] hadamard(n[, dtype])	Construct a Hadamard matrix.
 - [ ] hankel(c[, r])	Construct a Hankel matrix.
 - [ ] helmert(n[, full])	Create a Helmert matrix of order n.
 - [ ] hilbert(n)	Create a Hilbert matrix of order n.

@@ -63,5 +63,13 @@ module Linalg
         (a.size - 2).times { |i| matrix.unsafe_set i + 1, i, T.new(1) }
       end
     end
+
+    # TODO - faster implementation
+    def self.hadamard(n)
+      raise ArgumentError.new("n must be power of two") unless n.popcount == 1
+      return GeneralMatrix(T).new([[1]]) if n == 1
+      return GeneralMatrix(T).new([[1, 1], [1, -1]]) if n == 2
+      return hadamard(n/2).kron(hadamard(2))
+    end
   end
 end
