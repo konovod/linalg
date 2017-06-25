@@ -87,7 +87,7 @@
 ### Special Matrices
 
 - [x] block_diag(arrs)	Create a block diagonal matrix from provided arrays.
-- [ ] circulant(c)	Construct a circulant matrix.
+- [x] circulant(c)	Construct a circulant matrix.
 - [ ] companion(a)	Create a companion matrix.
 - [ ] dft(n[, scale])	Discrete Fourier transform matrix.
 - [ ] hadamard(n[, dtype])	Construct a Hadamard matrix.
@@ -98,5 +98,5 @@
 - [ ] leslie(f, s)	Create a Leslie matrix.
 - [ ] pascal(n[, kind, exact])	Returns the n x n Pascal matrix.
 - [ ] invpascal(n[, kind, exact])	Returns the inverse of the n x n Pascal matrix.
-- [ ] toeplitz(c[, r])	Construct a Toeplitz matrix.
+- [x] toeplitz(c[, r])	Construct a Toeplitz matrix.
 - [x] tri(N[, M, k, dtype])	Construct (N, M) matrix filled with ones at and below the k-th diagonal.

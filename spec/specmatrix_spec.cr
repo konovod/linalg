@@ -30,4 +30,12 @@ describe "constructing of special matrices" do
       [4 - j, 2 + 3*j, 1],
     ]
   end
+
+  it "circulant matrix" do
+    Mat.circulant([1, 2, 3]).should eq GMat.new [
+      [1, 3, 2],
+      [2, 1, 3],
+      [3, 2, 1],
+    ]
+  end
 end

@@ -41,5 +41,12 @@ module Linalg
         end
       end
     end
+
+    def self.circulant(c)
+      GeneralMatrix(T).new(c.size, c.size) do |i, j|
+        k = i - j
+        c[(k + c.size) % c.size]
+      end
+    end
   end
 end
