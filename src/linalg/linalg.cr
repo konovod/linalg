@@ -264,9 +264,9 @@ module Linalg
       raise ArgumentError.new("matrix must be square") unless square?
       a = overwrite_a ? self : clone
       {% if T == Complex %}
-        w = Slice(T).new(rows)
+        w = Slice(T).new(rows, T.new(0))
         z = GeneralMatrix(T).new(*size)
-        lapack(ge, es, 'V'.ord, 'N'.ord, nil, rows, a, columns, out sdim, w, z, columns)
+        lapack(ge, es, 'V'.ord, 'N'.ord, nil, rows, a, columns, out sdim, w.to_unsafe.as(LibLAPACKE::DoubleComplex*), z, columns)
         a.clear_flags
         a.assume! MatrixFlags::Triangular
         z.assume! MatrixFlags::Orthogonal

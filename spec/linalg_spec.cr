@@ -186,6 +186,6 @@ describe Linalg do
   it "high-level: schur decomposition (complex argument)" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     t, z = a.schur
-    (a - z*t*z.transpose).abs.should be_close(0, 1e-6)
+    (a - z*t*z.conjtranspose).abs.should be_close(0, 1e-6)
   end
 end

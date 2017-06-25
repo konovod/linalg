@@ -210,6 +210,38 @@ module Linalg
       SubMatrix(T).new(self, {rows.begin, columns.begin}, {nrows, ncols})
     end
 
+    def [](row : Int32, columns : Range(Int32, Int32))
+      self[row..row, columns]
+    end
+
+    def [](rows : Range(Int32, Int32), column : Int32)
+      self[rows, column..column]
+    end
+
+    def []=(rows : Range(Int32, Int32), columns : Range(Int32, Int32), value)
+      if value.is_a? Matrix
+        rows.each do |row|
+          columns.each do |column|
+            self[row, column] = value[row - rows.begin, column - columns.begin]
+          end
+        end
+      else
+        rows.each do |row|
+          columns.each do |column|
+            self[row, column] = value
+          end
+        end
+      end
+    end
+
+    def []=(row : Int32, columns : Range(Int32, Int32), value)
+      self[row..row, columns] = value
+    end
+
+    def []=(rows : Range(Int32, Int32), column : Int32, value)
+      self[rows, column..column] = value
+    end
+
     def row(i)
       SubMatrix(T).new(self, {i, 0}, {1, columns})
     end
@@ -227,7 +259,6 @@ module Linalg
     end
 
     def []=(i, j, value)
-      # i isn't checked as underlying array will check it anyway
       if j >= 0 && j < columns && i >= 0 && i < rows
         unsafe_set(i, j, value)
       else
@@ -298,6 +329,20 @@ module Linalg
 
     def self.identity(n)
       GeneralMatrix(T).new(n, n) { |i, j| i == j ? 1 : 0 }
+    end
+
+    def self.block_diag(*args)
+      rows = args.sum &.rows
+      columns = args.sum &.columns
+      GeneralMatrix(T).new(rows, columns).tap do |result|
+        row = 0
+        column = 0
+        args.each do |arg|
+          result[row...row + arg.rows, column...column + arg.columns] = arg
+          row += arg.rows
+          column += arg.columns
+        end
+      end
     end
   end
 
