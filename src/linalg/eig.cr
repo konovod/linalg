@@ -2,6 +2,10 @@ require "../matrix/*"
 require "./libLAPACKE"
 
 module Linalg
+  def self.eigs(a, b, *, need_left : Bool, need_right : Bool, overwrite_a = false, overwrite_b = false)
+    a.eigs(b: b, need_left: need_left, need_right: need_right, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
+  end
+
   module Matrix(T)
     def eigvals(*, overwrite_a = false)
       vals, aleft, aright = eigs(overwrite_a: overwrite_a, need_left: false, need_right: false)
@@ -133,7 +137,7 @@ module Linalg
     # generalized eigenvalues problem
     def eigs(*, b : Matrix(T), need_left : Bool, need_right : Bool, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("a matrix must be square") unless square?
-      raise ArgumentError.new("b matrix must be square") unless b.square?
+      raise ArgumentError.new("b matrix must have same size as a") unless b.size == self.size
       {% if T == Complex %}
       if flags.hermitian? && b.flags.positive_definite?
         vals, vectors = eigs_gen_he(b: b, need_vectors: need_left || need_right, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
