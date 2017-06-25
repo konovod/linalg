@@ -176,4 +176,16 @@ describe Linalg do
     h, q = a.hessenberg(calc_q: true)
     (a - q*h*q.transpose).abs.should be_close(0, 1e-6)
   end
+
+  it "high-level: schur decomposition (real argument)" do
+    a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
+    t, z = a.schur
+    (a - z*t*z.transpose).abs.should be_close(0, 1e-6)
+  end
+
+  it "high-level: schur decomposition (complex argument)" do
+    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    t, z = a.schur
+    (a - z*t*z.transpose).abs.should be_close(0, 1e-6)
+  end
 end

@@ -54,7 +54,7 @@
 - [ ] rq(a[, overwrite_a, lwork, mode, check_finite])	Compute RQ decomposition of a matrix.
 - [ ] qz(A, B[, output, lwork, sort, overwrite_a, ...])	QZ decomposition for generalized eigenvalues of a pair of matrices.
 - [ ] ordqz(A, B[, sort, output, overwrite_a, ...])	QZ decomposition for a pair of matrices with reordering.
-- [ ] schur(a[, output, lwork, overwrite_a, sort, ...])	Compute Schur decomposition of a matrix.
+- [x] schur(a[, output, lwork, overwrite_a, sort, ...])	Compute Schur decomposition of a matrix.
 - [ ] rsf2csf(T, Z[, check_finite])	Convert real Schur form to complex Schur form.
 - [x] hessenberg(a[, calc_q, overwrite_a, ...])	Compute Hessenberg form of a matrix.
 - [ ] scipy.linalg.interpolative – Interpolative matrix decompositions
