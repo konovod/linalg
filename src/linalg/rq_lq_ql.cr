@@ -26,7 +26,11 @@ def {{letters}}(*, overwrite_a = false)
   k = {m,n}.min
   lapack(or, g{{letters}}, m, n, k, a, a.columns, tau)
   a.assume! MatrixFlags::Orthogonal
-  {r, a}
+  {% if letters.id.chars[0] == 'q' %}
+    {a, r}
+  {% else %}
+    {r, a}
+  {% end %}
 end
 
 end

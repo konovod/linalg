@@ -223,7 +223,7 @@ describe Linalg do
     (a - l*q).abs.should be_close(0, 1e-6)
 
     a = GMat32.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
-    l, q = a.ql
+    q, l = a.ql
     (q*q.transpose).should be_close(Mat32.identity(3), 1e-4)
     (a - q*l).abs.should be_close(0, 1e-4)
   end
