@@ -197,7 +197,7 @@ module Linalg
     def each_index(&block)
       rows.times do |row|
         columns.times do |column|
-          yield row
+          yield row, column
         end
       end
     end

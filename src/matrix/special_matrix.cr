@@ -126,4 +126,37 @@ module Linalg
       end
     end
   end
+
+  enum DFTScale
+    None
+    N
+    SqrtN
+  end
+
+  module Matrix(T)
+    def self.dft(n, scale : DFTScale = DFTScale::None)
+      {% raise "DFT matrix must be Complex" unless T == Complex %}
+      j = Complex.new(0, 1)
+      w = (-2*Math::PI*j / n).exp
+      result = Matrix(T).ones(n, n).clone
+      result.each_index do |i, j|
+        next if i == 0 || j == 0
+        if j == 1
+          result.unsafe_set(i, j, w*result.unsafe_at(i - 1, j))
+        else
+          result.unsafe_set(i, j, result.unsafe_at(i, 1)*result.unsafe_at(i, j - 1))
+        end
+      end
+      unless scale.none?
+        case scale
+        when .sqrt_n?
+          scale = 1.0 / Math.sqrt(n)
+        else
+          scale = 1.0 / n
+        end
+        result.each_with_index { |v, i, j| result.unsafe_set(i, j, scale*v) }
+      end
+      result
+    end
+  end
 end

@@ -99,4 +99,12 @@ describe "constructing of special matrices" do
       [0.33333333, 0.25, 0.2],
     ]), 1e-6)
   end
+
+  it "dft matrix" do
+    m = MatComplex.dft(8)
+    x = GMatComplex.new [[1, 2, 3, 0, 3, 2, 1, 0]]
+    (x*m).should be_close GMatComplex.new([
+      [12, -2 - 2*j, -4*j, -2 + 2*j, 4, -2 - 2*j, 4*j, -2 + 2*j],
+    ]), 1e-6
+  end
 end

@@ -89,7 +89,7 @@
 - [x] block_diag(arrs)	Create a block diagonal matrix from provided arrays.
 - [x] circulant(c)	Construct a circulant matrix.
 - [x] companion(a)	Create a companion matrix.
-- [ ] dft(n[, scale])	Discrete Fourier transform matrix.
+- [x] dft(n[, scale])	Discrete Fourier transform matrix.
 - [x] hadamard(n[, dtype])	Construct a Hadamard matrix.
 - [x] hankel(c[, r])	Construct a Hankel matrix.
 - [x] helmert(n[, full])	Create a Helmert matrix of order n.
