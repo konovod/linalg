@@ -38,4 +38,13 @@ describe "constructing of special matrices" do
       [3, 2, 1],
     ]
   end
+
+  it "leslie matrix" do
+    Mat.leslie([0.1, 2.0, 1.0, 0.1], [0.2, 0.8, 0.7]).should eq GMat.new [
+      [0.1, 2, 1, 0.1],
+      [0.2, 0, 0, 0],
+      [0, 0.8, 0, 0],
+      [0, 0, 0.7, 0],
+    ]
+  end
 end

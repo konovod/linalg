@@ -95,7 +95,7 @@
 - [ ] helmert(n[, full])	Create a Helmert matrix of order n.
 - [ ] hilbert(n)	Create a Hilbert matrix of order n.
 - [ ] invhilbert(n[, exact])	Compute the inverse of the Hilbert matrix of order n.
-- [ ] leslie(f, s)	Create a Leslie matrix.
+- [x] leslie(f, s)	Create a Leslie matrix.
 - [ ] pascal(n[, kind, exact])	Returns the n x n Pascal matrix.
 - [ ] invpascal(n[, kind, exact])	Returns the inverse of the n x n Pascal matrix.
 - [x] toeplitz(c[, r])	Construct a Toeplitz matrix.

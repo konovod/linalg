@@ -48,5 +48,12 @@ module Linalg
         c[(k + c.size) % c.size]
       end
     end
+
+    def self.leslie(f, s)
+      GeneralMatrix(T).new(s.size + 1, f.size).tap do |matrix|
+        f.each_with_index { |fi, i| matrix.unsafe_set 0, i, T.new(fi) }
+        s.each_with_index { |si, i| matrix.unsafe_set i + 1, i, T.new(si) }
+      end
+    end
   end
 end
