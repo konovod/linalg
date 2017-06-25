@@ -47,4 +47,12 @@ describe "constructing of special matrices" do
       [0, 0, 0.7, 0],
     ]
   end
+
+  it "companion matrix" do
+    Mat.companion([1, -10, 31, -30]).should eq GMat.new [
+      [10, -31, 30],
+      [1, 0, 0],
+      [0, 1, 0],
+    ]
+  end
 end

@@ -55,5 +55,13 @@ module Linalg
         s.each_with_index { |si, i| matrix.unsafe_set i + 1, i, T.new(si) }
       end
     end
+
+    def self.companion(a)
+      k = -1.0/a[0]
+      GeneralMatrix(T).new(a.size - 1, a.size - 1).tap do |matrix|
+        (a.size - 1).times { |i| matrix.unsafe_set 0, i, T.new(a[i + 1]*k) }
+        (a.size - 2).times { |i| matrix.unsafe_set i + 1, i, T.new(1) }
+      end
+    end
   end
 end
