@@ -91,4 +91,12 @@ describe "constructing of special matrices" do
     (Mat.helmert(5, true) - h1).abs.should be_close(0, 1e-6)
     (Mat.helmert(5, false) - h1[1..4, 0..4]).abs.should be_close(0, 1e-6)
   end
+
+  it "hilbert matrix" do
+    Mat.hilbert(3).should be_close(GMat.new([
+      [1, 0.5, 0.33333333],
+      [0.5, 0.33333333, 0.25],
+      [0.33333333, 0.25, 0.2],
+    ]), 1e-6)
+  end
 end

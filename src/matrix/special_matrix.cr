@@ -119,5 +119,11 @@ module Linalg
       end
       result
     end
+
+    def self.hilbert(n)
+      GeneralMatrix(T).new(n, n) do |i, j|
+        T.new(1.0) / (i + j + 1)
+      end
+    end
   end
 end
