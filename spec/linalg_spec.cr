@@ -174,18 +174,35 @@ describe Linalg do
 
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     h, q = a.hessenberg(calc_q: true)
+    (q*q.transpose).should be_close(Mat.identity(3), 1e-6)
     (a - q*h*q.transpose).abs.should be_close(0, 1e-6)
   end
 
   it "high-level: schur decomposition (real argument)" do
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     t, z = a.schur
+    (z*z.transpose).should be_close(Mat.identity(3), 1e-6)
     (a - z*t*z.transpose).abs.should be_close(0, 1e-6)
   end
 
   it "high-level: schur decomposition (complex argument)" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     t, z = a.schur
+    (z*z.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
     (a - z*t*z.conjtranspose).abs.should be_close(0, 1e-6)
+  end
+
+  it "high-level: qr decomposition" do
+    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    q, r, pvt = a.qr
+    (q*q.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
+    (a - q*r).abs.should be_close(0, 1e-6)
+    # only r
+    r1, pvt = a.qr_r
+    r1.should be_close(r, 1e-9)
+    # raw form
+    q1, tau, pvt = a.qr_raw
+    # pivoted TODO - spec?
+    q, r, pvt = a.qr(pivoting: true)
   end
 end

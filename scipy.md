@@ -46,7 +46,7 @@
 - [x] cho_solve(c_and_lower, b[, overwrite_b, ...])	Solve the linear equations A x = b, given the Cholesky factorization of A.
 - [ ] cho_solve_banded(cb_and_lower, b[, ...])	Solve the linear equations A x = b, given the Cholesky factorization of A.
 - [ ] polar(a[, side])	Compute the polar decomposition.
-- [ ] qr(a[, overwrite_a, lwork, mode, pivoting, ...])	Compute QR decomposition of a matrix.
+- [x] qr(a[, overwrite_a, lwork, mode, pivoting, ...])	Compute QR decomposition of a matrix.
 - [ ] qr_multiply(a, c[, mode, pivoting, ...])	Calculate the QR decomposition and multiply Q with a matrix.
 - [ ] qr_update(Q, R, u, v[, overwrite_qruv, ...])	Rank-k QR update
 - [ ] qr_delete(Q, R, k, int p=1[, which, ...])	QR downdate on row or column deletions
