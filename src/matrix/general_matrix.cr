@@ -100,7 +100,7 @@ module Linalg
         (0..@nrows - 2).each do |i|
           (i + 1..@ncolumns - 1).each do |j|
             a = self[i, j]
-            self[i, j] = self[j, i]
+            self[i, j] = self[j, i].conj
             self[j, i] = a.conj
           end
         end
