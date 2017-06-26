@@ -239,6 +239,22 @@ module Linalg
       end
     end
 
+    def [](i, j)
+      if j >= 0 && j < columns && i >= 0 && i < rows
+        unsafe_at(i, j)
+      else
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{rows}x#{columns}")
+      end
+    end
+
+    def []=(i, j, value)
+      if j >= 0 && j < columns && i >= 0 && i < rows
+        unsafe_set(i, j, value)
+      else
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{rows}x#{columns}")
+      end
+    end
+
     # return submatrix over given ranges.
     def [](rows : Range(Int32, Int32), columns : Range(Int32, Int32))
       nrows = rows.end + (rows.excludes_end? ? 0 : 1) - rows.begin
@@ -254,19 +270,21 @@ module Linalg
       self[rows, column..column]
     end
 
+    def row(i)
+      SubMatrix(T).new(self, {i, 0}, {1, columns})
+    end
+
+    def column(i)
+      SubMatrix(T).new(self, {0, i}, {rows, 1})
+    end
+
     def []=(rows : Range(Int32, Int32), columns : Range(Int32, Int32), value)
+      submatrix = self[rows, columns]
       if value.is_a? Matrix
-        rows.each do |row|
-          columns.each do |column|
-            self[row, column] = value[row - rows.begin, column - columns.begin]
-          end
-        end
+        raise IndexError.new("submatrix size must match assigned value") unless submatrix.size == value.size
+        submatrix.each_index { |i, j| submatrix.unsafe_set i, j, value.unsafe_at(i, j) }
       else
-        rows.each do |row|
-          columns.each do |column|
-            self[row, column] = value
-          end
-        end
+        submatrix.each_index { |i, j| submatrix.unsafe_set i, j, value }
       end
     end
 
@@ -276,30 +294,6 @@ module Linalg
 
     def []=(rows : Range(Int32, Int32), column : Int32, value)
       self[rows, column..column] = value
-    end
-
-    def row(i)
-      SubMatrix(T).new(self, {i, 0}, {1, columns})
-    end
-
-    def column(i)
-      SubMatrix(T).new(self, {0, i}, {rows, 1})
-    end
-
-    def [](i, j)
-      if j >= 0 && j < columns && i >= 0 && i < rows
-        unsafe_at(i, j)
-      else
-        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{rows}x#{columns}")
-      end
-    end
-
-    def []=(i, j, value)
-      if j >= 0 && j < columns && i >= 0 && i < rows
-        unsafe_set(i, j, value)
-      else
-        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{rows}x#{columns}")
-      end
     end
 
     def assume!(flag : MatrixFlags)
