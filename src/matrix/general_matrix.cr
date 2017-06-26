@@ -95,21 +95,10 @@ module Linalg
 
     # transposes matrix inplace
     def conjtranspose!
+      {% raise "Matrix must be Complex for conjtranspose" unless T == Complex %}
       return self if flags.hermitian?
-      if square?
-        (0..@nrows - 2).each do |i|
-          (i + 1..@ncolumns - 1).each do |j|
-            a = self[i, j]
-            self[i, j] = self[j, i].conj
-            self[j, i] = a.conj
-          end
-        end
-        @flags ^= MatrixFlags::Lower if flags.triangular?
-        self
-      else
-        # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
-        raise "not implemented yet"
-      end
+      each_with_index { |v, i, j| unsafe_set(i, j, v.conj) }
+      transpose!
     end
 
     def reshape!(anrows, ancolumns)

@@ -136,6 +136,10 @@ describe Linalg::Matrix do
     mt = m.conjtranspose
     mt.should eq GMatComplex.new([[1 - j, 4], [2 - j, 5], [3 + j, 6 - 2*j]])
     mt.conjtranspose.should eq m
+
+    m = GMatComplex.new([[1, 2*j, 3], [4*j, 5, 6*j], [7, 8*j, 9 - j]])
+    m.conjtranspose!
+    (m - GMatComplex.new([[1, -4*j, 7], [-2*j, 5, -8*j], [3, -6*j, 9 + j]])).norm.should be_close(0, 1e-9)
   end
 
   it "has kron operation" do
