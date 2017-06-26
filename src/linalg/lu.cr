@@ -2,11 +2,11 @@ module Linalg
   module Matrix(T)
     def lu(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
-      m = rows
-      n = columns
-      k = {rows, columns}.min
+      m = nrows
+      n = ncolumns
+      k = {nrows, ncolumns}.min
       ipiv = Slice(Int32).new(m)
-      lapack(ge, trf, rows, columns, a, columns, ipiv)
+      lapack(ge, trf, nrows, ncolumns, a, ncolumns, ipiv)
       a.clear_flags
       # apply all transformation of piv to "own" piv
       piv = (1..m).to_a
@@ -41,8 +41,8 @@ module Linalg
 
     def lu_factor!
       raise ArgumentError.new("matrix must be square") unless square?
-      ipiv = Slice(Int32).new(rows)
-      lapack(ge, trf, rows, columns, self, columns, ipiv)
+      ipiv = Slice(Int32).new(nrows)
+      lapack(ge, trf, nrows, ncolumns, self, ncolumns, ipiv)
       clear_flags
       LUMatrix(T).new(self, ipiv)
     end
@@ -79,11 +79,11 @@ module Linalg
     end
 
     def size
-      @a.rows
+      @a.nrows
     end
 
     def solve(b, transpose = LUTranspose::None, *, overwrite_b = false)
-      raise ArgumentError.new("number of rows in a and b must match") unless @a.rows == b.rows
+      raise ArgumentError.new("nrows of a and b must match") unless @a.nrows == b.nrows
       trans = case transpose
               when .none?           then 'N'
               when .transpose?      then 'T'
@@ -91,7 +91,7 @@ module Linalg
               else                       'N'
               end.ord
       x = overwrite_b ? b : b.clone
-      lapack(ge, trs, trans, size, b.columns, @a, size, @ipiv, x, x.columns)
+      lapack(ge, trs, trans, size, b.ncolumns, @a, size, @ipiv, x, x.ncolumns)
       x.clear_flags
       x
     end

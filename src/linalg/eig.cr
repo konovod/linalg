@@ -22,13 +22,13 @@ module Linalg
       {% if T == Complex %}
       job = need_vectors ? 'V'.ord : 'N'.ord
       a = overwrite_a ? self : clone
-      vals = Array(Float64).new(rows, 0.0)
+      vals = Array(Float64).new(nrows, 0.0)
       vectors = a.clone
-      support = Slice(Int32).new(2*rows)
-      lapack(he, evr, job, 'A'.ord, uplo, rows, a, rows,
+      support = Slice(Int32).new(2*nrows)
+      lapack(he, evr, job, 'A'.ord, uplo, nrows, a, nrows,
         'N'.ord,'N'.ord,'N'.ord,'N'.ord, -1.0,
         out nfound, vals,
-        vectors, columns, support)
+        vectors, ncolumns, support)
       a.clear_flags
       vectors.clear_flags
       {vals, vectors}
@@ -39,13 +39,13 @@ module Linalg
       {% if T != Complex %}
       job = need_vectors ? 'V'.ord : 'N'.ord
       a = overwrite_a ? self : clone
-      vals = Array(T).new(rows, T.new(0))
+      vals = Array(T).new(nrows, T.new(0))
       vectors = a.clone
-      support = Slice(Int32).new(2*rows)
-      lapack(sy, evr, job, 'A'.ord, uplo, rows, a, rows,
+      support = Slice(Int32).new(2*nrows)
+      lapack(sy, evr, job, 'A'.ord, uplo, nrows, a, nrows,
         'N'.ord,'N'.ord,'N'.ord,'N'.ord, -1.0,
         out nfound, vals,
-        vectors, columns, support)
+        vectors, ncolumns, support)
       a.clear_flags
       vectors.clear_flags
       {vals, vectors}
@@ -74,28 +74,28 @@ module Linalg
       end
       {% end %}
       a = overwrite_a ? self : clone
-      eigvectorsl = need_left ? GeneralMatrix(T).new(rows, rows) : nil
-      eigvectorsr = need_right ? GeneralMatrix(T).new(rows, rows) : nil
+      eigvectorsl = need_left ? GeneralMatrix(T).new(nrows, nrows) : nil
+      eigvectorsr = need_right ? GeneralMatrix(T).new(nrows, nrows) : nil
       {% if T == Complex %}
-        vals = Array(T).new(rows, T.new(0,0))
-        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
+        vals = Array(T).new(nrows, T.new(0,0))
+        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
                 vals.to_unsafe.as(LibLAPACKE::DoubleComplex*),
-                eigvectorsl.try &.to_unsafe, rows,
-                eigvectorsr.try &.to_unsafe, rows)
+                eigvectorsl.try &.to_unsafe, nrows,
+                eigvectorsr.try &.to_unsafe, nrows)
         a.clear_flags
         return {vals, eigvectorsl, eigvectorsr}
       {% else %}
-        reals = Array(T).new(rows, T.new(0))
-        imags = Array(T).new(rows, T.new(0))
-        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
+        reals = Array(T).new(nrows, T.new(0))
+        imags = Array(T).new(nrows, T.new(0))
+        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
                 reals, imags,
-                eigvectorsl.try &.to_unsafe, rows,
-                eigvectorsr.try &.to_unsafe, rows)
+                eigvectorsl.try &.to_unsafe, nrows,
+                eigvectorsr.try &.to_unsafe, nrows)
         a.clear_flags
         if imags.all? &.==(0)
           vals = reals
         else
-          vals = Array(Complex).new(rows){|i| Complex.new(reals[i], imags[i])}
+          vals = Array(Complex).new(nrows){|i| Complex.new(reals[i], imags[i])}
         end
         return {vals, eigvectorsl, eigvectorsr}
       {% end %}
@@ -106,10 +106,10 @@ module Linalg
       job = need_vectors ? 'V'.ord : 'N'.ord
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
-      vals = Array(T).new(rows, T.new(0))
+      vals = Array(T).new(nrows, T.new(0))
       lapack(sy, gvd, 1, job, uplo,
-        rows, a, rows,
-        bb, rows,
+        nrows, a, nrows,
+        bb, nrows,
         vals)
       a.clear_flags
       bb.clear_flags
@@ -122,10 +122,10 @@ module Linalg
       job = need_vectors ? 'V'.ord : 'N'.ord
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
-      vals = Array(Float64).new(rows, 0.0)
+      vals = Array(Float64).new(nrows, 0.0)
       lapack(he, gvd, 1, job, uplo,
-        rows, a, rows,
-        bb, rows,
+        nrows, a, nrows,
+        bb, nrows,
         vals)
       a.clear_flags
       bb.clear_flags
@@ -140,7 +140,7 @@ module Linalg
       {% if T == Complex %}
       if flags.hermitian? && b.flags.positive_definite?
         vals, vectors = eigs_gen_he(b: b, need_vectors: need_left || need_right, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
-        beta = Array(Float64).new(rows, 1.0)
+        beta = Array(Float64).new(nrows, 1.0)
         if need_left && need_right
           return {vals, beta, vectors, vectors.not_nil!.clone}
         else
@@ -150,7 +150,7 @@ module Linalg
       {% else %}
       if flags.symmetric? && b.flags.positive_definite?
         vals, vectors = eigs_gen_sy(b: b, need_vectors: need_left || need_right, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
-        beta = Array(T).new(rows, T.new(1))
+        beta = Array(T).new(nrows, T.new(1))
         if need_left && need_right
           return {vals, beta, vectors, vectors.not_nil!.clone}
         else
@@ -160,35 +160,35 @@ module Linalg
       {% end %}
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
-      eigvectorsl = need_left ? GeneralMatrix(T).new(rows, rows) : nil
-      eigvectorsr = need_right ? GeneralMatrix(T).new(rows, rows) : nil
+      eigvectorsl = need_left ? GeneralMatrix(T).new(nrows, nrows) : nil
+      eigvectorsr = need_right ? GeneralMatrix(T).new(nrows, nrows) : nil
       {% if T == Complex %}
-        alpha = Array(T).new(rows, T.new(0,0))
-        beta = Array(T).new(rows, T.new(0,0))
-        lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
-                bb, b.columns,
+        alpha = Array(T).new(nrows, T.new(0,0))
+        beta = Array(T).new(nrows, T.new(0,0))
+        lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+                bb, b.ncolumns,
                 alpha.to_unsafe.as(LibLAPACKE::DoubleComplex*),
                 beta.to_unsafe.as(LibLAPACKE::DoubleComplex*),
-                eigvectorsl.try &.to_unsafe, rows,
-                eigvectorsr.try &.to_unsafe, rows)
+                eigvectorsl.try &.to_unsafe, nrows,
+                eigvectorsr.try &.to_unsafe, nrows)
         a.clear_flags
         bb.clear_flags
         return {alpha, beta, eigvectorsl, eigvectorsr}
       {% else %}
-        alpha_reals = Array(T).new(rows, T.new(0))
-        alpha_imags = Array(T).new(rows, T.new(0))
-        beta = Array(T).new(rows, T.new(0))
-        lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, rows, a, rows,
-                overwrite_b ? b : b.clone, b.columns,
+        alpha_reals = Array(T).new(nrows, T.new(0))
+        alpha_imags = Array(T).new(nrows, T.new(0))
+        beta = Array(T).new(nrows, T.new(0))
+        lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+                overwrite_b ? b : b.clone, b.ncolumns,
                 alpha_reals, alpha_imags, beta,
-                eigvectorsl.try &.to_unsafe, rows,
-                eigvectorsr.try &.to_unsafe, rows)
+                eigvectorsl.try &.to_unsafe, nrows,
+                eigvectorsr.try &.to_unsafe, nrows)
         a.clear_flags
         bb.clear_flags
         if alpha_imags.all? &.==(0)
           alpha = alpha_reals
         else
-          alpha = Array(Complex).new(rows){|i| Complex.new(alpha_reals[i], alpha_imags[i])}
+          alpha = Array(Complex).new(nrows){|i| Complex.new(alpha_reals[i], alpha_imags[i])}
         end
         return {alpha, beta, eigvectorsl, eigvectorsr}
       {% end %}

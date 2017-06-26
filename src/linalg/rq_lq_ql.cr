@@ -1,10 +1,10 @@
 private macro decomposition(letters, trix)
 
 private def {{letters}}_initial(a)
-  m = a.rows
-  n = a.columns
+  m = a.nrows
+  n = a.ncolumns
   tau = GeneralMatrix(T).new(1, n)
-  lapack(ge, {{letters}}f, m, n, a, a.columns, tau)
+  lapack(ge, {{letters}}f, m, n, a, a.ncolumns, tau)
   a.clear_flags
   tau
 end
@@ -21,10 +21,10 @@ def {{letters}}(*, overwrite_a = false)
   tau = {{letters}}_initial(a)
   r = a.clone
   r.{{trix}}!
-  m = a.rows
-  n = a.columns
+  m = a.nrows
+  n = a.ncolumns
   k = {m,n}.min
-  lapack(or, g{{letters}}, m, n, k, a, a.columns, tau)
+  lapack(or, g{{letters}}, m, n, k, a, a.ncolumns, tau)
   a.assume! MatrixFlags::Orthogonal
   {% if letters.id.chars[0] == 'q' %}
     {a, r}

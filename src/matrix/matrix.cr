@@ -21,7 +21,7 @@ module Linalg
   end
 
   # class that provide all utility matrix functions
-  # TODO - sums on cols\rows, check numpy for more (require previous point?)
+  # TODO - sums on cols\nrows, check numpy for more (require previous point?)
   # TODO - saving/loading to files (what formats? csv?)
   # TODO - replace [] to unsafe at most places
   module Matrix(T)
@@ -38,56 +38,56 @@ module Linalg
     end
 
     def size
-      {rows, columns}
+      {nrows, ncolumns}
     end
 
     # creates generic matrix with same content. Useful for virtual matrices
     def clone
-      GeneralMatrix(T).new(rows, columns) do |i, j|
+      GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         unsafe_at(i, j)
       end.tap { |it| it.flags = flags }
     end
 
     # matrix product to given m
     def *(m : Matrix(T))
-      if columns != m.rows
-        raise ArgumentError.new("matrix size should match ([#{rows}x#{columns}] * [#{m.rows}x#{m.columns}]")
+      if ncolumns != m.nrows
+        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
       end
-      result = GeneralMatrix(T).new(rows, m.columns) do |i, j|
-        (0...columns).sum { |k| self[i, k]*m[k, j] }
+      result = GeneralMatrix(T).new(nrows, m.ncolumns) do |i, j|
+        (0...ncolumns).sum { |k| self[i, k]*m[k, j] }
       end
     end
 
     # multiplies at scalar
     def *(k : Number | Complex)
-      result = GeneralMatrix(T).new(rows, columns) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j]*k
       end
     end
 
     # divides at scalar
     def /(k : Number | Complex)
-      result = GeneralMatrix(T).new(rows, columns) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j] / k
       end
     end
 
     # returns element-wise sum
     def +(m : Matrix(T))
-      if columns != m.columns || rows != m.rows
-        raise ArgumentError.new("matrix size should match ([#{rows}x#{columns}] + [#{m.rows}x#{m.columns}]")
+      if ncolumns != m.ncolumns || nrows != m.nrows
+        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] + [#{m.nrows}x#{m.ncolumns}]")
       end
-      result = GeneralMatrix(T).new(rows, columns) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j] + m[i, j]
       end
     end
 
     # returns element-wise subtract
     def -(m : Matrix(T))
-      if columns != m.columns || rows != m.rows
-        raise ArgumentError.new("matrix size should match ([#{rows}x#{columns}] - [#{m.rows}x#{m.columns}]")
+      if ncolumns != m.ncolumns || nrows != m.nrows
+        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] - [#{m.nrows}x#{m.ncolumns}]")
       end
-      result = GeneralMatrix(T).new(rows, columns) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j] - m[i, j]
       end
     end
@@ -95,7 +95,7 @@ module Linalg
     # returns transposed matrix
     def transpose
       return clone if flags.symmetric?
-      GeneralMatrix(T).new(columns, rows) do |i, j|
+      GeneralMatrix(T).new(ncolumns, nrows) do |i, j|
         self[j, i]
       end.tap do |m|
         m.flags = flags
@@ -109,7 +109,7 @@ module Linalg
     def conjtranspose
       {% raise "Matrix must be Complex for conjtranspose" unless T == Complex %}
       return clone if flags.hermitian?
-      GeneralMatrix(T).new(columns, rows) do |i, j|
+      GeneralMatrix(T).new(ncolumns, nrows) do |i, j|
         self[j, i].conj
       end.tap do |m|
         m.flags = flags
@@ -126,7 +126,7 @@ module Linalg
 
     # same as tril in scipy - returns lower triangular or trapezoidal part of matrix
     def tril(k = 0)
-      x = GeneralMatrix(T).new(rows, columns) do |i, j|
+      x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i >= j - k ? self[i, j] : 0
       end
       if k >= 0
@@ -137,7 +137,7 @@ module Linalg
 
     # same as triu in scipy - returns upper triangular or trapezoidal part of matrix
     def triu(k = 0)
-      x = GeneralMatrix(T).new(rows, columns) do |i, j|
+      x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i <= j - k ? self[i, j] : 0
       end
       if k >= 0
@@ -148,9 +148,9 @@ module Linalg
 
     # like a tril in scipy - remove all elements above k-diagonal
     def tril!(k = 0)
-      (rows*columns).times do |index|
-        i = index / columns
-        j = index % columns
+      (nrows*ncolumns).times do |index|
+        i = index / ncolumns
+        j = index % ncolumns
         @raw[index] = T.new(0) if i < j - k
       end
       if k <= 0
@@ -161,9 +161,9 @@ module Linalg
 
     # like a triu in scipy - remove all elements below k-diagonal
     def triu!(k = 0)
-      (rows*columns).times do |index|
-        i = index / columns
-        j = index % columns
+      (nrows*ncolumns).times do |index|
+        i = index / ncolumns
+        j = index % ncolumns
         @raw[index] = T.new(0) if i > j - k
       end
       if k >= 0
@@ -179,9 +179,9 @@ module Linalg
     # [91, 92, 93, .... 100]
     def to_s(io)
       io << "\n"
-      rows.times do |i|
+      nrows.times do |i|
         io << "["
-        columns.times do |j|
+        ncolumns.times do |j|
           io << ", " unless j == 0
           io << self[i, j]
         end
@@ -191,95 +191,95 @@ module Linalg
     end
 
     def each(&block)
-      rows.times do |row|
-        columns.times do |column|
+      nrows.times do |row|
+        ncolumns.times do |column|
           yield self.unsafe_at(row, column)
         end
       end
     end
 
     def each_index(&block)
-      rows.times do |row|
-        columns.times do |column|
+      nrows.times do |row|
+        ncolumns.times do |column|
           yield row, column
         end
       end
     end
 
     def each_with_index(&block)
-      rows.times do |row|
-        columns.times do |column|
+      nrows.times do |row|
+        ncolumns.times do |column|
           yield self.unsafe_at(row, column), row, column
         end
       end
     end
 
     def ==(other)
-      return false unless rows == other.rows && columns == other.columns
+      return false unless nrows == other.nrows && ncolumns == other.ncolumns
       each_with_index do |value, row, column|
         return false if other.unsafe_at(row, column) != value
       end
       true
     end
 
-    # changes number of rows and columns of matrix (total number of elements must not change)
-    def reshape(arows, acolumns)
-      clone.reshape!(arows, acolumns)
+    # changes nrows and ncolumns of matrix (total number of elements must not change)
+    def reshape(anrows, ancolumns)
+      clone.reshape!(anrows, ancolumns)
     end
 
     # returns True if matrix is square and False otherwise
     def square?
-      rows == columns
+      nrows == ncolumns
     end
 
     # return matrix repeated `arows` times by vertical and `acolumns` times by horizontal
     def repmat(arows, acolumns)
-      GeneralMatrix(T).new(rows*arows, columns*acolumns) do |i, j|
-        self[i % rows, j % columns]
+      GeneralMatrix(T).new(nrows*arows, ncolumns*acolumns) do |i, j|
+        self[i % nrows, j % ncolumns]
       end
     end
 
     def [](i, j)
-      if j >= 0 && j < columns && i >= 0 && i < rows
+      if j >= 0 && j < ncolumns && i >= 0 && i < nrows
         unsafe_at(i, j)
       else
-        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{rows}x#{columns}")
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{nrows}x#{ncolumns}")
       end
     end
 
     def []=(i, j, value)
-      if j >= 0 && j < columns && i >= 0 && i < rows
+      if j >= 0 && j < ncolumns && i >= 0 && i < nrows
         unsafe_set(i, j, value)
       else
-        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{rows}x#{columns}")
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{nrows}x#{ncolumns}")
       end
     end
 
     # return submatrix over given ranges.
-    def [](rows : Range(Int32, Int32), columns : Range(Int32, Int32))
-      nrows = rows.end + (rows.excludes_end? ? 0 : 1) - rows.begin
-      ncols = columns.end + (columns.excludes_end? ? 0 : 1) - columns.begin
-      SubMatrix(T).new(self, {rows.begin, columns.begin}, {nrows, ncols})
+    def [](arows : Range(Int32, Int32), acolumns : Range(Int32, Int32))
+      anrows = arows.end + (arows.excludes_end? ? 0 : 1) - arows.begin
+      ancols = acolumns.end + (acolumns.excludes_end? ? 0 : 1) - acolumns.begin
+      SubMatrix(T).new(self, {arows.begin, acolumns.begin}, {anrows, ancols})
     end
 
-    def [](row : Int32, columns : Range(Int32, Int32))
-      self[row..row, columns]
+    def [](row : Int32, acolumns : Range(Int32, Int32))
+      self[row..row, acolumns]
     end
 
-    def [](rows : Range(Int32, Int32), column : Int32)
-      self[rows, column..column]
+    def [](arows : Range(Int32, Int32), column : Int32)
+      self[arows, column..column]
     end
 
     def row(i)
-      SubMatrix(T).new(self, {i, 0}, {1, columns})
+      SubMatrix(T).new(self, {i, 0}, {1, ncolumns})
     end
 
     def column(i)
-      SubMatrix(T).new(self, {0, i}, {rows, 1})
+      SubMatrix(T).new(self, {0, i}, {nrows, 1})
     end
 
-    def []=(rows : Range(Int32, Int32), columns : Range(Int32, Int32), value)
-      submatrix = self[rows, columns]
+    def []=(arows : Range(Int32, Int32), acolumns : Range(Int32, Int32), value)
+      submatrix = self[arows, acolumns]
       if value.is_a? Matrix
         raise IndexError.new("submatrix size must match assigned value") unless submatrix.size == value.size
         submatrix.each_index { |i, j| submatrix.unsafe_set i, j, value.unsafe_at(i, j) }
@@ -288,12 +288,12 @@ module Linalg
       end
     end
 
-    def []=(row : Int32, columns : Range(Int32, Int32), value)
-      self[row..row, columns] = value
+    def []=(row : Int32, acolumns : Range(Int32, Int32), value)
+      self[row..row, acolumns] = value
     end
 
-    def []=(rows : Range(Int32, Int32), column : Int32, value)
-      self[rows, column..column] = value
+    def []=(nrows : Range(Int32, Int32), column : Int32, value)
+      self[nrows, column..column] = value
     end
 
     def assume!(flag : MatrixFlags)
@@ -317,7 +317,7 @@ module Linalg
       when .positive_definite?
       when .triangular?
       when .orthogonal?
-        square? && (self*self.t - Matrix(T).eye(rows)).norm(MatrixNorm::Max) < tolerance
+        square? && (self*self.t - Matrix(T).eye(nrows)).norm(MatrixNorm::Max) < tolerance
       when .lower?
         false
       else
@@ -329,28 +329,28 @@ module Linalg
       @flags = MatrixFlags.new(0)
     end
 
-    def self.rand(rows, columns, rng = Random::DEFAULT)
-      GeneralMatrix(T).new(rows, columns) { |i, j| rng.rand }
+    def self.rand(nrows, ncolumns, rng = Random::DEFAULT)
+      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| rng.rand }
     end
 
-    def self.zeros(rows, columns)
-      GeneralMatrix(T).new(rows, columns)
+    def self.zeros(nrows, ncolumns)
+      GeneralMatrix(T).new(nrows, ncolumns)
     end
 
-    def self.ones(rows, columns)
-      GeneralMatrix(T).new(rows, columns) { |i, j| 1 }
+    def self.ones(nrows, ncolumns)
+      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| 1 }
     end
 
-    def self.repmat(a : Matrix(T), rows, columns)
-      a.repmat(rows, columns)
+    def self.repmat(a : Matrix(T), nrows, ncolumns)
+      a.repmat(nrows, ncolumns)
     end
 
-    def self.diag(arows, acolumns, value : Number | Complex)
-      diag(arows, acolumns) { value }
+    def self.diag(nrows, ncolumns, value : Number | Complex)
+      diag(nrows, ncolumns) { value }
     end
 
-    def self.diag(arows, acolumns, values)
-      GeneralMatrix(T).new(arows, acolumns) do |i, j|
+    def self.diag(nrows, ncolumns, values)
+      GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i == j ? values[i] : 0
       end
     end
@@ -359,20 +359,20 @@ module Linalg
       diag(values.size, values.size, values)
     end
 
-    def self.diag(arows, acolumns, &block)
-      GeneralMatrix(T).new(arows, acolumns) do |i, j|
+    def self.diag(nrows, ncolumns, &block)
+      GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i == j ? yield(i) : 0
       end
     end
 
     def self.kron(a, b)
-      GeneralMatrix(T).new(a.rows*b.rows, a.columns*b.columns) do |i, j|
-        a[i / b.rows, j / b.columns] * b[i % b.rows, j % b.columns]
+      GeneralMatrix(T).new(a.nrows*b.nrows, a.ncolumns*b.ncolumns) do |i, j|
+        a[i / b.nrows, j / b.ncolumns] * b[i % b.nrows, j % b.ncolumns]
       end
     end
 
-    def self.tri(rows, columns, k = 0)
-      GeneralMatrix(T).new(rows, columns) do |i, j|
+    def self.tri(nrows, ncolumns, k = 0)
+      GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i >= j - k ? 1 : 0
       end
     end

@@ -6,56 +6,56 @@ module Linalg
   # TODO - constructing from matlab-like string "[1,2,3;3,4,6;1,1,3]" (check regexps?)
   class GeneralMatrix(T)
     include Matrix(T)
-    getter rows : Int32
-    getter columns : Int32
+    getter nrows : Int32
+    getter ncolumns : Int32
     getter raw : Slice(T)
     property flags : MatrixFlags = MatrixFlags.new(0)
 
-    def initialize(@rows, @columns)
+    def initialize(@nrows, @ncolumns)
       check_type
-      @raw = Slice(T).new(rows*columns, T.new(0))
+      @raw = Slice(T).new(nrows*ncolumns, T.new(0))
     end
 
-    def initialize(@rows, @columns, values, @flags = MatrixFlags.new(0))
+    def initialize(@nrows, @ncolumns, values, @flags = MatrixFlags.new(0))
       check_type
-      @raw = Slice(T).new(rows*columns) { |i| T.new(values[i]) }
+      @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
     end
 
     def initialize(values)
       check_type
-      @rows = values.size
-      @columns = values[0].size
-      @raw = Slice(T).new(rows*columns) do |index|
-        i = index / @columns
-        j = index % @columns
-        raise IndexError.new("All rows should have same size") if j == 0 && values[i].size != @columns
+      @nrows = values.size
+      @ncolumns = values[0].size
+      @raw = Slice(T).new(nrows*ncolumns) do |index|
+        i = index / @ncolumns
+        j = index % @ncolumns
+        raise IndexError.new("All rows must have same size") if j == 0 && values[i].size != @ncolumns
         T.new(values[i][j])
       end
     end
 
     def self.from(matrix)
-      new(matrix.rows, matrix.columns, matrix.raw)
+      new(matrix.nrows, matrix.ncolumns, matrix.raw)
     end
 
-    def initialize(@rows, @columns, &block)
+    def initialize(@nrows, @ncolumns, &block)
       check_type
-      @raw = Slice(T).new(@rows*@columns) do |index|
-        i = index / @columns
-        j = index % @columns
+      @raw = Slice(T).new(@nrows*@ncolumns) do |index|
+        i = index / @ncolumns
+        j = index % @ncolumns
         T.new(yield(i, j))
       end
     end
 
     def unsafe_at(i, j)
-      @raw.unsafe_at(i*columns + j)
+      @raw.unsafe_at(i*ncolumns + j)
     end
 
     def unsafe_set(i, j, value)
-      @raw[i*columns + j] = T.new(value)
+      @raw[i*ncolumns + j] = T.new(value)
     end
 
     def dup
-      GeneralMatrix(T).new(@rows, @columns, @raw).tap { |it| it.flags = flags }
+      GeneralMatrix(T).new(@nrows, @ncolumns, @raw).tap { |it| it.flags = flags }
     end
 
     def clone
@@ -71,15 +71,15 @@ module Linalg
     end
 
     def ==(other : self)
-      @rows == other.rows && @columns == other.columns && @raw == other.raw
+      @nrows == other.nrows && @ncolumns == other.ncolumns && @raw == other.raw
     end
 
     # transposes matrix inplace
     def transpose!
       return self if flags.symmetric?
       if square?
-        (0..@rows - 2).each do |i|
-          (i + 1..@columns - 1).each do |j|
+        (0..@nrows - 2).each do |i|
+          (i + 1..@ncolumns - 1).each do |j|
             a = self[i, j]
             self[i, j] = self[j, i]
             self[j, i] = a
@@ -97,8 +97,8 @@ module Linalg
     def conjtranspose!
       return self if flags.hermitian?
       if square?
-        (0..@rows - 2).each do |i|
-          (i + 1..@columns - 1).each do |j|
+        (0..@nrows - 2).each do |i|
+          (i + 1..@ncolumns - 1).each do |j|
             a = self[i, j]
             self[i, j] = self[j, i]
             self[j, i] = a.conj
@@ -112,10 +112,10 @@ module Linalg
       end
     end
 
-    def reshape!(arows, acolumns)
-      raise ArgumentError.new("number of elements should not change") if arows*acolumns != @raw.size
-      @rows = arows
-      @columns = acolumns
+    def reshape!(anrows, ancolumns)
+      raise ArgumentError.new("number of elements must not change") if anrows*ancolumns != @raw.size
+      @nrows = anrows
+      @ncolumns = ancolumns
       self
     end
 
@@ -124,10 +124,10 @@ module Linalg
     end
 
     def to_aa
-      Array(Array(T)).new(@rows) do |i|
-        Array(T).build(@columns) do |pointer|
-          pointer.to_slice(@columns).copy_from(@raw[i*@columns, @columns])
-          @columns
+      Array(Array(T)).new(@nrows) do |i|
+        Array(T).build(@ncolumns) do |pointer|
+          pointer.to_slice(@ncolumns).copy_from(@raw[i*@ncolumns, @ncolumns])
+          @ncolumns
         end
       end
     end

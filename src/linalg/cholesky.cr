@@ -11,7 +11,7 @@ module Linalg
       raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
       raise ArgumentError.new("Matrix must be positive definite for cholesky decomposition") unless flags.positive_definite?
       char = lower ? 'L' : 'U'
-      lapack(po, trf, char.ord, rows, self, rows)
+      lapack(po, trf, char.ord, nrows, self, nrows)
       if lower
         if dont_clean
           self.flags = MatrixFlags::Triangular | MatrixFlags::Lower
@@ -33,12 +33,12 @@ module Linalg
     end
 
     def cho_solve(b : self, *, overwrite_b = false)
-      raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
+      raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       raise ArgumentError.new("a must be square") unless square?
       raise ArgumentError.new("a must be triangular") unless flags.triangular?
       x = overwrite_b ? b : b.clone
-      n = rows
-      lapack(po, trs, uplo, n, b.columns, self, n, x, b.columns)
+      n = nrows
+      lapack(po, trs, uplo, n, b.ncolumns, self, n, x, b.ncolumns)
       b.clear_flags
       x
     end

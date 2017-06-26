@@ -79,7 +79,7 @@ module Linalg
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       return transpose! if flags.orthogonal?
-      n = @rows
+      n = @nrows
       if flags.positive_definite?
         lapack(po, trf, uplo, n, self, n)
         lapack(po, tri, uplo, n, self, n)
@@ -108,26 +108,26 @@ module Linalg
     end
 
     def solve(b : self, *, overwrite_a = false, overwrite_b = false)
-      raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
+      raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       raise ArgumentError.new("a must be square") unless square?
       a = overwrite_b ? self : self.clone
       x = overwrite_b ? b : b.clone
-      n = rows
+      n = nrows
       if flags.triangular?
-        lapack(tr, trs, uplo, 'N'.ord, 'N'.ord, n, b.columns, a, n, x, b.columns)
+        lapack(tr, trs, uplo, 'N'.ord, 'N'.ord, n, b.ncolumns, a, n, x, b.ncolumns)
       elsif flags.positive_definite?
-        lapack(po, sv, uplo, n, b.columns, a, n, x, b.columns)
+        lapack(po, sv, uplo, n, b.ncolumns, a, n, x, b.ncolumns)
       elsif flags.hermitian?
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
-        lapack(he, sv, uplo, n, b.columns, a, n, ipiv, x, b.columns)
+        lapack(he, sv, uplo, n, b.ncolumns, a, n, ipiv, x, b.ncolumns)
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)
-        lapack(sy, sv, uplo, n, b.columns, a, n, ipiv, x, b.columns)
+        lapack(sy, sv, uplo, n, b.ncolumns, a, n, ipiv, x, b.ncolumns)
       else
         ipiv = Slice(Int32).new(n)
-        lapack(ge, sv, n, b.columns, a, n, ipiv, x, b.columns)
+        lapack(ge, sv, n, b.ncolumns, a, n, ipiv, x, b.ncolumns)
       end
       a.clear_flags
       x.clear_flags
@@ -137,53 +137,53 @@ module Linalg
     def det(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       lru = overwrite_a ? self : self.clone
-      ipiv = Slice(Int32).new(rows)
-      lapack(ge, trf, rows, rows, lru, rows, ipiv)
+      ipiv = Slice(Int32).new(nrows)
+      lapack(ge, trf, nrows, nrows, lru, nrows, ipiv)
       lru.clear_flags
-      (0...rows).reduce(1) { |det, i| det*lru[i, i] }
+      (0...nrows).reduce(1) { |det, i| det*lru[i, i] }
     end
 
     def solvels(b : self, *, overwrite_a = false, overwrite_b = false, cond = -1)
-      raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
+      raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       a = overwrite_a ? self : self.clone
-      if columns > rows
+      if ncolumns > nrows
         # make room for residuals
-        x = GeneralMatrix(T).new(columns, b.columns) { |r, c| r < rows ? b[r, c] : T.new(0) }
+        x = GeneralMatrix(T).new(ncolumns, b.ncolumns) { |r, c| r < nrows ? b[r, c] : T.new(0) }
       else
         x = overwrite_b ? b : b.clone
       end
-      lapack(ge, ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
+      lapack(ge, ls, 'N'.ord, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns)
       a.clear_flags
       x.clear_flags
       x
     end
 
     def lstsq(b : self, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
-      raise ArgumentError.new("number of rows in a and b must match") unless rows == b.rows
+      raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       if method.auto?
         method = LSMethod::QR
       end
       a = overwrite_a ? self : self.clone
-      if columns > rows
+      if ncolumns > nrows
         # make room for residuals
-        x = GeneralMatrix(T).new(columns, b.columns) { |r, c| r < rows ? b[r, c] : T.new(0) }
+        x = GeneralMatrix(T).new(ncolumns, b.ncolumns) { |r, c| r < nrows ? b[r, c] : T.new(0) }
       else
         x = overwrite_b ? b : b.clone
       end
       rank = 0
       case method
       when .ls?
-        lapack(ge, ls, 'N'.ord, rows, columns, b.columns, a, columns, x, x.columns)
+        lapack(ge, ls, 'N'.ord, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns)
         s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
       when .lsd?
-        ssize = {rows, columns}.min
+        ssize = {nrows, ncolumns}.min
         s = {% if T == Complex %} Array(Float64).new(ssize, 0.0) {% else %} Array(T).new(ssize, T.new(0)) {% end %}
         rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(cond)
-        lapack(ge, lsd, rows, columns, b.columns, a, columns, x, x.columns, s, rcond, pointerof(rank))
+        lapack(ge, lsd, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns, s, rcond, pointerof(rank))
       when .lsy?
-        jpvt = Slice(Int32).new(columns)
+        jpvt = Slice(Int32).new(ncolumns)
         rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(cond)
-        lapack(ge, lsy, rows, columns, b.columns, a, columns, x, x.columns, jpvt, rcond, pointerof(rank))
+        lapack(ge, lsy, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns, jpvt, rcond, pointerof(rank))
         s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
       else
         s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
@@ -195,29 +195,29 @@ module Linalg
 
     def svd(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
-      m = rows
-      n = columns
+      m = nrows
+      n = ncolumns
       s = {% if T == Complex %} Array(Float64).new({m, n}.min, 0.0) {% else %} Array(T).new({m, n}.min, T.new(0)) {% end %}
       u = GeneralMatrix(T).new(m, m)
       vt = GeneralMatrix(T).new(n, n)
-      lapack(ge, sdd, 'A'.ord, m, n, a, columns, s, u, m, vt, n)
+      lapack(ge, sdd, 'A'.ord, m, n, a, ncolumns, s, u, m, vt, n)
       a.clear_flags
       return {u, s, vt}
     end
 
     def svdvals(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
-      m = rows
-      n = columns
+      m = nrows
+      n = ncolumns
       s = {% if T == Complex %} Array(Float64).new({m, n}.min, 0.0) {% else %} Array(T).new({m, n}.min, T.new(0)) {% end %}
-      lapack(ge, sdd, 'N'.ord, m, n, a, columns, s, nil, m, nil, n)
+      lapack(ge, sdd, 'N'.ord, m, n, a, ncolumns, s, nil, m, nil, n)
       a.clear_flags
       s
     end
 
     def balance!(*, permute = true, scale = true, separate = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      n = @rows
+      n = @nrows
       job = if permute && scale
               'B'
             elsif permute
@@ -243,19 +243,19 @@ module Linalg
       raise ArgumentError.new("matrix must be square") unless square?
       # idea from scipy.
       # no need to calculate if size <= 2
-      if rows < 2
-        q = calc_q ? Matrix(T).identity(rows) : Matrix(T).zeros(1, 1)
+      if nrows < 2
+        q = calc_q ? Matrix(T).identity(nrows) : Matrix(T).zeros(1, 1)
         return {self, q}
       end
-      n = rows
+      n = nrows
       s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new(n)
       lapack(ge, bal, 'S'.ord, n, self, n, out ilo, out ihi, s)
       clear_flags
       tau = GeneralMatrix(T).new(1, n)
-      lapack(ge, hrd, n, ilo, ihi, self, columns, tau)
+      lapack(ge, hrd, n, ilo, ihi, self, ncolumns, tau)
       if calc_q
         q = clone
-        lapack(or, ghr, n, ilo, ihi, q, columns, tau)
+        lapack(or, ghr, n, ilo, ihi, q, ncolumns, tau)
         q.flags = MatrixFlags::Orthogonal
       else
         q = Matrix(T).zeros(1, 1)
@@ -291,17 +291,17 @@ module Linalg
               'M'
             end.ord
       if flags.triangular?
-        lapack_util(lantr, let, uplo, 'N'.ord, rows, columns, self, columns)
+        lapack_util(lantr, let, uplo, 'N'.ord, nrows, ncolumns, self, ncolumns)
       elsif flags.hermitian?
         {% if T == Complex %}
-        lapack_util(lanhe, let, uplo, rows,  self, columns)
+        lapack_util(lanhe, let, uplo, nrows,  self, ncolumns)
         {% else %}
-        lapack_util(lange, let, rows, columns, self, columns)
+        lapack_util(lange, let, nrows, ncolumns, self, ncolumns)
         {% end %}
       elsif flags.symmetric?
-        lapack_util(lansy, let, uplo, rows, self, columns)
+        lapack_util(lansy, let, uplo, nrows, self, ncolumns)
       else
-        lapack_util(lange, let, rows, columns, self, columns)
+        lapack_util(lange, let, nrows, ncolumns, self, ncolumns)
       end
     end
 

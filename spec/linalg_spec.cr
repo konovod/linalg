@@ -115,7 +115,7 @@ describe Linalg do
   it "high-level: calculate singular value decomposition" do
     a = GMat.new([[1, 2, 3], [4, 5, 6]])
     u, s, vt = Linalg.svd(a)
-    (u*Mat.diag(a.rows, a.columns, s)*vt).should be_close a, 1e-6
+    (u*Mat.diag(a.nrows, a.ncolumns, s)*vt).should be_close a, 1e-6
 
     ac = GMatComplex.new([[1, 2, 3], [4, 5, 6]])
     s1 = ac.svdvals(overwrite_a: true)

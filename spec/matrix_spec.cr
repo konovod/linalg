@@ -11,14 +11,14 @@ describe Linalg::Matrix do
 
   it "can be created from array with given dimension" do
     m = GMat.new(3, 4, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    m.rows.should eq 3
+    m.nrows.should eq 3
     m[1, 0].should eq 5
   end
 
   it "can be created from array of arrays" do
     m = GMat.new({ {1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12} })
-    m.rows.should eq 4
-    m.columns.should eq 3
+    m.nrows.should eq 4
+    m.ncolumns.should eq 3
     m[1, 0].should eq 4
     expect_raises(IndexError) { GMat.new({ {1, 2, 3}, {4, 5} }) }
   end

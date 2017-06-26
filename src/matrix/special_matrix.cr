@@ -5,15 +5,15 @@ require "./general_matrix"
 module Linalg
   module Matrix(T)
     def self.block_diag(*args)
-      rows = args.sum &.rows
-      columns = args.sum &.columns
-      GeneralMatrix(T).new(rows, columns).tap do |result|
+      nrows = args.sum &.nrows
+      ncolumns = args.sum &.ncolumns
+      GeneralMatrix(T).new(nrows, ncolumns).tap do |result|
         row = 0
         column = 0
         args.each do |arg|
-          result[row...row + arg.rows, column...column + arg.columns] = arg
-          row += arg.rows
-          column += arg.columns
+          result[row...row + arg.nrows, column...column + arg.ncolumns] = arg
+          row += arg.nrows
+          column += arg.ncolumns
         end
       end
     end

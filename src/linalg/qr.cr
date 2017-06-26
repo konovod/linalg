@@ -1,16 +1,16 @@
 module Linalg
   module Matrix(T)
     private def qr_initial(a, pivoting)
-      m = a.rows
-      n = a.columns
+      m = a.nrows
+      n = a.ncolumns
       tau = GeneralMatrix(T).new(1, n)
       if pivoting
         jpvt = Array(Int32).new(n, 0)
-        lapack(ge, qp3, m, n, a, a.columns, jpvt, tau)
+        lapack(ge, qp3, m, n, a, a.ncolumns, jpvt, tau)
         a.clear_flags
       else
         jpvt = Array(Int32).new(0)
-        lapack(ge, qrf, m, n, a, a.columns, tau)
+        lapack(ge, qrf, m, n, a, a.ncolumns, tau)
         a.clear_flags
       end
       {tau, jpvt}
@@ -34,10 +34,10 @@ module Linalg
       tau, pvt = qr_initial(a, pivoting)
       r = a.clone
       r.triu!
-      m = a.rows
-      n = a.columns
+      m = a.nrows
+      n = a.ncolumns
       k = {m, n}.min
-      lapack(or, gqr, m, n, k, a, a.columns, tau)
+      lapack(or, gqr, m, n, k, a, a.ncolumns, tau)
       a.assume! MatrixFlags::Orthogonal
       {a, r, pvt}
     end
