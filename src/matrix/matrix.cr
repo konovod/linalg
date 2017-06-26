@@ -270,14 +270,6 @@ module Linalg
       self[arows, column..column]
     end
 
-    def row(i)
-      SubMatrix(T).new(self, {i, 0}, {1, ncolumns})
-    end
-
-    def column(i)
-      SubMatrix(T).new(self, {0, i}, {nrows, 1})
-    end
-
     def []=(arows : Range(Int32, Int32), acolumns : Range(Int32, Int32), value)
       submatrix = self[arows, acolumns]
       if value.is_a? Matrix

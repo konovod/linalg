@@ -225,10 +225,10 @@ describe Linalg::Matrix do
 
   it "has row and column functions" do
     m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
-    r1 = m.row(2)
+    r1 = m.rows[2]
     r1.size.to_a.should eq [1, 4]
     r1[0, 2].should eq m[2, 2]
-    r1 = m.column(3)
+    r1 = m.columns[3]
     r1.size.to_a.should eq [3, 1]
     r1[1, 0].should eq m[1, 3]
   end
@@ -237,9 +237,9 @@ describe Linalg::Matrix do
     m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
     m[1, 2..3] = 10
     m[1..2, 0] = 20
-    m[1, 0..3] = m.row(2)
+    m[1, 0..3] = m.rows[2]
     m[0..2, 1] = -1
-    m[0..2, 3] = m.column(2) - m.row(1).transpose[0..2, 0]
+    m[0..2, 3] = m.columns[2] - m.rows[1].transpose[0..2, 0]
     m.should eq GMat32.new [
       [1, -1, 3, -17],
       [20, -1, 11, 12],
