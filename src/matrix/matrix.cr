@@ -300,10 +300,30 @@ module Linalg
       @flags |= flag
     end
 
+    # TODO - better eps
+    private def tolerance
+      {% if T == Float32 %}
+        2e-7
+      {% else %}
+        2e-16
+      {% end %} * norm(MatrixNorm::Max)
+    end
+
     # TODO - check for all flags
-    # def detect(flag : MatrixFlags)
-    #   @flags |=
-    # end
+    private def detect_single(flag : MatrixFlags)
+      case flag
+      when .symmetric?
+      when .hermitian?
+      when .positive_definite?
+      when .triangular?
+      when .orthogonal?
+        square? && (self*self.t - Matrix(T).eye(rows)).norm(MatrixNorm::Max) < tolerance
+      when .lower?
+        false
+      else
+        false
+      end
+    end
 
     def clear_flags
       @flags = MatrixFlags.new(0)
