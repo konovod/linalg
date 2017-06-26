@@ -59,7 +59,7 @@ a = Mat.identity(3) # =>
 
 # basic algebra
 a = Mat.rand(5) + 2 * Mat.identity(5)
-(a.inv * a - Mat.identity(5)).abs < 1e-6 # NOTE abs is incomplete for now, only H-inf norm supported
+(a.inv * a - Mat.identity(5)).abs < 1e-6
 
 b = Mat.rand(5,1)
 x = Linalg.solve(a, b) # or a.solve(b)
@@ -103,10 +103,9 @@ puts lu.solve(GMat32.new([[2], [4]]))
 - linear least squares problem (`Linalg.solvels` to just get decision or `Linalg.lstsq` to also get rank and singular values (TODO - and residues))
 - cholesky decomposition
 - hessenberg form
-
-Other decompositions and other functions are in progress.
-
-Plans are to support at least all features of scipy.linalg that LAPACK can provide, but better.
+- qr, rq, lq, ql decompositions
+- schur and qz decomposition
+- generalized eigenproblem
 
 There is(WIP) also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select faster algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically.
 
