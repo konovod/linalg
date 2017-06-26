@@ -12,6 +12,14 @@ module Linalg
     LSD        = SVD
   end
 
+  enum MatrixNorm
+    Frobenius
+    One
+    # Two
+    Inf
+    MaxAbs
+  end
+
   class LinAlgError < Exception
   end
 
@@ -36,6 +44,17 @@ module Linalg
   end
 
   module Matrix(T)
+    macro lapack_util(name, *args)
+      {% if T == Float32
+           typ = :s.id
+         elsif T == Float64
+           typ = :d.id
+         elsif T == Complex
+           typ = :z.id
+         end %}
+       LibLAPACKE.{{typ}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
+    end
+
     macro lapack(storage, name, *args)
       {% if T == Float32
            typ = :s.id
@@ -257,6 +276,37 @@ module Linalg
 
     def hessenberg
       clone.hessenberg!
+    end
+
+    # returns matrix norm
+    def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
+      let = case kind
+            when .frobenius?
+              'F'
+            when .one?
+              'O'
+            when .inf?
+              'I'
+            else
+              'M'
+            end.ord
+      if flags.triangular?
+        lapack_util(lantr, let, uplo, 'N'.ord, rows, columns, self, columns)
+      elsif flags.hermitian?
+        {% if T == Complex %}
+        lapack_util(lanhe, let, uplo, rows,  self, columns)
+        {% else %}
+        lapack_util(lange, let, rows, columns, self, columns)
+        {% end %}
+      elsif flags.symmetric?
+        lapack_util(lansy, let, uplo, rows, self, columns)
+      else
+        lapack_util(lange, let, rows, columns, self, columns)
+      end
+    end
+
+    def abs(kind : MatrixNorm = MatrixNorm::Frobenius)
+      norm(kind)
     end
   end
 end

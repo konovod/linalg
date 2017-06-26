@@ -92,12 +92,6 @@ module Linalg
       end
     end
 
-    # returns matrix norm
-    # TODO - proper norms
-    def abs
-      (0...rows).map { |r| (0...columns).sum { |c| self[r, c].abs } }.max
-    end
-
     # returns transposed matrix
     def transpose
       return clone if flags.symmetric?

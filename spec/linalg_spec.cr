@@ -263,4 +263,16 @@ describe Linalg do
     (a - vl*aa*vr.conjtranspose).abs.should be_close(0, 1e-6)
     (b - vl*bb*vr.conjtranspose).abs.should be_close(0, 1e-6)
   end
+
+  it "high-level: calculate matrix norms" do
+    a = GMat.new([[-4, -3, -2, -1, 0, 1, 2, 3, 4]]).t
+    b = a.reshape(3, 3)
+    a.norm.should be_close(7.745966692414834, 1e-6)
+    b.norm.should be_close(7.745966692414834, 1e-6)
+    b.norm(MatrixNorm::Frobenius).should be_close(7.745966692414834, 1e-6)
+    a.norm(MatrixNorm::Inf).should eq 4
+    b.norm(MatrixNorm::Inf).should eq 9
+    a.norm(MatrixNorm::One).should eq 20
+    b.norm(MatrixNorm::One).should eq 7
+  end
 end
