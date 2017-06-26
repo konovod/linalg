@@ -54,7 +54,6 @@ module Linalg
 
     def eigs(*, need_left : Bool, need_right : Bool, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      # TODO -  hb, sb, st
       {% if T == Complex %}
       if flags.hermitian?
         vals, vectors = eigsh(need_vectors: need_left || need_right, overwrite_a: overwrite_a)

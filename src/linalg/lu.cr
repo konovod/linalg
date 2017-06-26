@@ -82,8 +82,6 @@ module Linalg
       @a.rows
     end
 
-    # TODO - equilibration?
-
     def solve(b, transpose = LUTranspose::None, *, overwrite_b = false)
       raise ArgumentError.new("number of rows in a and b must match") unless @a.rows == b.rows
       trans = case transpose

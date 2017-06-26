@@ -54,7 +54,6 @@ module Linalg
       @raw[i*columns + j] = T.new(value)
     end
 
-    # TODO - benchmark is it faster?
     def dup
       GeneralMatrix(T).new(@rows, @columns, @raw).tap { |it| it.flags = flags }
     end
@@ -77,6 +76,7 @@ module Linalg
 
     # transposes matrix inplace
     def transpose!
+      return self if flags.symmetric?
       if square?
         (0..@rows - 2).each do |i|
           (i + 1..@columns - 1).each do |j|
@@ -85,6 +85,27 @@ module Linalg
             self[j, i] = a
           end
         end
+        @flags ^= MatrixFlags::Lower if flags.triangular?
+        self
+      else
+        # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
+        raise "not implemented yet"
+      end
+    end
+
+    # transposes matrix inplace
+    def conjtranspose!
+      return self if flags.hermitian?
+      if square?
+        (0..@rows - 2).each do |i|
+          (i + 1..@columns - 1).each do |j|
+            a = self[i, j]
+            self[i, j] = self[j, i]
+            self[j, i] = a.conj
+          end
+        end
+        @flags ^= MatrixFlags::Lower if flags.triangular?
+        self
       else
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
         raise "not implemented yet"

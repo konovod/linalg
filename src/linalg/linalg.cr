@@ -16,7 +16,7 @@ module Linalg
   end
 
   def self.inv(matrix, *, overwrite_a = false)
-    matrix.inv(overwrite_a: overwrite_a)
+    overwrite_a ? matrix.inv! : matrix.inv
   end
 
   def self.solve(a, b, *, overwrite_a = false, overwrite_b = false)
@@ -59,6 +59,7 @@ module Linalg
 
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
+      return transpose! if flags.orthogonal?
       n = @rows
       if flags.positive_definite?
         lapack(po, trf, uplo, n, self, n)
@@ -93,7 +94,6 @@ module Linalg
       a = overwrite_b ? self : self.clone
       x = overwrite_b ? b : b.clone
       n = rows
-      # TODO - gb, gt, pb, pt
       if flags.triangular?
         lapack(tr, trs, uplo, 'N'.ord, 'N'.ord, n, b.columns, a, n, x, b.columns)
       elsif flags.positive_definite?

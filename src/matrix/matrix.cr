@@ -9,20 +9,18 @@ module Linalg
     Symmetric
     Hermitian
     PositiveDefinite
-    Hessenberg
-    Band
-    Diagonal
-    Bidiagonal
-    Tridiagonal
+    # Hessenberg
+    # Band
+    # Diagonal
+    # Bidiagonal
+    # Tridiagonal
     Triangular
     Orthogonal
-    Unitary          = Orthogonal
-
+    Unitary    = Orthogonal
     Lower
   end
 
   # class that provide all utility matrix functions
-  # TODO - iteration on cols\rows (create row\column object to prevent allocations?)
   # TODO - sums on cols\rows, check numpy for more (require previous point?)
   # TODO - saving/loading to files (what formats? csv?)
   # TODO - replace [] to unsafe at most places
@@ -102,16 +100,28 @@ module Linalg
 
     # returns transposed matrix
     def transpose
+      return clone if flags.symmetric?
       GeneralMatrix(T).new(columns, rows) do |i, j|
         self[j, i]
+      end.tap do |m|
+        m.flags = flags
+        if flags.triangular?
+          m.flags ^= MatrixFlags::Lower
+        end
       end
     end
 
     # returns transposed matrix
     def conjtranspose
       {% raise "Matrix must be Complex for conjtranspose" unless T == Complex %}
+      return clone if flags.hermitian?
       GeneralMatrix(T).new(columns, rows) do |i, j|
         self[j, i].conj
+      end.tap do |m|
+        m.flags = flags
+        if flags.triangular?
+          m.flags ^= MatrixFlags::Lower
+        end
       end
     end
 
@@ -126,7 +136,7 @@ module Linalg
         i >= j - k ? self[i, j] : 0
       end
       if k >= 0
-        x.flags = MatrixFlags::Triangular | MatrixFlags::Lower
+        x.assume! MatrixFlags::Triangular | MatrixFlags::Lower
       end
       x
     end
@@ -137,7 +147,7 @@ module Linalg
         i <= j - k ? self[i, j] : 0
       end
       if k >= 0
-        x.flags = MatrixFlags::Triangular
+        x.assume! MatrixFlags::Triangular
       end
       x
     end
@@ -150,7 +160,7 @@ module Linalg
         @raw[index] = T.new(0) if i < j - k
       end
       if k <= 0
-        self.flags = MatrixFlags::Triangular | MatrixFlags::Lower
+        self.assume! MatrixFlags::Triangular | MatrixFlags::Lower
       end
       self
     end
@@ -163,7 +173,7 @@ module Linalg
         @raw[index] = T.new(0) if i > j - k
       end
       if k >= 0
-        self.flags = MatrixFlags::Triangular
+        self.assume! MatrixFlags::Triangular
       end
       self
     end
