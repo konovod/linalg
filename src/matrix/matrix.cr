@@ -6,18 +6,17 @@ module Linalg
 
   @[Flags]
   enum MatrixFlags
-    Symmetric
-    Hermitian
-    PositiveDefinite
+    Symmetric        = 1
+    Hermitian        = 2
+    PositiveDefinite = 4
     # Hessenberg
     # Band
     # Diagonal
     # Bidiagonal
     # Tridiagonal
-    Triangular
-    Orthogonal
-    Unitary    = Orthogonal
-    Lower
+    Triangular =  8
+    Orthogonal = 16
+    Lower      = 32
   end
 
   # class that provide all utility matrix functions
@@ -310,78 +309,80 @@ module Linalg
       amax * nrows * ncolumns * 10*eps
     end
 
-    def almost_eq(other : Matrix(T))
-      tol = {self.tolerance, other.tolerance}.min
+    def almost_eq(other : Matrix(T), eps)
       each_with_index do |value, row, column|
-        return false if (value - other.unsafe_at(row, column)).abs > tol
+        return false if (value - other.unsafe_at(row, column)).abs > eps
       end
       true
     end
 
+    def almost_eq(other : Matrix(T))
+      almost_eq other, {self.tolerance, other.tolerance}.min
+    end
+
     # TODO - check for all flags
-    private def check_single(flag : MatrixFlags)
+    private def check_single(flag : MatrixFlags, eps = tolerance)
       case flag
       when .symmetric?
         # TODO - 2 times less work
         return false unless square?
         each_with_index do |value, row, column|
-          return false if row < column && (value - unsafe_at(row, column)).abs > tol
+          return false if row < column && (value - unsafe_at(row, column)).abs > eps
         end
-        true
+        return true
       when .hermitian?
         {% if T == Complex %}
           return false unless square?
           each_with_index do |value, row, column|
-            return false if row < column && (value.conj - unsafe_at(row, column)).abs > tol
+            return false if row < column && (value.conj - unsafe_at(row, column)).abs > eps
           end
-          true
+          return true
         {% else %}
-          false
+          return false
         {% end %}
       when .positive_definite?
       when .triangular?
         each_with_index do |value, row, column|
-          return false if row > column && (value).abs > tol
+          return false if row > column && (value).abs > eps
         end
-        true
+        return true
       when .orthogonal?
-        square? && (self*self.t).almost_eq Matrix(T).identity(nrows)
+        return square? && (self*self.conjt).almost_eq Matrix(T).identity(nrows), eps
       when .lower?
         each_with_index do |value, row, column|
-          return false if row < column && (value).abs > tol
+          return false if row < column && (value).abs > eps
         end
-        true
+        return true
       else
-        false
+        return false
       end
+      return false
     end
 
-    private def detect_single(flag : MatrixFlags)
-      check_single(flag).tap do |ok|
+    private def detect_single(flag : MatrixFlags, eps = tolerance)
+      check_single(flag, eps).tap do |ok|
         assume!(flag, ok)
       end
     end
 
-    def detect(aflags : MatrixFlags)
-      result = false
+    def detect(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
+      result = true
       {MatrixFlags::Symmetric,
        MatrixFlags::Hermitian,
        MatrixFlags::PositiveDefinite,
        MatrixFlags::Orthogonal}.each do |f|
-        if aflags & f
-          result = false unless detect_single(f)
+        if aflags & f != MatrixFlags::None
+          result = false unless detect_single(f, eps)
         end
       end
       if aflags.triangular?
         # Lower involves triangular
-        if aflags.lower?
-          ok = detect_single(MatrixFlags::Lower)
-          result = false unless ok
-          assume!(MatrixFlags::Triangular, ok)
-        else
-          result = detect_single(MatrixFlags::Triangular)
-        end
+        lower = detect_single(MatrixFlags::Lower, eps)
+        assume!(MatrixFlags::Triangular, lower)
+        upper = detect_single(MatrixFlags::Triangular, eps)
+        result = false unless lower || upper
       end
+      result
     end
 
     def assume(aflags : MatrixFlags, value : Bool = true)
