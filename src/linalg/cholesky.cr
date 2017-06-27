@@ -9,18 +9,17 @@ module Linalg
   module Matrix(T)
     def cholesky!(*, lower = false, dont_clean = false)
       raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
-      raise ArgumentError.new("Matrix must be positive definite for cholesky decomposition") unless flags.positive_definite?
       char = lower ? 'L' : 'U'
       lapack(po, trf, char.ord, nrows, self, nrows)
       if lower
         if dont_clean
-          self.flags = MatrixFlags::Triangular | MatrixFlags::Lower
+          self.flags = MatrixFlags::LowerTriangular
         else
           tril!
         end
       else
         if dont_clean
-          self.flags = MatrixFlags::Triangular
+          self.flags = MatrixFlags::UpperTriangular
         else
           triu!
         end
@@ -29,7 +28,9 @@ module Linalg
     end
 
     def cholesky(*, lower = false, dont_clean = false)
-      clone.cholesky!(lower: lower, dont_clean: dont_clean)
+      clone.cholesky!(lower: lower, dont_clean: dont_clean).tap do |m|
+        self.assume! MatrixFlags::PositiveDefinite
+      end
     end
 
     def cho_solve(b : self, *, overwrite_b = false)

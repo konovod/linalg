@@ -117,6 +117,8 @@ describe Linalg do
     a = GMat.new([[1, 2, 3], [4, 5, 6]])
     u, s, vt = Linalg.svd(a)
     (u*Mat.diag(a.nrows, a.ncolumns, s)*vt).should almost_eq a
+    u.detect(MatrixFlags::Orthogonal).should be_true
+    vt.detect(MatrixFlags::Orthogonal).should be_true
 
     ac = GMatComplex.new([[1, 2, 3], [4, 5, 6]])
     s1 = ac.svdvals(overwrite_a: true)
@@ -135,6 +137,9 @@ describe Linalg do
     a = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [1, 2, 10, 0], [50, 6, 7, 8], [1, 21, 1, 0]])
     p, l, u = a.lu
     (p*l*u).should almost_eq a
+    l.detect(MatrixFlags::LowerTriangular).should be_true
+    l.detect(MatrixFlags::UpperTriangular).should be_false
+    u.detect(MatrixFlags::UpperTriangular).should be_true
   end
 
   it "high-level: solve using LU" do
@@ -149,16 +154,11 @@ describe Linalg do
 
   it "high-level: cholesky decomposition" do
     a = GMatComplex.new([[1, -2*j], [2*j, 5]])
-    expect_raises(ArgumentError) do
-      a.cholesky!
-    end
-    a.assume! MatrixFlags::PositiveDefinite
     c = a.cholesky(lower: true)
     (c*c.conjtranspose).should almost_eq a
   end
   it "high-level: using cholesky decomposition to solve equations" do
     a = GMatComplex.new([[1, -2*j], [2*j, 5]])
-    a.assume! MatrixFlags::PositiveDefinite
     chol1 = a.cholesky(lower: true, dont_clean: true)
     chol2 = a.cholesky(lower: false, dont_clean: false)
     b = GMatComplex.new([[2], [4]])
@@ -171,11 +171,11 @@ describe Linalg do
   it "high-level: hessenberg decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     h, q = a.hessenberg(calc_q: true)
+    q.detect(MatrixFlags::Orthogonal).should be_true
     (q*h*q.conjtranspose).should almost_eq a
 
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     h, q = a.hessenberg(calc_q: true)
-    # (q*q.transpose).should be_close(Mat.identity(3), 1e-6)
     q.detect(MatrixFlags::Orthogonal).should be_true
     (q*h*q.transpose).should almost_eq a
   end
@@ -183,21 +183,21 @@ describe Linalg do
   it "high-level: schur decomposition (real argument)" do
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     t, z = a.schur
-    (z*z.transpose).should almost_eq Mat.identity(3)
+    z.detect(MatrixFlags::Orthogonal).should be_true
     (z*t*z.transpose).should almost_eq a
   end
 
   it "high-level: schur decomposition (complex argument)" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     t, z = a.schur
-    (z*z.conjtranspose).should almost_eq MatComplex.identity(3)
+    z.detect(MatrixFlags::Orthogonal).should be_true
     (z*t*z.conjtranspose).should almost_eq a
   end
 
   it "high-level: qr decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     q, r, pvt = a.qr
-    (q*q.conjtranspose).should almost_eq MatComplex.identity(3)
+    q.detect(MatrixFlags::Orthogonal).should be_true
     (q*r).should almost_eq a
     # only r
     r1, pvt = a.qr_r
@@ -211,7 +211,7 @@ describe Linalg do
   it "high-level: rq decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     r, q = a.rq
-    (q*q.conjtranspose).should almost_eq MatComplex.identity(3)
+    q.detect(MatrixFlags::Orthogonal).should be_true
     (r*q).should almost_eq a
     # only r
     r1 = a.rq_r
@@ -221,12 +221,12 @@ describe Linalg do
   it "high-level: lq and ql decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     l, q = a.lq
-    (q*q.conjtranspose).should almost_eq MatComplex.identity(3)
+    q.detect(MatrixFlags::Orthogonal).should be_true
     (l*q).should almost_eq a
 
     a = GMat32.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     q, l = a.ql
-    (q*q.transpose).should almost_eq Mat32.identity(3)
+    q.detect(MatrixFlags::Orthogonal).should be_true
     (q*l).should almost_eq a
   end
 
@@ -242,8 +242,8 @@ describe Linalg do
       [2, 1, 1],
     ]
     aa, bb, vl, vr = Linalg.qz(a, b)
-    (vl*vl.transpose).should almost_eq Mat.identity(3)
-    (vr*vr.transpose).should almost_eq Mat.identity(3)
+    vl.detect(MatrixFlags::Orthogonal).should be_true
+    vr.detect(MatrixFlags::Orthogonal).should be_true
     (vl*aa*vr.transpose).should almost_eq a
     (vl*bb*vr.transpose).should almost_eq b
   end
@@ -260,8 +260,8 @@ describe Linalg do
       [1, 1 - j, 1 + j],
     ]
     aa, bb, vl, vr = Linalg.qz(a, b)
-    (vl*vl.conjtranspose).should almost_eq MatComplex.identity(3)
-    (vr*vr.conjtranspose).should almost_eq MatComplex.identity(3)
+    vl.detect(MatrixFlags::Orthogonal).should be_true
+    vr.detect(MatrixFlags::Orthogonal).should be_true
     (vl*aa*vr.conjtranspose).should almost_eq a
     (vl*bb*vr.conjtranspose).should almost_eq b
   end

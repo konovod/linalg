@@ -86,12 +86,15 @@ module Linalg
             self[j, i] = a
           end
         end
-        @flags ^= MatrixFlags::Lower if flags.triangular?
-        self
       else
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
         raise "not implemented yet"
       end
+      if flags.triangular?
+        @flags ^= MatrixFlags::LowerTriangular
+        @flags ^= MatrixFlags::UpperTriangular
+      end
+      self
     end
 
     # transposes matrix inplace
@@ -106,6 +109,7 @@ module Linalg
 
     def reshape!(anrows, ancolumns)
       raise ArgumentError.new("number of elements must not change") if anrows*ancolumns != @raw.size
+      clear_flags unless anrows == nrows && ancolumns == ncolumns
       @nrows = anrows
       @ncolumns = ancolumns
       self

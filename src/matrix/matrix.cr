@@ -6,17 +6,18 @@ module Linalg
 
   @[Flags]
   enum MatrixFlags
-    Symmetric        = 1
-    Hermitian        = 2
-    PositiveDefinite = 4
+    Symmetric
+    Hermitian
+    PositiveDefinite
     # Hessenberg
     # Band
     # Diagonal
     # Bidiagonal
     # Tridiagonal
-    Triangular =  8
-    Orthogonal = 16
-    Lower      = 32
+    Orthogonal
+    UpperTriangular
+    LowerTriangular
+    Triangular      = UpperTriangular | LowerTriangular
   end
 
   # class that provide all utility matrix functions
@@ -99,7 +100,8 @@ module Linalg
       end.tap do |m|
         m.flags = flags
         if flags.triangular?
-          m.flags ^= MatrixFlags::Lower
+          m.flags ^= MatrixFlags::LowerTriangular
+          m.flags ^= MatrixFlags::UpperTriangular
         end
       end
     end
@@ -115,7 +117,8 @@ module Linalg
       end.tap do |m|
         m.flags = flags
         if flags.triangular?
-          m.flags ^= MatrixFlags::Lower
+          m.flags ^= MatrixFlags::LowerTriangular
+          m.flags ^= MatrixFlags::UpperTriangular
         end
       end
     end
@@ -131,7 +134,7 @@ module Linalg
         i >= j - k ? self[i, j] : 0
       end
       if k >= 0
-        x.assume! MatrixFlags::Triangular | MatrixFlags::Lower
+        x.assume! MatrixFlags::LowerTriangular
       end
       x
     end
@@ -142,7 +145,7 @@ module Linalg
         i <= j - k ? self[i, j] : 0
       end
       if k >= 0
-        x.assume! MatrixFlags::Triangular
+        x.assume! MatrixFlags::UpperTriangular
       end
       x
     end
@@ -155,7 +158,7 @@ module Linalg
         @raw[index] = T.new(0) if i < j - k
       end
       if k <= 0
-        self.assume! MatrixFlags::Triangular | MatrixFlags::Lower
+        self.flags = MatrixFlags::LowerTriangular
       end
       self
     end
@@ -168,7 +171,7 @@ module Linalg
         @raw[index] = T.new(0) if i > j - k
       end
       if k >= 0
-        self.assume! MatrixFlags::Triangular
+        self.flags = MatrixFlags::UpperTriangular
       end
       self
     end
@@ -338,17 +341,25 @@ module Linalg
           end
           return true
         {% else %}
-          return false
+          return check_single(MatrixFlags::Symmetric, eps)
         {% end %}
       when .positive_definite?
-      when .triangular?
+        # TODO - cleaner detection?
+        return false unless square? && check_single(MatrixFlags::Hermitian, eps)
+        begin
+          cholesky(dont_clean: true)
+          return true
+        rescue LinAlgError
+          return false
+        end
+      when .orthogonal?
+        return square? && (self*self.conjt).almost_eq Matrix(T).identity(nrows), eps
+      when .upper_triangular?
         each_with_index do |value, row, column|
           return false if row > column && (value).abs > eps
         end
         return true
-      when .orthogonal?
-        return square? && (self*self.conjt).almost_eq Matrix(T).identity(nrows), eps
-      when .lower?
+      when .lower_triangular?
         each_with_index do |value, row, column|
           return false if row < column && (value).abs > eps
         end
@@ -370,17 +381,15 @@ module Linalg
       {MatrixFlags::Symmetric,
        MatrixFlags::Hermitian,
        MatrixFlags::PositiveDefinite,
-       MatrixFlags::Orthogonal}.each do |f|
+       MatrixFlags::Orthogonal,
+       MatrixFlags::LowerTriangular,
+       MatrixFlags::UpperTriangular}.each do |f|
         if aflags & f != MatrixFlags::None
           result = false unless detect_single(f, eps)
         end
       end
       if aflags.triangular?
-        # Lower involves triangular
-        lower = detect_single(MatrixFlags::Lower, eps)
-        assume!(MatrixFlags::Triangular, lower)
-        upper = detect_single(MatrixFlags::Triangular, eps)
-        result = false unless lower || upper
+        result = false unless detect_single(MatrixFlags::LowerTriangular, eps) || detect_single(MatrixFlags::UpperTriangular, eps)
       end
       result
     end

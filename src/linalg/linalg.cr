@@ -73,7 +73,7 @@ module Linalg
     end
 
     private def uplo
-      flags.lower? ? 'L'.ord : 'U'.ord
+      flags.lower_triangular? ? 'L'.ord : 'U'.ord
     end
 
     def inv!

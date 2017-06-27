@@ -15,7 +15,7 @@ module Linalg
         z = GeneralMatrix(T).new(*size)
         lapack(ge, es, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, w.to_unsafe.as(LibLAPACKE::DoubleComplex*), z, ncolumns)
         a.clear_flags
-        a.assume! MatrixFlags::Triangular
+        a.assume! MatrixFlags::UpperTriangular
         z.assume! MatrixFlags::Orthogonal
         return {a, z}
       {% else %}
@@ -46,7 +46,7 @@ module Linalg
             vsl, ncolumns, vsr, ncolumns)
         a.clear_flags
         bb.clear_flags
-        bb.assume! MatrixFlags::Triangular
+        bb.assume! MatrixFlags::UpperTriangular
       {% else %}
         alphar = Slice(T).new(nrows)
         alphai = Slice(T).new(nrows)
