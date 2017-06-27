@@ -40,7 +40,7 @@ describe Linalg do
   it "ultra-highlevel - calls functions on a virtual matrices" do
     m4 = Mat.ones(4, 4)*5 + Mat.rand(4, 4, Random.new(1))
     m3 = m4[0..2, 0..2]
-    (m3*m3.inv).should be_close Mat.identity(3), 1e-9
+    (m3*m3.inv).should almost_eq Mat.identity(3)
   end
 
   it "raises LinAlgError on incorrect data" do
@@ -115,7 +115,7 @@ describe Linalg do
   it "high-level: calculate singular value decomposition" do
     a = GMat.new([[1, 2, 3], [4, 5, 6]])
     u, s, vt = Linalg.svd(a)
-    (u*Mat.diag(a.nrows, a.ncolumns, s)*vt).should be_close a, 1e-6
+    (u*Mat.diag(a.nrows, a.ncolumns, s)*vt).should almost_eq a
 
     ac = GMatComplex.new([[1, 2, 3], [4, 5, 6]])
     s1 = ac.svdvals(overwrite_a: true)
@@ -133,7 +133,7 @@ describe Linalg do
   it "high-level: LU factorization" do
     a = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [1, 2, 10, 0], [50, 6, 7, 8], [1, 21, 1, 0]])
     p, l, u = a.lu
-    (p*l*u).should be_close a, 1e-4
+    (p*l*u).should almost_eq a
   end
 
   it "high-level: solve using LU" do

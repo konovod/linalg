@@ -292,13 +292,25 @@ module Linalg
       @flags |= flag
     end
 
-    # TODO - better eps
-    private def tolerance
-      {% if T == Float32 %}
-        2e-7
-      {% else %}
-        2e-16
-      {% end %} * norm(MatrixNorm::Max)
+    def tolerance
+      amax = 0.0
+      # TODO - better iteration?
+      each do |value|
+        vabs = {% if T == Complex %}value.real.abs + value.imag.abs{% else %}value.abs{% end %}
+        amax = vabs if amax < vabs
+      end
+      eps = {% if T == Float32 %}2e-7{% else %}2e-16{% end %}
+      amax * nrows * ncolumns * 10*eps
+    end
+
+    def almost_eq(other : Matrix(T))
+      return false unless nrows == other.nrows && ncolumns == other.ncolumns
+      tol = {self.tolerance, other.tolerance}.min
+      # TODO - better eps?
+      each_with_index do |value, row, column|
+        return false if (value - other.unsafe_at(row, column)).abs > tol
+      end
+      true
     end
 
     # TODO - check for all flags
@@ -309,7 +321,7 @@ module Linalg
       when .positive_definite?
       when .triangular?
       when .orthogonal?
-        square? && (self*self.t - Matrix(T).eye(nrows)).norm(MatrixNorm::Max) < tolerance
+        square? && (self*self.t).almost_eq Matrix(T).eye(nrows)
       when .lower?
         false
       else
