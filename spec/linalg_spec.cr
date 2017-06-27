@@ -153,7 +153,7 @@ describe Linalg do
     end
     a.assume! MatrixFlags::PositiveDefinite
     c = a.cholesky(lower: true)
-    (c*c.conjtranspose).should be_close a, 1e-6
+    (c*c.conjtranspose).should almost_eq a
   end
   it "high-level: using cholesky decomposition to solve equations" do
     a = GMatComplex.new([[1, -2*j], [2*j, 5]])
@@ -170,36 +170,36 @@ describe Linalg do
   it "high-level: hessenberg decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     h, q = a.hessenberg(calc_q: true)
-    (a - q*h*q.conjtranspose).abs.should be_close(0, 1e-6)
+    (q*h*q.conjtranspose).should almost_eq a
 
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     h, q = a.hessenberg(calc_q: true)
     (q*q.transpose).should be_close(Mat.identity(3), 1e-6)
-    (a - q*h*q.transpose).abs.should be_close(0, 1e-6)
+    (q*h*q.transpose).should almost_eq a
   end
 
   it "high-level: schur decomposition (real argument)" do
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     t, z = a.schur
-    (z*z.transpose).should be_close(Mat.identity(3), 1e-6)
-    (a - z*t*z.transpose).abs.should be_close(0, 1e-6)
+    (z*z.transpose).should almost_eq Mat.identity(3)
+    (z*t*z.transpose).should almost_eq a
   end
 
   it "high-level: schur decomposition (complex argument)" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     t, z = a.schur
-    (z*z.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
-    (a - z*t*z.conjtranspose).abs.should be_close(0, 1e-6)
+    (z*z.conjtranspose).should almost_eq MatComplex.identity(3)
+    (z*t*z.conjtranspose).should almost_eq a
   end
 
   it "high-level: qr decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     q, r, pvt = a.qr
-    (q*q.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
-    (a - q*r).abs.should be_close(0, 1e-6)
+    (q*q.conjtranspose).should almost_eq MatComplex.identity(3)
+    (q*r).should almost_eq a
     # only r
     r1, pvt = a.qr_r
-    r1.should be_close(r, 1e-9)
+    r1.should almost_eq r
     # raw form
     q1, tau, pvt = a.qr_raw
     # pivoted TODO - spec?
@@ -209,23 +209,23 @@ describe Linalg do
   it "high-level: rq decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     r, q = a.rq
-    (q*q.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
-    (a - r*q).abs.should be_close(0, 1e-6)
+    (q*q.conjtranspose).should almost_eq MatComplex.identity(3)
+    (r*q).should almost_eq a
     # only r
     r1 = a.rq_r
-    r1.should be_close(r, 1e-9)
+    r1.should almost_eq r
   end
 
   it "high-level: lq and ql decomposition" do
     a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
     l, q = a.lq
-    (q*q.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
-    (a - l*q).abs.should be_close(0, 1e-6)
+    (q*q.conjtranspose).should almost_eq MatComplex.identity(3)
+    (l*q).should almost_eq a
 
     a = GMat32.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     q, l = a.ql
-    (q*q.transpose).should be_close(Mat32.identity(3), 1e-4)
-    (a - q*l).abs.should be_close(0, 1e-4)
+    (q*q.transpose).should almost_eq Mat32.identity(3)
+    (q*l).should almost_eq a
   end
 
   it "high-level: qz decomposition (real argument)" do
@@ -240,10 +240,10 @@ describe Linalg do
       [2, 1, 1],
     ]
     aa, bb, vl, vr = Linalg.qz(a, b)
-    (vl*vl.transpose).should be_close(Mat.identity(3), 1e-6)
-    (vr*vr.transpose).should be_close(Mat.identity(3), 1e-6)
-    (a - vl*aa*vr.transpose).abs.should be_close(0, 1e-6)
-    (b - vl*bb*vr.transpose).abs.should be_close(0, 1e-6)
+    (vl*vl.transpose).should almost_eq Mat.identity(3)
+    (vr*vr.transpose).should almost_eq Mat.identity(3)
+    (vl*aa*vr.transpose).should almost_eq a
+    (vl*bb*vr.transpose).should almost_eq b
   end
 
   it "high-level: qz decomposition (complex argument)" do
@@ -258,10 +258,10 @@ describe Linalg do
       [1, 1 - j, 1 + j],
     ]
     aa, bb, vl, vr = Linalg.qz(a, b)
-    (vl*vl.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
-    (vr*vr.conjtranspose).should be_close(MatComplex.identity(3), 1e-6)
-    (a - vl*aa*vr.conjtranspose).abs.should be_close(0, 1e-6)
-    (b - vl*bb*vr.conjtranspose).abs.should be_close(0, 1e-6)
+    (vl*vl.conjtranspose).should almost_eq MatComplex.identity(3)
+    (vr*vr.conjtranspose).should almost_eq MatComplex.identity(3)
+    (vl*aa*vr.conjtranspose).should almost_eq a
+    (vl*bb*vr.conjtranspose).should almost_eq b
   end
 
   it "high-level: calculate matrix norms" do
