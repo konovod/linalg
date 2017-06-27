@@ -175,6 +175,7 @@ describe Linalg do
     a = GMat.new([[1, -2, 3], [2, 5, 4], [7, 0, 1]])
     h, q = a.hessenberg(calc_q: true)
     (q*q.transpose).should be_close(Mat.identity(3), 1e-6)
+    # q.detect(MatrixFlags::Orthogonal).should be_true
     (q*h*q.transpose).should almost_eq a
   end
 

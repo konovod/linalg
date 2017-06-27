@@ -51,6 +51,7 @@ module Linalg
     end
 
     def unsafe_set(i, j, value)
+      clear_flags # TODO - not always?
       @raw[i*ncolumns + j] = T.new(value)
     end
 

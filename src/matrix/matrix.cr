@@ -290,8 +290,12 @@ module Linalg
       self[nrows, column..column] = value
     end
 
-    def assume!(flag : MatrixFlags)
-      @flags |= flag
+    def assume!(flag : MatrixFlags, value : Bool = true)
+      if value
+        @flags |= flag
+      else
+        @flags &= ~flag
+      end
     end
 
     def tolerance
@@ -301,14 +305,13 @@ module Linalg
         vabs = {% if T == Complex %}value.real.abs + value.imag.abs{% else %}value.abs{% end %}
         amax = vabs if amax < vabs
       end
+      # TODO - better eps?
       eps = {% if T == Float32 %}2e-7{% else %}2e-16{% end %}
       amax * nrows * ncolumns * 10*eps
     end
 
     def almost_eq(other : Matrix(T))
-      return false unless nrows == other.nrows && ncolumns == other.ncolumns
       tol = {self.tolerance, other.tolerance}.min
-      # TODO - better eps?
       each_with_index do |value, row, column|
         return false if (value - other.unsafe_at(row, column)).abs > tol
       end
@@ -316,18 +319,76 @@ module Linalg
     end
 
     # TODO - check for all flags
-    private def detect_single(flag : MatrixFlags)
+    private def check_single(flag : MatrixFlags)
       case flag
       when .symmetric?
+        # TODO - 2 times less work
+        return false unless square?
+        each_with_index do |value, row, column|
+          return false if row < column && (value - unsafe_at(row, column)).abs > tol
+        end
+        true
       when .hermitian?
+        {% if T == Complex %}
+          return false unless square?
+          each_with_index do |value, row, column|
+            return false if row < column && (value.conj - unsafe_at(row, column)).abs > tol
+          end
+          true
+        {% else %}
+          false
+        {% end %}
       when .positive_definite?
       when .triangular?
+        each_with_index do |value, row, column|
+          return false if row > column && (value).abs > tol
+        end
+        true
       when .orthogonal?
         square? && (self*self.t).almost_eq Matrix(T).identity(nrows)
       when .lower?
-        false
+        each_with_index do |value, row, column|
+          return false if row < column && (value).abs > tol
+        end
+        true
       else
         false
+      end
+    end
+
+    private def detect_single(flag : MatrixFlags)
+      check_single(flag).tap do |ok|
+        assume!(flag, ok)
+      end
+    end
+
+    def detect(aflags : MatrixFlags)
+      result = false
+      {MatrixFlags::Symmetric,
+       MatrixFlags::Hermitian,
+       MatrixFlags::PositiveDefinite,
+       MatrixFlags::Orthogonal}.each do |f|
+        if aflags & f
+          result = false unless detect_single(f)
+        end
+      end
+      if aflags.triangular?
+        # Lower involves triangular
+        if aflags.lower?
+          ok = detect_single(MatrixFlags::Lower)
+          result = false unless ok
+          assume!(MatrixFlags::Triangular, ok)
+        else
+          result = detect_single(MatrixFlags::Triangular)
+        end
+      end
+    end
+
+    def assume(aflags : MatrixFlags, value : Bool = true)
+      if value
+        detect(aflags)
+      else
+        assume! aflags, false
       end
     end
 
