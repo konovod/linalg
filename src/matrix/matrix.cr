@@ -107,7 +107,9 @@ module Linalg
 
     # returns transposed matrix
     def conjtranspose
-      {% raise "Matrix must be Complex for conjtranspose" unless T == Complex %}
+      {% if T != Complex %}
+        return transpose
+      {% end %}
       return clone if flags.hermitian?
       GeneralMatrix(T).new(ncolumns, nrows) do |i, j|
         self[j, i].conj
@@ -321,7 +323,7 @@ module Linalg
       when .positive_definite?
       when .triangular?
       when .orthogonal?
-        square? && (self*self.t).almost_eq Matrix(T).eye(nrows)
+        square? && (self*self.t).almost_eq Matrix(T).identity(nrows)
       when .lower?
         false
       else

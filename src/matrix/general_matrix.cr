@@ -95,7 +95,9 @@ module Linalg
 
     # transposes matrix inplace
     def conjtranspose!
-      {% raise "Matrix must be Complex for conjtranspose" unless T == Complex %}
+      {% if T != Complex %}
+        return transpose!
+      {% end %}
       return self if flags.hermitian?
       each_with_index { |v, i, j| unsafe_set(i, j, v.conj) }
       transpose!
