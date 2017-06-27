@@ -4,6 +4,12 @@ require "./general_matrix"
 
 module Linalg
   module Matrix(T)
+    def self.tri(nrows, ncolumns, k = 0)
+      GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
+        i >= j - k ? 1 : 0
+      end
+    end
+
     def self.block_diag(*args)
       nrows = args.sum &.nrows
       ncolumns = args.sum &.ncolumns

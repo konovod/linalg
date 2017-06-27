@@ -61,6 +61,10 @@ module Linalg
     def scale
       self
     end
+
+    def self.for_diag
+      Symmetric | UpperTriangular | LowerTriangular | Hermitian
+    end
   end
 
   # class that provide all utility matrix functions
@@ -451,11 +455,11 @@ module Linalg
     end
 
     def self.zeros(nrows, ncolumns)
-      GeneralMatrix(T).new(nrows, ncolumns)
+      GeneralMatrix(T).new(nrows, ncolumns).tap { |m| m.flags = MatrixFlags.for_diag }
     end
 
     def self.ones(nrows, ncolumns)
-      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| 1 }
+      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| 1 }.tap { |m| m.flags = MatrixFlags::Symmetric | MatrixFlags::Hermitian }
     end
 
     def self.repmat(a : Matrix(T), nrows, ncolumns)
@@ -469,7 +473,7 @@ module Linalg
     def self.diag(nrows, ncolumns, values)
       GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i == j ? values[i] : 0
-      end
+      end.tap { |m| m.flags = MatrixFlags.for_diag }
     end
 
     def self.diag(values)
@@ -479,7 +483,7 @@ module Linalg
     def self.diag(nrows, ncolumns, &block)
       GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i == j ? yield(i) : 0
-      end
+      end.tap { |m| m.flags = MatrixFlags.for_diag }
     end
 
     def self.kron(a, b)
@@ -488,14 +492,9 @@ module Linalg
       end
     end
 
-    def self.tri(nrows, ncolumns, k = 0)
-      GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
-        i >= j - k ? 1 : 0
-      end
-    end
-
     def self.identity(n)
-      GeneralMatrix(T).new(n, n) { |i, j| i == j ? 1 : 0 }
+      result = GeneralMatrix(T).new(n, n) { |i, j| i == j ? 1 : 0 }
+      result.tap { |m| m.flags = MatrixFlags.for_diag | MatrixFlags::PositiveDefinite }
     end
 
     def self.eye(n)
