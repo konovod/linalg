@@ -18,6 +18,49 @@ module Linalg
     UpperTriangular
     LowerTriangular
     Triangular      = UpperTriangular | LowerTriangular
+
+    def triangular?
+      self.upper_triangular? || self.lower_triangular?
+    end
+
+    def diagonal?
+      self.upper_triangular? && self.lower_triangular?
+    end
+
+    def sum(f2 : MatrixFlags)
+      self & f2 & (MatrixFlags::UpperTriangular |
+                   MatrixFlags::LowerTriangular |
+                   MatrixFlags::Symmetric |
+                   MatrixFlags::Hermitian)
+    end
+
+    def mult(f2 : MatrixFlags)
+      self & f2 & (MatrixFlags::UpperTriangular |
+                   MatrixFlags::LowerTriangular |
+                   MatrixFlags::Symmetric)
+    end
+
+    def transpose
+      result = self
+      if triangular?
+        wasup, waslo = upper_triangular?, lower_triangular?
+        if wasup
+          result |= MatrixFlags::LowerTriangular
+        else
+          result &= ~MatrixFlags::LowerTriangular
+        end
+        if waslo
+          result |= MatrixFlags::UpperTriangular
+        else
+          result &= ~MatrixFlags::UpperTriangular
+        end
+      end
+      result
+    end
+
+    def scale
+      self
+    end
   end
 
   # class that provide all utility matrix functions
@@ -56,6 +99,7 @@ module Linalg
       result = GeneralMatrix(T).new(nrows, m.ncolumns) do |i, j|
         (0...ncolumns).sum { |k| self[i, k]*m[k, j] }
       end
+      result.tap { |r| r.flags = self.flags.mult(m.flags) }
     end
 
     # multiplies at scalar
@@ -63,6 +107,7 @@ module Linalg
       result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j]*k
       end
+      result.tap { |r| r.flags = self.flags.scale }
     end
 
     # divides at scalar
@@ -70,6 +115,7 @@ module Linalg
       result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j] / k
       end
+      result.tap { |r| r.flags = self.flags.scale }
     end
 
     # returns element-wise sum
@@ -80,6 +126,7 @@ module Linalg
       result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j] + m[i, j]
       end
+      result.tap { |r| r.flags = self.flags.sum(m.flags) }
     end
 
     # returns element-wise subtract
@@ -90,6 +137,7 @@ module Linalg
       result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j] - m[i, j]
       end
+      result.tap { |r| r.flags = self.flags.sum(m.flags) }
     end
 
     # returns transposed matrix
@@ -98,11 +146,7 @@ module Linalg
       GeneralMatrix(T).new(ncolumns, nrows) do |i, j|
         self[j, i]
       end.tap do |m|
-        m.flags = flags
-        if flags.triangular?
-          m.flags ^= MatrixFlags::LowerTriangular
-          m.flags ^= MatrixFlags::UpperTriangular
-        end
+        m.flags = flags.transpose
       end
     end
 
@@ -115,11 +159,7 @@ module Linalg
       GeneralMatrix(T).new(ncolumns, nrows) do |i, j|
         self[j, i].conj
       end.tap do |m|
-        m.flags = flags
-        if flags.triangular?
-          m.flags ^= MatrixFlags::LowerTriangular
-          m.flags ^= MatrixFlags::UpperTriangular
-        end
+        m.flags = flags.transpose
       end
     end
 
@@ -403,7 +443,7 @@ module Linalg
     end
 
     def clear_flags
-      @flags = MatrixFlags.new(0)
+      @flags = MatrixFlags::None
     end
 
     def self.rand(nrows, ncolumns, rng = Random::DEFAULT)

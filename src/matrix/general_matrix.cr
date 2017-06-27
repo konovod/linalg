@@ -90,10 +90,7 @@ module Linalg
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
         raise "not implemented yet"
       end
-      if flags.triangular?
-        @flags ^= MatrixFlags::LowerTriangular
-        @flags ^= MatrixFlags::UpperTriangular
-      end
+      self.flags = flags.transpose
       self
     end
 
