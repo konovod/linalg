@@ -1,1 +1,7 @@
 language: crystal
+sudo: required
+dist: trusty
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y liblapacke
+  - sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so

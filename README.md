@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/konovod/linalg.svg?branch=master)](https://travis-ci.org/konovod/linalg)
+
 # linalg
 Linear algebra library in Crystal, uses LAPACKE.
 - direct access to LAPACK methods
