@@ -480,6 +480,14 @@ module Linalg
       diag(values.size, values.size, values)
     end
 
+    def self.column(values)
+      GeneralMatrix(T).new(values.size, 1, values)
+    end
+
+    def self.row(values)
+      GeneralMatrix(T).new(1, values.size, values)
+    end
+
     def self.diag(nrows, ncolumns, &block)
       GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i == j ? yield(i) : 0
