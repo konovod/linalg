@@ -1,5 +1,3 @@
-require "spec"
-
 module Spec
   struct AlmostEqualExpectation(T)
     def initialize(@expected_value : T)

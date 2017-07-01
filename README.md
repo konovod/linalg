@@ -41,17 +41,19 @@ Types with prefix G (GMat, GMat32, GMatComplex) are for actually allocated matri
 others are automatically converted to them when needed.
 
 ```crystal
+#suggested to don't prefix Linalg:: everywhere
+include Linalg
+
 # create matrix from array of arrays (or tuple... everything Indexable)
 m = GMat.new([
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
-      [10, 11, 12]
-      ])
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  [10, 11, 12],
+])
 # or using block
 m = GMat32.new(3, 4) { |i, j| i*3 + j + 1 }
 # or using one of other ways, check "spec" directory
-
 
 # there are also matrices with special values, memory for elements isn't allocated until they are changed.
 # NOTE currently virtual matrices support is incomplete, so memory is allocated always
@@ -61,13 +63,13 @@ a = Mat.identity(3) # =>
 # [0 0 1]
 
 # do basic arithmetics
-2 * a - Mat.diag([2,2,2]) == Mat.zeros(3,3) # => true
+2 * a - Mat.diag([2, 2, 2]) == Mat.zeros(3, 3) # => true
 
 # basic algebra
-a = Mat.rand(5) + 2 * Mat.identity(5)
+a = Mat.rand(5, 5) + 2 * Mat.identity(5)
 (a.inv * a - Mat.identity(5)).abs < 1e-6
 
-b = Mat.rand(5,1)
+b = Mat.rand(5, 1)
 x = Linalg.solve(a, b) # or a.solve(b)
 (a.inv*x - b).abs < 1e-6
 
@@ -76,18 +78,19 @@ m.eigvals # => [-6, -1, 2]
 
 # extract submatrices (memory isn't copied as they reference to basic matrix)
 m = GMat.new([
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
-r = m.column[3] # =>
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+])
+r = m.columns[2] # =>
 # [3]
 # [6]
 # [7]
 x = m[1..1, 1..2] # =>
 # [5 6]
-x[0,0] = 0 # m[1,1] is now 0 (questionable feature? maybe should be ##[]! for modifiable submatrices and ##[] for CoW?)
+x[0, 0] = 0 # m[1,1] is now 0 (questionable feature? maybe should be ##[]! for modifiable submatrices and ##[] for CoW?)
 y = x.clone # now y is a separate matrix
-y[0,0] = 1 # m[1,1] is still 0
+y[0, 0] = 1 # m[1,1] is still 0
 
 ```
 other present features:
@@ -113,7 +116,7 @@ puts lu.solve(GMat32.new([[2], [4]]))
 - `schur` and `qz` (generalized schur) decomposition
 - generalized eigenproblem (`eigs(a, b, ...)`)
 
-There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select proper algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. Actuall `a.transpose` returns matrix clone as for symmetric matrices A=A'. 
+There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select proper algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. Actuall `a.transpose` returns matrix clone as for symmetric matrices A=A'.
 
 
 Check `spec` directory for more examples.
