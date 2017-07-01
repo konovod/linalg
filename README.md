@@ -11,7 +11,11 @@ Killing SciPy, one module at a time.
 ## Installation
 
 1. Install LAPACKE (and dependencies - LAPACK and BLAS). `sudo apt install liblapacke` for Ubuntu, `sudo pacman -S lapacke` for Arch.
+
+*WARNING: lapack and blas pakages are not optimized, for better performance use optimized version, like ATLAS*
+
 2. (for Ubuntu) it seems package doesn't create symlink, so use `sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so`
+
 
 Add this to your application's `shard.yml`:
 
@@ -109,13 +113,29 @@ puts lu.solve(GMat32.new([[2], [4]]))
 - `schur` and `qz` (generalized schur) decomposition
 - generalized eigenproblem (`eigs(a, b, ...)`)
 
-There is(WIP) also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select proper algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically.
+There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select proper algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. Actuall `a.transpose` returns matrix clone as for symmetric matrices A=A'. 
 
 
 Check `spec` directory for more examples.
 ## Development
 
-TODO: Write development instructions here
+### Roadmap:
+
+##### Important
+
+- [ ] saving\loading from files
+- [ ] Virtual(lazy) matrices, ways to evade allocations during calculations
+- [ ] Matrix exponentiation (and other matrix functions)
+- [ ] Banded matrices
+- [ ] Other missing features from LAPACK (mostly selectable and orderable eigenvalues, I'm not not sure about their usefullness)
+- [ ] Sparse matrices (perhaps out of scope\deserves separate shard)
+- [ ] Other missing features from scipy.linalg (pseudoinverse, lyapunov\ricatti\sylvester equations, other things i don't know algorithms for)
+
+##### Not so important
+
+- [ ] saving\loading to matlab-like string
+- [ ] better pretty-print, with alignment and various precision
+
 
 PRs are welcome)
 
