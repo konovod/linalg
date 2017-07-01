@@ -62,8 +62,12 @@ module Linalg
       self
     end
 
-    def self.for_diag
-      Symmetric | UpperTriangular | LowerTriangular | Hermitian
+    def self.for_diag(square : Bool)
+      if square
+        Symmetric | UpperTriangular | LowerTriangular | Hermitian
+      else
+        UpperTriangular | LowerTriangular
+      end
     end
   end
 
@@ -455,11 +459,15 @@ module Linalg
     end
 
     def self.zeros(nrows, ncolumns)
-      GeneralMatrix(T).new(nrows, ncolumns).tap { |m| m.flags = MatrixFlags.for_diag }
+      GeneralMatrix(T).new(nrows, ncolumns).tap { |m| m.flags = MatrixFlags.for_diag(m.square?) }
     end
 
     def self.ones(nrows, ncolumns)
-      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| 1 }.tap { |m| m.flags = MatrixFlags::Symmetric | MatrixFlags::Hermitian }
+      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| 1 }.tap do |m|
+        if m.square?
+          m.flags = MatrixFlags::Symmetric | MatrixFlags::Hermitian
+        end
+      end
     end
 
     def self.repmat(a : Matrix(T), nrows, ncolumns)
@@ -473,7 +481,7 @@ module Linalg
     def self.diag(nrows, ncolumns, values)
       GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i == j ? values[i] : 0
-      end.tap { |m| m.flags = MatrixFlags.for_diag }
+      end.tap { |m| m.flags = MatrixFlags.for_diag(m.square?) }
     end
 
     def self.diag(values)
@@ -491,7 +499,7 @@ module Linalg
     def self.diag(nrows, ncolumns, &block)
       GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i == j ? yield(i) : 0
-      end.tap { |m| m.flags = MatrixFlags.for_diag }
+      end.tap { |m| m.flags = MatrixFlags.for_diag(m.square?) }
     end
 
     def self.kron(a, b)
@@ -502,7 +510,7 @@ module Linalg
 
     def self.identity(n)
       result = GeneralMatrix(T).new(n, n) { |i, j| i == j ? 1 : 0 }
-      result.tap { |m| m.flags = MatrixFlags.for_diag | MatrixFlags::PositiveDefinite }
+      result.tap { |m| m.flags = MatrixFlags.for_diag(true) | MatrixFlags::PositiveDefinite }
     end
 
     def self.eye(n)
@@ -523,6 +531,30 @@ module Linalg
 
     def conjt!
       conjtranspose!
+    end
+
+    def cat(other : Matrix(T), dimension)
+      raise ArgumentError.new("only dimesion = 0 or 1 supported") unless {0, 1}.includes? dimension
+      if self.size[1 - dimension] != other.size[1 - dimension]
+        raise ArgumentError.new("matrix size along other dimension should match for concatenation")
+      end
+      if dimension == 0
+        GeneralMatrix(T).new(nrows + other.nrows, ncolumns) do |row, column|
+          row < nrows ? unsafe_at(row, column) : other.unsafe_at(row - nrows, column)
+        end
+      else
+        GeneralMatrix(T).new(nrows, ncolumns + other.ncolumns) do |row, column|
+          column < ncolumns ? unsafe_at(row, column) : other.unsafe_at(row, column - ncolumns)
+        end
+      end
+    end
+
+    def vcat(other)
+      cat other, 0
+    end
+
+    def hcat(other)
+      cat other, 1
     end
   end
 

@@ -255,4 +255,21 @@ describe Linalg::Matrix do
       [20, -1, 11, 0],
     ]
   end
+
+  it "can be concatenated with other matrices" do
+    a = Mat.ones(2, 3)*2
+    b = Mat.eye(3)
+    c = a.vcat(b)
+    a.vcat(b).should eq GMat.new [
+      [2, 2, 2],
+      [2, 2, 2],
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ]
+    expect_raises(ArgumentError) { a.hcat(b) }
+    a = a.t
+    a.cat!(b, 1)
+    a.t.should eq c
+  end
 end

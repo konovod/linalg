@@ -88,7 +88,7 @@ module Linalg
         end
       else
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
-        raise "not implemented yet"
+        raise "transpose! not implemented yet"
       end
       self.flags = flags.transpose
       self
@@ -123,6 +123,24 @@ module Linalg
           @ncolumns
         end
       end
+    end
+
+    def cat!(other : Matrix(T), dimension)
+      # TODO - better implementation?
+      anew = self.cat(other, dimension)
+      @nrows = anew.nrows
+      @ncolumns = anew.ncolumns
+      @raw = anew.raw
+      clear_flags
+      self
+    end
+
+    def vcat!(other)
+      cat! other, 0
+    end
+
+    def hcat!(other)
+      cat! other, 1
     end
   end
 

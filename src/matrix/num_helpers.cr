@@ -10,13 +10,13 @@ struct Complex
     end
   end
 
-  def *(m : Matrix(Complex))
+  def *(m : Linalg::Matrix(Complex))
     m*self
   end
 end
 
 abstract struct Number
-  def *(m : Matrix)
+  def *(m : Linalg::Matrix)
     m*self
   end
 
