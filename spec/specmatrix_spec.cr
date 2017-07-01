@@ -4,8 +4,7 @@ include Linalg
 j = Complex.new(0, 1)
 describe "constructing of special matrices" do
   it "block_diag matrix" do
-    a = GMat.new [[1, 0],
-                  [0, 1]]
+    a = Mat.eye(2)
     b = GMat.new [[3, 4, 5],
                   [6, 7, 8]]
     c = GMat.new [[7]]
