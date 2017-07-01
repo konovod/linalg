@@ -272,4 +272,10 @@ describe Linalg::Matrix do
     a.cat!(b, 1)
     a.t.should eq c
   end
+
+  it "columns and rows can be extracted by range" do
+    m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+    m.rows[1..2].should eq m[1..2, 0..3]
+    m.columns[1...3].should eq m[0..2, 1..2]
+  end
 end

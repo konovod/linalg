@@ -22,5 +22,18 @@ module Linalg
     end
     def_indexable(columns, {0, i}, {@base.nrows, 1})
     def_indexable(rows, {i, 0}, {1, @base.ncolumns})
+
+    # TODO - more macro magic?
+    struct Columns(T)
+      def [](range : Range)
+        SubMatrix(T).new(@base, {0, range.begin}, {@base.nrows, range.size})
+      end
+    end
+
+    struct Rows(T)
+      def [](range : Range)
+        SubMatrix(T).new(@base, {range.begin, 0}, {range.size, @base.ncolumns})
+      end
+    end
   end
 end
