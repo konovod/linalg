@@ -1,7 +1,6 @@
 require "./spec_helper"
 
 include Linalg
-j = Complex.new(0, 1)
 describe Linalg::Matrix do
   it "can be created with given size" do
     m = GMat.new(10, 15)
@@ -63,8 +62,8 @@ describe Linalg::Matrix do
     m.should eq GMat.new(3, 4) { |i, j| 1.5 }
 
     m1 = MatComplex.ones(3, 4)
-    m = j * m1 / j
-    m.should eq GMatComplex.new(3, 4) { |i, j| 1 }
+    m = 2.i * m1 / 1.i
+    m.should eq GMatComplex.new(3, 4) { |i, j| 2 }
   end
 
   it "can checks if it is square" do
@@ -137,14 +136,14 @@ describe Linalg::Matrix do
   end
 
   it "can be conjtrasposed" do
-    m = GMatComplex.new([[1 + j, 2 + j, 3 - j], [4, 5, 6 + 2*j]])
+    m = GMatComplex.new([[1 + 1.i, 2 + 1.i, 3 - 1.i], [4, 5, 6 + 2.i]])
     mt = m.conjtranspose
-    mt.should eq GMatComplex.new([[1 - j, 4], [2 - j, 5], [3 + j, 6 - 2*j]])
+    mt.should eq GMatComplex.new([[1 - 1.i, 4], [2 - 1.i, 5], [3 + 1.i, 6 - 2.i]])
     mt.conjtranspose.should eq m
 
-    m = GMatComplex.new([[1, 2*j, 3], [4*j, 5, 6*j], [7, 8*j, 9 - j]])
+    m = GMatComplex.new([[1, 2.i, 3], [4.i, 5, 6.i], [7, 8.i, 9 - 1.i]])
     m.conjtranspose!
-    m.should almost_eq GMatComplex.new([[1, -4*j, 7], [-2*j, 5, -8*j], [3, -6*j, 9 + j]])
+    m.should almost_eq GMatComplex.new([[1, -4.i, 7], [-2.i, 5, -8.i], [3, -6.i, 9 + 1.i]])
   end
 
   it "has kron operation" do

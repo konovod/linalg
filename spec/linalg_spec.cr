@@ -2,8 +2,6 @@ require "./spec_helper"
 
 include Linalg
 describe Linalg do
-  j = Complex.new(0, 1)
-
   it "calls LAPACK functions directly" do
     m = [
       1.0, 0.0, 1.0,
@@ -64,7 +62,7 @@ describe Linalg do
     (matrix1*matrix1.inv).should eq Mat32.identity(3)
 
     matrix1 = GMatComplex.new({
-      {1 + 1*j, 0, 1},
+      {1 + 1.i, 0, 1},
       {0, 4, 0},
       {0, 0, 1},
     })
@@ -153,12 +151,12 @@ describe Linalg do
   end
 
   it "high-level: cholesky decomposition" do
-    a = GMatComplex.new([[1, -2*j], [2*j, 5]])
+    a = GMatComplex.new([[1, -2.i], [2.i, 5]])
     c = a.cholesky(lower: true)
     (c*c.conjtranspose).should almost_eq a
   end
   it "high-level: using cholesky decomposition to solve equations" do
-    a = GMatComplex.new([[1, -2*j], [2*j, 5]])
+    a = GMatComplex.new([[1, -2.i], [2.i, 5]])
     chol1 = a.cholesky(lower: true, dont_clean: true)
     chol2 = a.cholesky(lower: false, dont_clean: false)
     b = GMatComplex.new([[2], [4]])
@@ -169,7 +167,7 @@ describe Linalg do
   end
 
   it "high-level: hessenberg decomposition" do
-    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    a = GMatComplex.new([[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]])
     h, q = a.hessenberg(calc_q: true)
     q.detect(MatrixFlags::Orthogonal).should be_true
     (q*h*q.conjtranspose).should almost_eq a
@@ -188,14 +186,14 @@ describe Linalg do
   end
 
   it "high-level: schur decomposition (complex argument)" do
-    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    a = GMatComplex.new([[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]])
     t, z = a.schur
     z.detect(MatrixFlags::Orthogonal).should be_true
     (z*t*z.conjtranspose).should almost_eq a
   end
 
   it "high-level: qr decomposition" do
-    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    a = GMatComplex.new([[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]])
     q, r, pvt = a.qr
     q.detect(MatrixFlags::Orthogonal).should be_true
     (q*r).should almost_eq a
@@ -209,7 +207,7 @@ describe Linalg do
   end
 
   it "high-level: rq decomposition" do
-    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    a = GMatComplex.new([[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]])
     r, q = a.rq
     q.detect(MatrixFlags::Orthogonal).should be_true
     (r*q).should almost_eq a
@@ -219,7 +217,7 @@ describe Linalg do
   end
 
   it "high-level: lq and ql decomposition" do
-    a = GMatComplex.new([[1, -2*j, 3], [2*j, 5, 4], [7, 0, 1*j]])
+    a = GMatComplex.new([[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]])
     l, q = a.lq
     q.detect(MatrixFlags::Orthogonal).should be_true
     (l*q).should almost_eq a
@@ -250,14 +248,14 @@ describe Linalg do
 
   it "high-level: qz decomposition (complex argument)" do
     a = GMatComplex.new [
-      [-2, 4*j, 1],
-      [3, -4*j, 1],
-      [1, 0, 1 - j],
+      [-2, 4.i, 1],
+      [3, -4.i, 1],
+      [1, 0, 1 - 1.i],
     ]
     b = GMatComplex.new [
       [-2, 4, 0],
-      [2, -3, -2*j],
-      [1, 1 - j, 1 + j],
+      [2, -3, -2.i],
+      [1, 1 - 1.i, 1 + 1.i],
     ]
     aa, bb, vl, vr = Linalg.qz(a, b)
     vl.detect(MatrixFlags::Orthogonal).should be_true

@@ -1,6 +1,5 @@
 require "./spec_helper"
 
-j = Complex.new(0, 1)
 describe Linalg::Matrix do
   it "basic flags test" do
     a = Linalg::Mat.rand(10, 10)

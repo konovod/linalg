@@ -1,7 +1,6 @@
 require "./spec_helper"
 
 include Linalg
-j = Complex.new(0, 1)
 describe "constructing of special matrices" do
   it "block_diag matrix" do
     a = Mat.eye(2)
@@ -23,10 +22,10 @@ describe "constructing of special matrices" do
       [2, 1, 4, 5],
       [3, 2, 1, 4],
     ]
-    MatComplex.toeplitz(GMatComplex.new [[1.0, 2 + 3*j, 4 - j]]).should eq GMatComplex.new [
-      [1, 2 - 3*j, 4 + j],
-      [2 + 3*j, 1, 2 - 3*j],
-      [4 - j, 2 + 3*j, 1],
+    MatComplex.toeplitz(GMatComplex.new [[1.0, 2 + 3.i, 4 - 1.i]]).should eq GMatComplex.new [
+      [1, 2 - 3.i, 4 + 1.i],
+      [2 + 3.i, 1, 2 - 3.i],
+      [4 - 1.i, 2 + 3.i, 1],
     ]
   end
 
@@ -72,10 +71,10 @@ describe "constructing of special matrices" do
       [2, 3, 4, 5],
       [3, 4, 5, 6],
     ]
-    MatComplex.hankel(GMatComplex.new [[1.0, 2 + 3*j, 4 - j]]).should eq GMatComplex.new [
-      [1, 2 + 3*j, 4 - j],
-      [2 + 3*j, 4 - j, 0],
-      [4 - j, 0, 0],
+    MatComplex.hankel(GMatComplex.new [[1.0, 2 + 3.i, 4 - 1.i]]).should eq GMatComplex.new [
+      [1, 2 + 3.i, 4 - 1.i],
+      [2 + 3.i, 4 - 1.i, 0],
+      [4 - 1.i, 0, 0],
     ]
   end
 
@@ -103,7 +102,7 @@ describe "constructing of special matrices" do
     m = MatComplex.dft(8)
     x = GMatComplex.new [[1, 2, 3, 0, 3, 2, 1, 0]]
     (x*m).should almost_eq GMatComplex.new([
-      [12, -2 - 2*j, -4*j, -2 + 2*j, 4, -2 - 2*j, 4*j, -2 + 2*j],
+      [12, -2 - 2.i, -4.i, -2 + 2.i, 4, -2 - 2.i, 4.i, -2 + 2.i],
     ])
   end
 end

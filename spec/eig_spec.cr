@@ -1,8 +1,7 @@
 require "./spec_helper"
+include Linalg
 
 describe Linalg do
-  j = Complex.new(0, 1)
-
   it "high-level: calculate nonsymmetric eigenvalues" do
     a = GMat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
     vals = a.eigvals
@@ -14,14 +13,14 @@ describe Linalg do
   it "high-level: calculate nonsymmetric eigenvalues (complex result)" do
     a = GMat32.new([[3, -2], [4, -1]])
     vals = a.eigvals
-    vals[0].should be_close 1 + 2*j, 1e-3
-    vals[1].should be_close 1 - 2*j, 1e-3
+    vals[0].should be_close 1 + 2.i, 1e-3
+    vals[1].should be_close 1 - 2.i, 1e-3
   end
   it "high-level: calculate nonsymmetric eigenvalues (complex argument)" do
     a = GMatComplex.new([[3, -2], [4, -1]])
     vals = a.eigvals
-    vals[0].should be_close 1 + 2*j, 1e-3
-    vals[1].should be_close 1 - 2*j, 1e-3
+    vals[0].should be_close 1 + 2.i, 1e-3
+    vals[1].should be_close 1 - 2.i, 1e-3
   end
 
   it "high-level: calculate nonsymmetric eigenvectors" do
@@ -49,9 +48,9 @@ describe Linalg do
   end
   it "high-level: calculate hermitian eigenvalues (complex argument)" do
     a = GMatComplex.new([
-      [1, 2 - j, 3 + 2*j],
-      [2 + j, 3, 4],
-      [3 - 2*j, 4, 5],
+      [1, 2 - 1.i, 3 + 2.i],
+      [2 + 1.i, 3, 4],
+      [3 - 2.i, 4, 5],
     ])
     a.assume! MatrixFlags::Hermitian
     vals = a.eigvals
@@ -82,14 +81,14 @@ describe Linalg do
 
   it "high-level: generalized nonsymmetric eigenvalues (complex argument)" do
     a = GMatComplex.new [
-      [-2, 4*j, 1],
-      [3, -4*j, 1],
-      [1, 0, 1 - j],
+      [-2, 4.i, 1],
+      [3, -4.i, 1],
+      [1, 0, 1 - 1.i],
     ]
     b = GMatComplex.new [
       [-2, 4, 0],
-      [2, -3, -2*j],
-      [1, 1 - j, 1 + j],
+      [2, -3, -2.i],
+      [1, 1 - 1.i, 1 + 1.i],
     ]
     alpha, beta, left, right = Linalg.eigs(a, b, need_left: true, need_right: true)
     3.times do |i|
@@ -121,8 +120,8 @@ describe Linalg do
 
   it "high-level: generalized symmetric eigenvalues (complex argument)" do
     a = GMatComplex.new [
-      [-2, 4*j, 1],
-      [-4*j, -4, 0],
+      [-2, 4.i, 1],
+      [-4.i, -4, 0],
       [1, 0, 1],
     ]
     b = GMatComplex.new [
