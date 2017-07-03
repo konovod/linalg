@@ -116,7 +116,7 @@ puts lu.solve(GMat32.new([[2], [4]]))
 - `schur` and `qz` (generalized schur) decomposition
 - generalized eigenproblem (`eigs(a, b, ...)`)
 
-There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select proper algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. Actuall `a.transpose` returns matrix clone as for symmetric matrices A=A'.
+There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select proper algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. Actually `a.transpose` returns matrix clone as for symmetric matrices A=A'.
 
 
 Check `spec` directory for more examples.
