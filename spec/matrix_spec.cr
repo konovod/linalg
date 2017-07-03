@@ -222,7 +222,7 @@ describe Linalg::Matrix do
       m1[1, 3]
     end
     expect_raises(IndexError) do
-      m[-1..3, 2..3]
+      m[-6..3, 2..3]
     end
     expect_raises(IndexError) do
       m[0..3, 2..4]

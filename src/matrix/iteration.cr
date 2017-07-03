@@ -26,13 +26,17 @@ module Linalg
     # TODO - more macro magic?
     struct Columns(T)
       def [](range : Range)
-        SubMatrix(T).new(@base, {0, range.begin}, {@base.nrows, range.size})
+        start = range.begin + (range.begin < 0 ? @base.ncolumns : 0)
+        size = range.end - start + (range.end < 0 ? @base.ncolumns : 0)
+        SubMatrix(T).new(@base, {0, start}, {@base.nrows, size})
       end
     end
 
     struct Rows(T)
       def [](range : Range)
-        SubMatrix(T).new(@base, {range.begin, 0}, {range.size, @base.ncolumns})
+        size = range.size
+        size += @base.nrows if range.end < 0
+        SubMatrix(T).new(@base, {range.begin, 0}, {size, @base.ncolumns})
       end
     end
   end
