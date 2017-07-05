@@ -86,6 +86,8 @@ module Linalg
             self[j, i] = a
           end
         end
+      elsif nrows = 1 || ncolumns == 1
+        @nrows, @ncolumns = @ncolumns, @nrows
       else
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
         raise "transpose! not implemented yet"
@@ -141,6 +143,18 @@ module Linalg
 
     def hcat!(other)
       cat! other, 1
+    end
+
+    def self.rows(*args)
+      new(args)
+    end
+
+    def self.columns(*args)
+      new(args).transpose!
+    end
+
+    def self.[](*args)
+      new(args)
     end
   end
 

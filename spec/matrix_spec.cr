@@ -15,7 +15,7 @@ describe Linalg::Matrix do
   end
 
   it "can be created from array of arrays" do
-    m = GMat.new({ {1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12} })
+    m = GMat[{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}]
     m.nrows.should eq 4
     m.ncolumns.should eq 3
     m[1, 0].should eq 4

@@ -3,7 +3,7 @@ include Linalg
 
 describe Linalg do
   it "high-level: calculate nonsymmetric eigenvalues" do
-    a = GMat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = GMat32[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
     vals = a.eigvals
     vals[0].should be_close -6, 1e-3
     vals[1].should be_close -1, 1e-3
@@ -11,35 +11,35 @@ describe Linalg do
   end
 
   it "high-level: calculate nonsymmetric eigenvalues (complex result)" do
-    a = GMat32.new([[3, -2], [4, -1]])
+    a = GMat32[[3, -2], [4, -1]]
     vals = a.eigvals
     vals[0].should be_close 1 + 2.i, 1e-3
     vals[1].should be_close 1 - 2.i, 1e-3
   end
   it "high-level: calculate nonsymmetric eigenvalues (complex argument)" do
-    a = GMatComplex.new([[3, -2], [4, -1]])
+    a = GMatComplex[[3, -2], [4, -1]]
     vals = a.eigvals
     vals[0].should be_close 1 + 2.i, 1e-3
     vals[1].should be_close 1 - 2.i, 1e-3
   end
 
   it "high-level: calculate nonsymmetric eigenvectors" do
-    a = GMat32.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = GMat32[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
     vals, vectors = a.eigs
     raise "" if vals.is_a? Array(Complex)
     vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
 
-    a = GMatComplex.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+    a = GMatComplex[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
     vals, vectors = a.eigs(left: true)
     vals.each { |e| (vectors*a - vectors*e).det.should be_close 0, 1e-6 }
   end
 
   it "high-level: calculate symmetric eigenvalues (real argument)" do
-    a = GMat32.new([
+    a = GMat32[
       [1, 2, 3],
       [2, 3, 4],
       [3, 4, 5],
-    ])
+    ]
     a.assume! MatrixFlags::Symmetric
     vals = a.eigvals
     vals[0].should be_close -0.623475, 1e-4
@@ -47,11 +47,11 @@ describe Linalg do
     vals[2].should be_close 9.62348, 1e-4
   end
   it "high-level: calculate hermitian eigenvalues (complex argument)" do
-    a = GMatComplex.new([
+    a = GMatComplex[
       [1, 2 - 1.i, 3 + 2.i],
       [2 + 1.i, 3, 4],
       [3 - 2.i, 4, 5],
-    ])
+    ]
     a.assume! MatrixFlags::Hermitian
     vals = a.eigvals
     vals[0].should be_close -2.26772, 1e-5
@@ -60,12 +60,12 @@ describe Linalg do
   end
 
   it "high-level: generalized nonsymmetric eigenvalues (real argument)" do
-    a = GMat.new [
+    a = GMat[
       [-2, 4, 1],
       [2, -4, 1],
       [1, 1, 1],
     ]
-    b = GMat.new [
+    b = GMat[
       [-2, 4, 0],
       [2, -3, 1],
       [2, 1, 1],
@@ -80,12 +80,12 @@ describe Linalg do
   end
 
   it "high-level: generalized nonsymmetric eigenvalues (complex argument)" do
-    a = GMatComplex.new [
+    a = GMatComplex[
       [-2, 4.i, 1],
       [3, -4.i, 1],
       [1, 0, 1 - 1.i],
     ]
-    b = GMatComplex.new [
+    b = GMatComplex[
       [-2, 4, 0],
       [2, -3, -2.i],
       [1, 1 - 1.i, 1 + 1.i],
@@ -98,12 +98,12 @@ describe Linalg do
   end
 
   it "high-level: generalized symmetric eigenvalues (real argument)" do
-    a = GMat.new [
+    a = GMat[
       [-2, 4, 1],
       [4, -4, 3],
       [1, 3, 1],
     ]
-    b = GMat.new [
+    b = GMat[
       [2, -1, 0],
       [-1, 2, -1],
       [0, -1, 2],
@@ -119,12 +119,12 @@ describe Linalg do
   end
 
   it "high-level: generalized symmetric eigenvalues (complex argument)" do
-    a = GMatComplex.new [
+    a = GMatComplex[
       [-2, 4.i, 1],
       [-4.i, -4, 0],
       [1, 0, 1],
     ]
-    b = GMatComplex.new [
+    b = GMatComplex[
       [2, -1, 0],
       [-1, 2, -1],
       [0, -1, 2],

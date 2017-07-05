@@ -45,12 +45,12 @@ others are automatically converted to them when needed.
 include Linalg
 
 # create matrix from array of arrays (or tuple... everything Indexable)
-m = GMat.new([
+m = GMat[
   [1, 2, 3],
   [4, 5, 6],
   [7, 8, 9],
   [10, 11, 12],
-])
+]
 # or using block
 m = GMat32.new(3, 4) { |i, j| i*3 + j + 1 }
 # or using one of other ways, check "spec" directory
@@ -73,11 +73,11 @@ b = Mat.rand(5, 1)
 x = Linalg.solve(a, b) # or a.solve(b)
 (a.inv*x - b).abs < 1e-6
 
-m = GMat.new([[-2, 4, 1], [2, -4, 1], [1, 1, 1]])
+m = GMat[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
 m.eigvals # => [-6, -1, 2]
 
 # extract submatrices (memory isn't copied as they reference to basic matrix)
-m = GMat.new([
+m = GMat[
   [1, 2, 3],
   [4, 5, 6],
   [7, 8, 9],
@@ -102,12 +102,13 @@ other present features:
 p, l, u = a.lu
 
 # to get them in compact form and use for solving linear equations:
-a = GMat32.new(
-  [[2, 4],
-   [2, 8]]
-)
+a = GMat32[
+  [2, 4],
+  [2, 8]
+  ]
+
 lu = a.lu_factor # lu is LUMatrix(T) - immutable object that can return it's content and solve systems
-puts lu.solve(GMat32.new([[2], [4]]))
+puts lu.solve(GMat32[[2], [4]])
 ```
 - linear least squares problem (`Linalg.solvels` to just get decision or `Linalg.lstsq` to also get rank and singular values (TODO - and residues))
 - cholesky decomposition (`##cholesky`, `##cholesky!`, `##cho_solve`)
