@@ -298,5 +298,9 @@ describe Linalg do
     m.rank.should eq 1
     m = Mat.zeros(5, 1)
     m.rank.should eq 0
+    m = Mat.zeros(8, 6)
+    m.rank.should eq 0
+    m = Mat.ones(8, 6)
+    m.rank(method: RankMethod::QRP).should eq 1
   end
 end
