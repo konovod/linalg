@@ -277,4 +277,23 @@ describe Linalg::Matrix do
     m.rows[1..2].should eq m[1..2, 0..3]
     m.columns[1...3].should eq m[0..2, 1..2]
   end
+
+  it "have map and map_with_index methods" do
+    m = Mat.rand(10, 15)
+    m2 = m.map { |x| -x }
+    (m + m2).should eq Mat.zeros(10, 15)
+
+    m3 = m.map_with_index { |x, row, col| row < col ? -x : 0 }
+    (m + m3).detect(MatrixFlags::LowerTriangular).should be_true
+  end
+
+  it "have map! and map_with_index! methods" do
+    m = Mat.tri(10, 15) * (-1.0)
+    m.map! { |x| -x }
+    m.should eq Mat.tri(10, 15)
+
+    m = Mat.ones(10, 15)
+    m.map_with_index! { |x, row, col| row < col ? x : 0 }
+    m.detect(MatrixFlags::UpperTriangular).should be_true
+  end
 end

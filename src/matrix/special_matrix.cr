@@ -160,7 +160,7 @@ module Linalg
         else
           scale = 1.0 / n
         end
-        result.each_with_index { |v, i, j| result.unsafe_set(i, j, scale*v) }
+        result.map! { |v| scale*v }
       end
       result
     end

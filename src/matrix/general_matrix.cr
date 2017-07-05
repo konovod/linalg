@@ -102,7 +102,7 @@ module Linalg
         return transpose!
       {% end %}
       return self if flags.hermitian?
-      each_with_index { |v, i, j| unsafe_set(i, j, v.conj) }
+      map! &.conj
       transpose!
     end
 
@@ -155,6 +155,14 @@ module Linalg
 
     def self.[](*args)
       new(args)
+    end
+
+    def map!(&block)
+      each_with_index { |v, i, j| unsafe_set(i, j, yield(v)) }
+    end
+
+    def map_with_index!(&block)
+      each_with_index { |v, i, j| unsafe_set(i, j, yield(v, i, j)) }
     end
   end
 
