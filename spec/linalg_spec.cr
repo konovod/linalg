@@ -275,4 +275,28 @@ describe Linalg do
     a.norm(MatrixNorm::One).should eq 20
     b.norm(MatrixNorm::One).should eq 7
   end
+
+  it "high-level: calculate matrix rank" do
+    m = GMat.new([
+      [1, 0, 1],
+      [0, 4, 0],
+      [2, 3, 2],
+    ])
+    m.rank.should eq 2
+    m.rank(method: RankMethod::QRP).should eq 2
+    m.rank(method: RankMethod::SVD, overwrite_a: true).should eq 2
+    m = 1e-6 * GMat.new([
+      [1, 0, 1, 4],
+      [0, 4, 0, 4],
+      [1, 3, 2, 10],
+    ])
+    m.rank.should eq 3
+  end
+
+  it "high-level: calculate matrix rank (edge cases)" do
+    m = Mat.ones(5, 1)
+    m.rank.should eq 1
+    m = Mat.zeros(5, 1)
+    m.rank.should eq 0
+  end
 end

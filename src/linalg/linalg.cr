@@ -12,6 +12,11 @@ module Linalg
     LSD        = SVD
   end
 
+  enum RankMethod
+    SVD
+    QRP
+  end
+
   enum MatrixNorm
     Frobenius
     One
@@ -307,6 +312,25 @@ module Linalg
 
     def abs(kind : MatrixNorm = MatrixNorm::Frobenius)
       norm(kind)
+    end
+
+    protected def count_diagonal(eps)
+      (0...{nrows, ncolumns}.min).count { |x| unsafe_at(x, x).abs > eps }
+    end
+
+    # determine effective rank either by SVD method or QR-factorization with pivoting
+    # QR method is faster, but could fail to determine rank in rare cases
+    def rank(eps = self.tolerance, *, method : RankMethod = RankMethod::SVD, overwrite_a = false)
+      # if matrix is triangular no check needed
+      return count_diagonal(eps) if flags.triangular?
+      case method
+      when .qrp?
+        a, pvt = qr_r(overwrite_a: overwrite_a, pivoting: true)
+        a.count_diagonal(eps)
+      when .svd?
+        s = svdvals(overwrite_a: overwrite_a)
+        s.count { |x| x.abs > eps }
+      end
     end
   end
 end
