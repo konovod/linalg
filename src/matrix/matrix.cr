@@ -118,6 +118,10 @@ module Linalg
       result.tap { |r| r.flags = self.flags.scale }
     end
 
+    def -
+      result = self*(-1)
+    end
+
     # divides at scalar
     def /(k : Number | Complex)
       result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
