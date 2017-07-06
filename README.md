@@ -132,14 +132,15 @@ Check `spec` directory for more examples.
 - [ ] Matrix exponentiation (and other matrix functions)
 - [ ] Banded matrices
 - [ ] Other missing features from LAPACK (mostly selectable and orderable eigenvalues, I'm not not sure about their usefullness)
-- [ ] Sparse matrices (perhaps out of scope\deserves separate shard)
-- [ ] Other missing features from scipy.linalg (pseudoinverse, lyapunov\ricatti\sylvester equations, other things i don't know algorithms for)
+- [ ] Sparse matrices (perhaps out of scope/deserves separate shard)
+- [ ] Other missing features from scipy.linalg (pseudoinverse, lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
 
 ##### Not so important
 
 - [ ] saving\loading to matlab-like string
 - [ ] better pretty-print, with alignment and various precision
-
+- [ ] use blas for multiplication
+- [ ] more flags support (inversion of diagonal matrix and other trivial cases)
 
 PRs are welcome)
 
