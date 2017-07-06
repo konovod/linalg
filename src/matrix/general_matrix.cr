@@ -162,10 +162,12 @@ module Linalg
 
     def map!(&block)
       each_with_index { |v, i, j| unsafe_set(i, j, yield(v)) }
+      self
     end
 
     def map_with_index!(&block)
       each_with_index { |v, i, j| unsafe_set(i, j, yield(v, i, j)) }
+      self
     end
 
     # like a tril in scipy - remove all elements above k-diagonal

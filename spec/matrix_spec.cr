@@ -294,7 +294,7 @@ describe Linalg::Matrix do
 
   it "have map! and map_with_index! methods" do
     m = Mat.tri(10, 15) * (-1.0)
-    m.map! { |x| -x }
+    m.map! { |x| -x }.should eq Mat.tri(10, 15)
     m.should eq Mat.tri(10, 15)
 
     m = Mat.ones(10, 15)
