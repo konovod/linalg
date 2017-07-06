@@ -150,8 +150,7 @@ module Linalg
         raise "" unless a4
         raise "" unless a6
         # For optimal evaluation need different formula for m >= 12.
-        u = self * (a6*(c[14 - 1]*a6 + c[12 - 1]*a4 + c[10 - 1]*a2)
-        +c[8 - 1]*a6 + c[6 - 1]*a4 + c[4 - 1]*a2 + c[2 - 1]*Matrix(T).eye(n))
+        u = self * (a6*(c[14 - 1]*a6 + c[12 - 1]*a4 + c[10 - 1]*a2) + c[8 - 1]*a6 + c[6 - 1]*a4 + c[4 - 1]*a2 + c[2 - 1]*Matrix(T).eye(n))
 
         v = a6*(c[13 - 1]*a6 + c[11 - 1]*a4 + c[9 - 1]*a2) + c[7 - 1]*a6 + c[5 - 1]*a4 + c[3 - 1]*a2 + c[1 - 1]*Matrix(T).eye(n)
         # pp a6, a4, a2, self, c, u, v
