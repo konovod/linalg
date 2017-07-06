@@ -216,6 +216,11 @@ module Linalg
       io << "\n"
     end
 
+    def inspect(io)
+      io << self.class << " (" << nrows << "x" << ncolumns << ", " << flags << "):"
+      to_s(io)
+    end
+
     def each(&block)
       nrows.times do |row|
         ncolumns.times do |column|

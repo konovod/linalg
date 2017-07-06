@@ -199,6 +199,11 @@ describe Linalg::Matrix do
     m.to_s.should eq "\n[1.0, 2.0]\n[3.0, 4.0]\n[5.0, 6.0]\n\n"
   end
 
+  it "inspected" do
+    m = GMat.new([[1, 2], [3, 4], [5, 6]])
+    m.inspect.should eq "Linalg::GeneralMatrix(Float64) (3x2, None):\n[1.0, 2.0]\n[3.0, 4.0]\n[5.0, 6.0]\n\n"
+  end
+
   it "converted to array" do
     m = GMat.new([[1, 2], [3, 4], [5, 6]])
     m.to_a.should eq [1, 2, 3, 4, 5, 6]
