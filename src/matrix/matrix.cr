@@ -198,32 +198,6 @@ module Linalg
       x
     end
 
-    # like a tril in scipy - remove all elements above k-diagonal
-    def tril!(k = 0)
-      (nrows*ncolumns).times do |index|
-        i = index / ncolumns
-        j = index % ncolumns
-        @raw[index] = T.new(0) if i < j - k
-      end
-      if k <= 0
-        self.flags = MatrixFlags::LowerTriangular
-      end
-      self
-    end
-
-    # like a triu in scipy - remove all elements below k-diagonal
-    def triu!(k = 0)
-      (nrows*ncolumns).times do |index|
-        i = index / ncolumns
-        j = index % ncolumns
-        @raw[index] = T.new(0) if i > j - k
-      end
-      if k >= 0
-        self.flags = MatrixFlags::UpperTriangular
-      end
-      self
-    end
-
     # converts to string, with linefeeds before and after matrix:
     # [1, 2, 3, .... 10]
     # [11, 12, 13, .... 20]

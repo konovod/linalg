@@ -164,6 +164,24 @@ module Linalg
     def map_with_index!(&block)
       each_with_index { |v, i, j| unsafe_set(i, j, yield(v, i, j)) }
     end
+
+    # like a tril in scipy - remove all elements above k-diagonal
+    def tril!(k = 0)
+      map_with_index! { |v, i, j| i < j - k ? 0 : v }
+      if k <= 0
+        self.flags = MatrixFlags::LowerTriangular
+      end
+      self
+    end
+
+    # like a triu in scipy - remove all elements below k-diagonal
+    def triu!(k = 0)
+      map_with_index! { |v, i, j| i > j - k ? 0 : v }
+      if k >= 0
+        self.flags = MatrixFlags::UpperTriangular
+      end
+      self
+    end
   end
 
   alias GMat = GeneralMatrix(Float64)
