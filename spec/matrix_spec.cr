@@ -129,7 +129,7 @@ describe Linalg::Matrix do
     m.transpose!
     m.should eq GMat.new([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
   end
-  pending "can be trasposed inplace (rectangular case)" do
+  it "can be trasposed inplace (rectangular case)" do
     m = GMat.new([[1, 2, 3, 4], [5, 6, 7, 8]])
     m.transpose!
     m.should eq GMat.new([[1, 5], [2, 6], [3, 7], [4, 8]])

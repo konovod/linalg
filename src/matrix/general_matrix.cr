@@ -86,11 +86,14 @@ module Linalg
             self[j, i] = a
           end
         end
-      elsif nrows = 1 || ncolumns == 1
+      elsif nrows == 1 || ncolumns == 1
         @nrows, @ncolumns = @ncolumns, @nrows
       else
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
-        raise "transpose! not implemented yet"
+        newraw = Slice(T).new(nrows*ncolumns, T.new(0))
+        each_with_index { |v, r, c| newraw[c*nrows + r] = v }
+        @raw = newraw
+        @nrows, @ncolumns = @ncolumns, @nrows
       end
       self.flags = flags.transpose
       self
