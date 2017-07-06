@@ -319,7 +319,7 @@ module Linalg
     end
 
     # determine effective rank either by SVD method or QR-factorization with pivoting
-    # QR method is faster, but could fail to determine rank in rare cases
+    # QR method is faster, but could fail to determine rank in some cases
     def rank(eps = self.tolerance, *, method : RankMethod = RankMethod::SVD, overwrite_a = false)
       # if matrix is triangular no check needed
       return count_diagonal(eps) if flags.triangular?
