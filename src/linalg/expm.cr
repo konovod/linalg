@@ -24,7 +24,7 @@ module Linalg
   } # m_vals = 13
 
   module Matrix(T)
-    def expm(*, schur_fact = false, overwrite_a = false)
+    def expm(*, schur_fact = false)
       # EXPM_NEW  Matrix exponential.
       #  EXPM_NEW(A) is the matrix exponential of A computed using
       #  an improved scaling and squaring algorithm with a Pade approximation.
@@ -40,11 +40,10 @@ module Linalg
       raise ArgumentError.new("Matrix must be square for expm") unless square?
       schur_fact = false if flags.triangular?
       if schur_fact
-        a = overwrite_a ? self : clone
-        a, q = a.schur(overwrite_a: true)
+        a, q = self.schur
       else
         a = self
-        q = GMat.new(0, 0) # to prevent nilable of q
+        q = GMat.new(0, 0) # to prevent nilability of q
       end
       n = a.nrows
       s = 0
@@ -155,10 +154,11 @@ module Linalg
         +c[8 - 1]*a6 + c[6 - 1]*a4 + c[4 - 1]*a2 + c[2 - 1]*Matrix(T).eye(n))
 
         v = a6*(c[13 - 1]*a6 + c[11 - 1]*a4 + c[9 - 1]*a2) + c[7 - 1]*a6 + c[5 - 1]*a4 + c[3 - 1]*a2 + c[1 - 1]*Matrix(T).eye(n)
+        # pp a6, a4, a2, self, c, u, v
       else
         raise ""
       end
-      f = (v - u)*(u + v).inv!
+      f = (v - u).inv!*(u + v)
     end
 
     protected def getPadeCoefficients(m)
@@ -184,7 +184,7 @@ module Linalg
       end
     end
 
-    def normAm(m, *, overwrite_a = false)
+    protected def normAm(m, *, overwrite_a = false)
       # NORMAM   Estimate of 1-norm of power of matrix.
       #    NORMAM(A,m) estimates norm(A^m,1).
       #    If A has nonnegative elements the estimate is exact.
