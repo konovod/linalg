@@ -38,12 +38,12 @@ module Linalg
       #  970-989, 2009.
       #  Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
       raise ArgumentError.new("Matrix must be square for expm") unless square?
-
-      a = overwrite_a ? self : clone
-      schur_fact = false if a.flags.triangular?
+      schur_fact = false if flags.triangular?
       if schur_fact
+        a = overwrite_a ? self : clone
         a, q = a.schur(overwrite_a: true)
       else
+        a = self
         q = GMat.new(0, 0) # to prevent nilable of q
       end
       n = a.nrows
@@ -158,7 +158,7 @@ module Linalg
       else
         raise ""
       end
-      f = (-u + v)*(u + v).inv!
+      f = (v - u)*(u + v).inv!
     end
 
     protected def getPadeCoefficients(m)
@@ -184,7 +184,7 @@ module Linalg
       end
     end
 
-    protected def normAm(m, *, overwrite_a = false)
+    def normAm(m, *, overwrite_a = false)
       # NORMAM   Estimate of 1-norm of power of matrix.
       #    NORMAM(A,m) estimates norm(A^m,1).
       #    If A has nonnegative elements the estimate is exact.
@@ -197,12 +197,11 @@ module Linalg
       #    Awad H. Al-Mohy and Nicholas J. Higham, April 19, 2010.
       n = nrows
       a = overwrite_a ? self : clone
-      if a.raw.all? &.>(0)
+      if a.raw.all? &.>=(0)
         e = Matrix(T).ones(n, 1)
         a.transpose!
         m.times { e = a * e }
         c = e.norm(MatrixNorm::Inf)
-        mv = m
         c
       else
         # TODO - normest?
