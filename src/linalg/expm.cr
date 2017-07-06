@@ -93,13 +93,13 @@ module Linalg
         f.t!
       end
       #
-      if a.flags.triangular? || schur_fact
-        # TODO f = expm_sqtri(a, f, s)
-        raise "not implemented yet"
-        f.transpose! if a.flags.lower_triangular?
-      else
-        s.to_i.times { f = f*f }
-      end
+      # TODO f = expm_sqtri(a, f, s)
+      # if a.flags.triangular? || schur_fact
+      #   raise "not implemented yet"
+      #   f.transpose! if a.flags.lower_triangular?
+      # else
+      s.to_i.times { f = f*f }
+      # end
       return schur_fact ? q*f*q.conjt : f
     end
 
