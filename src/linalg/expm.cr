@@ -38,12 +38,13 @@ module Linalg
       #  970-989, 2009.
       #  Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
       raise ArgumentError.new("Matrix must be square for expm") unless square?
+      return Matrix(T).identity(nrows) if norm(MatrixNorm::One) == 0
       schur_fact = false if flags.triangular?
       if schur_fact
         a, q = self.schur
       else
         a = self
-        q = GMat.new(0, 0) # to prevent nilability of q
+        q = Matrix(T).zeros(0, 0) # to prevent nilability of q
       end
       n = a.nrows
       s = 0
