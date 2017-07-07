@@ -4,7 +4,7 @@
 Linear algebra library in Crystal, uses LAPACKE.
 - direct access to LAPACK methods
 - convenient Matrix(T) class, supports T=Float32, Float64 and Complex.
-- high-level interface similar to scipy.linalg or MATLAB. (WIP)
+- high-level interface similar to scipy.linalg or MATLAB.
 
 Killing SciPy, one module at a time.
 
@@ -109,6 +109,7 @@ a = GMat32[
 lu = a.lu_factor # lu is LUMatrix(T) - immutable object that can return it's content and solve systems
 puts lu.solve(GMat32[[2], [4]])
 ```
+- matrix rank determination (using SVD or QRP)
 - linear least squares problem (`Linalg.solvels` to just get decision or `Linalg.lstsq` to also get rank and singular values (TODO - and residues))
 - cholesky decomposition (`##cholesky`, `##cholesky!`, `##cho_solve`)
 - `hessenberg` form
@@ -116,7 +117,29 @@ puts lu.solve(GMat32[[2], [4]])
 - `schur` and `qz` (generalized schur) decomposition
 - generalized eigenproblem (`eigs(a, b, ...)`)
 
-There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select proper algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. Actually `a.transpose` returns matrix clone as for symmetric matrices A=A'.
+There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select better algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. In fact, `a.transpose` will return matrix clone as for symmetric matrices A=A'.
+
+Supported flags:
+```crystal
+enum MatrixFlags
+  Symmetric
+  Hermitian
+  PositiveDefinite
+  Orthogonal
+  UpperTriangular
+  LowerTriangular
+  Triangular      = UpperTriangular | LowerTriangular
+```
+NOTE for complex matrices `Orthogonal` flag means `Unitary`.
+
+Main functions for flags are:
+```crystal
+  a.assume!(flag) # sets matrix flag without check, can lead to incorrect results if matrix do not have corresponding property.
+  a.detect(flag) # checks if matrix has property, if yes sets the flag. Returns true if check positive
+  a.detect # detect all possible flags
+  a.flags # returns matrix flags
+```
+Most operations - matrix addition, multiplication, inversion, transposition and decompositions correctly update flags, but any direct access like `a[i,j] = 0` or `a.map!{|v| v+1}` resets flags to `None`, so use `a.detect` after them if you need to preserve them.
 
 
 Check `spec` directory for more examples.
@@ -150,8 +173,3 @@ PRs are welcome)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
 5. Create a new Pull Request
-
-
-## Contributors
-
-- [[konovod]](https://github.com/konovod) Konovod - creator, maintainer
