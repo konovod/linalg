@@ -10,9 +10,8 @@ Killing SciPy, one module at a time.
 
 ## Installation
 
-1. Install LAPACKE (and dependencies - LAPACK and BLAS). `sudo apt install liblapacke` for Ubuntu, `sudo pacman -S lapacke` for Arch.
+1. Install LAPACKE (and dependencies - LAPACK and BLAS). `sudo apt install libopenblas-base liblapacke` for Ubuntu, `sudo pacman -S lapacke` (for better performance use `openblas-lapack` from AUR) for Arch.
 
-*WARNING: lapack and blas pakages are not optimized, for better performance use optimized version, like ATLAS*
 
 2. (for Ubuntu) it seems package doesn't create symlink, so use `sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so`
 

@@ -28,23 +28,26 @@ test 500
 test 1000
 test 2000
 
+# with OpenBLAS
 # *********N = 10*************
-#         QR 141.47k (  7.07µs) (±17.05%)       fastest
-# Orthogonal  72.27k ( 13.84µs) (±17.57%)  1.96× slower
-#        SVD  38.63k ( 25.88µs) (± 8.40%)  3.66× slower
+#         QR  98.49k ( 10.15µs) (±13.47%)       fastest
+# Orthogonal  51.43k ( 19.45µs) (± 9.68%)  1.92× slower
+#        SVD  22.79k ( 43.87µs) (± 6.46%)  4.32× slower
 # *********N = 100*************
-#         QR   1.88k (531.03µs) (±13.97%)       fastest
-# Orthogonal   1.07k (933.43µs) (± 9.57%)  1.76× slower
-#        SVD 482.19  (  2.07ms) (± 6.12%)  3.91× slower
+#         QR   2.28k (439.27µs) (±12.25%)       fastest
+# Orthogonal   1.28k (778.68µs) (±11.98%)  1.77× slower
+#        SVD 292.27  (  3.42ms) (±10.73%)  7.79× slower
 # *********N = 500*************
-#         QR  20.99  ( 47.65ms) (± 2.68%)       fastest
-# Orthogonal  13.39  ( 74.68ms) (± 1.28%)  1.57× slower
-#        SVD   9.63  (103.79ms) (± 2.39%)  2.18× slower
+#         QR  40.09  ( 24.94ms) (± 3.20%)       fastest
+# Orthogonal  26.61  ( 37.58ms) (± 3.59%)  1.51× slower
+#        SVD  11.88  ( 84.18ms) (± 5.46%)  3.38× slower
 # *********N = 1000*************
-#         QR   2.72  (367.56ms) (± 2.49%)       fastest
-# Orthogonal   1.68  (595.04ms) (± 0.32%)  1.62× slower
-#        SVD   1.39  (719.77ms) (± 0.89%)  1.96× slower
+#         QR    7.9  (126.63ms) (± 5.62%)       fastest
+# Orthogonal   4.13  ( 241.9ms) (± 1.29%)  1.91× slower
+#        SVD   2.94  (339.71ms) (± 1.21%)  2.68× slower
 # *********N = 2000*************
-#         QR   0.34  (  2.98s ) (± 0.27%)       fastest
-# Orthogonal    0.2  (  5.05s ) (± 0.00%)  1.70× slower
-#        SVD   0.17  (  5.73s ) (± 0.00%)  1.93× slower
+# GC Warning: Repeated allocation of very large block (appr. size 16003072):
+# 	May lead to memory leak and poor performance
+#         QR   1.57  ( 638.6ms) (± 0.66%)       fastest
+# Orthogonal   0.56  (   1.8s ) (± 1.10%)  2.81× slower
+#        SVD   0.53  (  1.89s ) (± 0.29%)  2.96× slower
