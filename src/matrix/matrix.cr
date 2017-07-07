@@ -58,8 +58,9 @@ module Linalg
       result
     end
 
-    def scale
-      self
+    def scale(complex : Bool)
+      r = self & ~MatrixFlags::Orthogonal
+      complex ? r & ~MatrixFlags::Hermitian : r
     end
 
     def self.for_diag(square : Bool)
@@ -68,6 +69,16 @@ module Linalg
       else
         UpperTriangular | LowerTriangular
       end
+    end
+
+    def real
+      result = self & (MatrixFlags::Symmetric | MatrixFlags::Hermitian | MatrixFlags::Triangular)
+      result |= MatrixFlags::Symmetric if self.hermitian?
+      result
+    end
+
+    def imag
+      self & (MatrixFlags::Symmetric | MatrixFlags::Triangular)
     end
   end
 
@@ -99,6 +110,26 @@ module Linalg
       end.tap { |it| it.flags = flags }
     end
 
+    # converts complex matrix to real part
+    def to_real
+      {% unless T == Complex %}
+        {% raise "Only complex matrices have ##to_real" %}
+      {% end %}
+      GeneralMatrix(Float64).new(nrows, ncolumns) do |i, j|
+        unsafe_at(i, j).real
+      end.tap { |it| it.flags = flags.real }
+    end
+
+    # converts complex matrix to imaginary part
+    def to_imag
+      {% unless T == Complex %}
+        {% raise "Only complex matrices have ##to_imag" %}
+      {% end %}
+      GeneralMatrix(Float64).new(nrows, ncolumns) do |i, j|
+        unsafe_at(i, j).imag
+      end.tap { |it| it.flags = flags.imag }
+    end
+
     # matrix product to given m
     def *(m : Matrix(T))
       if ncolumns != m.nrows
@@ -115,7 +146,7 @@ module Linalg
       result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j]*k
       end
-      result.tap { |r| r.flags = self.flags.scale }
+      result.tap { |r| r.flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0) }
     end
 
     def -
@@ -127,7 +158,7 @@ module Linalg
       result = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         self[i, j] / k
       end
-      result.tap { |r| r.flags = self.flags.scale }
+      result.tap { |r| r.flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0) }
     end
 
     # returns element-wise sum
@@ -363,14 +394,14 @@ module Linalg
         # TODO - 2 times less work
         return false unless square?
         each_with_index do |value, row, column|
-          return false if row < column && (value - unsafe_at(row, column)).abs > eps
+          return false if row < column && (value - unsafe_at(column, row)).abs > eps
         end
         return true
       when .hermitian?
         {% if T == Complex %}
           return false unless square?
           each_with_index do |value, row, column|
-            return false if row < column && (value.conj - unsafe_at(row, column)).abs > eps
+            return false if row < column && (value.conj - unsafe_at(column, row)).abs > eps
           end
           return true
         {% else %}

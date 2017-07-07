@@ -24,4 +24,29 @@ describe Linalg::Matrix do
     a = Linalg::Mat.zeros(10, 4)
     a.flags.symmetric?.should be_false
   end
+
+  it "flags for complex to double conversion" do
+    a = Linalg::GMatComplex[{0, 6.i, 0, 0}, {0, 0, 6, 0}, {0, 0, 0, 6}, {0, 0, 0, 0}]
+    a.detect
+    a.flags.should eq Linalg::MatrixFlags::UpperTriangular
+    a.to_real.flags.should eq Linalg::MatrixFlags::UpperTriangular
+    a.to_imag.flags.should eq Linalg::MatrixFlags::UpperTriangular
+    b = (1.i*a).expm
+    b.to_real.flags.should eq Linalg::MatrixFlags::UpperTriangular
+    b.to_imag.flags.should eq Linalg::MatrixFlags::UpperTriangular
+
+    a = a + a.conjt
+    a.flags.should eq Linalg::MatrixFlags::None
+    a.detect
+    a.flags.should eq Linalg::MatrixFlags::Hermitian
+    (1.i*a).flags.should eq Linalg::MatrixFlags::None
+    a.to_real.flags.should eq Linalg::MatrixFlags::Hermitian | Linalg::MatrixFlags::Symmetric
+    a.to_imag.flags.should eq Linalg::MatrixFlags::None
+    b = (1.i*a).expm
+    b.flags.should eq Linalg::MatrixFlags::None
+    b.detect
+    b.flags.should eq Linalg::MatrixFlags::Orthogonal
+    b.to_real.flags.should eq Linalg::MatrixFlags::None
+    b.to_imag.flags.should eq Linalg::MatrixFlags::None
+  end
 end
