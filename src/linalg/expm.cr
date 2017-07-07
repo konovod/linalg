@@ -197,7 +197,8 @@ module Linalg
       #    Awad H. Al-Mohy and Nicholas J. Higham, April 19, 2010.
       n = nrows
       a = overwrite_a ? self : clone
-      if a.raw.all? &.>=(0)
+
+      if a.raw.all? { |v| {% if T == Complex %} v.real >= 0{% else %} v >= 0{% end %} }
         e = Matrix(T).ones(n, 1)
         a.transpose!
         m.times { e = a * e }
