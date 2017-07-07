@@ -53,5 +53,8 @@ describe Linalg do
       [0.83373 + 0.98890.i, -0.33175 + 0.96671.i, 2.39036 + 0.53776.i],
       [1.93342 + 0.66349.i, 0.83373 + 0.98890.i, 1.85841 - 1.47252.i],
       [0, 0, 2.71828]], 1e-4
+
+    m = MatComplex.diag([Math::PI*1.i, 5, 1])
+    m.expm.should almost_eq MatComplex.diag([-1, Math::E**5, Math::E])
   end
 end
