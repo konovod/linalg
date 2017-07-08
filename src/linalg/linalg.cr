@@ -148,7 +148,7 @@ module Linalg
       ipiv = Slice(Int32).new(nrows)
       lapack(ge, trf, nrows, nrows, lru, nrows, ipiv)
       lru.clear_flags
-      (0...nrows).reduce(1) { |det, i| det*lru[i, i] }
+      lru.diag.product
     end
 
     def solvels(b : self, *, overwrite_a = false, overwrite_b = false, cond = -1)
@@ -317,19 +317,15 @@ module Linalg
       norm(kind)
     end
 
-    protected def count_diagonal(eps)
-      (0...{nrows, ncolumns}.min).count { |x| unsafe_at(x, x).abs > eps }
-    end
-
     # determine effective rank either by SVD method or QR-factorization with pivoting
     # QR method is faster, but could fail to determine rank in some cases
     def rank(eps = self.tolerance, *, method : RankMethod = RankMethod::SVD, overwrite_a = false)
       # if matrix is triangular no check needed
-      return count_diagonal(eps) if flags.triangular?
+      return diag.count { |v| v.abs > eps } if flags.triangular?
       case method
       when .qrp?
         a, pvt = qr_r(overwrite_a: overwrite_a, pivoting: true)
-        a.count_diagonal(eps)
+        a.diag.count { |v| v.abs > eps }
       when .svd?
         s = svdvals(overwrite_a: overwrite_a)
         s.count { |x| x.abs > eps }
