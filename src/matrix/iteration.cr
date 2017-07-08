@@ -39,5 +39,24 @@ module Linalg
         SubMatrix(T).new(@base, {range.begin, 0}, {size, @base.ncolumns})
       end
     end
+
+    struct Diagonal(T)
+      include Indexable(T)
+      protected def initialize(@base : Matrix(T))
+      end
+
+      def size
+        {@base.nrows, @base.ncolumns}.min
+      end
+
+      # unsafe_new for submatrix?
+      def unsafe_at(i)
+        @base.unsafe_at(i, i)
+      end
+    end
+
+    def diag
+      Diagonal(T).new(self)
+    end
   end
 end

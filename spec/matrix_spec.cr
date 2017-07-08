@@ -308,4 +308,10 @@ describe Linalg::Matrix do
     m = Mat.ones(10, 20)
     m.trace.should eq 10
   end
+
+  it "have Indexable diag" do
+    m = GMat32.new([[-1, 2, 3, 4], [5, -6, 7, 8], [9, 10, -11, 12]])
+    m.diag[1].should eq -6
+    (m.diag.all? &.<(0)).should be_true
+  end
 end

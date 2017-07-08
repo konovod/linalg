@@ -582,7 +582,7 @@ module Linalg
     end
 
     def trace
-      (0...{nrows, ncolumns}.min).sum { |i| unsafe_at(i, i) }
+      diag.sum
     end
   end
 
