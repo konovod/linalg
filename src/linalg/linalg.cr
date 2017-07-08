@@ -81,6 +81,12 @@ module Linalg
       flags.lower_triangular? ? 'L'.ord : 'U'.ord
     end
 
+    private def copy_up_down
+      f = flags
+      each_with_index { |v, i, j| unsafe_set(j, i, v) if i < j }
+      @flags = f
+    end
+
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       return transpose! if flags.orthogonal?
@@ -88,16 +94,21 @@ module Linalg
       if flags.positive_definite?
         lapack(po, trf, uplo, n, self, n)
         lapack(po, tri, uplo, n, self, n)
-      elsif flags.hermitian?
+        copy_up_down
+      elsif {{T == Complex}} && flags.hermitian?
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
         lapack(he, trf, uplo, n, self, n, ipiv)
         lapack(he, tri, uplo, n, self, n, ipiv)
+        copy_up_down
+        {% else %}
+        raise "error"
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)
         lapack(sy, trf, uplo, n, self, n, ipiv)
         lapack(sy, tri, uplo, n, self, n, ipiv)
+        copy_up_down
       elsif flags.triangular?
         lapack(tr, tri, uplo, 'N'.ord, n, self, n)
       else

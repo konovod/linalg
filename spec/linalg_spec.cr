@@ -69,6 +69,20 @@ describe Linalg do
     (matrix1*matrix1.inv).should eq MatComplex.identity(3)
   end
 
+  it "correctly update symmetric matrices" do
+    matrix1 = GMat[
+      [1, 1, 1],
+      [1, 2, 3],
+      [1, 3, 6],
+    ]
+    matrix1.detect
+    matrix1.inv.should eq GMat[
+      [3.0, -3.0, 1.0],
+      [-3.0, 5.0, -2.0],
+      [1.0, -2.0, 1.0],
+    ]
+  end
+
   it "high-level: solve linear equations" do
     a = GMat32[
       [2, 4],
