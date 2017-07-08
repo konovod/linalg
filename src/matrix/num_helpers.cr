@@ -24,3 +24,13 @@ abstract struct Number
     self
   end
 end
+
+module Enumerable(T)
+  def product(initial : Complex, &block)
+    reduce(initial) { |memo, e| memo * (yield e) }
+  end
+
+  def product(initial : Complex)
+    product initial, &.itself
+  end
+end

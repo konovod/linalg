@@ -83,6 +83,12 @@ describe Linalg do
       [4, 5, 7],
       [-1, 1, -1]]
     a.det.should eq 9
+
+    a = GMatComplex[
+      [1.i, 2, 3],
+      [0, 5, 7],
+      [0, 0, -1.i]]
+    a.det.should eq 5
   end
   it "high-level: solve linear least square" do
     a = GMat32[

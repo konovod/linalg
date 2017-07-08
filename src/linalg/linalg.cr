@@ -141,6 +141,9 @@ module Linalg
 
     def det(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
+      if flags.triangular?
+        return diag.product
+      end
       lru = overwrite_a ? self : self.clone
       ipiv = Slice(Int32).new(nrows)
       lapack(ge, trf, nrows, nrows, lru, nrows, ipiv)
