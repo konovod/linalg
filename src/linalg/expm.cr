@@ -39,6 +39,12 @@ module Linalg
       #  Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
       raise ArgumentError.new("Matrix must be square for expm") unless square?
       return Matrix(T).identity(nrows) if norm(MatrixNorm::One) == 0
+      if flags.diagonal?
+        return Matrix(T).diag(nrows, nrows) do |i|
+          v = unsafe_at(i, i)
+          {% if T == Complex %} v.exp {% else %} Math.exp(v) {% end %}
+        end
+      end
       schur_fact = false if flags.triangular?
       if schur_fact
         a, q = self.schur
