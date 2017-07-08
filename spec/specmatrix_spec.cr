@@ -120,4 +120,10 @@ describe "constructing of special matrices" do
     Mat32.pascal(4, PascalKind::Upper).should eq Mat32.pascal(4, PascalKind::Lower).transpose
     Mat.pascal(50)[-1, -1].should be_close(2.547761225898085e28, 1e29)
   end
+
+  it "invpascal matrix" do
+    Mat.invpascal(10, PascalKind::Upper).should almost_eq Mat.pascal(10, PascalKind::Upper).inv
+    Mat32.invpascal(10, PascalKind::Lower).should almost_eq Mat32.pascal(10, PascalKind::Lower).inv
+    MatComplex.invpascal(10).should almost_eq MatComplex.pascal(10).inv
+  end
 end

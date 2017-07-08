@@ -214,7 +214,25 @@ module Linalg
               m.unsafe_set(i, j, m.unsafe_at(i - 1, j) + m.unsafe_at(i, j - 1))
             end
           end
-          m.assume!(MatrixFlags::Symmetric | MatrixFlags::Hermitian)
+          m.assume!(MatrixFlags::Symmetric | MatrixFlags::Hermitian | MatrixFlags::PositiveDefinite)
+        end
+      end
+    end
+
+    def self.invpascal(n, kind : PascalKind = PascalKind::Symmetric)
+      case kind
+      when .symmetric?
+        # TODO - better method
+        result = invpascal(n, PascalKind::Upper)*invpascal(n, PascalKind::Lower)
+        result.assume!(MatrixFlags::Symmetric | MatrixFlags::Hermitian | MatrixFlags::PositiveDefinite)
+        result
+      else
+        pascal(n, kind).map_with_index! { |v, r, c| (r - c) % 2 == 0 ? v : -v }.tap do |m|
+          if kind.lower?
+            m.assume!(MatrixFlags::LowerTriangular)
+          else
+            m.assume!(MatrixFlags::UpperTriangular)
+          end
         end
       end
     end
