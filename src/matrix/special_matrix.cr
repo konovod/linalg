@@ -166,3 +166,57 @@ module Linalg
     end
   end
 end
+
+module Linalg
+  enum PascalKind
+    Upper
+    Lower
+    Symmetric
+  end
+
+  module Matrix(T)
+    private def self.n_choose_k(n, k)
+      (1..n).product(T.new(1.0)) / ((1..k).product(T.new(1.0)) * (1..n - k).product(T.new(1.0)))
+    end
+
+    def self.pascal(n, kind : PascalKind = PascalKind::Symmetric)
+      case kind
+      when .upper?
+        zeros(n, n).tap do |m|
+          m.each_index do |i, j|
+            next if i > j
+            if i == j || i == 0
+              m.unsafe_set(i, j, T.new(1.0))
+            else
+              m.unsafe_set(i, j, m.unsafe_at(i - 1, j - 1) + m.unsafe_at(i, j - 1))
+            end
+          end
+          m.assume!(MatrixFlags::UpperTriangular)
+        end
+      when .lower?
+        zeros(n, n).tap do |m|
+          m.each_index do |i, j|
+            next if i < j
+            if i == j || j == 0
+              m.unsafe_set(i, j, T.new(1.0))
+            else
+              m.unsafe_set(i, j, m.unsafe_at(i - 1, j - 1) + m.unsafe_at(i - 1, j))
+            end
+          end
+          m.assume!(MatrixFlags::LowerTriangular)
+        end
+      else
+        zeros(n, n).tap do |m|
+          m.each_index do |i, j|
+            if i == 0 || j == 0
+              m.unsafe_set(i, j, T.new(1.0))
+            else
+              m.unsafe_set(i, j, m.unsafe_at(i - 1, j) + m.unsafe_at(i, j - 1))
+            end
+          end
+          m.assume!(MatrixFlags::Symmetric | MatrixFlags::Hermitian)
+        end
+      end
+    end
+  end
+end

@@ -105,4 +105,19 @@ describe "constructing of special matrices" do
       [12, -2 - 2.i, -4.i, -2 + 2.i, 4, -2 - 2.i, 4.i, -2 + 2.i],
     ])
   end
+
+  it "pascal matrix" do
+    Mat.pascal(4).should eq GMat[
+      [1, 1, 1, 1],
+      [1, 2, 3, 4],
+      [1, 3, 6, 10],
+      [1, 4, 10, 20]]
+    MatComplex.pascal(4, PascalKind::Lower).should eq GMatComplex[
+      [1, 0, 0, 0],
+      [1, 1, 0, 0],
+      [1, 2, 1, 0],
+      [1, 3, 3, 1]]
+    Mat32.pascal(4, PascalKind::Upper).should eq Mat32.pascal(4, PascalKind::Lower).transpose
+    Mat.pascal(50)[-1, -1].should be_close(2.547761225898085e28, 1e29)
+  end
 end
