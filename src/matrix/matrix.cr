@@ -306,6 +306,8 @@ module Linalg
     end
 
     def [](i, j)
+      i += nrows if i < 0
+      j += ncolumns if j < 0
       if j >= 0 && j < ncolumns && i >= 0 && i < nrows
         unsafe_at(i, j)
       else
@@ -314,6 +316,8 @@ module Linalg
     end
 
     def []=(i, j, value)
+      i += nrows if i < 0
+      j += ncolumns if j < 0
       if j >= 0 && j < ncolumns && i >= 0 && i < nrows
         unsafe_set(i, j, value)
       else

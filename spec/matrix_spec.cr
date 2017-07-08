@@ -40,6 +40,15 @@ describe Linalg::Matrix do
     expect_raises(IndexError) { m[0, 6] = 1.0 }
   end
 
+  it "negative indices counts from size" do
+    m = GMat.new(5, 4)
+    m[3, -2] = 1.0
+    m[-2, 2].should eq 1.0
+    m[-2, -2].should eq 1.0
+    m[3, -1].should eq 0.0
+    expect_raises(IndexError) { m[3, -5] = 1.0 }
+  end
+
   it "can multiply matrices" do
     m1 = GMat.new(3, 4) { |i, j| i + j }
     m2 = GMat.new(4, 2) { |i, j| i - j }
