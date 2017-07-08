@@ -61,14 +61,14 @@
 
 ### Matrix Functions
 
-- [ ] expm(A[, q])	Compute the matrix exponential using Pade approximation.
+- [x] expm(A[, q])	Compute the matrix exponential using Pade approximation.
 - [ ] logm(A[, disp])	Compute matrix logarithm.
-- [ ] cosm(A)	Compute the matrix cosine.
-- [ ] sinm(A)	Compute the matrix sine.
-- [ ] tanm(A)	Compute the matrix tangent.
-- [ ] coshm(A)	Compute the hyperbolic matrix cosine.
-- [ ] sinhm(A)	Compute the hyperbolic matrix sine.
-- [ ] tanhm(A)	Compute the hyperbolic matrix tangent.
+- [x] cosm(A)	Compute the matrix cosine.
+- [x] sinm(A)	Compute the matrix sine.
+- [x] tanm(A)	Compute the matrix tangent.
+- [x] coshm(A)	Compute the hyperbolic matrix cosine.
+- [x] sinhm(A)	Compute the hyperbolic matrix sine.
+- [x] tanhm(A)	Compute the hyperbolic matrix tangent.
 - [ ] signm(A[, disp])	Matrix sign function.
 - [ ] sqrtm(A[, disp, blocksize])	Matrix square root.
 - [ ] funm(A, func[, disp])	Evaluate a matrix function specified by a callable.
