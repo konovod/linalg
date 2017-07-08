@@ -580,6 +580,10 @@ module Linalg
     def map_with_index(&block)
       GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
     end
+
+    def trace
+      (0...{nrows, ncolumns}.min).sum { |i| unsafe_at(i, i) }
+    end
   end
 
   alias Mat = Matrix(Float64)

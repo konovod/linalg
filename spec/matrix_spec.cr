@@ -301,4 +301,11 @@ describe Linalg::Matrix do
     m.map_with_index! { |x, row, col| row < col ? x : 0 }
     m.detect(MatrixFlags::UpperTriangular).should be_true
   end
+
+  it "can evaluate trace" do
+    m = MatComplex.diag([1, 2, 3, 4, 5])
+    m.trace.should eq (1 + 2 + 3 + 4 + 5)
+    m = Mat.ones(10, 20)
+    m.trace.should eq 10
+  end
 end
