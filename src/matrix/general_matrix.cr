@@ -65,7 +65,7 @@ module Linalg
 
     def to_unsafe
       {% if T == Complex %}
-      @raw.to_unsafe.as(LibLAPACKE::DoubleComplex*)
+      @raw.to_unsafe.as(LibCBLAS::ComplexDouble*)
     {% else %}
       @raw.to_unsafe
     {% end %}

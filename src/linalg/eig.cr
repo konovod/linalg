@@ -79,7 +79,7 @@ module Linalg
       {% if T == Complex %}
         vals = Array(T).new(nrows, T.new(0,0))
         lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
-                vals.to_unsafe.as(LibLAPACKE::DoubleComplex*),
+                vals.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)
         a.clear_flags
@@ -167,8 +167,8 @@ module Linalg
         beta = Array(T).new(nrows, T.new(0,0))
         lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
                 bb, b.ncolumns,
-                alpha.to_unsafe.as(LibLAPACKE::DoubleComplex*),
-                beta.to_unsafe.as(LibLAPACKE::DoubleComplex*),
+                alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
+                beta.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)
         a.clear_flags

@@ -13,7 +13,7 @@ module Linalg
       {% if T == Complex %}
         w = Slice(T).new(nrows, T.new(0))
         z = GeneralMatrix(T).new(*size)
-        lapack(ge, es, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, w.to_unsafe.as(LibLAPACKE::DoubleComplex*), z, ncolumns)
+        lapack(ge, es, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, w.to_unsafe.as(LibCBLAS::ComplexDouble*), z, ncolumns)
         a.clear_flags
         a.assume! MatrixFlags::UpperTriangular
         z.assume! MatrixFlags::Orthogonal
@@ -41,8 +41,8 @@ module Linalg
         lapack(gg, es, 'V'.ord,'V'.ord, 'N'.ord, nil,
             nrows, a, ncolumns, bb, bb.ncolumns,
             out sdim,
-            alpha.to_unsafe.as(LibLAPACKE::DoubleComplex*),
-            beta.to_unsafe.as(LibLAPACKE::DoubleComplex*),
+            alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
+            beta.to_unsafe.as(LibCBLAS::ComplexDouble*),
             vsl, ncolumns, vsr, ncolumns)
         a.clear_flags
         bb.clear_flags
