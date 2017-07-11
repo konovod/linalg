@@ -57,7 +57,7 @@ module Linalg
          elsif T == Complex
            typ = :z.id
          end %}
-       LibCBLAS.{{typ}}{{storage}}{{name}}(LibCBLAS, {{*args}})
+       LibCBLAS.{{typ}}{{storage}}{{name}}(LibCBLAS::ROW_MAJOR, {{*args}})
     end
 
     macro lapack_util(name, *args)
@@ -352,6 +352,37 @@ module Linalg
         s = svdvals(overwrite_a: overwrite_a)
         s.count { |x| x.abs > eps }
       end
+    end
+
+    # performs c = alpha*a*b + beta*c (BLAS routines gemm/symm/hemm/trmm)
+    def inc_mult(a, b : Matrix(T), *, alpha = 1.0, beta = 1.0)
+      if a.ncolumns != b.nrows || a.nrows != nrows || b.ncolumns != ncolumns
+        raise ArgumentError.new("matrix size mismatch")
+      end
+      aa = a.is_a?(GeneralMatrix(T)) ? a : a.clone
+      bb = b.is_a?(GeneralMatrix(T)) ? b : b.clone
+      no = LibCBLAS::CblasTranspose::CblasNoTrans
+      {% if T == Complex %}
+        calpha = T.new(alpha)
+        cbeta = T.new(beta)
+        blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns,
+          pointerof(calpha).as(Float64*),
+          aa.to_unsafe.as(Float64*), a.ncolumns,
+          bb.to_unsafe.as(Float64*), b.ncolumns,
+          pointerof(cbeta).as(Float64*),
+          self.to_unsafe.as(Float64*), self.ncolumns)
+      {% else %}
+        blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns, T.new(alpha), aa, a.ncolumns, bb, b.ncolumns, T.new(beta), self, self.ncolumns)
+      {% end %}
+    end
+
+    def *(m : Matrix(T))
+      if ncolumns != m.nrows
+        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+      end
+      result = Matrix(T).zeros(nrows, m.ncolumns)
+      result.inc_mult(self, m)
+      result.tap { |r| r.flags = self.flags.mult(m.flags) }
     end
   end
 end

@@ -131,15 +131,15 @@ module Linalg
     end
 
     # matrix product to given m
-    def *(m : Matrix(T))
-      if ncolumns != m.nrows
-        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
-      end
-      result = GeneralMatrix(T).new(nrows, m.ncolumns) do |i, j|
-        (0...ncolumns).sum { |k| self[i, k]*m[k, j] }
-      end
-      result.tap { |r| r.flags = self.flags.mult(m.flags) }
-    end
+    # def *(m : Matrix(T))
+    #   if ncolumns != m.nrows
+    #     raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+    #   end
+    #   result = GeneralMatrix(T).new(nrows, m.ncolumns) do |i, j|
+    #     (0...ncolumns).sum { |k| self[i, k]*m[k, j] }
+    #   end
+    #   result.tap { |r| r.flags = self.flags.mult(m.flags) }
+    # end
 
     # multiplies at scalar
     def *(k : Number | Complex)
