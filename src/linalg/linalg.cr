@@ -49,6 +49,17 @@ module Linalg
   end
 
   module Matrix(T)
+    macro blas(storage, name, *args)
+      {% if T == Float32
+           typ = :s.id
+         elsif T == Float64
+           typ = :d.id
+         elsif T == Complex
+           typ = :z.id
+         end %}
+       LibCBLAS.{{typ}}{{storage}}{{name}}(LibCBLAS, {{*args}})
+    end
+
     macro lapack_util(name, *args)
       {% if T == Float32
            typ = :s.id
@@ -57,7 +68,7 @@ module Linalg
          elsif T == Complex
            typ = :z.id
          end %}
-       LibLAPACKE.{{typ}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
+       LibLAPACKE.{{typ}}{{name}}(LibCBLAS::ROW_MAJOR, {{*args}})
     end
 
     macro lapack(storage, name, *args)
@@ -73,7 +84,7 @@ module Linalg
           else
             st = storage
           end %}
-       info = LibLAPACKE.{{typ}}{{st}}{{name}}(LibLAPACKE::ROW_MAJOR, {{*args}})
+       info = LibLAPACKE.{{typ}}{{st}}{{name}}(LibCBLAS::ROW_MAJOR, {{*args}})
        raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
     end
 
