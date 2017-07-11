@@ -372,12 +372,26 @@ module Linalg
       no = LibCBLAS::CblasTranspose::CblasNoTrans
       calpha = T.new(alpha)
       cbeta = T.new(beta)
-      blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns,
-        blas_const(calpha),
-        aa, a.ncolumns,
-        bb, b.ncolumns,
-        blas_const(cbeta),
-        self, self.ncolumns)
+      if a.flags.symmetric? || b.flags.symmetric?
+        side = a.flags.symmetric? ? LibCBLAS::CblasSide::CblasLeft : LibCBLAS::CblasSide::CblasRight
+        if side == LibCBLAS::CblasSide::CblasRight
+          aa, bb = bb, aa
+        end
+        up = LibCBLAS::CblasUplo::CblasUpper
+        blas(sy, mm, side, up, a.nrows, b.ncolumns,
+          blas_const(calpha),
+          aa, a.ncolumns,
+          bb, b.ncolumns,
+          blas_const(cbeta),
+          self, self.ncolumns)
+      else
+        blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns,
+          blas_const(calpha),
+          aa, a.ncolumns,
+          bb, b.ncolumns,
+          blas_const(cbeta),
+          self, self.ncolumns)
+      end
     end
 
     def *(m : Matrix(T))

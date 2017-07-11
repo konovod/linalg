@@ -4,6 +4,8 @@ require "../src/linalg/*"
 
 include Linalg
 
+# Conclusion: blas gemm is significiantly faster, symm doesn't bring any profit
+
 module Linalg::Matrix(T)
   def naive_mult(m : Matrix(T))
     if ncolumns != m.nrows
@@ -35,23 +37,26 @@ module Linalg::Matrix(T)
 end
 
 def test(n)
-  a = Mat.rand(n, n*2)
-  b = Mat.rand(n*2, n)
+  a = Mat.rand(n, n)
+  b = Mat.rand(n, n)
+  asy = a + a.t
   puts "*********N = #{n}*************"
   Benchmark.ips do |bench|
     bench.report("naive") { a.naive_mult(b) }
     bench.report("ge_mult") { a.ge_mult(b) }
     bench.report("ge_mult2") { a.ge_mult2(b) }
+    bench.report("sy_mult") { asy.ge_mult(b) }
   end
 end
 
 # check methods consistency
 a = Mat.rand(10, 10)
 a1 = a[0..5, 0..5]
+asy = a1 + a1.t
 raise "* failure" unless (a1*a1.inv).almost_eq Mat.eye(a1.nrows)
 raise "naive failure" unless (a1.naive_mult(a1.inv)).almost_eq Mat.eye(a1.nrows)
 raise "ge_mult failure" unless (a1.ge_mult(a1.inv)).almost_eq Mat.eye(a1.nrows)
-raise "ge_mult2 failure" unless (a1.ge_mult2(a1.inv)).almost_eq Mat.eye(a1.nrows)
+raise "ge_sym failure" unless (asy.ge_mult2(asy.inv)).almost_eq Mat.eye(asy.nrows)
 
 test(10)
 test(50)
