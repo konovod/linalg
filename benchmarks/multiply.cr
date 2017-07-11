@@ -40,11 +40,12 @@ def test(n)
   a = Mat.rand(n, n)
   b = Mat.rand(n, n)
   asy = a + a.t
+  raise "noo" unless asy.detect MatrixFlags::Symmetric
   puts "*********N = #{n}*************"
   Benchmark.ips do |bench|
     bench.report("naive") { a.naive_mult(b) }
     bench.report("ge_mult") { a.ge_mult(b) }
-    bench.report("ge_mult2") { a.ge_mult2(b) }
+    # bench.report("ge_mult2") { a.ge_mult2(b) }
     bench.report("sy_mult") { asy.ge_mult(b) }
   end
 end
@@ -66,22 +67,22 @@ test(500)
 # test(1000)
 
 # *********N = 10*************
-#    naive  35.48k ( 28.19µs) (±13.41%)  9.32× slower
-#  ge_mult 330.71k (  3.02µs) (±18.24%)       fastest
-# ge_mult2 327.29k (  3.06µs) (±22.18%)  1.01× slower
+#   naive  62.95k ( 15.88µs) (±13.81%)  6.64× slower
+# ge_mult 417.71k (  2.39µs) (±21.83%)       fastest
+# sy_mult 404.63k (  2.47µs) (±22.07%)  1.03× slower
 # *********N = 50*************
-#    naive  341.5  (  2.93ms) (± 4.31%) 23.16× slower
-#  ge_mult   7.91k (126.43µs) (±14.15%)       fastest
-# ge_mult2    7.5k (133.31µs) (±14.16%)  1.05× slower
+#   naive 660.28  (  1.51ms) (± 8.65%) 28.44× slower
+# ge_mult  12.98k ( 77.06µs) (±16.67%)  1.45× slower
+# sy_mult  18.78k ( 53.26µs) (± 3.38%)       fastest
 # *********N = 100*************
-#    naive  43.29  (  23.1ms) (± 5.40%) 50.21× slower
-#  ge_mult   2.17k (460.11µs) (± 2.90%)       fastest
-# ge_mult2   2.15k ( 465.6µs) (± 2.62%)  1.01× slower
+#   naive  85.75  ( 11.66ms) (± 5.61%) 44.96× slower
+# ge_mult   3.83k (260.78µs) (± 2.89%)  1.01× slower
+# sy_mult   3.86k (259.37µs) (± 2.22%)       fastest
 # *********N = 200*************
-#    naive   5.18  (193.06ms) (± 4.35%) 59.46× slower
-#  ge_mult 307.52  (  3.25ms) (± 7.27%)  1.00× slower
-# ge_mult2 307.96  (  3.25ms) (± 2.17%)       fastest
+#   naive  10.52  ( 95.09ms) (± 5.51%) 55.71× slower
+# ge_mult 576.84  (  1.73ms) (± 7.82%)  1.02× slower
+# sy_mult 585.87  (  1.71ms) (± 2.14%)       fastest
 # *********N = 500*************
-#    naive   0.22  (  4.58s ) (± 0.59%) 103.27× slower
-#  ge_mult  22.53  ( 44.39ms) (± 3.33%)        fastest
-# ge_mult2  22.46  ( 44.52ms) (± 3.58%)   1.00× slower
+#   naive   0.59  (   1.7s ) (± 1.59%) 75.27× slower
+# ge_mult  44.35  ( 22.55ms) (± 2.77%)       fastest
+# sy_mult  43.98  ( 22.74ms) (± 4.97%)  1.01× slower
