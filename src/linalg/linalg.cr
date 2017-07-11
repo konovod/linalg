@@ -354,6 +354,14 @@ module Linalg
       end
     end
 
+    private macro blas_const(x)
+      {% if T == Complex %}
+        pointerof({{x}}).as(LibCBLAS::ComplexDouble*)
+      {% else %}
+        {{x}}
+      {% end %}
+    end
+
     # performs c = alpha*a*b + beta*c (BLAS routines gemm/symm/hemm/trmm)
     def inc_mult(a, b : Matrix(T), *, alpha = 1.0, beta = 1.0)
       if a.ncolumns != b.nrows || a.nrows != nrows || b.ncolumns != ncolumns
@@ -362,18 +370,14 @@ module Linalg
       aa = a.is_a?(GeneralMatrix(T)) ? a : a.clone
       bb = b.is_a?(GeneralMatrix(T)) ? b : b.clone
       no = LibCBLAS::CblasTranspose::CblasNoTrans
-      {% if T == Complex %}
-        calpha = T.new(alpha)
-        cbeta = T.new(beta)
-        blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns,
-          pointerof(calpha).as(Float64*),
-          aa.to_unsafe.as(Float64*), a.ncolumns,
-          bb.to_unsafe.as(Float64*), b.ncolumns,
-          pointerof(cbeta).as(Float64*),
-          self.to_unsafe.as(Float64*), self.ncolumns)
-      {% else %}
-        blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns, T.new(alpha), aa, a.ncolumns, bb, b.ncolumns, T.new(beta), self, self.ncolumns)
-      {% end %}
+      calpha = T.new(alpha)
+      cbeta = T.new(beta)
+      blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns,
+        blas_const(calpha),
+        aa, a.ncolumns,
+        bb, b.ncolumns,
+        blas_const(cbeta),
+        self, self.ncolumns)
     end
 
     def *(m : Matrix(T))
