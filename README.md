@@ -120,8 +120,12 @@ puts lu.solve(GMat32[[2], [4]])
 - `qr`, `rq`, `lq`, `ql` decompositions
 - `schur` and `qz` (generalized schur) decomposition
 - generalized eigenproblem (`eigs(a, b, ...)`)
+- creating special matrices like `pascal` or `toeplitz` (check scipy.md for a full list)
+- matrix exponent and trigonomertic functions
+- matrix exponentiation (to integer powers only atm (TODO - fractional))
 
-There is also concept of `Mat##flags`, that represent properties of matrix (symmetric, positive definite etc) that are used to select better algorithms. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used automatically. In fact, `a.transpose` will return matrix clone as for symmetric matrices A=A'.
+
+There is also concept of `Mat##flags` that represent properties of matrix (symmetric, positive definite etc), they are used to automatically select faster algorithms from LAPACK. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used. In fact, `a.transpose` will return matrix clone as for symmetric matrices A=A'.
 
 Supported flags:
 ```crystal
@@ -143,17 +147,15 @@ Main functions for flags are:
   a.detect # detect all possible flags
   a.flags # returns matrix flags
 ```
-Most operations - matrix addition, multiplication, inversion, transposition and decompositions correctly update flags, but any direct access like `a[i,j] = 0` or `a.map!{|v| v+1}` resets flags to `None`, so use `a.detect` after them if you need to preserve them.
+Most operations - matrix addition, multiplication, inversion, transposition and decompositions correctly update flags, but any direct access like `a[i,j] = 0` or `a.map!{|v| v+1}` resets flags to `None`, so use `a.detect` after them if you need to preserve flags (or `a.assume!(f)` if detection is too slow).
 
-
-Check `spec` directory for more examples.
 ## Development
 
 ### Roadmap:
 
 ##### Important
 
-- [ ] saving\loading from files
+- [ ] saving/loading from files
 - [ ] Virtual(lazy) matrices, ways to evade allocations during calculations
 - [ ] Matrix exponentiation (and other matrix functions)
 - [ ] Banded matrices
@@ -163,12 +165,10 @@ Check `spec` directory for more examples.
 
 ##### Not so important
 
-- [ ] saving\loading to matlab-like string
+- [ ] saving/loading to matlab-like string
 - [ ] better pretty-print, with alignment and various precision
-- [ ] use blas for multiplication
+- [x] use blas for multiplication
 - [ ] more flags support (inversion of diagonal matrix and other trivial cases)
-
-PRs are welcome)
 
 ## Contributing
 
