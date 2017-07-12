@@ -70,13 +70,41 @@ module Linalg
       end
     end
 
+    def tr_mult!(a : Matrix(T), *, alpha = 1.0, left = false)
+      raise "GeneralMatrix required for tr_mult!" unless self.is_a?(GeneralMatrix(T))
+      raise ArgumentError.new("matrix size should match") if ncolumns != a.nrows
+      raise "tr_mult! require square triangular matrix" unless a.square? && a.flags.triangular?
+      aa = a.is_a?(GeneralMatrix(T)) ? a : a.clone
+      no = LibCBLAS::CblasTranspose::CblasNoTrans
+      calpha = T.new(alpha)
+      auplo = aa.flags.upper_triangular? ? LibCBLAS::CblasUplo::CblasUpper : LibCBLAS::CblasUplo::CblasLower
+      side = left ? LibCBLAS::CblasSide::CblasLeft : LibCBLAS::CblasSide::CblasRight
+      blas(tr, mm, side, auplo, no, LibCBLAS::CblasDiag::CblasNonUnit,
+        self.nrows, self.ncolumns, blas_const(calpha),
+        aa, aa.ncolumns,
+        self, ncolumns)
+      self
+    end
+
     def *(m : Matrix(T))
       if ncolumns != m.nrows
         raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
       end
-      result = Matrix(T).zeros(nrows, m.ncolumns)
-      result.inc_mult(self, m)
-      result.tap { |r| r.flags = self.flags.mult(m.flags) }
+      if (square? && flags.triangular?) || (m.square? && m.flags.triangular?)
+        if m.square? && m.flags.triangular?
+          result = self.clone
+          result.tr_mult!(m, left: false)
+          result
+        else
+          result = m.clone
+          result.tr_mult!(self, left: true)
+          result
+        end
+      else
+        result = Matrix(T).zeros(nrows, m.ncolumns)
+        result.inc_mult(self, m)
+        result.tap { |r| r.flags = self.flags.mult(m.flags) }
+      end
     end
   end
 end
