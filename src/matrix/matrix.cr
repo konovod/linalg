@@ -239,16 +239,7 @@ module Linalg
     # ...
     # [91, 92, 93, .... 100]
     def to_s(io)
-      io << "\n"
-      nrows.times do |i|
-        io << "["
-        ncolumns.times do |j|
-          io << ", " unless j == 0
-          io << self[i, j]
-        end
-        io << "]\n"
-      end
-      io << "\n"
+      to_custom(io, "\n[", ", ", "]\n[", "]\n\n")
     end
 
     def inspect(io)
