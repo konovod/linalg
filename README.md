@@ -165,7 +165,7 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 
 ##### Not so important
 
-- [ ] saving/loading to matlab-like string
+- [x] saving/loading to matlab-like string
 - [ ] better pretty-print, with alignment and various precision
 - [x] use blas for multiplication
 - [ ] more flags support (inversion of diagonal matrix and other trivial cases)

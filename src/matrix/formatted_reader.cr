@@ -52,11 +52,11 @@ module Linalg::Matrix(T)
       token = multi_gets(io, scan)
       if token
         data << T.new(token[1])
-        pp token, row, column, last_column
+        # pp token, row, column, last_column
         case token[0]
         when 0 # columns_separator
-          column += 1
           raise MatrixParseError.new("row #{row} too long") if column >= last_column && row > 0
+          column += 1
         when 1 # rows_separator
           if row == 0
             last_column = column
