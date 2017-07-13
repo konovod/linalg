@@ -70,6 +70,7 @@ module Linalg::Matrix(T)
         end
       else
         if postfix_empty
+          row -= 1
           break # go to matrix construction
         else
           raise MatrixParseError.new("postfix not found")
@@ -81,5 +82,11 @@ module Linalg::Matrix(T)
 
   def self.from_matlab(s)
     from_custom(IO::Memory.new(s), "[", ",", ";", "]")
+  end
+
+  def self.load_csv(filename)
+    File.open(filename, "r") do |f|
+      return from_custom(f, "", ",", "\n", "")
+    end
   end
 end

@@ -155,7 +155,7 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 
 ##### Important
 
-- [ ] saving/loading from files
+- [x] saving/loading from files
 - [ ] Virtual(lazy) matrices, ways to evade allocations during calculations
 - [ ] Matrix exponentiation (and other matrix functions)
 - [ ] Banded matrices

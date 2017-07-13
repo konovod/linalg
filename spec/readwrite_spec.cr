@@ -15,4 +15,12 @@ describe Linalg::Matrix do
     m = Mat.rand(10, 10) * 1e+19
     Mat.from_matlab(m.to_matlab).should almost_eq m
   end
+
+  it "can be save to and loaded from csv" do
+    m = Mat.rand(10, 10).vcat((Mat.rand(10, 10)*6).expm)
+    m.save_csv "test.csv"
+    m1 = Mat.load_csv "test.csv"
+    m1.should almost_eq m
+    File.delete "test.csv"
+  end
 end

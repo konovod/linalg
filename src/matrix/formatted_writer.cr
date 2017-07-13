@@ -17,11 +17,6 @@ module Linalg::Matrix(T)
     io << postfix
   end
 
-  # def self.from_custom(io, prefix, columns_separator, rows_separator, postfix)
-  #   io.gets(prefix)
-  #   # gathering first row
-  # end
-
   def to_matlab(io)
     to_custom(io, "[", ", ", "; ", "]")
   end
