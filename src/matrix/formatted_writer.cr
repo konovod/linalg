@@ -1,4 +1,3 @@
-require "json"
 require "./general_matrix"
 require "./matrix"
 
