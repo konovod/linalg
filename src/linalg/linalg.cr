@@ -91,7 +91,9 @@ module Linalg
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       return transpose! if flags.orthogonal?
       n = @nrows
-      if flags.positive_definite?
+      if flags.triangular?
+        lapack(tr, tri, uplo, 'N'.ord, n, self, n)
+      elsif flags.positive_definite?
         lapack(po, trf, uplo, n, self, n)
         lapack(po, tri, uplo, n, self, n)
         copy_up_down
@@ -109,8 +111,6 @@ module Linalg
         lapack(sy, trf, uplo, n, self, n, ipiv)
         lapack(sy, tri, uplo, n, self, n, ipiv)
         copy_up_down
-      elsif flags.triangular?
-        lapack(tr, tri, uplo, 'N'.ord, n, self, n)
       else
         ipiv = Slice(Int32).new(n)
         lapack(ge, trf, n, n, self, n, ipiv)
