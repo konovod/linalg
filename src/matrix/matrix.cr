@@ -83,9 +83,6 @@ module LA
   end
 
   # class that provide all utility matrix functions
-  # TODO - sums on cols\nrows, check numpy for more (require previous point?)
-  # TODO - saving/loading to files (what formats? csv?)
-  # TODO - replace [] to unsafe at most places
   module Matrix(T)
     # used in constructors to limit T at compile-time
     protected def check_type
@@ -136,7 +133,7 @@ module LA
     #     raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
     #   end
     #   result = GeneralMatrix(T).new(nrows, m.ncolumns) do |i, j|
-    #     (0...ncolumns).sum { |k| self[i, k]*m[k, j] }
+    #     (0...ncolumns).sum { |k| self.unsafe_at(i, k)*m.unsafe_at(k, j) }
     #   end
     #   result.tap { |r| r.flags = self.flags.mult(m.flags) }
     # end
@@ -145,7 +142,7 @@ module LA
     def *(k : Number | Complex)
       new_flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0)
       result = GeneralMatrix(T).new(nrows, ncolumns, flags: new_flags) do |i, j|
-        self[i, j]*k
+        self.unsafe_at(i, j)*k
       end
     end
 
@@ -157,7 +154,7 @@ module LA
     def /(k : Number | Complex)
       new_flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0)
       result = GeneralMatrix(T).new(nrows, ncolumns, flags: new_flags) do |i, j|
-        self[i, j] / k
+        self.unsafe_at(i, j) / k
       end
     end
 
@@ -167,7 +164,7 @@ module LA
         raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] + [#{m.nrows}x#{m.ncolumns}]")
       end
       result = GeneralMatrix(T).new(nrows, ncolumns, flags: flags.sum(m.flags)) do |i, j|
-        self[i, j] + m[i, j]
+        self.unsafe_at(i, j) + m.unsafe_at(i, j)
       end
     end
 
@@ -177,7 +174,7 @@ module LA
         raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] - [#{m.nrows}x#{m.ncolumns}]")
       end
       result = GeneralMatrix(T).new(nrows, ncolumns, flags: flags.sum(m.flags)) do |i, j|
-        self[i, j] - m[i, j]
+        self.unsafe_at(i, j) - m.unsafe_at(i, j)
       end
     end
 
@@ -185,7 +182,7 @@ module LA
     def transpose
       return clone if flags.symmetric?
       GeneralMatrix(T).new(ncolumns, nrows, flags: flags.transpose) do |i, j|
-        self[j, i]
+        unsafe_at(j, i)
       end
     end
 
@@ -196,7 +193,7 @@ module LA
       {% end %}
       return clone if flags.hermitian?
       GeneralMatrix(T).new(ncolumns, nrows, flags: flags.transpose) do |i, j|
-        self[j, i].conj
+        unsafe_at(j, i).conj
       end
     end
 
@@ -208,7 +205,7 @@ module LA
     # same as tril in scipy - returns lower triangular or trapezoidal part of matrix
     def tril(k = 0)
       x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
-        i >= j - k ? self[i, j] : 0
+        i >= j - k ? unsafe_at(i, j) : 0
       end
       x.assume! MatrixFlags::LowerTriangular if k >= 0
       x
@@ -217,7 +214,7 @@ module LA
     # same as triu in scipy - returns upper triangular or trapezoidal part of matrix
     def triu(k = 0)
       x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
-        i <= j - k ? self[i, j] : 0
+        i <= j - k ? unsafe_at(i, j) : 0
       end
       x.assume! MatrixFlags::UpperTriangular if k >= 0
       x
@@ -282,7 +279,7 @@ module LA
     # return matrix repeated `arows` times by vertical and `acolumns` times by horizontal
     def repmat(arows, acolumns)
       GeneralMatrix(T).new(nrows*arows, ncolumns*acolumns) do |i, j|
-        self[i % nrows, j % ncolumns]
+        unsafe_at(i % nrows, j % ncolumns)
       end
     end
 
@@ -505,7 +502,7 @@ module LA
 
     def self.kron(a, b)
       GeneralMatrix(T).new(a.nrows*b.nrows, a.ncolumns*b.ncolumns) do |i, j|
-        a[i / b.nrows, j / b.ncolumns] * b[i % b.nrows, j % b.ncolumns]
+        a.unsafe_at(i / b.nrows, j / b.ncolumns) * b.unsafe_at(i % b.nrows, j % b.ncolumns)
       end
     end
 

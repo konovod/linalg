@@ -3,7 +3,6 @@ require "./submatrix"
 
 module LA
   # generic matrix, heap-allocated
-  # TODO - constructing from matlab-like string "[1,2,3;3,4,6;1,1,3]" (check regexps?)
   class GeneralMatrix(T)
     include Matrix(T)
     getter nrows : Int32
@@ -81,9 +80,9 @@ module LA
       if square?
         (0..@nrows - 2).each do |i|
           (i + 1..@ncolumns - 1).each do |j|
-            a = self[i, j]
-            self[i, j] = self[j, i]
-            self[j, i] = a
+            a = unsafe_at(i, j)
+            unsafe_set(i, j, unsafe_at(j, i))
+            unsafe_set(j, i, a)
           end
         end
       elsif nrows == 1 || ncolumns == 1

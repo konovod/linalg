@@ -4,7 +4,7 @@ module LA
   alias RowColumn = {Int32, Int32}
 
   # it's like Slice, but for matrices.
-  # in future will be improved to provide same interface as matrix
+  # made class not struct to avoid compilation issues
   class SubMatrix(T)
     include Matrix(T)
     getter offset
