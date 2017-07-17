@@ -1,6 +1,6 @@
 require "./matrix/*"
 require "./linalg/*"
 
-module Linalg
+module LA
   # TODO Put your code here
 end

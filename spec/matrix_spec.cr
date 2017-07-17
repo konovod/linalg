@@ -1,7 +1,7 @@
 require "./spec_helper"
 
-include Linalg
-describe Linalg::Matrix do
+include LA
+describe LA::Matrix do
   it "can be created with given size" do
     m = GMat.new(10, 15)
     m.raw.size.should eq 10*15
@@ -210,7 +210,7 @@ describe Linalg::Matrix do
 
   it "inspected" do
     m = GMat.new([[1, 2], [3, 4], [5, 6]])
-    m.inspect.should eq "Linalg::GeneralMatrix(Float64) (3x2, None):\n[1.0, 2.0]\n[3.0, 4.0]\n[5.0, 6.0]\n\n"
+    m.inspect.should eq "LA::GeneralMatrix(Float64) (3x2, None):\n[1.0, 2.0]\n[3.0, 4.0]\n[5.0, 6.0]\n\n"
   end
 
   it "converted to array" do

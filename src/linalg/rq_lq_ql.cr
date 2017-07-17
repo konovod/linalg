@@ -35,7 +35,7 @@ end
 
 end
 
-module Linalg
+module LA
   module Matrix(T)
     decomposition(rq, triu)
     decomposition(lq, tril)

@@ -4,7 +4,7 @@ require "../src/matrix/*"
 # Check if `##triu` method really needed or clone.triu! is enough.
 # Conclusion: there is a difference only for high N( = 1000 ), but it still exists, so triu stays
 {2, 5, 10, 100, 1000}.each do |n|
-  a = Linalg::Mat.rand(n, n)
+  a = LA::Mat.rand(n, n)
   puts "*********N = #{n}*************"
   Benchmark.ips do |bench|
     bench.report("clone.tril!") { a.clone.tril! }

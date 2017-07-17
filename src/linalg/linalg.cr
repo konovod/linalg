@@ -1,7 +1,7 @@
 require "../matrix/*"
 require "./libLAPACKE"
 
-module Linalg
+module LA
   enum LSMethod
     Auto       = 0
     QR

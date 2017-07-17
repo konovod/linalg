@@ -1,4 +1,4 @@
-module Linalg
+module LA
   module Matrix(T)
     def lu(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone

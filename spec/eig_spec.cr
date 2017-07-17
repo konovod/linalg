@@ -1,7 +1,7 @@
 require "./spec_helper"
-include Linalg
+include LA
 
-describe Linalg do
+describe LA do
   it "high-level: calculate nonsymmetric eigenvalues" do
     a = GMat32[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
     vals = a.eigvals
@@ -70,7 +70,7 @@ describe Linalg do
       [2, -3, 1],
       [2, 1, 1],
     ]
-    alpha, beta, left, right = Linalg.eigs(a, b, need_left: true, need_right: true)
+    alpha, beta, left, right = LA.eigs(a, b, need_left: true, need_right: true)
     # pp alpha, beta, left, right
     raise "" if alpha.is_a? Array(Complex)
     3.times do |i|
@@ -90,7 +90,7 @@ describe Linalg do
       [2, -3, -2.i],
       [1, 1 - 1.i, 1 + 1.i],
     ]
-    alpha, beta, left, right = Linalg.eigs(a, b, need_left: true, need_right: true)
+    alpha, beta, left, right = LA.eigs(a, b, need_left: true, need_right: true)
     3.times do |i|
       (a * right.not_nil! - alpha[i] / beta[i] * b * right.not_nil!).det.should be_close(0, 1e-6)
       (left.not_nil!.conjtranspose * a - alpha[i] / beta[i] * left.not_nil!.conjtranspose * b).det.should be_close(0, 1e-6)
@@ -110,7 +110,7 @@ describe Linalg do
     ]
     a.assume! MatrixFlags::Symmetric
     b.assume! MatrixFlags::PositiveDefinite
-    alpha, beta, left, right = Linalg.eigs(a, b, need_left: true, need_right: true)
+    alpha, beta, left, right = LA.eigs(a, b, need_left: true, need_right: true)
     raise "complex eigenvalue" if alpha.is_a? Array(Complex)
     3.times do |i|
       (a * right.not_nil! - alpha[i] / beta[i] * b * right.not_nil!).det.should be_close(0, 1e-6)
@@ -131,7 +131,7 @@ describe Linalg do
     ]
     a.assume! MatrixFlags::Hermitian
     b.assume! MatrixFlags::PositiveDefinite
-    alpha, beta, left, right = Linalg.eigs(a, b, need_left: true, need_right: true)
+    alpha, beta, left, right = LA.eigs(a, b, need_left: true, need_right: true)
     3.times do |i|
       (a * right.not_nil! - alpha[i] / beta[i] * b * right.not_nil!).det.should be_close(0, 1e-6)
       (left.not_nil!.conjtranspose * a - alpha[i] / beta[i] * left.not_nil!.conjtranspose * b).det.should be_close(0, 1e-6)

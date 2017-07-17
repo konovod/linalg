@@ -2,7 +2,7 @@ require "benchmark"
 require "../src/matrix/*"
 require "../src/linalg/*"
 
-include Linalg
+include LA
 
 # Conclusion: incremental is predictably faster
 
@@ -40,7 +40,7 @@ Benchmark.ips do |bench|
   bench.report("pascal_incremental") { pascal_incremental(50) }
 end
 
-# pascal_expm(5)        # => Linalg::GeneralMatrix(Float64) (5x5, None):
+# pascal_expm(5)        # => LA::GeneralMatrix(Float64) (5x5, None):
 # [1.0, 1.0, 1.0, 1.0, 1.0]
 # [1.0, 2.0, 3.0, 4.0, 5.0]
 # [1.0, 3.0, 6.0, 10.0, 15.0]
@@ -48,7 +48,7 @@ end
 # [1.0, 5.0, 15.0, 35.0, 70.0]
 #
 #
-# pascal_nchoosek(5)    # => Linalg::GeneralMatrix(Float64) (5x5, None):
+# pascal_nchoosek(5)    # => LA::GeneralMatrix(Float64) (5x5, None):
 # [1.0, 1.0, 1.0, 1.0, 1.0]
 # [1.0, 2.0, 3.0, 4.0, 5.0]
 # [1.0, 3.0, 6.0, 10.0, 15.0]
@@ -56,7 +56,7 @@ end
 # [1.0, 5.0, 15.0, 35.0, 70.0]
 #
 #
-# pascal_incremental(5) # => Linalg::GeneralMatrix(Float64) (5x5, None):
+# pascal_incremental(5) # => LA::GeneralMatrix(Float64) (5x5, None):
 # [1.0, 1.0, 1.0, 1.0, 1.0]
 # [1.0, 2.0, 3.0, 4.0, 5.0]
 # [1.0, 3.0, 6.0, 10.0, 15.0]

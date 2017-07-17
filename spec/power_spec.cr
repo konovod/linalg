@@ -1,7 +1,7 @@
 require "./spec_helper"
 
-include Linalg
-describe Linalg do
+include LA
+describe LA do
   it "can evaluate matrix integer power" do
     m = Mat.ones(3, 4)
     expect_raises(ArgumentError) do

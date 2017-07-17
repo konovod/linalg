@@ -1,7 +1,7 @@
 require "./spec_helper"
 
-include Linalg
-describe Linalg do
+include LA
+describe LA do
   it "calls LAPACK functions directly" do
     m = [
       1.0, 0.0, 1.0,
@@ -88,7 +88,7 @@ describe Linalg do
       [2, 4],
       [2, 8]]
     b = GMat32[[2], [4]]
-    Linalg.solve(a, b).should eq (a.inv * b)
+    LA.solve(a, b).should eq (a.inv * b)
   end
 
   it "high-level: calculate determinant" do
@@ -109,7 +109,7 @@ describe Linalg do
       [1, 2, 0],
       [0, 4, 3]]
     b = GMat32[[8], [18]]
-    x = Linalg.solvels(a, b)
+    x = LA.solvels(a, b)
     x_octave = GMat32.columns([0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-3)
   end
@@ -119,7 +119,7 @@ describe Linalg do
       [1, 2, 0],
       [0, 4, 3]]
     b = GMatComplex[[8], [18]]
-    x, rank, s = Linalg.lstsq(a, b, LSMethod::SVD)
+    x, rank, s = LA.lstsq(a, b, LSMethod::SVD)
     x_octave = GMatComplex.columns([0.918032, 3.54098, 1.27869])
     x.should be_close(x_octave, 1e-5)
     rank.should eq 2
@@ -129,7 +129,7 @@ describe Linalg do
 
   it "high-level: calculate singular value decomposition" do
     a = GMat[[1, 2, 3], [4, 5, 6]]
-    u, s, vt = Linalg.svd(a)
+    u, s, vt = LA.svd(a)
     (u*Mat.diag(a.nrows, a.ncolumns, s)*vt).should almost_eq a
     u.detect(MatrixFlags::Orthogonal).should be_true
     vt.detect(MatrixFlags::Orthogonal).should be_true
@@ -259,7 +259,7 @@ describe Linalg do
       [2, -3, 1],
       [2, 1, 1],
     ]
-    aa, bb, vl, vr = Linalg.qz(a, b)
+    aa, bb, vl, vr = LA.qz(a, b)
     vl.detect(MatrixFlags::Orthogonal).should be_true
     vr.detect(MatrixFlags::Orthogonal).should be_true
     (vl*aa*vr.transpose).should almost_eq a
@@ -277,7 +277,7 @@ describe Linalg do
       [2, -3, -2.i],
       [1, 1 - 1.i, 1 + 1.i],
     ]
-    aa, bb, vl, vr = Linalg.qz(a, b)
+    aa, bb, vl, vr = LA.qz(a, b)
     vl.detect(MatrixFlags::Orthogonal).should be_true
     vr.detect(MatrixFlags::Orthogonal).should be_true
     (vl*aa*vr.conjtranspose).should almost_eq a

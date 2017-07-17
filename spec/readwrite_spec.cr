@@ -1,7 +1,7 @@
 require "./spec_helper"
-include Linalg
+include LA
 
-describe Linalg::Matrix do
+describe LA::Matrix do
   it "can be constructed from matlab string" do
     Mat.from_matlab("[1,2,3; 4,5,6; 7,8,9  ] ").should eq GMat[[1, 2, 3], [4, 5, 6], [7, 8, 9]]
   end

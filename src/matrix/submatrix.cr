@@ -1,6 +1,6 @@
 require "./matrix"
 
-module Linalg
+module LA
   alias RowColumn = {Int32, Int32}
 
   # it's like Slice, but for matrices.

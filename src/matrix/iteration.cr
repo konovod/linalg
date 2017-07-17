@@ -1,7 +1,7 @@
 require "./matrix"
 require "./submatrix"
 
-module Linalg
+module LA
   module Matrix(T)
     private macro def_indexable(name, offset, size)
       struct {{name.id.capitalize}}(T)

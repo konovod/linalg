@@ -1,7 +1,7 @@
 require "../matrix/*"
 require "./libLAPACKE"
 
-module Linalg
+module LA
   def self.qz(a, b, *, overwrite_a = false, overwrite_b = false)
     a.qz(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end

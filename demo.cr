@@ -1,5 +1,5 @@
 require "./src/linalg"
-include Linalg
+include LA
 
 # create matrix from array of arrays (or tuple... everything Indexable)
 m = GMat[
@@ -29,7 +29,7 @@ a = Mat.rand(5, 5) + 2 * Mat.identity(5)
 pp (a.inv * a - Mat.identity(5)).norm < 1e-6
 
 b = Mat.rand(5, 1)
-x = Linalg.solve(a, b) # or a.solve(b)
+x = LA.solve(a, b) # or a.solve(b)
 pp (a*x - b).norm < 1e-6
 
 m = GMat[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
@@ -41,7 +41,7 @@ m = GMat[
   [4, 5, 6],
   [7, 8, 9],
 ]
-pp m.columns[2] # Linalg::SubMatrix(Float64) (3x1, None):
+pp m.columns[2] # LA::SubMatrix(Float64) (3x1, None):
 # [3.0]
 # [6.0]
 # [9.0]

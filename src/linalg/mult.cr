@@ -1,7 +1,7 @@
 require "../matrix/*"
 require "./libLAPACKE"
 
-module Linalg
+module LA
   module Matrix(T)
     macro blas(storage, name, *args)
       {% if T == Float32

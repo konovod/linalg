@@ -1,7 +1,7 @@
 require "./general_matrix"
 require "./matrix"
 
-module Linalg::Matrix(T)
+module LA::Matrix(T)
   # to_custom(io, "[", ",", "],[", "]")
   def to_custom(io, prefix, columns_separator, rows_separator, postfix)
     each_with_index do |v, r, c|
@@ -34,4 +34,4 @@ module Linalg::Matrix(T)
   end
 end
 
-# Linalg::Mat.rand(30, 30).save_csv("./test.csv")
+# LA::Mat.rand(30, 30).save_csv("./test.csv")

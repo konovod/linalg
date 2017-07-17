@@ -1,7 +1,7 @@
 require "./spec_helper"
 
-include Linalg
-describe Linalg do
+include LA
+describe LA do
   it "can evaluate matrix exponent" do
     Mat32.zeros(2, 2).expm.should almost_eq Mat32.identity(2)
     Mat32.ones(1, 1).expm.should almost_eq GMat32[[Math::E]]

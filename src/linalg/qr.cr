@@ -1,4 +1,4 @@
-module Linalg
+module LA
   module Matrix(T)
     private def qr_initial(a, pivoting)
       m = a.nrows

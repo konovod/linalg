@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-include Linalg
+include LA
 describe "constructing of special matrices" do
   it "block_diag matrix" do
     a = Mat.eye(2)

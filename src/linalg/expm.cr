@@ -1,4 +1,4 @@
-module Linalg
+module LA
   # this is a direct conversion to Crystal of matlab code
 
   # Coefficients of leading terms in the backward error functions h_{2m+1}.

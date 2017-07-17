@@ -10,11 +10,12 @@ Killing SciPy, one module at a time.
 
 ## Installation
 
-1. Install LAPACKE (and dependencies - LAPACK and BLAS). `sudo apt install libopenblas-base liblapacke` for Ubuntu, `sudo pacman -S lapacke` (for better performance use `openblas-lapack` from AUR) for Arch.
+1. Install LAPACKE (and dependencies - LAPACK and BLAS). `sudo apt install libopenblas-base liblapacke` for Ubuntu, `sudo pacman -S lapacke` (for better performance use `openblas-lapack` package from AUR) for Arch.
 
 
-2. (for Ubuntu) it seems package doesn't create symlink, so use `sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so`
-
+2. (for Ubuntu) it seems package doesn't create symlink, so use
+- `sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so`
+- `sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so`
 
 Add this to your application's `shard.yml`:
 
@@ -40,8 +41,8 @@ Types with prefix G (GMat, GMat32, GMatComplex) are for actually allocated matri
 others are automatically converted to them when needed.
 
 ```crystal
-#suggested to don't prefix Linalg:: everywhere
-include Linalg
+#suggested to don't prefix LA:: everywhere
+include LA
 
 # create matrix from array of arrays (or tuple... everything Indexable)
 m = GMat[
@@ -71,7 +72,7 @@ a = Mat.rand(5, 5) + 2 * Mat.identity(5)
 pp (a.inv * a - Mat.identity(5)).norm < 1e-6
 
 b = Mat.rand(5, 1)
-x = Linalg.solve(a, b) # or a.solve(b)
+x = LA.solve(a, b) # or a.solve(b)
 pp (a*x - b).norm < 1e-6
 
 m = GMat[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
@@ -83,7 +84,7 @@ m = GMat[
   [4, 5, 6],
   [7, 8, 9],
 ]
-pp m.columns[2] # Linalg::SubMatrix(Float64) (3x1, None):
+pp m.columns[2] # LA::SubMatrix(Float64) (3x1, None):
 # [3.0]
 # [6.0]
 # [9.0]
@@ -114,7 +115,7 @@ lu = a.lu_factor # lu is LUMatrix(T) - immutable object that can return it's con
 puts lu.solve(GMat32[[2], [4]])
 ```
 - matrix rank determination (using SVD or QRP)
-- linear least squares problem (`Linalg.solvels` to just get decision or `Linalg.lstsq` to also get rank and singular values (TODO - and residues))
+- linear least squares problem (`LA.solvels` to just get decision or `LA.lstsq` to also get rank and singular values (TODO - and residues))
 - cholesky decomposition (`##cholesky`, `##cholesky!`, `##cho_solve`)
 - `hessenberg` form
 - `qr`, `rq`, `lq`, `ql` decompositions

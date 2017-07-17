@@ -2,22 +2,22 @@ require "benchmark"
 require "../src/linalg"
 
 METHODS = {
-  Linalg::LSMethod::QR,
-  Linalg::LSMethod::Orthogonal,
-  Linalg::LSMethod::SVD,
+  LA::LSMethod::QR,
+  LA::LSMethod::Orthogonal,
+  LA::LSMethod::SVD,
 }
 
 def test(n)
-  basea = Linalg::Mat.rand(n/2, n/2)*10
+  basea = LA::Mat.rand(n/2, n/2)*10
   until basea.det.abs > 0.01
-    basea = Linalg::Mat.rand(n/2, n/2)*10
+    basea = LA::Mat.rand(n/2, n/2)*10
   end
-  a = Linalg::GMat.new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
-  b = Linalg::Mat.rand(n/2, 1)
+  a = LA::GMat.new(n/2, n) { |row, column| column < n/2 ? basea[row, column] : rand }
+  b = LA::Mat.rand(n/2, 1)
   puts "*********N = #{n}*************"
   Benchmark.ips do |bench|
     METHODS.each do |method|
-      bench.report(method.to_s) { Linalg.lstsq(a, b, method) }
+      bench.report(method.to_s) { LA.lstsq(a, b, method) }
     end
   end
 end

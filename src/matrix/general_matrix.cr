@@ -1,7 +1,7 @@
 require "./matrix"
 require "./submatrix"
 
-module Linalg
+module LA
   # generic matrix, heap-allocated
   # TODO - constructing from matlab-like string "[1,2,3;3,4,6;1,1,3]" (check regexps?)
   class GeneralMatrix(T)
