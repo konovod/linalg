@@ -323,4 +323,11 @@ describe Linalg::Matrix do
     m.diag[1].should eq -6
     (m.diag.all? &.<(0)).should be_true
   end
+
+  it "don't crash when using submatrix of submatrix" do
+    m4 = Mat.ones(4, 4)
+    m3 = m4[0..2, 0..2]
+    m2 = m3[0..1, 0..1]
+    m2.should eq GMat[[1, 1], [1, 1]]
+  end
 end

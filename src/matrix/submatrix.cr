@@ -5,7 +5,7 @@ module Linalg
 
   # it's like Slice, but for matrices.
   # in future will be improved to provide same interface as matrix
-  struct SubMatrix(T)
+  class SubMatrix(T)
     include Matrix(T)
     getter offset
     getter size

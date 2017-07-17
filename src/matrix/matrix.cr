@@ -318,10 +318,10 @@ module Linalg
 
     # return submatrix over given ranges.
     def [](arows : Range(Int32, Int32), acolumns : Range(Int32, Int32))
-      start_row = arows.begin + (arows.begin < 0 ? @nrows : 0)
-      start_col = acolumns.begin + (acolumns.begin < 0 ? @ncolumns : 0)
-      total_rows = arows.end + (arows.excludes_end? ? 0 : 1) - start_row + (arows.end < 0 ? @nrows : 0)
-      total_cols = acolumns.end + (acolumns.excludes_end? ? 0 : 1) - start_col + (acolumns.end < 0 ? @ncolumns : 0)
+      start_row = arows.begin + (arows.begin < 0 ? nrows : 0)
+      start_col = acolumns.begin + (acolumns.begin < 0 ? ncolumns : 0)
+      total_rows = arows.end + (arows.excludes_end? ? 0 : 1) - start_row + (arows.end < 0 ? nrows : 0)
+      total_cols = acolumns.end + (acolumns.excludes_end? ? 0 : 1) - start_col + (acolumns.end < 0 ? ncolumns : 0)
       SubMatrix(T).new(self, {start_row, start_col}, {total_rows, total_cols})
     end
 
