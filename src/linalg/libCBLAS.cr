@@ -1,4 +1,4 @@
-@[Link("cblas")]
+@[Link("blas")]
 lib LibCBLAS
   struct ComplexDouble
     re : LibC::Double
