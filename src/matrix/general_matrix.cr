@@ -11,12 +11,12 @@ module LA
     getter raw : Slice(T)
     property flags : MatrixFlags = MatrixFlags.new(0)
 
-    def initialize(@nrows, @ncolumns)
+    def initialize(@nrows, @ncolumns, *, @flags = MatrixFlags.new(0))
       check_type
       @raw = Slice(T).new(nrows*ncolumns, T.new(0))
     end
 
-    def initialize(@nrows, @ncolumns, values, @flags = MatrixFlags.new(0))
+    def initialize(@nrows, @ncolumns, values, *, @flags = MatrixFlags.new(0))
       check_type
       @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
     end
@@ -37,7 +37,7 @@ module LA
       new(matrix.nrows, matrix.ncolumns, matrix.raw)
     end
 
-    def initialize(@nrows, @ncolumns, &block)
+    def initialize(@nrows, @ncolumns, *, @flags = MatrixFlags.new(0), &block)
       check_type
       @raw = Slice(T).new(@nrows*@ncolumns) do |index|
         i = index / @ncolumns
@@ -56,7 +56,7 @@ module LA
     end
 
     def dup
-      GeneralMatrix(T).new(@nrows, @ncolumns, @raw).tap { |it| it.flags = flags }
+      GeneralMatrix(T).new(@nrows, @ncolumns, @raw, flags: @flags)
     end
 
     def clone
@@ -173,18 +173,14 @@ module LA
     # like a tril in scipy - remove all elements above k-diagonal
     def tril!(k = 0)
       map_with_index! { |v, i, j| i < j - k ? 0 : v }
-      if k <= 0
-        self.flags = MatrixFlags::LowerTriangular
-      end
+      self.flags = MatrixFlags::LowerTriangular if k <= 0
       self
     end
 
     # like a triu in scipy - remove all elements below k-diagonal
     def triu!(k = 0)
       map_with_index! { |v, i, j| i > j - k ? 0 : v }
-      if k >= 0
-        self.flags = MatrixFlags::UpperTriangular
-      end
+      self.flags = MatrixFlags::UpperTriangular if k >= 0
       self
     end
   end
