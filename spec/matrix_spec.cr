@@ -324,6 +324,19 @@ describe LA::Matrix do
     (m.diag.all? &.<(0)).should be_true
   end
 
+  it "have Indexable diag with offset" do
+    m = GMat32.new([[-1, 2, 3, 4], [5, -6, 7, 8], [9, 10, -11, 12]])
+    m.diag(0).to_a.should eq [-1, -6, -11]
+    m.diag(1).to_a.should eq [2, 7, 12]
+    m.diag(2).to_a.should eq [3, 8]
+    m.diag(3).to_a.should eq [4]
+    expect_raises(ArgumentError) { m.diag(4) }
+    m.diag(-1).to_a.should eq [5, 10]
+    m.diag(-2).to_a.should eq [9]
+    expect_raises(ArgumentError) { m.diag(-3) }
+    expect_raises(ArgumentError) { m.diag(-4) }
+  end
+
   it "don't crash when using submatrix of submatrix" do
     m4 = Mat.ones(4, 4)
     m3 = m4[0..2, 0..2]

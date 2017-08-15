@@ -20,6 +20,7 @@ module LA
         {{name.id.capitalize}}(T).new(self)
       end
     end
+
     def_indexable(columns, {0, i}, {@base.nrows, 1})
     def_indexable(rows, {i, 0}, {1, @base.ncolumns})
 
@@ -42,21 +43,31 @@ module LA
 
     struct Diagonal(T)
       include Indexable(T)
-      protected def initialize(@base : Matrix(T))
+
+      protected def initialize(@base : Matrix(T), @offset = 0)
+        raise ArgumentError.new("Offset #{offset} is too big (matrix size #{@base.nrows}x#{@base.ncolumns})") if size <= 0
       end
 
       def size
-        {@base.nrows, @base.ncolumns}.min
+        if @offset >= 0
+          {@base.nrows, @base.ncolumns - @offset}.min
+        else
+          {@base.nrows + @offset, @base.ncolumns}.min
+        end
       end
 
       # unsafe_new for submatrix?
       def unsafe_at(i)
-        @base.unsafe_at(i, i)
+        if @offset >= 0
+          @base.unsafe_at(i, i + @offset)
+        else
+          @base.unsafe_at(i - @offset, i)
+        end
       end
     end
 
-    def diag
-      Diagonal(T).new(self)
+    def diag(offset = 0)
+      Diagonal(T).new(self, offset)
     end
   end
 end
