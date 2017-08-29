@@ -49,4 +49,14 @@ describe LA::Matrix do
     b.to_real.flags.should eq LA::MatrixFlags::None
     b.to_imag.flags.should eq LA::MatrixFlags::None
   end
+
+  it "clean unused elements when inverting diagonal matrices" do
+    u = LA::GMat[
+      [1e+16, -1, 0],
+      [0.0, 1e+16, 2],
+      [0.0, 0.0, 1e+17],
+    ]
+    u.assume! LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular
+    u.inv[0, 1].should be_close 0.0, 1e-16
+  end
 end

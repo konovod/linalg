@@ -87,12 +87,17 @@ module LA
       @flags = f
     end
 
+    private def clean_unused
+      flags.lower_triangular? ? tril! : triu!
+    end
+
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       return transpose! if flags.orthogonal?
       n = @nrows
       if flags.triangular?
         lapack(tr, tri, uplo, 'N'.ord, n, self, n)
+        clean_unused
       elsif flags.positive_definite?
         lapack(po, trf, uplo, n, self, n)
         lapack(po, tri, uplo, n, self, n)
