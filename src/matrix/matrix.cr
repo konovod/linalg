@@ -91,6 +91,18 @@ module LA
       {% end %}
     end
 
+    private macro of_real_type(container, size)
+      {% if T == Complex %} {{container}}(Float64).new({{size}}, 0.0) {% else %} {{container}}(T).new({{size}}, T.new(0)) {% end %}
+    end
+
+    private macro of_real_type(value)
+      {% if T == Complex %} Float64.new({{value}}) {% else %} T.new({{value}}) {% end %}
+    end
+
+    private macro real_type_const(constant)
+      {% if T == Complex %} Float64::{{constant}} {% else %} T::{{constant}} {% end %}
+    end
+
     # to_unsafe method raises at runtime and is overriden by matrix that actually have pointer
     def to_unsafe
       raise ArgumentError.new("Virtual matrix can't be passed unsafe!")
@@ -353,9 +365,7 @@ module LA
         vabs = {% if T == Complex %}value.real.abs + value.imag.abs{% else %}value.abs{% end %}
         amax = vabs if amax < vabs
       end
-      # TODO - better eps?
-      eps = {% if T == Float32 %}2e-7{% else %}2e-16{% end %}
-      amax * nrows * ncolumns * 10*eps
+      amax * nrows * ncolumns * 10*real_type_const(EPSILON)
     end
 
     def almost_eq(other : Matrix(T), eps)

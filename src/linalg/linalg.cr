@@ -198,19 +198,19 @@ module LA
       case method
       when .ls?
         lapack(ge, ls, 'N'.ord, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns)
-        s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
+        s = of_real_type(Array, 0)
       when .lsd?
         ssize = {nrows, ncolumns}.min
-        s = {% if T == Complex %} Array(Float64).new(ssize, 0.0) {% else %} Array(T).new(ssize, T.new(0)) {% end %}
-        rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(cond)
+        s = of_real_type(Array, ssize)
+        rcond = of_real_type(cond)
         lapack(ge, lsd, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns, s, rcond, pointerof(rank))
       when .lsy?
         jpvt = Slice(Int32).new(ncolumns)
-        rcond = {% if T == Complex %} Float64 {% else %} T {% end %}.new(cond)
+        rcond = of_real_type(cond)
         lapack(ge, lsy, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns, jpvt, rcond, pointerof(rank))
-        s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
+        s = of_real_type(Array, 0)
       else
-        s = {% if T == Complex %} Array(Float64) {% else %} Array(T) {% end %}.new
+        s = of_real_type(Array, 0)
       end
       a.clear_flags
       x.clear_flags
@@ -221,7 +221,7 @@ module LA
       a = overwrite_a ? self : self.clone
       m = nrows
       n = ncolumns
-      s = {% if T == Complex %} Array(Float64).new({m, n}.min, 0.0) {% else %} Array(T).new({m, n}.min, T.new(0)) {% end %}
+      s = of_real_type(Array, {m, n}.min)
       u = GeneralMatrix(T).new(m, m)
       vt = GeneralMatrix(T).new(n, n)
       lapack(ge, sdd, 'A'.ord, m, n, a, ncolumns, s, u, m, vt, n)
@@ -233,7 +233,7 @@ module LA
       a = overwrite_a ? self : self.clone
       m = nrows
       n = ncolumns
-      s = {% if T == Complex %} Array(Float64).new({m, n}.min, 0.0) {% else %} Array(T).new({m, n}.min, T.new(0)) {% end %}
+      s = of_real_type(Array, {m, n}.min)
       lapack(ge, sdd, 'N'.ord, m, n, a, ncolumns, s, nil, m, nil, n)
       a.clear_flags
       s
@@ -272,7 +272,7 @@ module LA
         return {self, q}
       end
       n = nrows
-      s = {% if T == Complex %} Slice(Float64) {% else %} Slice(T) {% end %}.new(n)
+      s = of_real_type(Slice, n)
       lapack(ge, bal, 'S'.ord, n, self, n, out ilo, out ihi, s)
       clear_flags
       tau = GeneralMatrix(T).new(1, n)

@@ -113,7 +113,7 @@ module LA
     end
 
     protected def eval_alpha(a, k)
-      eps = {% if T == Float32 %}2e-7{% else %}2e-16{% end %}
+      eps = real_type_const(EPSILON)
       u = eps/2
       alpha = Coeff[k - 1]*a.map(&.abs).normAm(2*M_VALS[k - 1] + 1, overwrite_a: true) / a.norm(MatrixNorm::One)
       t = {(Math.log2(alpha/u)/(2*M_VALS[k - 1])).ceil, 0}.max
@@ -344,7 +344,7 @@ module LA
       ave = (a1 + a2)/2
       {% if T == Complex %}ave = ave.real{% end %}
       df = (a1 - a2).abs/2
-      if Math.max(ave, df) < {% if T == Complex %} Math.log(Float64::MAX_FINITE) {% else %} Math.log(T::MAX_FINITE) {% end %}
+      if Math.max(ave, df) < Math.log(real_type_const(MAX_FINITE))
         # Formula fine unless it overflows.
         x12 = c*Math.exp((a1 + a2)/2) * sinch((a2 - a1)/2)
       else
