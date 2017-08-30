@@ -45,6 +45,7 @@ module LA
           {% if T == Complex %} v.exp {% else %} Math.exp(v) {% end %}
         end
       end
+      return clone.expm2_by_2! if nrows == 2
       schur_fact = false if flags.triangular?
       if schur_fact
         a, q = self.schur
@@ -95,18 +96,19 @@ module LA
       a = a/2 ** s; a2 = a2/2 ** (2*s); a4 = a4/2 ** (4*s); a6 = a6/2 ** (6*s) # Scaling
       #
       f = a.padeApproximantOfDegree(M_VALS.last, a2, a4, a6)
-      if a.flags.lower_triangular?
+      lower = a.flags.lower_triangular? && !a.flags.upper_triangular?
+      if lower
         a.t!
         f.t!
       end
       #
       # TODO f = expm_sqtri(a, f, s)
-      # if a.flags.triangular? || schur_fact
-      #   raise "not implemented yet"
-      #   f.transpose! if a.flags.lower_triangular?
-      # else
-      s.to_i.times { f = f*f }
-      # end
+      if a.flags.triangular? || schur_fact
+        f = expm_sqtri(a, f, s)
+        f.transpose! if lower
+      else
+        s.to_i.times { f = f*f }
+      end
       return schur_fact ? q*f*q.conjt : f
     end
 
@@ -160,11 +162,10 @@ module LA
         u = self * (a6*(c[14 - 1]*a6 + c[12 - 1]*a4 + c[10 - 1]*a2) + c[8 - 1]*a6 + c[6 - 1]*a4 + c[4 - 1]*a2 + c[2 - 1]*Matrix(T).eye(n))
 
         v = a6*(c[13 - 1]*a6 + c[11 - 1]*a4 + c[9 - 1]*a2) + c[7 - 1]*a6 + c[5 - 1]*a4 + c[3 - 1]*a2 + c[1 - 1]*Matrix(T).eye(n)
-        # pp a6, a4, a2, self, c, u, v
       else
         raise ""
       end
-      f = (v - u).inv!*(u + v)
+      return (v - u).inv!*(u + v)
     end
 
     protected def getPadeCoefficients(m)
@@ -243,121 +244,119 @@ module LA
     #   end
     # end
 
-    # function X = expm_sqtri(T,F,s)
-    # % EXPM_SQTRI   Squaring phase of scaling and squaring method.
-    # %   X = EXPM_SQTRI(T/2^s,F,s) carries out the squaring phase
-    # %   of the scaling and squaring method for an upper quasitriangular T,
-    # %   given T/2^s and a Pade approximant F to e^{T/2^s}.
-    # %   It corrects the diagonal blocks blocks at each step.
-
-    # %   This M-file exploits Code Fragment 2.1 and Code Fragment 2.2 of the
-    # %   reference below.
-
-    # %   Reference: A. H. Al-Mohy and N. J. Higham, A New Scaling and Squaring
-    # %   Algorithm for the Matrix Exponential,SIAM J. Matrix Anal. Appl. 31(3):
-    # %   970-989, 2009.
-
-    # %   Awad H. Al-Mohy and Nicholas J. Higham, April 19, 2010.
-
-    # n = length(T);
-    # k = 1;
-    # % To turn off exact superdiagonal computation force "istriangular = 0".
-    # istriangular = isequal(T,triu(T));
-
-    # if n > 1
-    #    c = abs(diag(T,-1)) > 0;    % sum(c) = number of 2by2 full blocks
-    #    % NUMBLK blocks with i'th block in rows/cols INDX{i}.
-    #    numblk = n - sum(c);         % The number of blocks
-    #    indx = cell(numblk,1);
-    #    if c(end) == 0
-    #        indx{end} = n; c = [c ; 0];
-    #    end
-    #    for j = 1:numblk
-    #        if c(k)
-    #            indx{j} = k:k+1; k = k+2;
-    #        else
-    #            indx{j} = k; k = k+1;
-    #        end
-    #    end
-    # end
-
-    # for i = 0:s
-    #     if i > 0, F = F*F; end
-    #     if istriangular
-    #        % Compute diagonal and first superdiagonal.
-    #        for j = 1:2:n
-    #            if j < n
-    #               F(j:j+1,j:j+1) = expmT2by2( 2^i * T(j:j+1,j:j+1) );
-    #            else
-    #               F(n,n) = exp(2^i * T(n,n));
-    #            end
-    #        end
-    #     else
-    #        % Quasitriangular case: compute (block) diagonal only.
-    #        for j = 1:numblk
-    #            F(indx{j},indx{j}) = expm2_by_2( 2^i * T(indx{j},indx{j}) );
-    #        end
-    #     end
-    # end
-
-    # X = F;
+    def expm_sqtri(t, f, s)
+      # EXPM_SQTRI   Squaring phase of scaling and squaring method.
+      #   X = EXPM_SQTRI(T/2^s,F,s) carries out the squaring phase
+      #   of the scaling and squaring method for an upper quasitriangular T,
+      #   given T/2^s and a Pade approximant F to e^{T/2^s}.
+      #   It corrects the diagonal blocks blocks at each step.
+      #   This M-file exploits Code Fragment 2.1 and Code Fragment 2.2 of the
+      #   reference below.
+      #   Reference: A. H. Al-Mohy and N. J. Higham, A New Scaling and Squaring
+      #   Algorithm for the Matrix Exponential,SIAM J. Matrix Anal. Appl. 31(3):
+      #   970-989, 2009.
+      #   Awad H. Al-Mohy and Nicholas J. Higham, April 19, 2010.
+      k = 1
+      # To turn off exact superdiagonal computation force "istriangular = 0".
+      istriangular = t.flags.upper_triangular?
+      raise "not implemented" unless istriangular
+      # c = diag(-1).to_a.map { |x| x.abs > 0 ? 1 : 0 } # sum(c) = number of 2by2 full blocks
+      #    NUMBLK blocks with i'th block in rows/cols INDX{i}.
+      # numblk = nrows - c.sum # The number of blocks
+      #    indx = cell(numblk,1);
+      #    if c(end) == 0
+      #        indx{end} = n; c = [c ; 0];
+      #    end
+      #    for j = 1:numblk
+      #        if c(k)
+      #            indx{j} = k:k+1; k = k+2;
+      #        else
+      #            indx{j} = k; k = k+1;
+      #        end
+      #    end
+      i = 0
+      while i <= s + 0.001
+        f = f*f if i > 0
+        if istriangular
+          #         Compute diagonal and first superdiagonal.
+          (1..f.nrows).step(2) do |j|
+            if j < f.nrows - 1
+              f[j - 1..j, j - 1..j] = (2 ** i * t[j - 1..j, j - 1..j]).expmT2by2!
+            else
+              f[j, j] = Math.exp(2 ** i * t[j, j])
+            end
+          end
+        else
+          #         Quasitriangular case: compute (block) diagonal only.
+          #        for j = 1:numblk
+          #            F(indx{j},indx{j}) = expm2_by_2( 2^i * T(indx{j},indx{j}) );
+        end
+        i += 1
+      end
+      return f
+    end
 
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    # function X = expm2_by_2(A)
-    # % EXPM2_BY_2  Exponential for a general 2-by-2 matrix A.
+    protected def expm2_by_2!
+      # EXPM2_BY_2  Exponential for a general 2-by-2 matrix A.
+      case nrows
+      when 1
+        unsafe_set(0, 0, Math.exp(unsafe_at(0, 0)))
+      when 2
+        flags.upper_triangular? ? expmT2by2! : expm2by2full!
+      else
+        raise "BUG"
+      end
+      self
+    end
 
-    # if length(A) == 1
-    #     X = exp(A);
-    # else
-    #     X = expm2by2full(A);
-    # end
+    private def sinch(x)
+      x == 0 ? T.new(1.0) : Math.sinh(x)/x
+    end
 
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    # function X = expm2by2full(A)
+    private def expm2by2full!
+      # EXPM2BY2FULL   Exponential of 2-by-2 full matrix.
+      a = unsafe_at(0, 0)
+      b = unsafe_at(0, 1)
+      c = unsafe_at(1, 0)
+      d = unsafe_at(1, 1)
 
-    # % EXPM2BY2FULL   Exponential of 2-by-2 full matrix.
-
-    # a = A(1,1);
-    # b = A(1,2);
-    # c = A(2,1);
-    # d = A(2,2);
-
-    # delta = sqrt((a-d)^2 + 4*b*c);
-
-    # X = exp((a+d)/2)  * ...
-    #       [ cosh(delta/2) + (a-d)/2*sinch(delta/2),  b*sinch(delta/2)
-    #         c*sinch(delta/2),  cosh(delta/2) + (d-a)/2*sinch(delta/2) ];
-
-    # %%%%%%%%%%%%%%%%%%%%%
-    # function y = sinch(x)
-    #     if x == 0
-    #        y = 1;
-    #     else
-    #         y = sinh(x)/x;
-    #     end
+      delta = Math.sqrt((a - d)*(a - d) + 4*b*c)
+      k = Math.exp((a + d)/2)
+      unsafe_set(0, 0, k*(Math.cosh(delta/2) + (a - d)/2*sinch(delta/2)))
+      unsafe_set(0, 1, k*b*sinch(delta/2))
+      unsafe_set(1, 0, k*c*sinch(delta/2))
+      unsafe_set(1, 1, k*(Math.cosh(delta/2) + (d - a)/2*sinch(delta/2)))
+      self
+    end
 
     # %%%%%%%%%%%%%%%%%%%%%%%%
-    # function X = expmT2by2(A)
-    # %EXPMT2BY2    Exponential of 2-by-2 upper triangular matrix.
-    # %   EXPMT2BY2(A) is the exponential of the 2-by-2 upper triangular matrix A.
+    protected def expmT2by2!
+      # EXPMT2BY2    Exponential of 2-by-2 upper triangular matrix.
+      # EXPMT2BY2(A) is the exponential of the 2-by-2 upper triangular matrix A.
 
-    # % Modified from FUNM (EXPM2by2).
+      # Modified from FUNM (EXPM2by2).
 
-    # a1 = A(1,1);
-    # a2 = A(2,2);
+      a1 = unsafe_at(0, 0)
+      a2 = unsafe_at(1, 1)
+      c = unsafe_at(0, 1)
+      ave = (a1 + a2)/2
+      {% if T == Complex %}ave = ave.real{% end %}
+      df = (a1 - a2).abs/2
+      if Math.max(ave, df) < {% if T == Complex %} Math.log(Float64::MAX_FINITE) {% else %} Math.log(T::MAX_FINITE) {% end %}
+        # Formula fine unless it overflows.
+        x12 = c*Math.exp((a1 + a2)/2) * sinch((a2 - a1)/2)
+      else
+        # Formula can suffer cancellation.
+        x12 = c*(Math.exp(a2) - Math.exp(a1))/(a2 - a1)
+      end
 
-    # ave = (a1+a2)/2; df  = abs(a1-a2)/2;
-
-    # if max(ave,df) < log(realmax)
-    #    % Formula fine unless it overflows.
-    #    x12 = A(1,2)*exp( (a1+a2)/2 ) * sinch( (a2-a1)/2 );
-    # else
-    #    % Formula can suffer cancellation.
-    #    x12 = A(1,2)*(exp(a2)-exp(a1))/(a2-a1);
-    # end
-
-    # X = [exp(a1)  x12
-    #        0      exp(a2)];
-
+      unsafe_set(0, 0, Math.exp(a1))
+      unsafe_set(0, 1, x12)
+      unsafe_set(1, 0, 0.0)
+      unsafe_set(1, 1, Math.exp(a2))
+      self
+    end
   end
 end

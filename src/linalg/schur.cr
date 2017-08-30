@@ -19,13 +19,14 @@ module LA
         z.assume! MatrixFlags::Orthogonal
         return {a, z}
       {% else %}
-      wr = Slice(T).new(nrows)
-      wi = Slice(T).new(nrows)
-      z = GeneralMatrix(T).new(*size)
-      lapack(ge, es, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, wr, wi, z, ncolumns)
-      a.clear_flags
-      z.assume! MatrixFlags::Orthogonal
-      return {a, z}
+        wr = Slice(T).new(nrows)
+        wi = Slice(T).new(nrows)
+        z = GeneralMatrix(T).new(*size)
+        lapack(ge, es, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, wr, wi, z, ncolumns)
+        a.clear_flags
+        a.detect MatrixFlags::UpperTriangular
+        z.assume! MatrixFlags::Orthogonal
+        return {a, z}
       {% end %}
     end
 
@@ -55,6 +56,7 @@ module LA
             alphar, alphai, beta, vsl, ncolumns,vsr, ncolumns)
         a.clear_flags
         bb.clear_flags
+        bb.detect MatrixFlags::UpperTriangular
       {% end %}
       vsl.assume! MatrixFlags::Orthogonal
       vsr.assume! MatrixFlags::Orthogonal
