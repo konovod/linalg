@@ -47,7 +47,7 @@ describe LA do
     #   [0.0, 0.0, 0.0, 1.0],
     # ]
     m = m + m.t
-    m.detect MatrixFlags::Symmetric
+    # m.detect MatrixFlags::Symmetric
     m.expm(schur_fact: true).should almost_eq GMat[
       [2288.37752914804, 3687.89823361033, 3669.66066846686, 2258.86846809108],
       [3687.89823361033, 5958.03819761490, 5946.76670170141, 3669.66066846686],

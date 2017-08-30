@@ -209,8 +209,7 @@ module LA
         e = Matrix(T).ones(n, 1)
         a.transpose!
         m.times { e = a * e }
-        c = e.norm(MatrixNorm::Inf)
-        c
+        return e.norm(MatrixNorm::Inf)
       else
         # TODO - normest?
         # [c,v,w,it] = normest1(@afun_power);
