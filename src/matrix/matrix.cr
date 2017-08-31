@@ -80,6 +80,30 @@ module LA
     def imag
       self & (MatrixFlags::Symmetric | MatrixFlags::Triangular)
     end
+
+    def tril(diagonal : Bool, square : Bool)
+      if diagonal
+        if self.upper_triangular?
+          MatrixFlags.for_diag(square)
+        else
+          LowerTriangular
+        end
+      else
+        self & (MatrixFlags::UpperTriangular | MatrixFlags::LowerTriangular)
+      end
+    end
+
+    def triu(diagonal : Bool, square : Bool)
+      if diagonal
+        if self.lower_triangular?
+          MatrixFlags.for_diag(square)
+        else
+          UpperTriangular
+        end
+      else
+        self & (MatrixFlags::UpperTriangular | MatrixFlags::LowerTriangular)
+      end
+    end
   end
 
   # class that provide all utility matrix functions
@@ -219,7 +243,7 @@ module LA
       x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i >= j - k ? unsafe_at(i, j) : 0
       end
-      x.assume! MatrixFlags::LowerTriangular if k >= 0
+      x.flags = flags.tril(k <= 0, square?)
       x
     end
 
@@ -228,7 +252,7 @@ module LA
       x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i <= j - k ? unsafe_at(i, j) : 0
       end
-      x.assume! MatrixFlags::UpperTriangular if k >= 0
+      x.flags = flags.triu(k >= 0, square?)
       x
     end
 

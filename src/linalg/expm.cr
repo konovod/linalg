@@ -101,8 +101,6 @@ module LA
         a.t!
         f.t!
       end
-      #
-      # TODO f = expm_sqtri(a, f, s)
       if a.flags.triangular? || schur_fact
         f = expm_sqtri(a, f, s)
         f.transpose! if lower

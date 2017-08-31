@@ -81,14 +81,15 @@ module LA
       flags.lower_triangular? ? 'L'.ord : 'U'.ord
     end
 
-    private def copy_up_down
+    private def adjust_symmetric
       f = flags
       each_with_index { |v, i, j| unsafe_set(j, i, v) if i < j }
       @flags = f
     end
 
-    private def clean_unused
-      flags.lower_triangular? ? tril! : triu!
+    private def adjust_triangular
+      triu! if flags.upper_triangular?
+      tril! if flags.lower_triangular?
     end
 
     def inv!
@@ -97,17 +98,17 @@ module LA
       n = @nrows
       if flags.triangular?
         lapack(tr, tri, uplo, 'N'.ord, n, self, n)
-        clean_unused
+        adjust_triangular
       elsif flags.positive_definite?
         lapack(po, trf, uplo, n, self, n)
         lapack(po, tri, uplo, n, self, n)
-        copy_up_down
+        adjust_symmetric
       elsif {{T == Complex}} && flags.hermitian?
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
         lapack(he, trf, uplo, n, self, n, ipiv)
         lapack(he, tri, uplo, n, self, n, ipiv)
-        copy_up_down
+        adjust_symmetric
         {% else %}
         raise "error"
         {% end %}
@@ -115,7 +116,7 @@ module LA
         ipiv = Slice(Int32).new(n)
         lapack(sy, trf, uplo, n, self, n, ipiv)
         lapack(sy, tri, uplo, n, self, n, ipiv)
-        copy_up_down
+        adjust_symmetric
       else
         ipiv = Slice(Int32).new(n)
         lapack(ge, trf, n, n, self, n, ipiv)

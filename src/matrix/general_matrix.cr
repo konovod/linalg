@@ -171,15 +171,17 @@ module LA
 
     # like a tril in scipy - remove all elements above k-diagonal
     def tril!(k = 0)
+      oldflags = flags
       map_with_index! { |v, i, j| i < j - k ? 0 : v }
-      self.flags = MatrixFlags::LowerTriangular if k <= 0
+      self.flags = oldflags.tril(k <= 0, square?)
       self
     end
 
     # like a triu in scipy - remove all elements below k-diagonal
     def triu!(k = 0)
+      oldflags = flags
       map_with_index! { |v, i, j| i > j - k ? 0 : v }
-      self.flags = MatrixFlags::UpperTriangular if k >= 0
+      self.flags = oldflags.triu(k >= 0, square?)
       self
     end
   end

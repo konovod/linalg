@@ -59,4 +59,37 @@ describe LA::Matrix do
     u.assume! LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular
     u.inv[0, 1].should be_close 0.0, 1e-16
   end
+
+  it "correct flags for tril/triu" do
+    general = LA::Mat.rand(5, 5)
+    general.tril(1).flags.should eq LA::MatrixFlags::None
+    general.tril(-1).flags.should eq LA::MatrixFlags::LowerTriangular
+    lower = general.clone
+    lower.tril!(1)
+    lower.flags.should eq LA::MatrixFlags::None
+    lower.tril!(-1)
+    lower.flags.should eq LA::MatrixFlags::LowerTriangular
+    lower.triu(-1).flags.should eq LA::MatrixFlags::LowerTriangular
+    lower.triu(1).flags.symmetric?.should be_true
+
+    upper = general.clone
+    upper.triu!(-1)
+    upper.flags.should eq LA::MatrixFlags::None
+    upper.triu!(1)
+    upper.flags.should eq LA::MatrixFlags::UpperTriangular
+    upper.tril(1).flags.should eq LA::MatrixFlags::UpperTriangular
+    upper.tril(-1).flags.symmetric?.should be_true
+
+    diag = LA::Mat.eye(5)
+    diag.tril(-1).flags.symmetric?.should be_true
+    diag.tril(1).flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
+    diag.triu(-1).flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
+    diag.triu(1).flags.symmetric?.should be_true
+    diag.tril!(1)
+    diag.flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
+    diag.tril!
+    diag.flags.symmetric?.should be_true
+    diag.tril!(-1)
+    diag.flags.symmetric?.should be_true
+  end
 end
