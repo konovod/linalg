@@ -14,7 +14,7 @@ module LA::Matrix(T)
     if ncolumns != m.nrows
       raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
     end
-    result = GeneralMatrix(T).new(nrows, m.ncolumns, flags: self.flags.mult(m.flags)) do |i, j|
+    result = GeneralMatrix(T).new(nrows, m.ncolumns, self.flags.mult(m.flags)) do |i, j|
       (0...ncolumns).sum { |k| self[i, k]*m[k, j] }
     end
   end

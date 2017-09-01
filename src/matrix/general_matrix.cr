@@ -10,12 +10,12 @@ module LA
     getter raw : Slice(T)
     property flags : MatrixFlags = MatrixFlags.new(0)
 
-    def initialize(@nrows, @ncolumns, *, @flags = MatrixFlags.new(0))
+    def initialize(@nrows, @ncolumns, @flags : MatrixFlags = MatrixFlags.new(0))
       check_type
       @raw = Slice(T).new(nrows*ncolumns, T.new(0))
     end
 
-    def initialize(@nrows, @ncolumns, values, *, @flags = MatrixFlags.new(0))
+    def initialize(@nrows, @ncolumns, values, @flags : MatrixFlags = MatrixFlags.new(0))
       check_type
       @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
     end
@@ -36,7 +36,7 @@ module LA
       new(matrix.nrows, matrix.ncolumns, matrix.raw)
     end
 
-    def initialize(@nrows, @ncolumns, *, @flags = MatrixFlags.new(0), &block)
+    def initialize(@nrows, @ncolumns, @flags : MatrixFlags = MatrixFlags.new(0), &block)
       check_type
       @raw = Slice(T).new(@nrows*@ncolumns) do |index|
         i = index / @ncolumns
@@ -55,7 +55,7 @@ module LA
     end
 
     def dup
-      GeneralMatrix(T).new(@nrows, @ncolumns, @raw, flags: @flags)
+      GeneralMatrix(T).new(@nrows, @ncolumns, @raw, @flags)
     end
 
     def clone

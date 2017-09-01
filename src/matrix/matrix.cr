@@ -36,7 +36,7 @@ module LA
 
     # creates generic matrix with same content. Useful for virtual matrices
     def clone
-      GeneralMatrix(T).new(nrows, ncolumns, flags: flags) do |i, j|
+      GeneralMatrix(T).new(nrows, ncolumns, flags) do |i, j|
         unsafe_at(i, j)
       end
     end
@@ -46,7 +46,7 @@ module LA
       {% unless T == Complex %}
         {% raise "Only complex matrices have ##to_real" %}
       {% end %}
-      GeneralMatrix(Float64).new(nrows, ncolumns, flags: flags.real) do |i, j|
+      GeneralMatrix(Float64).new(nrows, ncolumns, flags.real) do |i, j|
         unsafe_at(i, j).real
       end
     end
@@ -56,7 +56,7 @@ module LA
       {% unless T == Complex %}
         {% raise "Only complex matrices have ##to_imag" %}
       {% end %}
-      GeneralMatrix(Float64).new(nrows, ncolumns, flags: flags.imag) do |i, j|
+      GeneralMatrix(Float64).new(nrows, ncolumns, flags.imag) do |i, j|
         unsafe_at(i, j).imag
       end
     end
@@ -75,7 +75,7 @@ module LA
     # multiplies at scalar
     def *(k : Number | Complex)
       new_flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0)
-      result = GeneralMatrix(T).new(nrows, ncolumns, flags: new_flags) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns, new_flags) do |i, j|
         self.unsafe_at(i, j)*k
       end
     end
@@ -87,7 +87,7 @@ module LA
     # divides at scalar
     def /(k : Number | Complex)
       new_flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0)
-      result = GeneralMatrix(T).new(nrows, ncolumns, flags: new_flags) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns, new_flags) do |i, j|
         self.unsafe_at(i, j) / k
       end
     end
@@ -97,7 +97,7 @@ module LA
       if ncolumns != m.ncolumns || nrows != m.nrows
         raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] + [#{m.nrows}x#{m.ncolumns}]")
       end
-      result = GeneralMatrix(T).new(nrows, ncolumns, flags: flags.sum(m.flags)) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
         self.unsafe_at(i, j) + m.unsafe_at(i, j)
       end
     end
@@ -107,7 +107,7 @@ module LA
       if ncolumns != m.ncolumns || nrows != m.nrows
         raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] - [#{m.nrows}x#{m.ncolumns}]")
       end
-      result = GeneralMatrix(T).new(nrows, ncolumns, flags: flags.sum(m.flags)) do |i, j|
+      result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
         self.unsafe_at(i, j) - m.unsafe_at(i, j)
       end
     end
@@ -115,7 +115,7 @@ module LA
     # returns transposed matrix
     def transpose
       return clone if flags.symmetric?
-      GeneralMatrix(T).new(ncolumns, nrows, flags: flags.transpose) do |i, j|
+      GeneralMatrix(T).new(ncolumns, nrows, flags.transpose) do |i, j|
         unsafe_at(j, i)
       end
     end
@@ -126,7 +126,7 @@ module LA
         return transpose
       {% end %}
       return clone if flags.hermitian?
-      GeneralMatrix(T).new(ncolumns, nrows, flags: flags.transpose) do |i, j|
+      GeneralMatrix(T).new(ncolumns, nrows, flags.transpose) do |i, j|
         unsafe_at(j, i).conj
       end
     end
@@ -138,19 +138,17 @@ module LA
 
     # same as tril in scipy - returns lower triangular or trapezoidal part of matrix
     def tril(k = 0)
-      x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
+      x = GeneralMatrix(T).new(nrows, ncolumns, flags.tril(k <= 0, square?)) do |i, j|
         i >= j - k ? unsafe_at(i, j) : 0
       end
-      x.flags = flags.tril(k <= 0, square?)
       x
     end
 
     # same as triu in scipy - returns upper triangular or trapezoidal part of matrix
     def triu(k = 0)
-      x = GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
+      x = GeneralMatrix(T).new(nrows, ncolumns, flags.triu(k >= 0, square?)) do |i, j|
         i <= j - k ? unsafe_at(i, j) : 0
       end
-      x.flags = flags.triu(k >= 0, square?)
       x
     end
 
@@ -298,7 +296,7 @@ module LA
     end
 
     def self.zeros(nrows, ncolumns)
-      GeneralMatrix(T).new(nrows, ncolumns, flags: MatrixFlags.for_diag(nrows == ncolumns))
+      GeneralMatrix(T).new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns))
     end
 
     def self.ones(nrows, ncolumns)
@@ -318,7 +316,7 @@ module LA
     end
 
     def self.diag(nrows, ncolumns, values)
-      GeneralMatrix(T).new(nrows, ncolumns, flags: MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+      GeneralMatrix(T).new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
         i == j ? values[i] : 0
       end
     end
@@ -336,7 +334,7 @@ module LA
     end
 
     def self.diag(nrows, ncolumns, &block)
-      GeneralMatrix(T).new(nrows, ncolumns, flags: MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+      GeneralMatrix(T).new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
         i == j ? yield(i) : 0
       end
     end
@@ -349,7 +347,7 @@ module LA
 
     def self.identity(n)
       aflags = MatrixFlags.for_diag(true) | MatrixFlags::PositiveDefinite
-      result = GeneralMatrix(T).new(n, n, flags: aflags) { |i, j| i == j ? 1 : 0 }
+      result = GeneralMatrix(T).new(n, n, aflags) { |i, j| i == j ? 1 : 0 }
     end
 
     def self.eye(n)
