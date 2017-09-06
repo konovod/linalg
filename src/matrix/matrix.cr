@@ -5,7 +5,12 @@ module LA
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
   # class that provide all utility matrix functions
-  module Matrix(T)
+  abstract class Matrix(T)
+    abstract def nrows : Int32
+    abstract def ncolumns : Int32
+    abstract def flags : MatrixFlags
+    abstract def flags=(value : MatrixFlags)
+
     # used in constructors to limit T at compile-time
     protected def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}

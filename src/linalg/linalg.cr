@@ -48,7 +48,7 @@ module LA
     matrix.svd(overwrite_a: overwrite_a)
   end
 
-  module Matrix(T)
+  abstract class Matrix(T)
     macro lapack_util(name, *args)
       {% if T == Float32
            typ = :s.id
@@ -84,7 +84,7 @@ module LA
     private def adjust_symmetric
       f = flags
       each_with_index { |v, i, j| unsafe_set(j, i, v) if i < j }
-      @flags = f
+      self.flags = f
     end
 
     private def adjust_triangular
@@ -95,7 +95,7 @@ module LA
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       return transpose! if flags.orthogonal?
-      n = @nrows
+      n = self.nrows
       if flags.triangular?
         lapack(tr, tri, uplo, 'N'.ord, n, self, n)
         adjust_triangular
@@ -242,7 +242,7 @@ module LA
 
     def balance!(*, permute = true, scale = true, separate = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      n = @nrows
+      n = self.nrows
       job = if permute && scale
               'B'
             elsif permute

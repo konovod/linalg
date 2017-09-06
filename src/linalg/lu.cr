@@ -1,5 +1,5 @@
 module LA
-  module Matrix(T)
+  abstract class Matrix(T)
     def lu(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
       m = nrows

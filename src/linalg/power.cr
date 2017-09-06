@@ -1,4 +1,4 @@
-module LA::Matrix(T)
+abstract class LA::Matrix(T)
   # Taken from https://github.com/Exilor/matrix/
   def **(other : Int)
     raise ArgumentError.new("matrix must be square") unless square?

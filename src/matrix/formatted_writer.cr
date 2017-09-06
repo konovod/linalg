@@ -1,7 +1,7 @@
 require "./general_matrix"
 require "./matrix"
 
-module LA::Matrix(T)
+abstract class LA::Matrix(T)
   # to_custom(io, "[", ",", "],[", "]")
   def to_custom(io, prefix, columns_separator, rows_separator, postfix)
     each_with_index do |v, r, c|

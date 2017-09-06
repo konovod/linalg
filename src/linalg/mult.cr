@@ -2,7 +2,7 @@ require "../matrix/*"
 require "./libLAPACKE"
 
 module LA
-  module Matrix(T)
+  abstract class Matrix(T)
     macro blas(storage, name, *args)
       {% if T == Float32
            typ = :s.id

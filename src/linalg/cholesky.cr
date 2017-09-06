@@ -6,7 +6,7 @@ module LA
     a.cho_solve(b, overwrite_b: overwrite_b)
   end
 
-  module Matrix(T)
+  abstract class Matrix(T)
     def cholesky!(*, lower = false, dont_clean = false)
       raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
       char = lower ? 'L' : 'U'

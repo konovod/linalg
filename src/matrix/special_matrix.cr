@@ -3,7 +3,7 @@ require "./matrix"
 require "./general_matrix"
 
 module LA
-  module Matrix(T)
+  abstract class Matrix(T)
     def self.tri(nrows, ncolumns, k = 0)
       GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
         i >= j - k ? 1 : 0
@@ -139,7 +139,7 @@ module LA
     SqrtN
   end
 
-  module Matrix(T)
+  abstract class Matrix(T)
     def self.dft(n, scale : DFTScale = DFTScale::None)
       {% raise "DFT matrix must be Complex" unless T == Complex %}
       j = Complex.new(0, 1)
@@ -174,7 +174,7 @@ module LA
     Symmetric
   end
 
-  module Matrix(T)
+  abstract class Matrix(T)
     private def self.n_choose_k(n, k)
       (1..n).product(T.new(1.0)) / ((1..k).product(T.new(1.0)) * (1..n - k).product(T.new(1.0)))
     end

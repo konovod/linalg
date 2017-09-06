@@ -23,7 +23,7 @@ module LA
     4.250000000000000e+000,
   } # m_vals = 13
 
-  module Matrix(T)
+  abstract class Matrix(T)
     def expm(*, schur_fact = false)
       # EXPM_NEW  Matrix exponential.
       #  EXPM_NEW(A) is the matrix exponential of A computed using

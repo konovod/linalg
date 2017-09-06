@@ -2,7 +2,7 @@ require "./matrix"
 require "./submatrix"
 
 module LA
-  module Matrix(T)
+  abstract class Matrix(T)
     private macro def_indexable(name, offset, size)
       struct {{name.id.capitalize}}(T)
         include Indexable(SubMatrix(T))

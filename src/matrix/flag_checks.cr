@@ -1,10 +1,10 @@
 module LA
-  module Matrix(T)
+  abstract class Matrix(T)
     def assume!(flag : MatrixFlags, value : Bool = true)
       if value
-        @flags |= flag
+        self.flags |= flag
       else
-        @flags &= ~flag
+        self.flags &= ~flag
       end
     end
 
@@ -88,7 +88,7 @@ module LA
     end
 
     def clear_flags
-      @flags = MatrixFlags::None
+      self.flags = MatrixFlags::None
     end
   end
 end

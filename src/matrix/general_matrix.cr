@@ -3,24 +3,27 @@ require "./submatrix"
 
 module LA
   # generic matrix, heap-allocated
-  class GeneralMatrix(T)
-    include Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
+    getter raw : Slice(T)
     getter nrows : Int32
     getter ncolumns : Int32
-    getter raw : Slice(T)
-    property flags : MatrixFlags = MatrixFlags.new(0)
+    property flags = MatrixFlags::None
 
-    def initialize(@nrows, @ncolumns, @flags : MatrixFlags = MatrixFlags.new(0))
+    def initialize(@nrows, @ncolumns, @flags = MatrixFlags::None)
       check_type
       @raw = Slice(T).new(nrows*ncolumns, T.new(0))
     end
 
-    def initialize(@nrows, @ncolumns, values, @flags : MatrixFlags = MatrixFlags.new(0))
+    def initialize(@nrows, @ncolumns, @flags = MatrixFlags::None, &block)
       check_type
-      @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
+      @raw = Slice(T).new(@nrows*@ncolumns) do |index|
+        i = index / @ncolumns
+        j = index % @ncolumns
+        T.new(yield(i, j))
+      end
     end
 
-    def initialize(values)
+    def initialize(values : Indexable)
       check_type
       @nrows = values.size
       @ncolumns = values[0].size
@@ -36,13 +39,9 @@ module LA
       new(matrix.nrows, matrix.ncolumns, matrix.raw)
     end
 
-    def initialize(@nrows, @ncolumns, @flags : MatrixFlags = MatrixFlags.new(0), &block)
+    def initialize(@nrows, @ncolumns, values : Indexable, @flags = MatrixFlags::None)
       check_type
-      @raw = Slice(T).new(@nrows*@ncolumns) do |index|
-        i = index / @ncolumns
-        j = index % @ncolumns
-        T.new(yield(i, j))
-      end
+      @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
     end
 
     def unsafe_at(i, j)

@@ -8,7 +8,7 @@ module LA
      end
   {% end %}
 
-  module Matrix(T)
+  abstract class Matrix(T)
     # optimization idea for noncomplex matrix is from scipy
     def cosm
       {% if T == Complex %}

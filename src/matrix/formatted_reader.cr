@@ -37,7 +37,7 @@ end
 class MatrixParseError < Exception
 end
 
-module LA::Matrix(T)
+abstract class LA::Matrix(T)
   # from_custom(io, "[", ",", "],[", "]")
   def self.from_custom(io, prefix, columns_separator, rows_separator, postfix)
     io.gets(prefix)

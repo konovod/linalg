@@ -1,5 +1,5 @@
 module LA
-  module Matrix(T)
+  abstract class Matrix(T)
     private def qr_initial(a, pivoting)
       m = a.nrows
       n = a.ncolumns

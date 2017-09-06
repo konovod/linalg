@@ -36,7 +36,7 @@ end
 end
 
 module LA
-  module Matrix(T)
+  abstract class Matrix(T)
     decomposition(rq, triu)
     decomposition(lq, tril)
     decomposition(ql, tril)

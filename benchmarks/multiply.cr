@@ -9,7 +9,7 @@ include LA
 # - symm is faster only at size ~50
 # - trmm is faster at size >= 50
 
-module LA::Matrix(T)
+abstract class LA::Matrix(T)
   def naive_mult(m : Matrix(T))
     if ncolumns != m.nrows
       raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
