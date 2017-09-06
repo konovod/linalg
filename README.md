@@ -158,8 +158,10 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 
 - [x] saving/loading from files
 - [ ] Virtual(lazy) matrices, ways to evade allocations during calculations
-- [ ] Matrix exponentiation (and other matrix functions)
+- [x] Matrix exponent and trigonometric
+- [ ] other matrix functions
 - [ ] Banded matrices
+- [ ] Column-major storage (optional?)
 - [ ] Other missing features from LAPACK (mostly selectable and orderable eigenvalues)
 - [ ] Sparse matrices (perhaps out of scope/deserves separate shard)
 - [ ] Other missing features from scipy.linalg (pseudoinverse, lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
