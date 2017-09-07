@@ -17,7 +17,7 @@ module LA
     def initialize(@nrows, @ncolumns, @flags = MatrixFlags::None, &block)
       check_type
       @raw = Slice(T).new(@nrows*@ncolumns) do |index|
-        i = index / @ncolumns # TODO fixing highlight in sublime /
+        i = index/@ncolumns
         j = index % @ncolumns
         T.new(yield(i, j))
       end
@@ -28,7 +28,7 @@ module LA
       @nrows = values.size
       @ncolumns = values[0].size
       @raw = Slice(T).new(nrows*ncolumns) do |index|
-        i = index / @ncolumns # TODO fixing highlight in sublime /
+        i = index/@ncolumns
         j = index % @ncolumns
         raise IndexError.new("All rows must have same size") if j == 0 && values[i].size != @ncolumns
         T.new(values[i][j])
