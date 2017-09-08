@@ -52,12 +52,28 @@ module LA
       end
     end
 
+    def self.new(nrows, ncolumns, upper_band, values : Indexable)
+      new(nrows, ncolumns, upper_band, upper_band, values)
+    end
+
     def initialize(@nrows, @ncolumns, @upper_band, @lower_band, values : Indexable)
       check_type
+      # TODO check values sizes
       @raw_banded = Slice(T).new(bands_size) do |index|
-        i = index % band_len
         band = index/band_len
-        T.new(values[band][i])
+        offset = band - @upper_band
+        i = (index % band_len)
+        if offset >= 0
+          len = {nrows, ncolumns - offset}.min
+        else
+          len = {nrows + offset, ncolumns}.min
+          i += offset
+        end
+        if i >= 0 && i < len
+          T.new(values[band][i])
+        else
+          T.new(0)
+        end
       end
     end
 
