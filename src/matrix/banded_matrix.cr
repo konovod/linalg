@@ -64,11 +64,12 @@ module LA
         offset = band - @upper_band
         i = (index % band_len)
         if offset >= 0
-          len = {nrows, ncolumns - offset}.min
+          len = {nrows - offset, ncolumns}.min
         else
-          len = {nrows + offset, ncolumns}.min
-          i += offset
+          len = {nrows, ncolumns + offset}.min
         end
+        raise ArgumentError.new("#{band} item length is #{values[band].size}, expected #{len} ") if i == 0 && len != values[band].size
+        i += offset if offset < 0
         if i >= 0 && i < len
           T.new(values[band][i])
         else
