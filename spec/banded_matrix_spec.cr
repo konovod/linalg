@@ -2,9 +2,9 @@ require "./spec_helper"
 
 include LA
 describe LA::BandedMatrix do
-  # it "is created from Mat##diag call" do
-  #   GMat.diag([1, 2, 3]).should be_a BandedMatrix(Float64)
-  # end
+  pending "is created from Mat##diag call" do
+    GMat.diag([1, 2, 3]).should be_a BandedMatrix(Float64)
+  end
   it "can be created by block" do
     a = BMat.new(5, 7, 2) { |i, j| i - j }
     a.should eq GMat[
@@ -82,5 +82,39 @@ describe LA::BandedMatrix do
       [0, 0, 0, 64, 65],
       [0, 0, 0, 0, 75],
     ]
+  end
+
+  it "can be created from general matrix" do
+    a = GMat[
+      [11, 12, 0, 0, 0],
+      [21, 22, 23, 0, 0],
+      [31, 32, 33, 34, 0],
+      [0, 42, 43, 44, 45],
+      [0, 0, 53, 54, 55],
+      [0, 0, 0, 64, 65],
+      [0, 0, 0, 0, 75],
+    ]
+    b = BMat.from(a)
+    b.should be_a BandedMatrix(Float64)
+    b.should eq a
+  end
+
+  it "can be created with given tolerance" do
+    a = GMat[
+      [11, 12, 0, 0, 0],
+      [21, 22, 23, 0, 0],
+      [31, 32, 33, 34, 0],
+      [1e-6, 42, 43, 44, 45],
+      [0, 0, 53, 54, 55],
+      [0, 0, 0, 64, 65],
+      [0, 0, 0, 0, 75],
+    ]
+    b = BMat.from(a)
+    b.lower_band.should eq 3
+    b.should eq a
+
+    b2 = BMat.from(a, 1e-5)
+    b2.lower_band.should eq 2
+    b2.should_not eq a
   end
 end

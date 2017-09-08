@@ -35,8 +35,14 @@ module LA
       end
     end
 
-    def self.from(matrix)
-      new(matrix.nrows, matrix.ncolumns, matrix.raw)
+    def self.from(matrix : GeneralMatrix(T))
+      new(matrix.nrows, matrix.ncolumns, matrix.raw, matrix.flags)
+    end
+
+    def self.from(matrix : Matrix)
+      new(matrix.nrows, matrix.ncolumns, matrix.flags) do |i, j|
+        matrix.unsafe_at(i, j)
+      end
     end
 
     def initialize(@nrows, @ncolumns, values : Indexable, @flags = MatrixFlags::None)

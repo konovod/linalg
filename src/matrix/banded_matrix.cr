@@ -78,14 +78,29 @@ module LA
       end
     end
 
-    # def self.from(matrix)
-    #   new(matrix.nrows, matrix.ncolumns, matrix.raw)
-    # end
+    def self.from(matrix : BandedMatrix)
+      new(matrix.nrows, matrix.ncolumns, matrix.upper_band, matrix.lower_band, matrix.flags).tap do |result|
+        matrix.raw_banded.each_with_index do |v, i|
+          result.raw_banded.unsafe_set(i, T.new(v))
+        end
+      end
+    end
 
-    # def initialize(@nrows, @ncolumns, values : Indexable, @flags = MatrixFlags::None)
-    #   check_type
-    #   @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
-    # end
+    def self.from(matrix : Matrix, tolerance = matrix.tolerance)
+      upper_band = (1..matrix.ncolumns - 1).bsearch do |i|
+        matrix.diag(i).all? { |v| v.abs <= tolerance }
+      end
+      upper_band = (upper_band || matrix.ncolumns) - 1
+
+      lower_band = (1..matrix.nrows - 1).bsearch do |i|
+        matrix.diag(-i).all? { |v| v.abs <= tolerance }
+      end
+      lower_band = (lower_band || matrix.nrows) - 1
+
+      new(matrix.nrows, matrix.ncolumns, upper_band, lower_band, matrix.flags) do |i, j|
+        matrix.unsafe_at(i, j)
+      end
+    end
 
     def unsafe_at(i, j)
       if index = ij2index(i, j)
