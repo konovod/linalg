@@ -205,6 +205,27 @@ module LA
       self.flags = oldflags.triu(k >= 0, square?)
       self
     end
+
+    def add!(k : Number, m : Matrix)
+      if ncolumns != m.ncolumns || nrows != m.nrows
+        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] - [#{m.nrows}x#{m.ncolumns}]")
+      end
+      oldflags = flags
+      map_with_index! { |v, i, j| v + k*m.unsafe_at(i, j) }
+      self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
+      self
+    end
+
+    def add!(m : Matrix)
+      add!(1, m)
+    end
+
+    def scale!(k : Number | Complex)
+      oldflags = flags
+      map_with_index! { |v, i, j| k*v }
+      new_flags = oldflags.scale(k.is_a?(Complex) && k.imag != 0)
+      self
+    end
   end
 
   alias GMat = GeneralMatrix(Float64)

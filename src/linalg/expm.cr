@@ -147,11 +147,11 @@ module LA
         v = Matrix(T).zeros(n, n)
         #
         (2..m + 1).reverse_each.step(2).each do |j|
-          u += c[j - 1] * apowers[j/2 - 1]
+          u.add!(c[j - 1], apowers[j/2 - 1])
         end
         u = self*u
         (1..m).reverse_each.step(2).each do |j|
-          v += c[j - 1] * apowers[(j + 1)/2 - 1]
+          v.add!(c[j - 1], apowers[(j + 1)/2 - 1])
         end
       when 13
         raise "" unless a4

@@ -24,7 +24,7 @@ abstract class LA::Matrix(T)
       raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
     end
     result = Matrix(T).zeros(nrows, m.ncolumns)
-    result.inc_mult(self, m)
+    result.add_mult(self, m)
     result.tap { |r| r.flags = self.flags.mult(m.flags) }
   end
 
@@ -33,7 +33,7 @@ abstract class LA::Matrix(T)
       raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
     end
     result = Matrix(T).zeros(nrows, m.ncolumns)
-    result.inc_mult(self, m, beta: 0.0)
+    result.add_mult(self, m, beta: 0.0)
     result.tap { |r| r.flags = self.flags.mult(m.flags) }
   end
 

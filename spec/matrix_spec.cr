@@ -356,4 +356,22 @@ describe LA::Matrix do
       [1.0, 1.0, 0.0],
       [1.0, 1.0, 0.0]]
   end
+
+  it "can `add!` matrices" do
+    m = Mat.eye(4)
+    m.add! m
+    m.should eq GMat.diag([2, 2, 2, 2])
+    m2 = Mat.rand(4, 4)
+    m.add! -1, m2
+    (m + m2).should eq GMat.diag([2, 2, 2, 2])
+
+    expect_raises(ArgumentError) { m.add!(GMat.rand(3, 4)) }
+  end
+
+  it "can `scale!` self by scalar" do
+    m = Mat.rand(5, 8)
+    m_half = m.clone
+    m_half.scale! 0.5
+    (m_half + m_half).should eq m
+  end
 end

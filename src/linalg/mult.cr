@@ -23,7 +23,7 @@ module LA
     end
 
     # performs c = alpha*a*b + beta*c (BLAS routines gemm/symm/hemm/trmm)
-    def inc_mult(a, b : Matrix(T), *, alpha = 1.0, beta = 1.0)
+    def add_mult(a, b : Matrix(T), *, alpha = 1.0, beta = 1.0)
       if a.ncolumns != b.nrows || a.nrows != nrows || b.ncolumns != ncolumns
         raise ArgumentError.new("matrix size mismatch")
       end
@@ -102,7 +102,7 @@ module LA
         end
       else
         result = Matrix(T).zeros(nrows, m.ncolumns)
-        result.inc_mult(self, m)
+        result.add_mult(self, m)
         result.tap { |r| r.flags = self.flags.mult(m.flags) }
       end
     end
