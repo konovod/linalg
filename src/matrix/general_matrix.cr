@@ -121,6 +121,22 @@ module LA
       self
     end
 
+    def resize!(anrows, ancolumns)
+      # TODO - better implementation?
+      anew = GeneralMatrix(T).new(anrows, ancolumns) do |i, j|
+        if j >= 0 && j < ncolumns && i >= 0 && i < nrows
+          unsafe_at(i, j)
+        else
+          T.new(0)
+        end
+      end
+      @nrows = anrows
+      @ncolumns = ancolumns
+      @raw = anew.raw
+      clear_flags
+      self
+    end
+
     def to_a
       @raw.to_a
     end

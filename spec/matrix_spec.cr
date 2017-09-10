@@ -343,4 +343,17 @@ describe LA::Matrix do
     m2 = m3[0..1, 0..1]
     m2.should eq GMat[[1, 1], [1, 1]]
   end
+
+  it "can be `resize!`d" do
+    m = Mat.ones(2, 3)
+    m_same = m.resize!(3, 2)
+    m_same.should eq GMat[
+      [1.0, 1.0],
+      [1.0, 1.0],
+      [0.0, 0.0]]
+    m.resize!(2, 3)
+    m.should eq GMat[
+      [1.0, 1.0, 0.0],
+      [1.0, 1.0, 0.0]]
+  end
 end
