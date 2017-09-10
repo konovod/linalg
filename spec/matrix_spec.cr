@@ -223,7 +223,7 @@ describe LA::Matrix do
   end
   it "can be created from matrix of another type" do
     m = GMat32.new([[1, 2], [3, 4], [5, 6]])
-    GMatComplex.from(m).should eq GMatComplex.new([[1, 2], [3, 4], [5, 6]])
+    GMatComplex.new(m).should eq GMatComplex.new([[1, 2], [3, 4], [5, 6]])
   end
 
   it "can provide submatrices" do

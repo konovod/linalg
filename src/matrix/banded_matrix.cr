@@ -78,15 +78,15 @@ module LA
       end
     end
 
-    def self.from(matrix : BandedMatrix)
+    def self.new(matrix : BandedMatrix)
       new(matrix.nrows, matrix.ncolumns, matrix.upper_band, matrix.lower_band, matrix.flags).tap do |result|
         matrix.raw_banded.each_with_index do |v, i|
-          result.raw_banded.unsafe_set(i, T.new(v))
+          result.raw_banded[i] = T.new(v)
         end
       end
     end
 
-    def self.from(matrix : Matrix, tolerance = matrix.tolerance)
+    def self.new(matrix : Matrix, tolerance = matrix.tolerance)
       upper_band = (1..matrix.ncolumns - 1).bsearch do |i|
         matrix.diag(i).all? { |v| v.abs <= tolerance }
       end
@@ -118,6 +118,14 @@ module LA
         # TODO - resize?
         raise IndexError.new
       end
+    end
+
+    def dup
+      BandedMatrix(T).new(self)
+    end
+
+    def clone
+      dup
     end
 
     # def dup

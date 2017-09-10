@@ -34,5 +34,13 @@ module LA
     def unsafe_at(x, y)
       @base.unsafe_at(@offset[0] + x, @offset[1] + y)
     end
+
+    def dup
+      SubMatrix(T).new(@base, @offset, {@nrows, @ncolumns})
+    end
+
+    def clone
+      to_general
+    end
   end
 end

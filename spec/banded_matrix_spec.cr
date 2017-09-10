@@ -94,7 +94,7 @@ describe LA::BandedMatrix do
       [0, 0, 0, 64, 65],
       [0, 0, 0, 0, 75],
     ]
-    b = BMat.from(a)
+    b = BMat.new(a)
     b.should be_a BandedMatrix(Float64)
     b.should eq a
   end
@@ -109,12 +109,32 @@ describe LA::BandedMatrix do
       [0, 0, 0, 64, 65],
       [0, 0, 0, 0, 75],
     ]
-    b = BMat.from(a)
+    b = BMat.new(a)
     b.lower_band.should eq 3
     b.should eq a
 
-    b2 = BMat.from(a, 1e-5)
+    b2 = BMat.new(a, 1e-5)
     b2.lower_band.should eq 2
     b2.should_not eq a
+  end
+
+  it "can be created from band matrix of another type" do
+    a = BMat32.new(5, 7, 2) { |i, j| i - j }
+    a_complex = BMatComplex.new(a)
+    a_complex.should eq GMatComplex[
+      [0, -1, -2, 0, 0, 0, 0],
+      [1, 0, -1, -2, 0, 0, 0],
+      [2, 1, 0, -1, -2, 0, 0],
+      [0, 2, 1, 0, -1, -2, 0],
+      [0, 0, 2, 1, 0, -1, -2],
+    ]
+    a_float = BMat.new(a)
+    a_float.should eq GMat[
+      [0, -1, -2, 0, 0, 0, 0],
+      [1, 0, -1, -2, 0, 0, 0],
+      [2, 1, 0, -1, -2, 0, 0],
+      [0, 2, 1, 0, -1, -2, 0],
+      [0, 0, 2, 1, 0, -1, -2],
+    ]
   end
 end

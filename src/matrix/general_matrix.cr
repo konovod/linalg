@@ -35,11 +35,11 @@ module LA
       end
     end
 
-    def self.from(matrix : GeneralMatrix(T))
+    def self.new(matrix : GeneralMatrix(T))
       new(matrix.nrows, matrix.ncolumns, matrix.raw, matrix.flags)
     end
 
-    def self.from(matrix : Matrix)
+    def self.new(matrix : Matrix)
       new(matrix.nrows, matrix.ncolumns, matrix.flags) do |i, j|
         matrix.unsafe_at(i, j)
       end

@@ -40,7 +40,7 @@ module LA
     end
 
     # creates generic matrix with same content. Useful for virtual matrices
-    def clone
+    def to_general
       GeneralMatrix(T).new(nrows, ncolumns, flags) do |i, j|
         unsafe_at(i, j)
       end
