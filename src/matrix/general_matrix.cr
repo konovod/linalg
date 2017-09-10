@@ -207,9 +207,7 @@ module LA
     end
 
     def add!(k : Number, m : Matrix)
-      if ncolumns != m.ncolumns || nrows != m.nrows
-        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] - [#{m.nrows}x#{m.ncolumns}]")
-      end
+      assert_same_size(m)
       oldflags = flags
       map_with_index! { |v, i, j| v + k*m.unsafe_at(i, j) }
       self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))

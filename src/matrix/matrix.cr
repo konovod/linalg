@@ -97,11 +97,15 @@ module LA
       end
     end
 
+    protected def assert_same_size(m : Matrix)
+      if ncolumns != m.ncolumns || nrows != m.nrows
+        raise ArgumentError.new("matrix size doesn't match ([#{nrows}x#{ncolumns}] and [#{m.nrows}x#{m.ncolumns}]")
+      end
+    end
+
     # returns element-wise sum
     def +(m : Matrix(T))
-      if ncolumns != m.ncolumns || nrows != m.nrows
-        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] + [#{m.nrows}x#{m.ncolumns}]")
-      end
+      assert_same_size(m)
       result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
         self.unsafe_at(i, j) + m.unsafe_at(i, j)
       end
@@ -109,9 +113,7 @@ module LA
 
     # returns element-wise subtract
     def -(m : Matrix(T))
-      if ncolumns != m.ncolumns || nrows != m.nrows
-        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] - [#{m.nrows}x#{m.ncolumns}]")
-      end
+      assert_same_size(m)
       result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
         self.unsafe_at(i, j) - m.unsafe_at(i, j)
       end
