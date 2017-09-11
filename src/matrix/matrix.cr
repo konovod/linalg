@@ -409,8 +409,53 @@ module LA
       GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
     end
 
+    def map!(&block)
+      each_with_index { |v, i, j| unsafe_set(i, j, yield(v)) }
+      self
+    end
+
+    def map_with_index!(&block)
+      each_with_index { |v, i, j| unsafe_set(i, j, yield(v, i, j)) }
+      self
+    end
+
+    # like a tril in scipy - remove all elements above k-diagonal
+    def tril!(k = 0)
+      oldflags = flags
+      map_with_index! { |v, i, j| i < j - k ? 0 : v }
+      self.flags = oldflags.tril(k <= 0, square?)
+      self
+    end
+
+    # like a triu in scipy - remove all elements below k-diagonal
+    def triu!(k = 0)
+      oldflags = flags
+      map_with_index! { |v, i, j| i > j - k ? 0 : v }
+      self.flags = oldflags.triu(k >= 0, square?)
+      self
+    end
+
     def trace
       diag.sum
+    end
+
+    def add!(k : Number, m : Matrix)
+      assert_same_size(m)
+      oldflags = flags
+      map_with_index! { |v, i, j| v + k*m.unsafe_at(i, j) }
+      self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
+      self
+    end
+
+    def add!(m : Matrix)
+      add!(1, m)
+    end
+
+    def scale!(k : Number | Complex)
+      oldflags = flags
+      map_with_index! { |v, i, j| k*v }
+      new_flags = oldflags.scale(k.is_a?(Complex) && k.imag != 0)
+      self
     end
   end
 

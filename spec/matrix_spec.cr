@@ -374,4 +374,15 @@ describe LA::Matrix do
     m_half.scale! 0.5
     (m_half + m_half).should eq m
   end
+
+  it "submatrices can be `map!`ped too" do
+    m = Mat.ones(3, 2)
+    x = m[0..1, 0..0]
+    x.map! { |v| -v }
+    m.should eq GMat[
+      [-1.0, 1.0],
+      [-1.0, 1.0],
+      [1.0, 1.0],
+    ]
+  end
 end

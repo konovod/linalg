@@ -128,15 +128,24 @@ module LA
       dup
     end
 
-    # def dup
-    #   GeneralMatrix(T).new(@nrows, @ncolumns, @raw, @flags)
-    # end
-
-    # def clone
-    # end
-
     # def to_unsafe
-    # end
+    # def ==(other : self)
+    # def transpose!
+    # def conjtranspose!
+    # def reshape!(anrows, ancolumns)
+    # def to_a
+    # def to_aa
+    # def cat!(other : Matrix(T), dimension)
+    # def vcat!(other)
+    # def hcat!(other)
+    # def self.rows(*args)
+    # def self.columns(*args)
+    # def self.[](*args)
+    # def map!(&block)
+    # def map_with_index!(&block)
+    # def tril!(k = 0)
+    # def triu!(k = 0)
+
   end
 
   alias BMat = BandedMatrix(Float64)
