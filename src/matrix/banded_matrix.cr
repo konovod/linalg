@@ -135,12 +135,6 @@ module LA
     # def reshape!(anrows, ancolumns)
     # def to_a
     # def to_aa
-    # def cat!(other : Matrix(T), dimension)
-    # def vcat!(other)
-    # def hcat!(other)
-    # def self.rows(*args)
-    # def self.columns(*args)
-    # def self.[](*args)
     # def map!(&block)
     # def map_with_index!(&block)
     # def tril!(k = 0)

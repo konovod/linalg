@@ -326,6 +326,9 @@ module LA
       GeneralMatrix(T).new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
         i == j ? values[i] : 0
       end
+      # BandedMatrix(T).new(nrows, ncolumns, 0, 0, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+      #   i == j ? values[i] : 0
+      # end
     end
 
     def self.diag(values)
