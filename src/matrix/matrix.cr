@@ -173,7 +173,7 @@ module LA
       to_s(io)
     end
 
-    def each(&block)
+    def each(*, all = false, &block)
       nrows.times do |row|
         ncolumns.times do |column|
           yield self.unsafe_at(row, column)
@@ -181,7 +181,7 @@ module LA
       end
     end
 
-    def each_index(&block)
+    def each_index(*, all = false, &block)
       nrows.times do |row|
         ncolumns.times do |column|
           yield row, column
@@ -189,7 +189,7 @@ module LA
       end
     end
 
-    def each_with_index(&block)
+    def each_with_index(*, all = false, &block)
       nrows.times do |row|
         ncolumns.times do |column|
           yield self.unsafe_at(row, column), row, column

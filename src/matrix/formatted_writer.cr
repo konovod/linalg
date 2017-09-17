@@ -4,7 +4,7 @@ require "./matrix"
 abstract class LA::Matrix(T)
   # to_custom(io, "[", ",", "],[", "]")
   def to_custom(io, prefix, columns_separator, rows_separator, postfix)
-    each_with_index do |v, r, c|
+    each_with_index(all: true) do |v, r, c|
       if c > 0
         io << columns_separator
       elsif r > 0

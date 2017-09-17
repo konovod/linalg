@@ -385,4 +385,26 @@ describe LA::Matrix do
       [1.0, 1.0],
     ]
   end
+
+  it "have `each` methods" do
+    m = GMat[[1, 2, 3], [4, 5, 6]]
+    elements = [] of Float64
+    m.each { |v| elements << v }
+    elements.should eq [1, 2, 3, 4, 5, 6]
+
+    elements1 = [] of Float64
+    m.each(all: true) { |v| elements1 << v }
+    elements1.should eq elements
+
+    elements1 = [] of Float64
+    m.each(all: false) { |v| elements1 << v }
+    elements1.should eq elements
+
+    m2 = Mat.zeros(*m.size)
+    m.each_with_index { |v, i, j| m2[i, j] = v }
+    m2.should eq m
+
+    m.each_index(all: false) { |i, j| m[i, j] = -m[i, j] }
+    m.should eq -m2
+  end
 end
