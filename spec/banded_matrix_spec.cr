@@ -175,4 +175,18 @@ describe LA::BandedMatrix do
       {2, 1, 7.0},
     ]
   end
+
+  it "can be mapped with map" do
+    a = BMat.new(3, 4, 1, {[1, 2, 3], [4, 5, 6], [7, 8]})
+    a1 = a.map { |v| -v }
+    a1.should be_a BMat
+    a1.should eq -a
+
+    a.map_with_index! { |v, i, j| (i + 1)*10 + (j + 1) + v }
+    a.should eq GMat[
+      [11 + 4.0, 12 + 1.0, 0.0, 0.0],
+      [21 + 7.0, 22 + 5.0, 23 + 2.0, 0.0],
+      [0.0, 32 + 8.0, 33 + 6.0, 34 + 3.0],
+    ]
+  end
 end

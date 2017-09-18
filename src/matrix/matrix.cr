@@ -396,12 +396,12 @@ module LA
       cat other, 1
     end
 
-    def map(&block)
-      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j)) }
-    end
-
     def map_with_index(&block)
       GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
+    end
+
+    def map(&block)
+      map_with_index { |v, i, j| yield(v) }
     end
 
     def map_with_index!(&block)

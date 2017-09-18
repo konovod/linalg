@@ -140,6 +140,10 @@ module LA
       end
     end
 
+    def map_with_index(&block)
+      BandedMatrix(T).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
+    end
+
     # def to_unsafe
     # def ==(other : self)
     # def transpose!
