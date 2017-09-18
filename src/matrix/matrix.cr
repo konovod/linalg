@@ -173,14 +173,6 @@ module LA
       to_s(io)
     end
 
-    def each(*, all = false, &block)
-      nrows.times do |row|
-        ncolumns.times do |column|
-          yield self.unsafe_at(row, column)
-        end
-      end
-    end
-
     def each_index(*, all = false, &block)
       nrows.times do |row|
         ncolumns.times do |column|
@@ -189,17 +181,17 @@ module LA
       end
     end
 
+    def each(*, all = false, &block)
+      each_index(all: all) { |i, j| yield(unsafe_at(i, j)) }
+    end
+
     def each_with_index(*, all = false, &block)
-      nrows.times do |row|
-        ncolumns.times do |column|
-          yield self.unsafe_at(row, column), row, column
-        end
-      end
+      each_index(all: all) { |i, j| yield(unsafe_at(i, j), i, j) }
     end
 
     def ==(other)
       return false unless nrows == other.nrows && ncolumns == other.ncolumns
-      each_with_index do |value, row, column|
+      each_with_index(all: true) do |value, row, column|
         return false if other.unsafe_at(row, column) != value
       end
       true
@@ -288,7 +280,7 @@ module LA
     end
 
     def almost_eq(other : Matrix(T), eps)
-      each_with_index do |value, row, column|
+      each_with_index(all: true) do |value, row, column|
         return false if (value - other.unsafe_at(row, column)).abs > eps
       end
       true
@@ -412,13 +404,13 @@ module LA
       GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
     end
 
-    def map!(&block)
-      each_with_index { |v, i, j| unsafe_set(i, j, yield(v)) }
+    def map_with_index!(&block)
+      each_with_index { |v, i, j| unsafe_set(i, j, yield(v, i, j)) }
       self
     end
 
-    def map_with_index!(&block)
-      each_with_index { |v, i, j| unsafe_set(i, j, yield(v, i, j)) }
+    def map!(&block)
+      map_with_index! { |v, i, j| yield(v) }
       self
     end
 

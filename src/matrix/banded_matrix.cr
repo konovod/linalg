@@ -128,6 +128,18 @@ module LA
       dup
     end
 
+    def each_index(*, all = false, &block)
+      if all
+        super(all: false) { |i, j| yield(i, j) }
+      else
+        bands_size.times do |i|
+          if rowcol = index2ij(i)
+            yield(*rowcol)
+          end
+        end
+      end
+    end
+
     # def to_unsafe
     # def ==(other : self)
     # def transpose!

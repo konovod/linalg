@@ -137,4 +137,36 @@ describe LA::BandedMatrix do
       [0, 0, 2, 1, 0, -1, -2],
     ]
   end
+
+  it "can be iterated with `each`" do
+    a = BMat.new(3, 3, 1, {[1, 2], [3, 4, 5], [6, 7]})
+    elements = [] of {Int32, Int32, Float64}
+    a.each_with_index(all: true) do |v, i, j|
+      elements << {i, j, v}
+    end
+    elements.should eq [
+      {0, 0, 3.0},
+      {0, 1, 1.0},
+      {0, 2, 0.0},
+      {1, 0, 6.0},
+      {1, 1, 4.0},
+      {1, 2, 2.0},
+      {2, 0, 0.0},
+      {2, 1, 7.0},
+      {2, 2, 5.0},
+    ]
+    elements = [] of {Int32, Int32, Float64}
+    a.each_with_index(all: false) do |v, i, j|
+      elements << {i, j, v}
+    end
+    elements.should eq [
+      {0, 1, 1.0},
+      {1, 2, 2.0},
+      {0, 0, 3.0},
+      {1, 1, 4.0},
+      {2, 2, 5.0},
+      {1, 0, 6.0},
+      {2, 1, 7.0},
+    ]
+  end
 end
