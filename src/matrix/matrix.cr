@@ -80,9 +80,7 @@ module LA
     # multiplies at scalar
     def *(k : Number | Complex)
       new_flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0)
-      result = GeneralMatrix(T).new(nrows, ncolumns, new_flags) do |i, j|
-        self.unsafe_at(i, j)*k
-      end
+      map { |v| v*k }.tap { |result| result.flags = new_flags }
     end
 
     def -
@@ -91,10 +89,7 @@ module LA
 
     # divides at scalar
     def /(k : Number | Complex)
-      new_flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0)
-      result = GeneralMatrix(T).new(nrows, ncolumns, new_flags) do |i, j|
-        self.unsafe_at(i, j) / k
-      end
+      self*(T.new(1.0) / k)
     end
 
     protected def assert_same_size(m : Matrix)
