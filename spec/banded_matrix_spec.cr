@@ -82,6 +82,12 @@ describe LA::BandedMatrix do
       [0, 0, 0, 64, 65],
       [0, 0, 0, 0, 75],
     ]
+    expect_raises(ArgumentError) do
+      BMat.new(3, 4, 1, {[1, 2], [4, 5, 6], [7, 8]})
+    end
+    expect_raises(ArgumentError) do
+      BMat.new(3, 4, 1, {[1, 2, 3], [4, 5, 6], [7, 8, 9]})
+    end
   end
 
   it "can be created from general matrix" do
