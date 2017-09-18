@@ -144,15 +144,30 @@ module LA
       BandedMatrix(T).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
     end
 
-    # def to_unsafe
-    # def ==(other : self)
+    def to_unsafe
+      {% if T == Complex %}
+        @raw_banded.to_unsafe.as(LibCBLAS::ComplexDouble*)
+      {% else %}
+        @raw_banded.to_unsafe
+      {% end %}
+    end
+
+    def ==(other : BandedMatrix(T))
+      # optimization - don't check corners that are empty on both matrices
+      return false unless nrows == other.nrows && ncolumns == other.ncolumns
+      maxupper = {upper_band, other.upper_band}.max
+      maxlower = {lower_band, other.lower_band}.max
+      range = -maxupper..maxlower
+      each_index(all: true) do |i, j|
+        next unless range.includes? i - j
+        return false if other.unsafe_at(i, j) != unsafe_at(i, j)
+      end
+      true
+    end
+
     # def transpose!
     # def conjtranspose!
     # def reshape!(anrows, ancolumns)
-    # def to_a
-    # def to_aa
-    # def map!(&block)
-    # def map_with_index!(&block)
     # def tril!(k = 0)
     # def triu!(k = 0)
 

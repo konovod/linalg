@@ -189,4 +189,16 @@ describe LA::BandedMatrix do
       [0.0, 32 + 8.0, 33 + 6.0, 34 + 3.0],
     ]
   end
+
+  it "equality check is optimized" do
+    a = BMat.new(3, 4, 1, {[1, 2, 3], [4, 5, 6], [0, 0]})
+    b = BMat.new(3, 4, 1, {[1, 2, 3], [4, 5, 6], [7, 8]})
+    a2 = BMat.new(3, 4, 1, 0, {[1, 2, 3], [4, 5, 6]})
+    c = BMat.new(3, 4, 0, 1, {[0, 0, 0], [7, 8]})
+
+    a.should eq a2
+    a.should_not eq b
+    a.should_not eq c
+    (a + c).should eq b
+  end
 end
