@@ -165,12 +165,38 @@ module LA
       true
     end
 
-    # def transpose!
-    # def conjtranspose!
+    def transpose!
+      return self if flags.symmetric?
+      newraw = Slice(T).new(nrows*(@upper_band + @lower_band + 1), T.new(0))
+      each_with_index do |v, i, j|
+        # raise "#{i}, #{j}" unless {0, j - @lower_band}.max <= j <= {ncolumns - 1, i + @upper_band}.min
+        ai = @lower_band + j - i
+        newraw[ai*nrows + i] = v
+      end
+      @upper_band, @lower_band = @lower_band, @upper_band
+      @nrows, @ncolumns = @ncolumns, @nrows
+      @raw_banded = newraw
+      self.flags = flags.transpose
+      self
+    end
+
     # def reshape!(anrows, ancolumns)
     # def tril!(k = 0)
     # def triu!(k = 0)
-
+    # def to_real
+    # def to_imag
+    # def +(m : Matrix(T))
+    # def -(m : Matrix(T))
+    # def transpose
+    # def conjtranspose
+    # def kron(b : Matrix(T))
+    # def tril(k = 0)
+    # def triu(k = 0)
+    # def self.rand(nrows, ncolumns, rng = Random::DEFAULT)
+    # def self.diag(nrows, ncolumns, values)
+    # def self.diag(nrows, ncolumns, &block)
+    # def self.identity(n)
+    # def cat(other : Matrix(T), dimension)
   end
 
   alias BMat = BandedMatrix(Float64)
