@@ -197,11 +197,6 @@ module LA
       true
     end
 
-    # changes nrows and ncolumns of matrix (total number of elements must not change)
-    def reshape(anrows, ancolumns)
-      clone.reshape!(anrows, ancolumns)
-    end
-
     # returns True if matrix is square and False otherwise
     def square?
       nrows == ncolumns

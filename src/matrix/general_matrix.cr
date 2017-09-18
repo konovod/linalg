@@ -113,12 +113,18 @@ module LA
       transpose!
     end
 
+    # changes nrows and ncolumns of matrix (total number of elements must not change)
     def reshape!(anrows, ancolumns)
       raise ArgumentError.new("number of elements must not change") if anrows*ancolumns != @raw.size
       clear_flags unless anrows == nrows && ancolumns == ncolumns
       @nrows = anrows
       @ncolumns = ancolumns
       self
+    end
+
+    # changes nrows and ncolumns of matrix (total number of elements must not change)
+    def reshape(anrows, ancolumns)
+      clone.reshape!(anrows, ancolumns)
     end
 
     def resize!(anrows, ancolumns)
