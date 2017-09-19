@@ -252,10 +252,41 @@ module LA
       self
     end
 
-    # def +(m : Matrix(T))
-    # def -(m : Matrix(T))
-    # def transpose
-    # def conjtranspose
+    # returns element-wise sum
+    def +(m : BandedMatrix(T))
+      assert_same_size(m)
+      result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.sum(m.flags)) do |i, j|
+        self.unsafe_at(i, j) + m.unsafe_at(i, j)
+      end
+    end
+
+    # returns element-wise subtract
+    def -(m : Matrix(T))
+      assert_same_size(m)
+      result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.sum(m.flags)) do |i, j|
+        self.unsafe_at(i, j) - m.unsafe_at(i, j)
+      end
+    end
+
+    # returns transposed matrix
+    def transpose
+      return clone if flags.symmetric?
+      BandedMatrix(T).new(ncolumns, nrows, lower_band, upper_band, flags.transpose) do |i, j|
+        unsafe_at(j, i)
+      end
+    end
+
+    # returns conjtransposed matrix
+    def conjtranspose
+      {% if T != Complex %}
+        return transpose
+      {% end %}
+      return clone if flags.hermitian?
+      BandedMatrix(T).new(ncolumns, nrows, lower_band, upper_band, flags.transpose) do |i, j|
+        unsafe_at(j, i).conj
+      end
+    end
+
     # def kron(b : Matrix(T))
     # def tril(k = 0)
     # def triu(k = 0)

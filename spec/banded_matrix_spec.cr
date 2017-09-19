@@ -311,4 +311,38 @@ describe LA::BandedMatrix do
       [0, 0, 0, 0],
     ]
   end
+
+  it " + and - with other BandedMatrix produce BandedMatrix" do
+    a = BMat.new(5, 6, 2, 1) { |i, j| (i + 1)*10 + j + 1 }
+    b = BMat.new(5, 6, 1, 2) { |i, j| (i + 1)*10 + j + 1 }
+    r1 = a + (-b)
+    r2 = a - b
+    r1.should eq r2
+    r1.should be_a BMat
+    r1.should eq GMat[
+      [0.0, 0.0, 13.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 24.0, 0.0, 0.0],
+      [-31.0, 0.0, 0.0, 0.0, 35.0, 0.0],
+      [0.0, -42.0, 0.0, 0.0, 0.0, 46.0],
+      [0.0, 0.0, -53.0, 0.0, 0.0, 0.0],
+    ]
+  end
+
+  it "can be transposed" do
+    a = BMatComplex.new(GMatComplex[
+      [1 + 1.i, 2.i, 3 + 3.i, 0],
+      [0, 0, 6, 7],
+    ])
+    at = a.t
+    at.should be_a BMatComplex
+    at.should eq GMatComplex[
+      [1.0 + 1.i, 0.0 + 0.i],
+      [0.0 + 2.i, 0.0 + 0.i],
+      [3.0 + 3.i, 6.0 + 0.i],
+      [0.0 + 0.i, 7.0 + 0.i],
+    ]
+    aconj = a.conjt
+    aconj.should be_a BMatComplex
+    aconj.should eq (BMatComplex.new(at.to_real) - BMatComplex.new(at.to_imag)*1.i)
+  end
 end
