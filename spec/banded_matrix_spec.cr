@@ -236,4 +236,54 @@ describe LA::BandedMatrix do
     a.set_bands(0, 0)
     a.flags.should eq (MatrixFlags::LowerTriangular | MatrixFlags::UpperTriangular)
   end
+
+  it "supports tril! and triu!" do
+    a = BMat.new(GMat[
+      [1, 2, 3, 0],
+      [4, 5, 6, 7],
+      [0, 8, 9, 1],
+      [0, 0, 2, 3],
+      [0, 0, 0, 4],
+    ])
+    b = a.t
+
+    a.tril!(1)
+    a.should eq GMat[
+      [1, 2, 0, 0],
+      [4, 5, 6, 0],
+      [0, 8, 9, 1],
+      [0, 0, 2, 3],
+      [0, 0, 0, 4],
+    ]
+    a.flags.should eq MatrixFlags::None
+    b.triu!(-1)
+    b.should eq a.t
+    b.flags.should eq MatrixFlags::None
+
+    a.tril!
+    a.should eq GMat[
+      [1, 0, 0, 0],
+      [4, 5, 0, 0],
+      [0, 8, 9, 0],
+      [0, 0, 2, 3],
+      [0, 0, 0, 4],
+    ]
+    a.flags.should eq MatrixFlags::LowerTriangular
+    b.triu!
+    b.should eq a.t
+    b.flags.should eq MatrixFlags::UpperTriangular
+
+    a.tril!(-1)
+    a.should eq GMat[
+      [0, 0, 0, 0],
+      [4, 0, 0, 0],
+      [0, 8, 0, 0],
+      [0, 0, 2, 0],
+      [0, 0, 0, 4],
+    ]
+    a.flags.should eq MatrixFlags::LowerTriangular
+    b.triu!(1)
+    b.should eq a.t
+    b.flags.should eq MatrixFlags::UpperTriangular
+  end
 end

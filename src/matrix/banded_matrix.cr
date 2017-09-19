@@ -195,7 +195,8 @@ module LA
       end
     end
 
-    def set_bands(aupper, alower)
+    def set_bands(aupper, alower) : Nil
+      return if aupper == @upper_band && alower == @lower_band
       raise ArgumentError.new "upper_band must be non-negative" unless aupper >= 0
       raise ArgumentError.new "lower_band must be non-negative" unless alower >= 0
       newraw = Slice(T).new(band_len*(aupper + alower + 1), T.new(0))
@@ -206,7 +207,6 @@ module LA
       end
       @raw_banded = newraw
       @upper_band, @lower_band = aupper, alower
-      clear_flags
       resized_flags
     end
 
@@ -218,8 +218,32 @@ module LA
       set_bands(@upper_band, value)
     end
 
-    # def tril!(k = 0)
-    # def triu!(k = 0)
+    def tril!(k = 0)
+      if k >= 0
+        # just update upper_band
+        self.upper_band = {@upper_band, k}.min
+      else
+        # set upper band and cleanup lower elements
+        self.upper_band = 0
+        each_with_index { |v, i, j| unsafe_set(i, j, T.new(0)) if i < j - k }
+        resized_flags
+      end
+      self
+    end
+
+    def triu!(k = 0)
+      if k <= 0
+        # just update lower_band
+        self.lower_band = {@lower_band, -k}.min
+      else
+        # set lower band and cleanup upper elements
+        self.lower_band = 0
+        each_with_index { |v, i, j| unsafe_set(i, j, T.new(0)) if i > j - k }
+        resized_flags
+      end
+      self
+    end
+
     # def to_real
     # def to_imag
     # def +(m : Matrix(T))
