@@ -230,5 +230,10 @@ describe LA::BandedMatrix do
     a.flags.should eq MatrixFlags::LowerTriangular
     a.upper_band = 1
     a.flags.should eq MatrixFlags::None
+
+    expect_raises(ArgumentError) { a.upper_band = -1 }
+
+    a.set_bands(0, 0)
+    a.flags.should eq (MatrixFlags::LowerTriangular | MatrixFlags::UpperTriangular)
   end
 end

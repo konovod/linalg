@@ -196,8 +196,8 @@ module LA
     end
 
     def set_bands(aupper, alower)
-      raise "upper_band must be non-negative" unless aupper >= 0
-      raise "lower_band must be non-negative" unless alower >= 0
+      raise ArgumentError.new "upper_band must be non-negative" unless aupper >= 0
+      raise ArgumentError.new "lower_band must be non-negative" unless alower >= 0
       newraw = Slice(T).new(band_len*(aupper + alower + 1), T.new(0))
       each_with_index do |v, i, j|
         next unless {0, j - aupper}.max <= i <= {nrows - 1, j + alower}.min
