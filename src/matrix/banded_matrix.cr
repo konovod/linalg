@@ -9,7 +9,7 @@ module LA
     property flags = MatrixFlags::None
     getter upper_band : Int32
     getter lower_band : Int32
-    getter raw_banded : Slice(T)
+    protected getter raw_banded : Slice(T)
 
     @[AlwaysInline]
     private def band_len
@@ -38,6 +38,7 @@ module LA
     def initialize(@nrows, @ncolumns, @upper_band, @lower_band = upper_band, @flags = MatrixFlags::None)
       check_type
       @raw_banded = Slice(T).new(bands_size, T.new(0))
+      resized_flags
     end
 
     def initialize(@nrows, @ncolumns, @upper_band, @lower_band = upper_band, @flags = MatrixFlags::None, &block)
@@ -50,6 +51,7 @@ module LA
           T.new(0)
         end
       end
+      resized_flags
     end
 
     def self.new(nrows, ncolumns, upper_band, values : Indexable)
@@ -76,6 +78,7 @@ module LA
           T.new(0)
         end
       end
+      resized_flags
     end
 
     def self.new(matrix : BandedMatrix)
@@ -167,7 +170,7 @@ module LA
 
     def transpose!
       return self if flags.symmetric?
-      newraw = Slice(T).new(nrows*(@upper_band + @lower_band + 1), T.new(0))
+      newraw = Slice(T).new(band_len*(@upper_band + @lower_band + 1), T.new(0))
       each_with_index do |v, i, j|
         # raise "#{i}, #{j}" unless {0, j - @lower_band}.max <= j <= {ncolumns - 1, i + @upper_band}.min
         ai = @lower_band + j - i
@@ -180,7 +183,41 @@ module LA
       self
     end
 
-    # def reshape!(anrows, ancolumns)
+    private def resized_flags
+      if @upper_band == 0 && @lower_band == 0
+        @flags = MatrixFlags.for_diag(nrows == ncolumns)
+      elsif @upper_band == 0
+        @flags = MatrixFlags::LowerTriangular
+      elsif @lower_band == 0
+        @flags = MatrixFlags::UpperTriangular
+      else
+        @flags = MatrixFlags::None
+      end
+    end
+
+    def set_bands(aupper, alower)
+      raise "upper_band must be non-negative" unless aupper >= 0
+      raise "lower_band must be non-negative" unless alower >= 0
+      newraw = Slice(T).new(band_len*(aupper + alower + 1), T.new(0))
+      each_with_index do |v, i, j|
+        next unless {0, j - aupper}.max <= i <= {nrows - 1, j + alower}.min
+        ai = aupper + i - j
+        newraw[ai*band_len + j] = v
+      end
+      @raw_banded = newraw
+      @upper_band, @lower_band = aupper, alower
+      clear_flags
+      resized_flags
+    end
+
+    def upper_band=(value)
+      set_bands(value, @lower_band)
+    end
+
+    def lower_band=(value)
+      set_bands(@upper_band, value)
+    end
+
     # def tril!(k = 0)
     # def triu!(k = 0)
     # def to_real

@@ -212,4 +212,23 @@ describe LA::BandedMatrix do
       [0.0, 0.0, 3.0],
     ]
   end
+
+  it "'s bands count can be changed" do
+    a = BMat.new(3, 4, 1, 2, {[1, 2, 3], [4, 5, 6], [7, 8], [9]})
+    a.lower_band = 1
+    a.should eq GMat[
+      [4.0, 1.0, 0.0, 0.0],
+      [7.0, 5.0, 2.0, 0.0],
+      [0.0, 8.0, 6.0, 3.0],
+    ]
+    a.lower_band.should eq 1
+    a.lower_band = 2
+    a[2, 0].should eq 0.0
+    a.lower_band.should eq 2
+
+    a.upper_band = 0
+    a.flags.should eq MatrixFlags::LowerTriangular
+    a.upper_band = 1
+    a.flags.should eq MatrixFlags::None
+  end
 end
