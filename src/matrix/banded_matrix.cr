@@ -147,6 +147,14 @@ module LA
       BandedMatrix(T).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
     end
 
+    def map_with_index_f64(&block)
+      BandedMatrix(Float64).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
+    end
+
+    def map_with_index_complex(&block)
+      BandedMatrix(Complex).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
+    end
+
     def to_unsafe
       {% if T == Complex %}
         @raw_banded.to_unsafe.as(LibCBLAS::ComplexDouble*)
@@ -244,8 +252,6 @@ module LA
       self
     end
 
-    # def to_real
-    # def to_imag
     # def +(m : Matrix(T))
     # def -(m : Matrix(T))
     # def transpose

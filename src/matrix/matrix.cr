@@ -51,9 +51,8 @@ module LA
       {% unless T == Complex %}
         {% raise "Only complex matrices have ##to_real" %}
       {% end %}
-      GeneralMatrix(Float64).new(nrows, ncolumns, flags.real) do |i, j|
-        unsafe_at(i, j).real
-      end
+      new_flags = flags.real
+      map_f64(&.real).tap { |r| r.flags = new_flags }
     end
 
     # converts complex matrix to imaginary part
@@ -61,9 +60,8 @@ module LA
       {% unless T == Complex %}
         {% raise "Only complex matrices have ##to_imag" %}
       {% end %}
-      GeneralMatrix(Float64).new(nrows, ncolumns, flags.imag) do |i, j|
-        unsafe_at(i, j).imag
-      end
+      new_flags = flags.imag
+      map_f64(&.imag).tap { |r| r.flags = new_flags }
     end
 
     # matrix product to given m
@@ -78,9 +76,14 @@ module LA
     # end
 
     # multiplies at scalar
-    def *(k : Number | Complex)
-      new_flags = self.flags.scale(k.is_a?(Complex) && k.imag != 0)
+    def *(k : Number)
+      new_flags = self.flags.scale(false)
       map { |v| v*k }.tap { |result| result.flags = new_flags }
+    end
+
+    def *(k : Complex)
+      new_flags = self.flags.scale(k.imag != 0)
+      map_complex(&.*(k)).tap { |r| r.flags = new_flags }
     end
 
     def -
@@ -386,14 +389,6 @@ module LA
       cat other, 1
     end
 
-    def map_with_index(&block)
-      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
-    end
-
-    def map(&block)
-      map_with_index { |v, i, j| yield(v) }
-    end
-
     def map_with_index!(&block)
       each_with_index { |v, i, j| unsafe_set(i, j, yield(v, i, j)) }
       self
@@ -402,6 +397,31 @@ module LA
     def map!(&block)
       map_with_index! { |v, i, j| yield(v) }
       self
+    end
+
+    def map_with_index(&block)
+      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
+    end
+
+    def map(&block)
+      map_with_index { |v, i, j| yield(v) }
+    end
+
+    # TODO - macro magic?
+    protected def map_with_index_f64(&block)
+      GeneralMatrix(Float64).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
+    end
+
+    protected def map_with_index_complex(&block)
+      GeneralMatrix(Complex).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
+    end
+
+    protected def map_f64(&block)
+      map_with_index_f64 { |v, i, j| yield(v) }
+    end
+
+    protected def map_complex(&block)
+      map_with_index_complex { |v, i, j| yield(v) }
     end
 
     # like a tril in scipy - remove all elements above k-diagonal

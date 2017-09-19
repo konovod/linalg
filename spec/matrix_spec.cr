@@ -65,6 +65,11 @@ describe LA::Matrix do
     expect_raises(ArgumentError) { GMat.new(3, 4) + GMat.new(4, 4) }
   end
 
+  it "can be multiplied to complex number" do
+    m1 = Mat32.ones(3, 4)
+    (m1*(2 + 1.i)).should eq GMatComplex.new(3, 4) { 2 + 1.i }
+  end
+
   it "scalars can be left member of multiplication, can be right member of division" do
     m1 = Mat.ones(3, 4)
     m = 3 * m1 / 2

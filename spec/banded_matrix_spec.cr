@@ -286,4 +286,29 @@ describe LA::BandedMatrix do
     b.should eq a.t
     b.flags.should eq MatrixFlags::UpperTriangular
   end
+
+  it "supports to_real and to_imag" do
+    a = BMatComplex.new(GMatComplex[
+      [1 + 1.i, 2.i, 3 + 3.i, 0],
+      [0, 0, 6, 7],
+    ])
+    areal = a.to_real
+    areal.should be_a BandedMatrix(Float64)
+    areal.upper_band.should eq a.upper_band
+    areal.lower_band.should eq a.lower_band
+    areal.flags.upper_triangular?.should be_true
+    areal.should eq GMat[
+      [1, 0, 3, 0],
+      [0, 0, 6, 7],
+    ]
+    aimag = a.to_imag
+    aimag.should be_a BandedMatrix(Float64)
+    aimag.upper_band.should eq a.upper_band
+    aimag.lower_band.should eq a.lower_band
+    aimag.flags.upper_triangular?.should be_true
+    aimag.should eq GMat[
+      [1, 2, 3, 0],
+      [0, 0, 0, 0],
+    ]
+  end
 end
