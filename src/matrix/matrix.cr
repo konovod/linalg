@@ -6,6 +6,8 @@ module LA
 
   # class that provide all utility matrix functions
   abstract class Matrix(T)
+    include Enumerable(T)
+
     abstract def nrows : Int32
     abstract def ncolumns : Int32
     abstract def flags : MatrixFlags
@@ -308,12 +310,9 @@ module LA
     end
 
     def self.diag(nrows, ncolumns, values)
-      GeneralMatrix(T).new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
-        i == j ? values[i] : 0
+      BandedMatrix(T).new(nrows, ncolumns, 0, 0, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+        values[i]
       end
-      # BandedMatrix(T).new(nrows, ncolumns, 0, 0, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
-      #   i == j ? values[i] : 0
-      # end
     end
 
     def self.diag(values)
@@ -329,8 +328,8 @@ module LA
     end
 
     def self.diag(nrows, ncolumns, &block)
-      GeneralMatrix(T).new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
-        i == j ? yield(i) : 0
+      BandedMatrix(T).new(nrows, ncolumns, 0, 0, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+        yield i
       end
     end
 
@@ -341,8 +340,9 @@ module LA
     end
 
     def self.identity(n)
-      aflags = MatrixFlags.for_diag(true) | MatrixFlags::PositiveDefinite
-      result = GeneralMatrix(T).new(n, n, aflags) { |i, j| i == j ? 1 : 0 }
+      (diag(n, n) { |i| 1 }).tap do |r|
+        r.assume! MatrixFlags::PositiveDefinite
+      end
     end
 
     def self.eye(n)

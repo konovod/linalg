@@ -203,7 +203,7 @@ module LA
       n = nrows
       a = overwrite_a ? self : clone
 
-      if a.raw.all? { |v| {% if T == Complex %} v.real >= 0{% else %} v >= 0{% end %} }
+      if a.all? { |v| {% if T == Complex %} v.real >= 0{% else %} v >= 0{% end %} }
         e = Matrix(T).ones(n, 1)
         a.transpose!
         m.times { e = a * e }
@@ -212,7 +212,7 @@ module LA
         # TODO - normest?
         # [c,v,w,it] = normest1(@afun_power);
         # mv = it(2)*2*m; % Since t = 2.
-        return a.map!(&.abs).normAm(m, overwrite_a: overwrite_a)
+        return a.map!(&.abs).normAm(m, overwrite_a: true)
       end
     end
 
