@@ -366,4 +366,18 @@ describe LA::BandedMatrix do
     ag.should eq (a + b)
     expect_raises(ArgumentError) { a.add! b.to_general }
   end
+
+  it "can be created with rand" do
+    a = BMatComplex.rand(5, 6, 1, 2)
+    a.should be_a BandedMatrix(Complex)
+    a.upper_band.should eq 1
+    a.lower_band.should eq 2
+    a.all? { |v| v.real < 1 && v.real >= 0 }.should be_true
+
+    a = BMat.rand(5, 6, 1, Random::PCG32.new)
+    a.should be_a BandedMatrix(Float64)
+    a.upper_band.should eq 1
+    a.lower_band.should eq 1
+    a.all? { |v| v < 1 && v >= 0 }.should be_true
+  end
 end

@@ -300,6 +300,14 @@ module LA
       raise ArgumentError.new "can't add! non-banded matrix"
     end
 
+    def self.rand(nrows, ncolumns, upper_band : Int32, lower_band : Int32, rng : Random = Random::DEFAULT)
+      new(nrows, ncolumns, upper_band, lower_band) { |i, j| rng.rand }
+    end
+
+    def self.rand(nrows, ncolumns, upper_band : Int32, rng : Random = Random::DEFAULT)
+      rand(nrows, ncolumns, upper_band, upper_band, rng)
+    end
+
     # def kron(b : Matrix(T))
     # def tril(k = 0)
     # def triu(k = 0)
