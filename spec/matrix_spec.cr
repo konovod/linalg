@@ -363,7 +363,7 @@ describe LA::Matrix do
   end
 
   it "can `add!` matrices" do
-    m = Mat.eye(4)
+    m = GMat.eye(4)
     m.add! m
     m.should eq GMat.diag([2, 2, 2, 2])
     m2 = Mat.rand(4, 4)

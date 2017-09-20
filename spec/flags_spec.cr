@@ -80,7 +80,7 @@ describe LA::Matrix do
     upper.tril(1).flags.should eq LA::MatrixFlags::UpperTriangular
     upper.tril(-1).flags.symmetric?.should be_true
 
-    diag = LA::Mat.eye(5)
+    diag = LA::GMat.eye(5)
     diag.tril(-1).flags.symmetric?.should be_true
     diag.tril(1).flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
     diag.triu(-1).flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)

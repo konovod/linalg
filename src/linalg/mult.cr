@@ -27,8 +27,8 @@ module LA
       if a.ncolumns != b.nrows || a.nrows != nrows || b.ncolumns != ncolumns
         raise ArgumentError.new("matrix size mismatch")
       end
-      aa = a.is_a?(GeneralMatrix(T)) ? a : a.clone
-      bb = b.is_a?(GeneralMatrix(T)) ? b : b.clone
+      aa = a.is_a?(GeneralMatrix(T)) ? a : a.to_general
+      bb = b.is_a?(GeneralMatrix(T)) ? b : b.to_general
       no = LibCBLAS::CblasTranspose::CblasNoTrans
       calpha = T.new(alpha)
       cbeta = T.new(beta)
@@ -74,7 +74,7 @@ module LA
       raise "GeneralMatrix required for tr_mult!" unless self.is_a?(GeneralMatrix(T))
       raise ArgumentError.new("matrix size should match") if ncolumns != a.nrows
       raise "tr_mult! require square triangular matrix" unless a.square? && a.flags.triangular?
-      aa = a.is_a?(GeneralMatrix(T)) ? a : a.clone
+      aa = a.is_a?(GeneralMatrix(T)) ? a : a.to_general
       no = LibCBLAS::CblasTranspose::CblasNoTrans
       calpha = T.new(alpha)
       auplo = aa.flags.upper_triangular? ? LibCBLAS::CblasUplo::CblasUpper : LibCBLAS::CblasUplo::CblasLower

@@ -42,5 +42,13 @@ module LA
     def clone
       to_general
     end
+
+    def transpose!
+      raise "impossible for submatrix"
+    end
+
+    def conjtranspose!
+      raise "impossible for submatrix"
+    end
   end
 end

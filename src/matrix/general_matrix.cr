@@ -185,6 +185,18 @@ module LA
     def self.[](*args)
       new(args)
     end
+
+    def self.diag(nrows, ncolumns, values)
+      new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+        i == j ? values[i] : 0
+      end
+    end
+
+    def self.diag(nrows, ncolumns, &block)
+      new(nrows, ncolumns, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+        i == j ? yield(i) : 0
+      end
+    end
   end
 
   alias GMat = GeneralMatrix(Float64)

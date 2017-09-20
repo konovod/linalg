@@ -261,7 +261,7 @@ module LA
     end
 
     # returns element-wise subtract
-    def -(m : Matrix(T))
+    def -(m : BandedMatrix(T))
       assert_same_size(m)
       result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.sum(m.flags)) do |i, j|
         self.unsafe_at(i, j) - m.unsafe_at(i, j)
@@ -287,13 +287,23 @@ module LA
       end
     end
 
+    def add!(k : Number, m : BandedMatrix)
+      assert_same_size(m)
+      set_bands({upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max)
+      oldflags = flags
+      map_with_index! { |v, i, j| v + k*m.unsafe_at(i, j) }
+      self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
+      self
+    end
+
+    def add!(k : Number, m : Matrix)
+      raise ArgumentError.new "can't add! non-banded matrix"
+    end
+
     # def kron(b : Matrix(T))
     # def tril(k = 0)
     # def triu(k = 0)
     # def self.rand(nrows, ncolumns, rng = Random::DEFAULT)
-    # def self.diag(nrows, ncolumns, values)
-    # def self.diag(nrows, ncolumns, &block)
-    # def self.identity(n)
     # def cat(other : Matrix(T), dimension)
   end
 

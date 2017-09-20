@@ -2,8 +2,8 @@ require "./spec_helper"
 
 include LA
 describe LA::BandedMatrix do
-  pending "is created from Mat##diag call" do
-    GMat.diag([1, 2, 3]).should be_a BandedMatrix(Float64)
+  it "is created from Mat##diag call" do
+    Mat.diag([1, 2, 3]).should be_a BandedMatrix(Float64)
   end
   it "can be created by block" do
     a = BMat.new(5, 7, 2) { |i, j| i - j }
@@ -344,5 +344,14 @@ describe LA::BandedMatrix do
     aconj = a.conjt
     aconj.should be_a BMatComplex
     aconj.should eq (BMatComplex.new(at.to_real) - BMatComplex.new(at.to_imag)*1.i)
+  end
+
+  it "multiplies to normal matrix" do
+    g = GMat[
+      [1, 1, 0],
+      [2, 2, 1],
+      [0, 2, 3],
+    ]
+    ((g.inv)*BMat.new(g)).should almost_eq Mat.identity(3)
   end
 end
