@@ -89,6 +89,12 @@ module LA
       end
     end
 
+    def self.diag(nrows, ncolumns, values)
+      new(nrows, ncolumns, 0, 0, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
+        values[i]
+      end
+    end
+
     def self.new(matrix : Matrix, tolerance = matrix.tolerance)
       upper_band = (1..matrix.ncolumns - 1).bsearch do |i|
         matrix.diag(i).all? { |v| v.abs <= tolerance }

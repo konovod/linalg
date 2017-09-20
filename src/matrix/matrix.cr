@@ -310,9 +310,7 @@ module LA
     end
 
     def self.diag(nrows, ncolumns, values)
-      BandedMatrix(T).new(nrows, ncolumns, 0, 0, MatrixFlags.for_diag(nrows == ncolumns)) do |i, j|
-        values[i]
-      end
+      GeneralMatrix(T).diag(nrows, ncolumns, values)
     end
 
     def self.diag(values)

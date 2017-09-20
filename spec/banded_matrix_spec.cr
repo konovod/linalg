@@ -2,8 +2,9 @@ require "./spec_helper"
 
 include LA
 describe LA::BandedMatrix do
-  it "is created from Mat##diag call" do
-    Mat.diag([1, 2, 3]).should be_a BandedMatrix(Float64)
+  it "is created from BMat##diag call" do
+    BMat.diag([1, 2, 3]).should be_a BandedMatrix(Float64)
+    BMat.diag([1, 2, 3]).should eq GMat.diag([1, 2, 3])
   end
   it "can be created by block" do
     a = BMat.new(5, 7, 2) { |i, j| i - j }
