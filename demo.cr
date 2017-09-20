@@ -40,7 +40,7 @@ pp m.columns[2] # LA::SubMatrix(Float64) (3x1, None):
 
 x = m[1..1, 1..2]
 pp x        # => [5.0, 6.0]
-x[0, 0] = 0 # m[1,1] is now 0 (questionable feature? maybe should be ##[]! for modifiable submatrices and ##[] for CoW?)
+x[0, 0] = 0 # m[1,1] is now 0 (questionable feature? maybe should be #[]! for modifiable submatrices and #[] for CoW?)
 y = x.clone # now y is a separate matrix
 y[0, 0] = 1 # m[1,1] is still 0
 pp m[1, 1]

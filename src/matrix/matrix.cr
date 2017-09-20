@@ -51,7 +51,7 @@ module LA
     # converts complex matrix to real part
     def to_real
       {% unless T == Complex %}
-        {% raise "Only complex matrices have ##to_real" %}
+        {% raise "Only complex matrices have #to_real" %}
       {% end %}
       new_flags = flags.real
       map_f64(&.real).tap { |r| r.flags = new_flags }
@@ -60,7 +60,7 @@ module LA
     # converts complex matrix to imaginary part
     def to_imag
       {% unless T == Complex %}
-        {% raise "Only complex matrices have ##to_imag" %}
+        {% raise "Only complex matrices have #to_imag" %}
       {% end %}
       new_flags = flags.imag
       map_f64(&.imag).tap { |r| r.flags = new_flags }

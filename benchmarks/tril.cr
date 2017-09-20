@@ -1,7 +1,7 @@
 require "benchmark"
 require "../src/matrix/*"
 
-# Check if `##triu` method really needed or clone.triu! is enough.
+# Check if `#triu` method really needed or clone.triu! is enough.
 # Conclusion: there is a difference only for high N( = 1000 ), but it still exists, so triu stays
 {2, 5, 10, 100, 1000}.each do |n|
   a = LA::Mat.rand(n, n)

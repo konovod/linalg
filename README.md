@@ -91,8 +91,8 @@ pp m[1, 1]
 ```
 other present features:
 
-- svd (`Mat##svd` or `Mat##svdvals` for just values)
-- lu decomposition (`Mat##lu`)
+- svd (`Mat#svd` or `Mat#svdvals` for just values)
+- lu decomposition (`Mat#lu`)
 ```crystal
 # to just get P L U matrices
 p, l, u = a.lu
@@ -108,7 +108,7 @@ puts lu.solve(GMat32[[2], [4]])
 ```
 - matrix rank determination (using SVD or QRP)
 - linear least squares problem (`LA.solvels` to just get decision or `LA.lstsq` to also get rank and singular values (TODO - and residues))
-- cholesky decomposition (`##cholesky`, `##cholesky!`, `##cho_solve`)
+- cholesky decomposition (`#cholesky`, `#cholesky!`, `#cho_solve`)
 - `hessenberg` form
 - `qr`, `rq`, `lq`, `ql` decompositions
 - `schur` and `qz` (generalized schur) decomposition
@@ -118,7 +118,7 @@ puts lu.solve(GMat32[[2], [4]])
 - matrix exponentiation (to integer powers only atm (TODO - fractional))
 
 
-There is also concept of `Mat##flags` that represent properties of matrix (symmetric, positive definite etc), they are used to automatically select faster algorithms from LAPACK. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used. In fact, `a.transpose` will return matrix clone as for symmetric matrices A=A'.
+There is also concept of `Mat#flags` that represent properties of matrix (symmetric, positive definite etc), they are used to automatically select faster algorithms from LAPACK. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used. In fact, `a.transpose` will return matrix clone as for symmetric matrices A=A'.
 
 Supported flags:
 ```crystal

@@ -124,7 +124,7 @@ describe LA::Matrix do
     Mat32.diag(2, 3, [14, 15]).should eq GMat32.new([[14, 0, 0], [0, 15, 0]])
   end
 
-  it "can be constructed using ##column and ##row" do
+  it "can be constructed using #column and #row" do
     Mat32.column([2, 2, 5]).should eq GMat32.new([[2], [2], [5]])
     Mat32.row([2, 2, 5]).should eq GMat32.new([[2, 2, 5]])
   end

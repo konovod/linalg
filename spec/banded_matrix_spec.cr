@@ -2,7 +2,7 @@ require "./spec_helper"
 
 include LA
 describe LA::BandedMatrix do
-  it "is created from BMat##diag call" do
+  it "is created from BMat#diag call" do
     BMat.diag([1, 2, 3]).should be_a BandedMatrix(Float64)
     BMat.diag([1, 2, 3]).should eq GMat.diag([1, 2, 3])
   end
