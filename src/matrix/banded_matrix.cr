@@ -314,9 +314,37 @@ module LA
       rand(nrows, ncolumns, upper_band, upper_band, rng)
     end
 
+    def tril(k = 0)
+      if k >= 0
+        # just update upper_band
+        return clone if k >= upper_band
+        self.class.new(nrows, ncolumns, k, lower_band) do |i, j|
+          unsafe_at(i, j)
+        end
+      else
+        # set upper band and cleanup lower elements
+        self.class.new(nrows, ncolumns, 0, lower_band) do |i, j|
+          i >= j - k ? unsafe_at(i, j) : 0
+        end
+      end
+    end
+
+    def triu(k = 0)
+      if k <= 0
+        # just update lower_band
+        return clone if -k >= lower_band
+        self.class.new(nrows, ncolumns, upper_band, -k) do |i, j|
+          unsafe_at(i, j)
+        end
+      else
+        # set lower band and cleanup upper elements
+        self.class.new(nrows, ncolumns, upper_band, 0) do |i, j|
+          i <= j - k ? unsafe_at(i, j) : 0
+        end
+      end
+    end
+
     # def kron(b : Matrix(T))
-    # def tril(k = 0)
-    # def triu(k = 0)
     # def cat(other : Matrix(T), dimension)
   end
 
