@@ -354,4 +354,16 @@ describe LA::BandedMatrix do
     ]
     ((g.inv)*BMat.new(g)).should almost_eq Mat.identity(3)
   end
+
+  it "supports add!" do
+    a = BMat.new(5, 6, 2, 1) { |i, j| (i + 1)*10 + j + 1 }
+    b = BMat.new(5, 6, 1, 2) { |i, j| (i + 1)*10 + j + 1 }
+    a2 = a.clone
+    a2.add! b
+    a2.should eq (a + b)
+    ag = a.to_general
+    ag.add! b
+    ag.should eq (a + b)
+    expect_raises(ArgumentError) { a.add! b.to_general }
+  end
 end

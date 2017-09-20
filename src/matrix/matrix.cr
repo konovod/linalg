@@ -452,7 +452,7 @@ module LA
       self
     end
 
-    def add!(m : Matrix)
+    def add!(m)
       add!(1, m)
     end
 
