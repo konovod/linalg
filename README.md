@@ -56,14 +56,6 @@ m = GMat[
 m = GMat32.new(3, 4) { |i, j| i*3 + j + 1 }
 # or using one of other ways, check "spec" directory
 
-# there are also matrices with special values, memory for elements isn't allocated until they are changed.
-# NOTE currently virtual matrices support is incomplete, so memory is allocated always
-a = Mat.identity(3)
-puts a # =>
-# [1.0, 0.0, 0.0]
-# [0.0, 1.0, 0.0]
-# [0.0, 0.0, 1.0]
-
 # do basic arithmetics
 pp 2 * a - Mat.diag([2, 2, 2]) == Mat.zeros(3, 3) # => true
 
@@ -157,7 +149,7 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 ##### Important
 
 - [x] saving/loading from files
-- [ ] Virtual(lazy) matrices, ways to evade allocations during calculations
+- [x] ways to evade allocations during calculations
 - [x] Matrix exponent and trigonometric
 - [ ] other matrix functions
 - [ ] Banded matrices

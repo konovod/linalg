@@ -311,7 +311,6 @@ module LA
     # def kron(b : Matrix(T))
     # def tril(k = 0)
     # def triu(k = 0)
-    # def self.rand(nrows, ncolumns, rng = Random::DEFAULT)
     # def cat(other : Matrix(T), dimension)
   end
 

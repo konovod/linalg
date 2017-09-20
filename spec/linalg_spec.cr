@@ -36,7 +36,7 @@ describe LA do
     (matrix1*matrix1.inv).should eq Mat.identity(3)
   end
 
-  it "ultra-highlevel - calls functions on a virtual matrices" do
+  it "ultra-highlevel - calls functions on a submatrices" do
     m4 = Mat.ones(4, 4) + Mat.diag([1, 2, 3, 4])
     m3 = m4[0..2, 0..2]
     (m3*m3.inv).should almost_eq Mat.identity(3)

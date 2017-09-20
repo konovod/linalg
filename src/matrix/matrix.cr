@@ -34,14 +34,14 @@ module LA
 
     # to_unsafe method raises at runtime and is overriden by matrix that actually have pointer
     def to_unsafe
-      raise ArgumentError.new("Virtual matrix can't be passed unsafe!")
+      raise ArgumentError.new("#{self.class} can't be passed unsafe!")
     end
 
     def size
       {nrows, ncolumns}
     end
 
-    # creates generic matrix with same content. Useful for virtual matrices
+    # creates generic matrix with same content. Useful for banded\sparse matrices
     def to_general
       GeneralMatrix(T).new(nrows, ncolumns, flags) do |i, j|
         unsafe_at(i, j)

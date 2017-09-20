@@ -4,7 +4,7 @@ abstract class LA::Matrix(T)
     raise ArgumentError.new("matrix must be square") unless square?
     m = self
     if other == 0
-      Matrix(T).identity(nrows)
+      self.class.identity(nrows)
     elsif other < 0
       repeated_square_power(other.abs).inv!
     elsif other == 1
@@ -15,7 +15,7 @@ abstract class LA::Matrix(T)
   end
 
   private def repeated_square_power(n)
-    result = Matrix(T).identity(nrows)
+    result = self.class.identity(nrows)
     square = self
 
     while n > 0

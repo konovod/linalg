@@ -38,9 +38,9 @@ module LA
       #  970-989, 2009.
       #  Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
       raise ArgumentError.new("Matrix must be square for expm") unless square?
-      return Matrix(T).identity(nrows) if norm(MatrixNorm::One) == 0
+      return self.class.identity(nrows) if norm(MatrixNorm::One) == 0
       if flags.diagonal?
-        return Matrix(T).diag(nrows, nrows) do |i|
+        return self.class.diag(nrows, nrows) do |i|
           v = unsafe_at(i, i)
           {% if T == Complex %} v.exp {% else %} Math.exp(v) {% end %}
         end
@@ -132,7 +132,7 @@ module LA
       when 3, 5, 7, 9
         m2 = (m + 3) / 2 # ((m + 1)/2.0).ceil
         apowers = Array(Matrix(T)).new(m2)
-        apowers << Matrix(T).eye(n)
+        apowers << self.class.eye(n)
         apowers << a2
         if a4
           apowers << a4
@@ -143,8 +143,8 @@ module LA
         (apowers.size...m2).each do |j|
           apowers << apowers.last*a2
         end
-        u = Matrix(T).zeros(n, n)
-        v = Matrix(T).zeros(n, n)
+        u = self.class.zeros(n, n)
+        v = self.class.zeros(n, n)
         #
         (2..m + 1).reverse_each.step(2).each do |j|
           u.add!(c[j - 1], apowers[j/2 - 1])
@@ -157,9 +157,9 @@ module LA
         raise "" unless a4
         raise "" unless a6
         # For optimal evaluation need different formula for m >= 12.
-        u = self * (a6*(c[14 - 1]*a6 + c[12 - 1]*a4 + c[10 - 1]*a2) + c[8 - 1]*a6 + c[6 - 1]*a4 + c[4 - 1]*a2 + c[2 - 1]*Matrix(T).eye(n))
+        u = self * (a6*(c[14 - 1]*a6 + c[12 - 1]*a4 + c[10 - 1]*a2) + c[8 - 1]*a6 + c[6 - 1]*a4 + c[4 - 1]*a2 + c[2 - 1]*self.class.eye(n))
 
-        v = a6*(c[13 - 1]*a6 + c[11 - 1]*a4 + c[9 - 1]*a2) + c[7 - 1]*a6 + c[5 - 1]*a4 + c[3 - 1]*a2 + c[1 - 1]*Matrix(T).eye(n)
+        v = a6*(c[13 - 1]*a6 + c[11 - 1]*a4 + c[9 - 1]*a2) + c[7 - 1]*a6 + c[5 - 1]*a4 + c[3 - 1]*a2 + c[1 - 1]*self.class.eye(n)
       else
         raise ""
       end
@@ -204,7 +204,7 @@ module LA
       a = overwrite_a ? self : clone
 
       if a.all? { |v| {% if T == Complex %} v.real >= 0{% else %} v >= 0{% end %} }
-        e = Matrix(T).ones(n, 1)
+        e = self.class.ones(n, 1)
         a.transpose!
         m.times { e = a * e }
         return e.norm(MatrixNorm::Inf)
