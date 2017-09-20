@@ -104,6 +104,20 @@ describe LA::BandedMatrix do
     b = BMat.new(a)
     b.should be_a BandedMatrix(Float64)
     b.should eq a
+
+    a = GMat[
+      [1, 0, 1],
+      [0, 4, 0],
+      [0, 0, 1],
+    ]
+    BMat.new(a).should eq a
+
+    a = GMat[
+      [1, 0, 0],
+      [0, 4, 0],
+      [1, 0, 1],
+    ]
+    BMat.new(a).should eq a
   end
 
   it "can be created with given tolerance" do

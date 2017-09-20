@@ -96,16 +96,16 @@ module LA
     end
 
     def self.new(matrix : Matrix, tolerance = matrix.tolerance)
-      upper_band = (1..matrix.ncolumns - 1).bsearch do |i|
-        matrix.diag(i).all? { |v| v.abs <= tolerance }
+      upper_band = matrix.ncolumns - 1
+      (matrix.ncolumns - 1).to(1) do |i|
+        break unless matrix.diag(i).all? { |v| v.abs <= tolerance }
+        upper_band = i - 1
       end
-      upper_band = (upper_band || matrix.ncolumns) - 1
-
-      lower_band = (1..matrix.nrows - 1).bsearch do |i|
-        matrix.diag(-i).all? { |v| v.abs <= tolerance }
+      lower_band = matrix.nrows - 1
+      (matrix.nrows - 1).to(1) do |i|
+        break unless matrix.diag(-i).all? { |v| v.abs <= tolerance }
+        lower_band = i - 1
       end
-      lower_band = (lower_band || matrix.nrows) - 1
-
       new(matrix.nrows, matrix.ncolumns, upper_band, lower_band, matrix.flags) do |i, j|
         matrix.unsafe_at(i, j)
       end
