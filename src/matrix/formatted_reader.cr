@@ -7,7 +7,7 @@ require "./matrix"
 def prepare_multi_gets(delimiters)
   scanner = delimiters.map_with_index do |x, i|
     {size: x.bytesize, index: i, data: x, last: x.byte_at(x.bytesize - 1)}
-  end
+  end.to_a
   scanner.sort_by { |x| -x[:size] }
   scanner
 end

@@ -67,19 +67,3 @@ module Enumerable(T)
     product initial, &.itself
   end
 end
-
-struct Float32
-  # Smallest finite value
-  MIN_FINITE = 0xff7fffff_u32.unsafe_as(Float32) # -3.40282347e+38_f32
-  # Largest finite value
-  MAX_FINITE = 0x7f7fffff_u32.unsafe_as(Float32) # 3.40282347e+38_f32
-  EPSILON    = 0x34000000_u32.unsafe_as(Float32) # 1.19209290e-07_f32
-end
-
-struct Float64
-  # Smallest finite value
-  MIN_FINITE = 0xffefffffffffffff_u64.unsafe_as(Float64) # -1.7976931348623157e+308_f64
-  # Largest finite value
-  MAX_FINITE = 0x7fefffffffffffff_u64.unsafe_as(Float64) # 1.7976931348623157e+308_f64
-  EPSILON    = 0x3cb0000000000000_u64.unsafe_as(Float64) # 2.2204460492503131e-16_f64
-end

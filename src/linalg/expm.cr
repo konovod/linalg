@@ -341,7 +341,7 @@ module LA
       ave = (a1 + a2)/2
       {% if T == Complex %}ave = ave.real{% end %}
       df = (a1 - a2).abs/2
-      if Math.max(ave, df) < Math.log(real_type_const(MAX_FINITE))
+      if Math.max(ave, df) < Math.log(real_type_const(MAX))
         # Formula fine unless it overflows.
         x12 = c*Math.exp((a1 + a2)/2) * sinch((a2 - a1)/2)
       else
