@@ -296,6 +296,15 @@ describe LA do
     b.norm(MatrixNorm::One).should eq 7
   end
 
+  it "high-level: calculate rectangular matrix norms" do
+    a = GMat[[-4, -3, -2, -1, 1, 2, 3, 4]].t
+    b = a.reshape(4, 2)
+    b.norm.should be_close(7.745966692414834, 1e-6)
+    b.norm(MatrixNorm::Frobenius).should be_close(7.745966692414834, 1e-6)
+    b.norm(MatrixNorm::Inf).should eq 7
+    b.norm(MatrixNorm::One).should eq 10
+  end
+
   it "high-level: calculate matrix rank" do
     m = GMat[
       [1, 0, 1],

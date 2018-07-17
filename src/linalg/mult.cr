@@ -81,8 +81,8 @@ module LA
       side = left ? LibCBLAS::CblasSide::CblasLeft : LibCBLAS::CblasSide::CblasRight
       blas(tr, mm, side, auplo, no, LibCBLAS::CblasDiag::CblasNonUnit,
         self.nrows, self.ncolumns, blas_const(calpha),
-        aa, aa.ncolumns,
-        self, ncolumns)
+        aa, aa.nrows,
+        self, nrows)
       self
     end
 

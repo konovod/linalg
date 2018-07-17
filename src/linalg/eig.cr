@@ -166,7 +166,7 @@ module LA
         alpha = Array(T).new(nrows, T.new(0,0))
         beta = Array(T).new(nrows, T.new(0,0))
         lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
-                bb, b.ncolumns,
+                bb, b.nrows,
                 alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 beta.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
@@ -179,7 +179,7 @@ module LA
         alpha_imags = Array(T).new(nrows, T.new(0))
         beta = Array(T).new(nrows, T.new(0))
         lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
-                overwrite_b ? b : b.clone, b.ncolumns,
+                overwrite_b ? b : b.clone, b.nrows,
                 alpha_reals, alpha_imags, beta,
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)

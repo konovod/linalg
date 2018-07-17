@@ -6,7 +6,7 @@ module LA
       n = ncolumns
       k = {nrows, ncolumns}.min
       ipiv = Slice(Int32).new(m)
-      lapack(ge, trf, nrows, ncolumns, a, ncolumns, ipiv)
+      lapack(ge, trf, nrows, ncolumns, a, nrows, ipiv)
       a.clear_flags
       # apply all transformation of piv to "own" piv
       piv = (1..m).to_a
@@ -42,7 +42,7 @@ module LA
     def lu_factor!
       raise ArgumentError.new("matrix must be square") unless square?
       ipiv = Slice(Int32).new(nrows)
-      lapack(ge, trf, nrows, ncolumns, self, ncolumns, ipiv)
+      lapack(ge, trf, nrows, ncolumns, self, nrows, ipiv)
       clear_flags
       LUMatrix(T).new(self, ipiv)
     end
@@ -91,7 +91,7 @@ module LA
               else                       'N'
               end.ord
       x = overwrite_b ? b : b.clone
-      lapack(ge, trs, trans, size, b.ncolumns, @a, size, @ipiv, x, x.ncolumns)
+      lapack(ge, trs, trans, size, b.ncolumns, @a, size, @ipiv, x, x.nrows)
       x.clear_flags
       x
     end

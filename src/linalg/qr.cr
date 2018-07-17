@@ -6,11 +6,11 @@ module LA
       tau = GeneralMatrix(T).new(1, n)
       if pivoting
         jpvt = Array(Int32).new(n, 0)
-        lapack(ge, qp3, m, n, a, a.ncolumns, jpvt, tau)
+        lapack(ge, qp3, m, n, a, a.nrows, jpvt, tau)
         a.clear_flags
       else
         jpvt = Array(Int32).new(0)
-        lapack(ge, qrf, m, n, a, a.ncolumns, tau)
+        lapack(ge, qrf, m, n, a, a.nrows, tau)
         a.clear_flags
       end
       {tau, jpvt}
@@ -37,7 +37,7 @@ module LA
       m = a.nrows
       n = a.ncolumns
       k = {m, n}.min
-      lapack(or, gqr, m, n, k, a, a.ncolumns, tau)
+      lapack(or, gqr, m, n, k, a, a.nrows, tau)
       a.assume! MatrixFlags::Orthogonal
       {a, r, pvt}
     end

@@ -136,20 +136,20 @@ module LA
       x = overwrite_b ? b : b.clone
       n = nrows
       if flags.triangular?
-        lapack(tr, trs, uplo, 'N'.ord, 'N'.ord, n, b.ncolumns, a, n, x, b.ncolumns)
+        lapack(tr, trs, uplo, 'N'.ord, 'N'.ord, n, b.nrows, a, n, x, b.nrows)
       elsif flags.positive_definite?
         lapack(po, sv, uplo, n, b.ncolumns, a, n, x, b.ncolumns)
       elsif flags.hermitian?
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
-        lapack(he, sv, uplo, n, b.ncolumns, a, n, ipiv, x, b.ncolumns)
+        lapack(he, sv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)
-        lapack(sy, sv, uplo, n, b.ncolumns, a, n, ipiv, x, b.ncolumns)
+        lapack(sy, sv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
       else
         ipiv = Slice(Int32).new(n)
-        lapack(ge, sv, n, b.ncolumns, a, n, ipiv, x, b.ncolumns)
+        lapack(ge, sv, n, b.ncolumns, a, n, ipiv, x, b.nrows)
       end
       a.clear_flags
       x.clear_flags
@@ -177,7 +177,7 @@ module LA
       else
         x = overwrite_b ? b : b.clone
       end
-      lapack(ge, ls, 'N'.ord, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns)
+      lapack(ge, ls, 'N'.ord, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
       a.clear_flags
       x.clear_flags
       x
@@ -198,17 +198,17 @@ module LA
       rank = 0
       case method
       when .ls?
-        lapack(ge, ls, 'N'.ord, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns)
+        lapack(ge, ls, 'N'.ord, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
         s = of_real_type(Array, 0)
       when .lsd?
         ssize = {nrows, ncolumns}.min
         s = of_real_type(Array, ssize)
         rcond = of_real_type(cond)
-        lapack(ge, lsd, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns, s, rcond, pointerof(rank))
+        lapack(ge, lsd, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows, s, rcond, pointerof(rank))
       when .lsy?
         jpvt = Slice(Int32).new(ncolumns)
         rcond = of_real_type(cond)
-        lapack(ge, lsy, nrows, ncolumns, b.ncolumns, a, ncolumns, x, x.ncolumns, jpvt, rcond, pointerof(rank))
+        lapack(ge, lsy, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows, jpvt, rcond, pointerof(rank))
         s = of_real_type(Array, 0)
       else
         s = of_real_type(Array, 0)
@@ -225,7 +225,7 @@ module LA
       s = of_real_type(Array, {m, n}.min)
       u = GeneralMatrix(T).new(m, m)
       vt = GeneralMatrix(T).new(n, n)
-      lapack(ge, sdd, 'A'.ord, m, n, a, ncolumns, s, u, m, vt, n)
+      lapack(ge, sdd, 'A'.ord, m, n, a, nrows, s, u, m, vt, n)
       a.clear_flags
       return {u, s, vt}
     end
@@ -235,7 +235,7 @@ module LA
       m = nrows
       n = ncolumns
       s = of_real_type(Array, {m, n}.min)
-      lapack(ge, sdd, 'N'.ord, m, n, a, ncolumns, s, nil, m, nil, n)
+      lapack(ge, sdd, 'N'.ord, m, n, a, nrows, s, nil, m, nil, n)
       a.clear_flags
       s
     end
@@ -316,17 +316,17 @@ module LA
               'M'
             end.ord
       if flags.triangular?
-        lapack_util(lantr, let, uplo, 'N'.ord, nrows, ncolumns, self, ncolumns)
+        lapack_util(lantr, let, uplo, 'N'.ord, nrows, ncolumns, self, nrows)
       elsif flags.hermitian?
         {% if T == Complex %}
-        lapack_util(lanhe, let, uplo, nrows,  self, ncolumns)
+        lapack_util(lanhe, let, uplo, nrows,  self, nrows)
         {% else %}
-        lapack_util(lange, let, nrows, ncolumns, self, ncolumns)
+        lapack_util(lange, let, nrows, ncolumns, self, nrows)
         {% end %}
       elsif flags.symmetric?
-        lapack_util(lansy, let, uplo, nrows, self, ncolumns)
+        lapack_util(lansy, let, uplo, nrows, self, nrows)
       else
-        lapack_util(lange, let, nrows, ncolumns, self, ncolumns)
+        lapack_util(lange, let, nrows, ncolumns, self, nrows)
       end
     end
 

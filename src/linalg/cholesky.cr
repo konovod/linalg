@@ -39,7 +39,7 @@ module LA
       raise ArgumentError.new("a must be triangular") unless flags.triangular?
       x = overwrite_b ? b : b.clone
       n = nrows
-      lapack(po, trs, uplo, n, b.ncolumns, self, n, x, b.ncolumns)
+      lapack(po, trs, uplo, n, b.nrows, self, n, x, b.nrows)
       b.clear_flags
       x
     end
