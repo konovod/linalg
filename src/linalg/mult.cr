@@ -11,7 +11,7 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-       LibCBLAS.{{typ}}{{storage}}{{name}}(LibCBLAS::ROW_MAJOR, {{*args}})
+       LibCBLAS.{{typ}}{{storage}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
     end
 
     private macro blas_const(x)
@@ -39,12 +39,12 @@ module LA
           aa, bb = bb, aa
         end
         up = LibCBLAS::CblasUplo::CblasUpper
-        blas(he, mm, side, up, a.nrows, b.ncolumns,
+        blas(he, mm, side, up, a.ncolumns, b.nrows,
           blas_const(calpha),
-          aa, a.ncolumns,
-          bb, b.ncolumns,
+          aa, a.nrows,
+          bb, b.nrows,
           blas_const(cbeta),
-          self, self.ncolumns)
+          self, self.nrows)
         {% else %}
         raise "" #to prevent type inference of nil
         {% end %}
@@ -54,19 +54,19 @@ module LA
           aa, bb = bb, aa
         end
         up = LibCBLAS::CblasUplo::CblasUpper
-        blas(sy, mm, side, up, a.nrows, b.ncolumns,
+        blas(sy, mm, side, up, a.ncolumns, b.nrows,
           blas_const(calpha),
-          aa, a.ncolumns,
-          bb, b.ncolumns,
+          aa, a.nrows,
+          bb, b.nrows,
           blas_const(cbeta),
-          self, self.ncolumns)
+          self, self.nrows)
       else
         blas(ge, mm, no, no, a.nrows, b.ncolumns, a.ncolumns,
           blas_const(calpha),
-          aa, a.ncolumns,
-          bb, b.ncolumns,
+          aa, a.nrows,
+          bb, b.nrows,
           blas_const(cbeta),
-          self, self.ncolumns)
+          self, self.nrows)
       end
     end
 

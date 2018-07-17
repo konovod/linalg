@@ -14,6 +14,12 @@ describe LA::Matrix do
     m[1, 0].should eq 5
   end
 
+  it "can be created from array with given dimension(column major)" do
+    m = GMat.new(3, 4, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], true)
+    m.nrows.should eq 3
+    m[1, 0].should eq 2
+  end
+
   it "can be created from array of arrays" do
     m = GMat[{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}]
     m.nrows.should eq 4
@@ -201,6 +207,16 @@ describe LA::Matrix do
     end
   end
 
+  it "can be reshaped (column major)" do
+    a = GMat.new([[1, 2, 3, 4, 5, 6]])
+    a.reshape!(3, 2, true)
+    a.should eq GMat.new([[1, 4], [2, 5], [3, 6]])
+    a.reshape(2, 3, true).should eq GMat.new([[1, 3, 5], [2, 4, 6]])
+    expect_raises(ArgumentError) do
+      a.reshape(1, 4, true)
+    end
+  end
+
   it "have tri function" do
     Mat.tri(3, 5, 2).should eq GMat.new(
       [[1, 1, 1, 0, 0],
@@ -226,6 +242,16 @@ describe LA::Matrix do
     m = GMat.new([[1, 2], [3, 4], [5, 6]])
     m.to_aa.should eq [[1, 2], [3, 4], [5, 6]]
   end
+
+  it "converted to array (column major)" do
+    m = GMat.new([[1, 2], [3, 4], [5, 6]])
+    m.to_a(true).should eq [1, 3, 5, 2, 4, 6]
+  end
+  it "converted to array of arrays (column major)" do
+    m = GMat.new([[1, 2], [3, 4], [5, 6]])
+    m.to_aa(true).should eq [[1, 3, 5], [2, 4, 6]]
+  end
+
   it "can be created from matrix of another type" do
     m = GMat32.new([[1, 2], [3, 4], [5, 6]])
     GMatComplex.new(m).should eq GMatComplex.new([[1, 2], [3, 4], [5, 6]])

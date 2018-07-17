@@ -57,7 +57,7 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-       LibLAPACKE.{{typ}}{{name}}(LibCBLAS::ROW_MAJOR, {{*args}})
+       LibLAPACKE.{{typ}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
     end
 
     macro lapack(storage, name, *args)
@@ -73,7 +73,7 @@ module LA
           else
             st = storage
           end %}
-       info = LibLAPACKE.{{typ}}{{st}}{{name}}(LibCBLAS::ROW_MAJOR, {{*args}})
+       info = LibLAPACKE.{{typ}}{{st}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
        raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
     end
 

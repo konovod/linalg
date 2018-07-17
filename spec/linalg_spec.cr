@@ -9,8 +9,8 @@ describe LA do
       0.0, 0.0, 1.0,
     ]
     ipiv = Slice(Int32).new(3)
-    LibLAPACKE.dgetrf(LibCBLAS::ROW_MAJOR, 3, 3, m, 3, ipiv).should eq 0
-    LibLAPACKE.dgetri(LibCBLAS::ROW_MAJOR, 3, m, 3, ipiv).should eq 0
+    LibLAPACKE.dgetrf(LibCBLAS::COL_MAJOR, 3, 3, m, 3, ipiv).should eq 0
+    LibLAPACKE.dgetri(LibCBLAS::COL_MAJOR, 3, m, 3, ipiv).should eq 0
     m.should eq [1.0, 0.0, -1.0, 0.0, 0.25, 0.0, 0.0, 0.0, 1.0]
   end
 
@@ -22,8 +22,8 @@ describe LA do
     ]
     matrix2 = matrix1*1
     ipiv = Slice(Int32).new(3)
-    LibLAPACKE.dgetrf(LibCBLAS::ROW_MAJOR, 3, 3, matrix2, 3, ipiv).should eq 0
-    LibLAPACKE.dgetri(LibCBLAS::ROW_MAJOR, 3, matrix2, 3, ipiv).should eq 0
+    LibLAPACKE.dgetrf(LibCBLAS::COL_MAJOR, 3, 3, matrix2, 3, ipiv).should eq 0
+    LibLAPACKE.dgetri(LibCBLAS::COL_MAJOR, 3, matrix2, 3, ipiv).should eq 0
     (matrix1*matrix2).should eq Mat.identity(3)
   end
 

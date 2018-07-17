@@ -17,8 +17,8 @@ module LA
     def initialize(@nrows, @ncolumns, @flags = MatrixFlags::None, &block)
       check_type
       @raw = Slice(T).new(@nrows*@ncolumns) do |index|
-        i = index/@ncolumns
-        j = index % @ncolumns
+        i = index % @nrows
+        j = index / @nrows
         T.new(yield(i, j))
       end
     end
@@ -28,15 +28,15 @@ module LA
       @nrows = values.size
       @ncolumns = values[0].size
       @raw = Slice(T).new(nrows*ncolumns) do |index|
-        i = index/@ncolumns
-        j = index % @ncolumns
+        i = index % @nrows
+        j = index / @nrows
         raise IndexError.new("All rows must have same size") if j == 0 && values[i].size != @ncolumns
         T.new(values[i][j])
       end
     end
 
     def self.new(matrix : GeneralMatrix(T))
-      new(matrix.nrows, matrix.ncolumns, matrix.raw, matrix.flags)
+      new(matrix.nrows, matrix.ncolumns, matrix.raw, true, matrix.flags)
     end
 
     def self.new(matrix : Matrix)
@@ -45,22 +45,30 @@ module LA
       end
     end
 
-    def initialize(@nrows, @ncolumns, values : Indexable, @flags = MatrixFlags::None)
+    def initialize(@nrows, @ncolumns, values : Indexable, col_major = false, @flags = MatrixFlags::None)
       check_type
-      @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
+      if col_major
+        @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
+      else
+        @raw = Slice(T).new(nrows*ncolumns) do |i|
+          row = i % nrows
+          col = i / nrows
+          T.new(values[col + row*@ncolumns])
+        end
+      end
     end
 
     def unsafe_at(i, j)
-      @raw.unsafe_at(i*ncolumns + j)
+      @raw.unsafe_at(i + j*nrows)
     end
 
     def unsafe_set(i, j, value)
       clear_flags # TODO - not always?
-      @raw[i*ncolumns + j] = T.new(value)
+      @raw[i + j*nrows] = T.new(value)
     end
 
     def dup
-      GeneralMatrix(T).new(@nrows, @ncolumns, @raw, @flags)
+      GeneralMatrix(T).new(@nrows, @ncolumns, @raw, true, @flags)
     end
 
     def clone
@@ -95,7 +103,7 @@ module LA
       else
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
         newraw = Slice(T).new(nrows*ncolumns, T.new(0))
-        each_with_index { |v, r, c| newraw[c*nrows + r] = v }
+        each_with_index { |v, r, c| newraw[c + r*ncolumns] = v }
         @raw = newraw
         @nrows, @ncolumns = @ncolumns, @nrows
       end
@@ -114,21 +122,36 @@ module LA
     end
 
     # changes nrows and ncolumns of matrix (total number of elements must not change)
-    def reshape!(anrows, ancolumns)
+    def reshape!(anrows, ancolumns, col_major = false)
+      return self if anrows == nrows && ancolumns == ncolumns
       raise ArgumentError.new("number of elements must not change") if anrows*ancolumns != @raw.size
-      clear_flags unless anrows == nrows && ancolumns == ncolumns
+      unless col_major
+        anew = reshape(anrows, ancolumns, col_major)
+        @raw = anew.raw
+      end
       @nrows = anrows
       @ncolumns = ancolumns
       self
     end
 
     # changes nrows and ncolumns of matrix (total number of elements must not change)
-    def reshape(anrows, ancolumns)
-      clone.reshape!(anrows, ancolumns)
+    def reshape(anrows, ancolumns, col_major = false)
+      if col_major
+        clone.reshape!(anrows, ancolumns, col_major)
+      else
+        raise ArgumentError.new("number of elements must not change") if anrows*ancolumns != @raw.size
+        GeneralMatrix(T).new(anrows, ancolumns) do |i, j|
+          row_index = i*ancolumns + j
+          arow = row_index / @ncolumns
+          acol = row_index % @ncolumns
+          unsafe_at(arow, acol)
+        end
+      end
     end
 
     def resize!(anrows, ancolumns)
       # TODO - better implementation?
+      return self if anrows == @nrows && ancolumns == @ncolumns
       anew = GeneralMatrix(T).new(anrows, ancolumns) do |i, j|
         if j >= 0 && j < ncolumns && i >= 0 && i < nrows
           unsafe_at(i, j)
@@ -143,15 +166,31 @@ module LA
       self
     end
 
-    def to_a
-      @raw.to_a
+    def to_a(col_major = false)
+      if col_major
+        @raw.to_a
+      else
+        Array(T).new(@ncolumns*@nrows) do |i|
+          row = i / @ncolumns
+          col = i % @ncolumns
+          unsafe_at(row, col)
+        end
+      end
     end
 
-    def to_aa
-      Array(Array(T)).new(@nrows) do |i|
-        Array(T).build(@ncolumns) do |pointer|
-          pointer.to_slice(@ncolumns).copy_from(@raw[i*@ncolumns, @ncolumns])
-          @ncolumns
+    def to_aa(col_major = false)
+      if col_major
+        Array(Array(T)).new(@ncolumns) do |i|
+          Array(T).build(@nrows) do |pointer|
+            pointer.to_slice(@nrows).copy_from(@raw[i*@nrows, @nrows])
+            @nrows
+          end
+        end
+      else
+        Array(Array(T)).new(@nrows) do |i|
+          Array(T).new(@ncolumns) do |j|
+            unsafe_at(i, j)
+          end
         end
       end
     end
