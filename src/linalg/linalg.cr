@@ -50,6 +50,7 @@ module LA
 
   abstract class Matrix(T)
     macro lapack_util(name, *args)
+      buf = of_real_type(Slice, 1000)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -57,7 +58,7 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-       LibLAPACKE.{{typ}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
+       LibLAPACK.{{typ}}{{name}}_({{*args}}, buf)
     end
 
     macro lapack(storage, name, *args)
@@ -314,20 +315,22 @@ module LA
               'I'
             else
               'M'
-            end.ord
-      if flags.triangular?
-        lapack_util(lantr, let, uplo, 'N'.ord, nrows, ncolumns, self, nrows)
-      elsif flags.hermitian?
-        {% if T == Complex %}
-        lapack_util(lanhe, let, uplo, nrows,  self, nrows)
-        {% else %}
-        lapack_util(lange, let, nrows, ncolumns, self, nrows)
-        {% end %}
-      elsif flags.symmetric?
-        lapack_util(lansy, let, uplo, nrows, self, nrows)
-      else
-        lapack_util(lange, let, nrows, ncolumns, self, nrows)
-      end
+            end.ord.to_u8
+      # if flags.triangular?
+      #   lapack_util(lantr, let, uplo, 'N'.ord, nrows, ncolumns, self, nrows)
+      # elsif flags.hermitian?
+      #   {% if T == Complex %}
+      #   lapack_util(lanhe, let, uplo, nrows,  self, nrows)
+      #   {% else %}
+      #   lapack_util(lange, let, nrows, ncolumns, self, nrows)
+      #   {% end %}
+      # elsif flags.symmetric?
+      #   lapack_util(lansy, let, uplo, nrows, self, nrows)
+      # else
+      n = @nrows
+      m = @ncolumns
+      lapack_util(lange, pointerof(let).to_slice(1), pointerof(n).to_slice(1), pointerof(m).to_slice(1), self, pointerof(n).to_slice(1))
+      # end
     end
 
     def abs(kind : MatrixNorm = MatrixNorm::Frobenius)
