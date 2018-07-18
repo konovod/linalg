@@ -49,8 +49,8 @@ module LA
   end
 
   abstract class Matrix(T)
-    macro lapack_util(name, *args)
-      buf = of_real_type(Slice, 1000)
+    macro lapack_util(name, worksize, *args)
+      buf = alloc_real_type(worksize)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -58,7 +58,24 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-       LibLAPACK.{{typ}}{{name}}_({{*args}}, buf)
+
+         {% for arg, index in args %}
+         {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
+             %var{index} = {{arg}}
+           {% end %}
+         {% end %}
+
+      result = LibLAPACK.{{typ}}{{name}}_(
+          {% for arg, index in args %}
+            {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
+              pointerof(%var{index}),
+            {% else %}
+              {{arg.stringify.gsub(/^matrix\((.*)\)$/, "(\\1)").id}},
+            {% end %}
+          {% end %}
+          buf)
+      WORK_POOL.release(buf)
+      result
     end
 
     macro lapack(storage, name, *args)
@@ -316,21 +333,22 @@ module LA
             else
               'M'
             end.ord.to_u8
-      # if flags.triangular?
-      #   lapack_util(lantr, let, uplo, 'N'.ord, nrows, ncolumns, self, nrows)
-      # elsif flags.hermitian?
-      #   {% if T == Complex %}
-      #   lapack_util(lanhe, let, uplo, nrows,  self, nrows)
-      #   {% else %}
-      #   lapack_util(lange, let, nrows, ncolumns, self, nrows)
-      #   {% end %}
-      # elsif flags.symmetric?
-      #   lapack_util(lansy, let, uplo, nrows, self, nrows)
-      # else
-      n = @nrows
-      m = @ncolumns
-      lapack_util(lange, pointerof(let).to_slice(1), pointerof(n).to_slice(1), pointerof(m).to_slice(1), self, pointerof(n).to_slice(1))
-      # end
+
+      worksize = kind.inf? ? nrows : 0
+
+      if flags.triangular?
+        lapack_util(lantr, worksize, let, uplo.to_u8, 'N'.ord.to_u8, @nrows, @ncolumns, matrix(self), @nrows)
+      elsif flags.hermitian?
+        {% if T == Complex %}
+        lapack_util(lanhe, worksize, let, uplo.to_u8, @nrows,  matrix(self), @nrows)
+        {% else %}
+        lapack_util(lange, worksize, let, @nrows, @ncolumns, matrix(self), @nrows)
+        {% end %}
+      elsif flags.symmetric?
+        lapack_util(lansy, worksize, let, uplo.to_u8, @nrows, matrix(self), @nrows)
+      else
+        lapack_util(lange, worksize, let, @nrows, @ncolumns, matrix(self), @nrows)
+      end
     end
 
     def abs(kind : MatrixNorm = MatrixNorm::Frobenius)
