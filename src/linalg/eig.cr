@@ -165,7 +165,7 @@ module LA
       {% if T == Complex %}
         alpha = Array(T).new(nrows, T.new(0,0))
         beta = Array(T).new(nrows, T.new(0,0))
-        lapacke(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(gg, ev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
                 bb, b.nrows,
                 alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 beta.to_unsafe.as(LibCBLAS::ComplexDouble*),

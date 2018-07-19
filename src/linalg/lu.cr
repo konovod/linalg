@@ -6,7 +6,7 @@ module LA
       n = ncolumns
       k = {nrows, ncolumns}.min
       ipiv = Slice(Int32).new(m)
-      lapacke(ge, trf, nrows, ncolumns, a, nrows, ipiv)
+      lapack(ge, trf, nrows, ncolumns, matrix(a), nrows, matrix(ipiv))
       a.clear_flags
       # apply all transformation of piv to "own" piv
       piv = (1..m).to_a
@@ -42,7 +42,7 @@ module LA
     def lu_factor!
       raise ArgumentError.new("matrix must be square") unless square?
       ipiv = Slice(Int32).new(nrows)
-      lapacke(ge, trf, nrows, ncolumns, self, nrows, ipiv)
+      lapack(ge, trf, nrows, ncolumns, matrix(self), nrows, matrix(ipiv))
       clear_flags
       LUMatrix(T).new(self, ipiv)
     end
@@ -63,17 +63,31 @@ module LA
     @ipiv : Slice(Int32)
 
     # TODO - more macro magic?
-    macro lapacke(storage, name, *args)
-        {% if T == Float32
-             typ = :s.id
-           elsif T == Float64
-             typ = :d.id
-           elsif T == Complex
-             typ = :z.id
-           end %}
-         info = LibLAPACKE.{{typ}}{{storage}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
-         raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
-      end
+    macro lapack(storage, name, *args, **worksizes)
+      {% if T == Float32
+           typ = :s.id
+         elsif T == Float64
+           typ = :d.id
+         elsif T == Complex
+           typ = :z.id
+         end %}
+       {% for arg, index in args %}
+         {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
+           %var{index} = {{arg}}
+         {% end %}
+       {% end %}
+       info = 0
+       LibLAPACK.{{typ}}{{storage}}{{name}}_(
+         {% for arg, index in args %}
+           {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
+             pointerof(%var{index}),
+           {% else %}
+             {{arg.stringify.gsub(/^matrix\((.*)\)$/, "(\\1)").id}},
+           {% end %}
+         {% end %}
+         pointerof(info))
+      raise LinAlgError.new("LAPACK.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
+    end
 
     def initialize(@a, @ipiv)
     end
@@ -89,9 +103,9 @@ module LA
               when .transpose?      then 'T'
               when .conj_transpose? then 'C'
               else                       'N'
-              end.ord
+              end.ord.to_u8
       x = overwrite_b ? b : b.clone
-      lapacke(ge, trs, trans, size, b.ncolumns, @a, size, @ipiv, x, x.nrows)
+      lapack(ge, trs, trans, size, b.ncolumns, matrix(@a), size, matrix(@ipiv), matrix(x), x.nrows)
       x.clear_flags
       x
     end

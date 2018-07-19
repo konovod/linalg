@@ -63,15 +63,20 @@ module LA
          end %}
 
        {% for arg, index in args %}
-         {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
+         {% if (arg.stringify =~ /^intout\(.*\)$/) %}
+           {{arg.stringify.gsub(/^intout\((.*)\)$/, "\\1").id}} = 0
+         {% elsif !(arg.stringify =~ /^matrix\(.*\)$/) %}
            %var{index} = {{arg}}
+         {% else %}
          {% end %}
        {% end %}
 
        info = 0
        LibLAPACK.{{typ}}{{storage}}{{name}}_(
          {% for arg, index in args %}
-           {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
+           {% if (arg.stringify =~ /^intout\(.*\)$/) %}
+             pointerof({{arg.stringify.gsub(/^intout\((.*)\)$/, "\\1").id}}),
+           {% elsif !(arg.stringify =~ /^matrix\(.*\)$/) %}
              pointerof(%var{index}),
            {% else %}
              {{arg.stringify.gsub(/^matrix\((.*)\)$/, "(\\1)").id}},
@@ -79,7 +84,7 @@ module LA
          {% end %}
          pointerof(info))
 
-      raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
+      raise LinAlgError.new("LAPACK.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
     end
   end
 end

@@ -73,8 +73,8 @@ module LA
         lapack(tr, tri, uplo, 'N'.ord.to_u8, n, matrix(self), n)
         adjust_triangular
       elsif flags.positive_definite?
-        lapacke(po, trf, uplo, n, self, n)
-        lapacke(po, tri, uplo, n, self, n)
+        lapack(po, trf, uplo, n, matrix(self), n)
+        lapack(po, tri, uplo, n, matrix(self), n)
         adjust_symmetric
       elsif {{T == Complex}} && flags.hermitian?
         {% if T == Complex %}
@@ -92,7 +92,7 @@ module LA
         adjust_symmetric
       else
         ipiv = Slice(Int32).new(n)
-        lapacke(ge, trf, n, n, self, n, ipiv)
+        lapack(ge, trf, n, n, matrix(self), n, matrix(ipiv))
         lapacke(ge, tri, n, self, n, ipiv)
       end
       self
@@ -109,9 +109,9 @@ module LA
       x = overwrite_b ? b : b.clone
       n = nrows
       if flags.triangular?
-        lapacke(tr, trs, uplo, 'N'.ord, 'N'.ord, n, b.nrows, a, n, x, b.nrows)
+        lapack(tr, trs, uplo, 'N'.ord.to_u8, 'N'.ord.to_u8, n, b.nrows, matrix(a), n, matrix(x), b.nrows)
       elsif flags.positive_definite?
-        lapacke(po, sv, uplo, n, b.ncolumns, a, n, x, b.ncolumns)
+        lapack(po, sv, uplo, n, b.ncolumns, matrix(a), n, matrix(x), b.ncolumns)
       elsif flags.hermitian?
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
@@ -122,7 +122,7 @@ module LA
         lapacke(sy, sv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
       else
         ipiv = Slice(Int32).new(n)
-        lapacke(ge, sv, n, b.ncolumns, a, n, ipiv, x, b.nrows)
+        lapack(ge, sv, n, b.ncolumns, matrix(a), n, matrix(ipiv), matrix(x), b.nrows)
       end
       a.clear_flags
       x.clear_flags
@@ -136,7 +136,7 @@ module LA
       end
       lru = overwrite_a ? self : self.clone
       ipiv = Slice(Int32).new(nrows)
-      lapacke(ge, trf, nrows, nrows, lru, nrows, ipiv)
+      lapack(ge, trf, nrows, nrows, matrix(lru), nrows, matrix(ipiv))
       lru.clear_flags
       lru.diag.product
     end
@@ -227,7 +227,9 @@ module LA
               return separate ? Matrix(T).ones(1, n) : Matrix(T).identity(n)
             end
       s = GeneralMatrix(T).new(1, n)
-      lapacke(ge, bal, job.ord, n, self, n, out ilo, out ihi, s)
+      ilo = 0
+      ihi = 0
+      lapack(ge, bal, job.ord.to_u8, n, matrix(self), n, intout(ilo), intout(ihi), matrix(s))
       separate ? s : Matrix(T).diag(s.raw)
     end
 
@@ -247,7 +249,7 @@ module LA
       end
       n = nrows
       s = of_real_type(Slice, n)
-      lapacke(ge, bal, 'S'.ord, n, self, n, out ilo, out ihi, s)
+      lapack(ge, bal, 'S'.ord.to_u8, n, matrix(self), n, intout(ilo), intout(ihi), matrix(s))
       clear_flags
       tau = GeneralMatrix(T).new(1, n)
       lapacke(ge, hrd, n, ilo, ihi, self, ncolumns, tau)
