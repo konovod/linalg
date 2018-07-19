@@ -17,6 +17,10 @@ module LA
       get(n*sizeof(Float64)).unsafe_as(Slice(Float64))
     end
 
+    def get_i32(n) : Slice(Int32)
+      get(n*sizeof(Int32)).unsafe_as(Slice(Int32))
+    end
+
     def release(ptr)
     end
 

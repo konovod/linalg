@@ -25,7 +25,7 @@ module LA
       vals = Array(Float64).new(nrows, 0.0)
       vectors = a.clone
       support = Slice(Int32).new(2*nrows)
-      lapack(he, evr, job, 'A'.ord, uplo, nrows, a, nrows,
+      lapacke(he, evr, job, 'A'.ord, uplo, nrows, a, nrows,
         'N'.ord,'N'.ord,'N'.ord,'N'.ord, -1.0,
         out nfound, vals,
         vectors, ncolumns, support)
@@ -42,7 +42,7 @@ module LA
       vals = Array(T).new(nrows, T.new(0))
       vectors = a.clone
       support = Slice(Int32).new(2*nrows)
-      lapack(sy, evr, job, 'A'.ord, uplo, nrows, a, nrows,
+      lapacke(sy, evr, job, 'A'.ord, uplo, nrows, a, nrows,
         'N'.ord,'N'.ord,'N'.ord,'N'.ord, -1.0,
         out nfound, vals,
         vectors, ncolumns, support)
@@ -78,7 +78,7 @@ module LA
       eigvectorsr = need_right ? GeneralMatrix(T).new(nrows, nrows) : nil
       {% if T == Complex %}
         vals = Array(T).new(nrows, T.new(0,0))
-        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
                 vals.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)
@@ -87,7 +87,7 @@ module LA
       {% else %}
         reals = Array(T).new(nrows, T.new(0))
         imags = Array(T).new(nrows, T.new(0))
-        lapack(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(ge, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
                 reals, imags,
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)
@@ -107,7 +107,7 @@ module LA
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
       vals = Array(T).new(nrows, T.new(0))
-      lapack(sy, gvd, 1, job, uplo,
+      lapacke(sy, gvd, 1, job, uplo,
         nrows, a, nrows,
         bb, nrows,
         vals)
@@ -123,7 +123,7 @@ module LA
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
       vals = Array(Float64).new(nrows, 0.0)
-      lapack(he, gvd, 1, job, uplo,
+      lapacke(he, gvd, 1, job, uplo,
         nrows, a, nrows,
         bb, nrows,
         vals)
@@ -165,7 +165,7 @@ module LA
       {% if T == Complex %}
         alpha = Array(T).new(nrows, T.new(0,0))
         beta = Array(T).new(nrows, T.new(0,0))
-        lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
                 bb, b.nrows,
                 alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 beta.to_unsafe.as(LibCBLAS::ComplexDouble*),
@@ -178,7 +178,7 @@ module LA
         alpha_reals = Array(T).new(nrows, T.new(0))
         alpha_imags = Array(T).new(nrows, T.new(0))
         beta = Array(T).new(nrows, T.new(0))
-        lapack(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(gg, ev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
                 overwrite_b ? b : b.clone, b.nrows,
                 alpha_reals, alpha_imags, beta,
                 eigvectorsl.try &.to_unsafe, nrows,
