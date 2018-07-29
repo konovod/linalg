@@ -6,7 +6,7 @@ module LA
       n = ncolumns
       k = {nrows, ncolumns}.min
       ipiv = Slice(Int32).new(m)
-      lapack(getrf, nrows, ncolumns, matrix(a), nrows, matrix(ipiv))
+      lapack(getrf, nrows, ncolumns, a, nrows, ipiv)
       a.clear_flags
       # apply all transformation of piv to "own" piv
       piv = (1..m).to_a
@@ -42,7 +42,7 @@ module LA
     def lu_factor!
       raise ArgumentError.new("matrix must be square") unless square?
       ipiv = Slice(Int32).new(nrows)
-      lapack(getrf, nrows, ncolumns, matrix(self), nrows, matrix(ipiv))
+      lapack(getrf, nrows, ncolumns, self, nrows, ipiv)
       clear_flags
       LUMatrix(T).new(self, ipiv)
     end
@@ -64,6 +64,14 @@ module LA
 
     # TODO - more macro magic?
     macro lapack(name, *args, **worksizes)
+
+      {%
+        lapack_funcs = {
+          "getrs" => {4 => LapackHelper::ARG_MATRIX, 6 => LapackHelper::ARG_MATRIX, 7 => LapackHelper::ARG_MATRIX},
+        }
+      %}
+      {% func_data = lapack_funcs[name.stringify] %}
+
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -71,20 +79,23 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-       {% for arg, index in args %}
-         {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
-           %var{index} = {{arg}}
-         {% end %}
-       {% end %}
-       info = 0
-       LibLAPACK.{{typ}}{{name}}_(
          {% for arg, index in args %}
-           {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
-             pointerof(%var{index}),
+           {% argtype = func_data[index + 1] %}
+           {% if argtype == LapackHelper::ARG_MATRIX %}
            {% else %}
-             {{arg.stringify.gsub(/^matrix\((.*)\)$/, "(\\1)").id}},
+           %var{index} = {{arg}}
            {% end %}
          {% end %}
+       info = 0
+       LibLAPACK.{{typ}}{{name}}_(
+       {% for arg, index in args %}
+       {% argtype = func_data[index + 1] %}
+       {% if argtype == LapackHelper::ARG_MATRIX %}
+         {{arg}},
+       {% else %}
+        pointerof(%var{index}),
+       {% end %}
+       {% end %}
          pointerof(info))
       raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{info}") if info != 0
     end
@@ -105,7 +116,7 @@ module LA
               else                       'N'
               end.ord.to_u8
       x = overwrite_b ? b : b.clone
-      lapack(getrs, trans, size, b.ncolumns, matrix(@a), size, matrix(@ipiv), matrix(x), x.nrows)
+      lapack(getrs, trans, size, b.ncolumns, @a, size, @ipiv, x, x.nrows)
       x.clear_flags
       x
     end
