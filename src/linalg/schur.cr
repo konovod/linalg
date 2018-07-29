@@ -13,7 +13,7 @@ module LA
       {% if T == Complex %}
         w = Slice(T).new(nrows, T.new(0))
         z = GeneralMatrix(T).new(*size)
-        lapacke(ge, es, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, w.to_unsafe.as(LibCBLAS::ComplexDouble*), z, ncolumns)
+        lapacke(gees, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, w.to_unsafe.as(LibCBLAS::ComplexDouble*), z, ncolumns)
         a.clear_flags
         a.assume! MatrixFlags::UpperTriangular
         z.assume! MatrixFlags::Orthogonal
@@ -22,7 +22,7 @@ module LA
         wr = Slice(T).new(nrows)
         wi = Slice(T).new(nrows)
         z = GeneralMatrix(T).new(*size)
-        lapacke(ge, es, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, wr, wi, z, ncolumns)
+        lapacke(gees, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, out sdim, wr, wi, z, ncolumns)
         a.clear_flags
         a.detect MatrixFlags::UpperTriangular
         z.assume! MatrixFlags::Orthogonal
@@ -39,7 +39,7 @@ module LA
       {% if T == Complex %}
         alpha = Slice(T).new(nrows, T.new(0))
         beta = Slice(T).new(nrows, T.new(0))
-        lapacke(gg, es, 'V'.ord,'V'.ord, 'N'.ord, nil,
+        lapacke(gges, 'V'.ord,'V'.ord, 'N'.ord, nil,
             nrows, a, ncolumns, bb, bb.ncolumns,
             out sdim,
             alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
@@ -52,7 +52,7 @@ module LA
         alphar = Slice(T).new(nrows)
         alphai = Slice(T).new(nrows)
         beta = Slice(T).new(nrows)
-        lapacke(gg, es, 'V'.ord, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, bb, ncolumns, out sdim,
+        lapacke(gges, 'V'.ord, 'V'.ord, 'N'.ord, nil, nrows, a, ncolumns, bb, ncolumns, out sdim,
             alphar, alphai, beta, vsl, ncolumns,vsr, ncolumns)
         a.clear_flags
         bb.clear_flags

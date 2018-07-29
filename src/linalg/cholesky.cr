@@ -11,7 +11,7 @@ module LA
     def cholesky!(*, lower = false, dont_clean = false)
       raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
       char = lower ? 'L' : 'U'
-      lapack(po, trf, char.ord.to_u8, nrows, matrix(self), nrows)
+      lapack(potrf, char.ord.to_u8, nrows, matrix(self), nrows)
       if lower
         if dont_clean
           self.flags = MatrixFlags::LowerTriangular
@@ -40,7 +40,7 @@ module LA
       raise ArgumentError.new("a must be triangular") unless flags.triangular?
       x = overwrite_b ? b : b.clone
       n = nrows
-      lapack(po, trs, uplo, n, b.nrows, matrix(self), n, matrix(x), b.nrows)
+      lapack(potrs, uplo, n, b.nrows, matrix(self), n, matrix(x), b.nrows)
       b.clear_flags
       x
     end

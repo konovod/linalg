@@ -31,7 +31,7 @@ module LA
       result
     end
 
-    macro lapacke(storage, name, *args)
+    macro lapacke(name, *args)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -39,16 +39,14 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-      {% if T == Complex && storage.id == :or.id
-           st = :un.id
-         else
-           st = storage
+      {% if T == Complex && name.stringify =~ /^or/
+           name = name.stringify.gsub(/^(or)/, "un").id
          end %}
-      info = LibLAPACKE.{{typ}}{{st}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
-      raise LinAlgError.new("LAPACKE.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
+      info = LibLAPACKE.{{typ}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
+      raise LinAlgError.new("LAPACKE.{{typ}}{{name}} returned #{info}") if info != 0
     end
 
-    macro lapack(storage, name, *args, **worksizes)
+    macro lapack(name, *args, **worksizes)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -56,23 +54,21 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-      {% if T == Complex && storage.id == :or.id
-           st = :un.id
-         else
-           st = storage
+      {% if T == Complex && name.stringify =~ /^or/
+           name = name.stringify.gsub(/^(or)/, "un").id
          end %}
 
-       {% for arg, index in args %}
-         {% if (arg.stringify =~ /^intout\(.*\)$/) %}
-           {{arg.stringify.gsub(/^intout\((.*)\)$/, "\\1").id}} = 0
-         {% elsif !(arg.stringify =~ /^matrix\(.*\)$/) %}
-           %var{index} = {{arg}}
-         {% else %}
-         {% end %}
-       {% end %}
+      {% for arg, index in args %}
+        {% if (arg.stringify =~ /^intout\(.*\)$/) %}
+          {{arg.stringify.gsub(/^intout\((.*)\)$/, "\\1").id}} = 0
+        {% elsif !(arg.stringify =~ /^matrix\(.*\)$/) %}
+          %var{index} = {{arg}}
+        {% else %}
+        {% end %}
+      {% end %}
 
        info = 0
-       LibLAPACK.{{typ}}{{storage}}{{name}}_(
+       LibLAPACK.{{typ}}{{name}}_(
          {% for arg, index in args %}
            {% if (arg.stringify =~ /^intout\(.*\)$/) %}
              pointerof({{arg.stringify.gsub(/^intout\((.*)\)$/, "\\1").id}}),
@@ -84,7 +80,7 @@ module LA
          {% end %}
          pointerof(info))
 
-      raise LinAlgError.new("LAPACK.{{typ}}{{storage}}{{name}} returned #{info}") if info != 0
+      raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{info}") if info != 0
     end
   end
 end
