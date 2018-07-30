@@ -57,6 +57,7 @@ m = GMat32.new(3, 4) { |i, j| i*3 + j + 1 }
 # or using one of other ways, check "spec" directory
 
 # do basic arithmetics
+a = Mat.eye(3)
 pp 2 * a - Mat.diag([2, 2, 2]) == Mat.zeros(3, 3) # => true
 
 # basic algebra
