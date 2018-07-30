@@ -5,10 +5,25 @@ module LA
     ARG_NORMAL = 0
     ARG_MATRIX = 1
     ARG_INTOUT = 2
+
+    WORK_NONE           = 0
+    WORK_DETECT         = 1
+    WORK_DETECT_SPECIAL = 2
+    WORK_EMPTY          = 3
+    WORK_PARAM1         = 4
+    WORK_PARAM2         = 5
   end
 
   abstract class Matrix(T)
     include LapackHelper
+
+    private macro alloc_real_type(size)
+      {% if T == Float32 %} WORK_POOL.get_f32({{size}}) {% else %} WORK_POOL.get_f64({{size}}) {% end %}
+    end
+
+    private macro alloc_type(size)
+      {% if T == Complex %} WORK_POOL.get_cmplx({{size}}) {% elsif T == Float32 %} WORK_POOL.get_f32({{size}}) {% else %} WORK_POOL.get_f64({{size}}) {% end %}
+    end
 
     macro lapack_util(name, worksize, *args)
       buf = alloc_real_type(worksize)
@@ -54,7 +69,7 @@ module LA
       raise LinAlgError.new("LAPACKE.{{typ}}{{name}} returned #{info}") if info != 0
     end
 
-    macro lapack(name, *args, **worksizes)
+    macro lapack(name, *args, worksize = nil)
 
       {%
         lapack_args = {
@@ -62,12 +77,21 @@ module LA
           "gesv"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 6 => ARG_MATRIX},
           "getrf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
           "getrs" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX},
+          "hetri" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
           "posv"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "potrf" => {3 => ARG_MATRIX},
           "potri" => {3 => ARG_MATRIX},
           "potrs" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "trtri" => {4 => ARG_MATRIX},
           "trtrs" => {6 => ARG_MATRIX, 8 => ARG_MATRIX},
+        }
+
+        lapack_worksize = {
+          "hetri" => {"cwork" => WORK_PARAM1},
+          # "lantr" => {"rwork" => WORK_PARAM1},
+          # "lanhe" => {"rwork" => WORK_PARAM1},
+          # "lange" => {"rwork" => WORK_PARAM1},
+          # "lansy" => {"rwork" => WORK_PARAM1},
         }
       %}
 
@@ -80,6 +104,37 @@ module LA
            typ = :z.id
          end %}
       {% func_args = lapack_args[name.stringify] %}
+      {% func_worksize = lapack_worksize[name.stringify] %}
+
+      {% if func_worksize %}
+        {% if func_worksize["cwork"] %}
+          {% if func_worksize["cwork"] == WORK_PARAM1 %}
+            %csize = {{worksize[0]}}
+          {% elsif func_worksize["cwork"] == WORK_PARAM2 %}
+            %csize = {{worksize[1]}}
+          {% end %}
+          %cbuf = alloc_type(%csize)
+        {% end %}
+
+        {% if func_worksize["rwork"] %}
+          {% if func_worksize["rwork"] == WORK_PARAM1 %}
+            %rsize = {{worksize[0]}}
+          {% elsif func_worksize["rwork"] == WORK_PARAM2 %}
+            %rsize = {{worksize[1]}}
+          {% end %}
+          %rbuf = alloc_real_type(%rsize)
+        {% end %}
+
+        {% if func_worksize["iwork"] %}
+          {% if func_worksize["iwork"] == WORK_PARAM1 %}
+            %isize = {{worksize[0]}}
+          {% elsif func_worksize["iwork"] == WORK_PARAM2 %}
+            %isize = {{worksize[1]}}
+          {% end %}
+          %ibuf = WORK_POOL.get_i32(%isize)
+        {% end %}
+      {% end %}
+
 
       {% if T == Complex
            name = name.stringify.gsub(/^(or)/, "un").id
@@ -107,8 +162,20 @@ module LA
           pointerof(%var{index}),
          {% end %}
          {% end %}
+
+         {% if func_worksize %}
+           {% if func_worksize["cwork"] %}
+              %cbuf,
+           {% end %}
+         {% end %}
+
          pointerof(info))
 
+         {% if func_worksize %}
+           {% if func_worksize["cwork"] %}
+              WORK_POOL.release(%cbuf)
+           {% end %}
+         {% end %}
       raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{info}") if info != 0
     end
   end

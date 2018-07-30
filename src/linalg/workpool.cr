@@ -17,6 +17,10 @@ module LA
       get(n*sizeof(Float64)).unsafe_as(Slice(Float64))
     end
 
+    def get_cmplx(n) : Slice(LibCBLAS::ComplexDouble)
+      get(n*sizeof(LibCBLAS::ComplexDouble)).unsafe_as(Slice(LibCBLAS::ComplexDouble))
+    end
+
     def get_i32(n) : Slice(Int32)
       get(n*sizeof(Int32)).unsafe_as(Slice(Int32))
     end

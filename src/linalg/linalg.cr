@@ -80,7 +80,7 @@ module LA
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
         lapacke(hetrf, uplo, n, self, n, ipiv)
-        lapacke(hetri, uplo, n, self, n, ipiv)
+        lapack(hetri, uplo, n, self, n, ipiv, worksize: [n])
         adjust_symmetric
         {% else %}
         raise "error"

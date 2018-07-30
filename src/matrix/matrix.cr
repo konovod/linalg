@@ -24,10 +24,6 @@ module LA
       {% if T == Complex %} {{container}}(Float64).new({{size}}, 0.0) {% else %} {{container}}(T).new({{size}}, T.new(0)) {% end %}
     end
 
-    private macro alloc_real_type(size)
-      {% if T == Float32 %} WORK_POOL.get_f32({{size}}) {% else %} WORK_POOL.get_f64({{size}}) {% end %}
-    end
-
     private macro of_real_type(value)
       {% if T == Complex %} Float64.new({{value}}) {% else %} T.new({{value}}) {% end %}
     end
