@@ -20,13 +20,13 @@ module LA
 
     private def eigsh(*, need_vectors, overwrite_a = false)
       {% if T == Complex %}
-      job = need_vectors ? 'V'.ord : 'N'.ord
+      job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
       a = overwrite_a ? self : clone
       vals = Array(Float64).new(nrows, 0.0)
       vectors = a.clone
       support = Slice(Int32).new(2*nrows)
-      lapacke(heevr, job, 'A'.ord, uplo, nrows, a, nrows,
-        'N'.ord,'N'.ord,'N'.ord,'N'.ord, -1.0,
+      lapacke(heevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
+        'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8, -1.0,
         out nfound, vals,
         vectors, ncolumns, support)
       a.clear_flags
@@ -37,13 +37,13 @@ module LA
 
     private def eigs_sy(*, need_vectors, overwrite_a = false)
       {% if T != Complex %}
-      job = need_vectors ? 'V'.ord : 'N'.ord
+      job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
       a = overwrite_a ? self : clone
       vals = Array(T).new(nrows, T.new(0))
       vectors = a.clone
       support = Slice(Int32).new(2*nrows)
-      lapacke(syevr, job, 'A'.ord, uplo, nrows, a, nrows,
-        'N'.ord,'N'.ord,'N'.ord,'N'.ord, -1.0,
+      lapacke(syevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
+        'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8, -1.0,
         out nfound, vals,
         vectors, ncolumns, support)
       a.clear_flags
@@ -78,7 +78,7 @@ module LA
       eigvectorsr = need_right ? GeneralMatrix(T).new(nrows, nrows) : nil
       {% if T == Complex %}
         vals = Array(T).new(nrows, T.new(0,0))
-        lapacke(geev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(geev, need_left ? 'V'.ord.to_u8 : 'N'.ord.to_u8, need_right ? 'V'.ord.to_u8 : 'N'.ord.to_u8, nrows, a, nrows,
                 vals.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)
@@ -87,7 +87,7 @@ module LA
       {% else %}
         reals = Array(T).new(nrows, T.new(0))
         imags = Array(T).new(nrows, T.new(0))
-        lapacke(geev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(geev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
                 reals, imags,
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)
@@ -103,7 +103,7 @@ module LA
 
     private def eigs_gen_sy(*, b : Matrix(T), need_vectors : Bool, overwrite_a = false, overwrite_b = false)
       {% if T != Complex %}
-      job = need_vectors ? 'V'.ord : 'N'.ord
+      job = (need_vectors ? 'V' : 'N').ord.to_u8
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
       vals = Array(T).new(nrows, T.new(0))
@@ -119,7 +119,7 @@ module LA
 
     private def eigs_gen_he(*, b : Matrix(T), need_vectors : Bool, overwrite_a = false, overwrite_b = false)
       {% if T == Complex %}
-      job = need_vectors ? 'V'.ord : 'N'.ord
+      job = (need_vectors ? 'V' : 'N').ord.to_u8
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
       vals = Array(Float64).new(nrows, 0.0)
@@ -178,7 +178,7 @@ module LA
         alpha_reals = Array(T).new(nrows, T.new(0))
         alpha_imags = Array(T).new(nrows, T.new(0))
         beta = Array(T).new(nrows, T.new(0))
-        lapacke(ggev, need_left ? 'V'.ord : 'N'.ord, need_right ? 'V'.ord : 'N'.ord, nrows, a, nrows,
+        lapacke(ggev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
                 overwrite_b ? b : b.clone, b.nrows,
                 alpha_reals, alpha_imags, beta,
                 eigvectorsl.try &.to_unsafe, nrows,

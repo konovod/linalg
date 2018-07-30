@@ -150,7 +150,7 @@ module LA
       else
         x = overwrite_b ? b : b.clone
       end
-      lapacke(gels, 'N'.ord, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
+      lapacke(gels, 'N'.ord.to_u8, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
       a.clear_flags
       x.clear_flags
       x
@@ -171,7 +171,7 @@ module LA
       rank = 0
       case method
       when .ls?
-        lapacke(gels, 'N'.ord, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
+        lapacke(gels, 'N'.ord.to_u8, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
         s = of_real_type(Array, 0)
       when .lsd?
         ssize = {nrows, ncolumns}.min
@@ -198,7 +198,7 @@ module LA
       s = of_real_type(Array, {m, n}.min)
       u = GeneralMatrix(T).new(m, m)
       vt = GeneralMatrix(T).new(n, n)
-      lapacke(gesdd, 'A'.ord, m, n, a, nrows, s, u, m, vt, n)
+      lapacke(gesdd, 'A'.ord.to_u8, m, n, a, nrows, s, u, m, vt, n)
       a.clear_flags
       return {u, s, vt}
     end
@@ -208,7 +208,7 @@ module LA
       m = nrows
       n = ncolumns
       s = of_real_type(Array, {m, n}.min)
-      lapacke(gesdd, 'N'.ord, m, n, a, nrows, s, nil, m, nil, n)
+      lapacke(gesdd, 'N'.ord.to_u8, m, n, a, nrows, s, nil, m, nil, n)
       a.clear_flags
       s
     end

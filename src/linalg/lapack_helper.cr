@@ -74,14 +74,43 @@ module LA
       {%
         lapack_args = {
           "gebal" => {3 => ARG_MATRIX, 5 => ARG_INTOUT, 6 => ARG_INTOUT, 7 => ARG_MATRIX},
+          # "gees"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 7 => ARG_INTOUT, 8 => ARG_MATRIX, 9 => ARG_MATRIX}, SPECIAL CASE
+          # "geev"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX}, SPECIAL CASE
+          "gehrd" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "gels"  => {5 => ARG_MATRIX, 7 => ARG_MATRIX},
+          "gelsd" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT},
+          "gelsy" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT},
+          "geqp3" => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "geqrf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "gerqf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "gelqf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "geqlf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "gesdd" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
           "gesv"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 6 => ARG_MATRIX},
           "getrf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "getri" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
           "getrs" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX},
+          # "gges" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT, 11 => ARG_MATRIX, 12 => ARG_MATRIX, 13 => ARG_MATRIX, 15 => ARG_MATRIX}, SPECIAL CASE
+          # "ggev" => {},SPECIAL CASE
+          "heevr" => {5 => ARG_MATRIX, 12 => ARG_INTOUT, 13 => ARG_MATRIX, 14 => ARG_MATRIX, 16 => ARG_MATRIX},
+          "hegvd" => {5 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
+          "hesv"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX},
+          "hetrf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
           "hetri" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "orghr" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "orgqr" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "orgrq" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "orglq" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "orgql" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "posv"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "potrf" => {3 => ARG_MATRIX},
           "potri" => {3 => ARG_MATRIX},
           "potrs" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "syevr" => {5 => ARG_MATRIX, 12 => ARG_INTOUT, 13 => ARG_MATRIX, 14 => ARG_MATRIX, 16 => ARG_MATRIX},
+          "sygvd" => {5 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
+          "sysv"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX},
+          "sytrf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "sytri" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
           "trtri" => {4 => ARG_MATRIX},
           "trtrs" => {6 => ARG_MATRIX, 8 => ARG_MATRIX},
         }
