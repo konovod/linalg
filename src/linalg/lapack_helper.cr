@@ -8,6 +8,8 @@ module LA
   end
 
   abstract class Matrix(T)
+    include LapackHelper
+
     macro lapack_util(name, worksize, *args)
       buf = alloc_real_type(worksize)
       {% if T == Float32
@@ -55,17 +57,17 @@ module LA
     macro lapack(name, *args, **worksizes)
 
       {%
-        lapack_funcs = {
-          "gebal" => {3 => LapackHelper::ARG_MATRIX, 5 => LapackHelper::ARG_INTOUT, 6 => LapackHelper::ARG_INTOUT, 7 => LapackHelper::ARG_MATRIX},
-          "gesv"  => {3 => LapackHelper::ARG_MATRIX, 5 => LapackHelper::ARG_MATRIX, 6 => LapackHelper::ARG_MATRIX},
-          "getrf" => {3 => LapackHelper::ARG_MATRIX, 5 => LapackHelper::ARG_MATRIX},
-          "getrs" => {4 => LapackHelper::ARG_MATRIX, 6 => LapackHelper::ARG_MATRIX, 7 => LapackHelper::ARG_MATRIX},
-          "posv"  => {4 => LapackHelper::ARG_MATRIX, 6 => LapackHelper::ARG_MATRIX},
-          "potrf" => {3 => LapackHelper::ARG_MATRIX},
-          "potri" => {3 => LapackHelper::ARG_MATRIX},
-          "potrs" => {4 => LapackHelper::ARG_MATRIX, 6 => LapackHelper::ARG_MATRIX},
-          "trtri" => {4 => LapackHelper::ARG_MATRIX},
-          "trtrs" => {6 => LapackHelper::ARG_MATRIX, 8 => LapackHelper::ARG_MATRIX},
+        lapack_args = {
+          "gebal" => {3 => ARG_MATRIX, 5 => ARG_INTOUT, 6 => ARG_INTOUT, 7 => ARG_MATRIX},
+          "gesv"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "getrf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
+          "getrs" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX},
+          "posv"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "potrf" => {3 => ARG_MATRIX},
+          "potri" => {3 => ARG_MATRIX},
+          "potrs" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "trtri" => {4 => ARG_MATRIX},
+          "trtrs" => {6 => ARG_MATRIX, 8 => ARG_MATRIX},
         }
       %}
 
@@ -77,16 +79,16 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-      {% func_data = lapack_funcs[name.stringify] %}
+      {% func_args = lapack_args[name.stringify] %}
 
       {% if T == Complex
            name = name.stringify.gsub(/^(or)/, "un").id
          end %}
 
       {% for arg, index in args %}
-        {% argtype = func_data[index + 1] %}
-        {% if argtype == LapackHelper::ARG_MATRIX %}
-        {% elsif argtype == LapackHelper::ARG_INTOUT %}
+        {% argtype = func_args[index + 1] %}
+        {% if argtype == ARG_MATRIX %}
+        {% elsif argtype == ARG_INTOUT %}
           {{arg}} = 0
         {% else %}
         %var{index} = {{arg}}
@@ -96,10 +98,10 @@ module LA
        info = 0
        LibLAPACK.{{typ}}{{name}}_(
          {% for arg, index in args %}
-         {% argtype = func_data[index + 1] %}
-         {% if argtype == LapackHelper::ARG_MATRIX %}
+         {% argtype = func_args[index + 1] %}
+         {% if argtype == ARG_MATRIX %}
            {{arg}},
-         {% elsif argtype == LapackHelper::ARG_INTOUT %}
+         {% elsif argtype == ARG_INTOUT %}
            pointerof({{arg}}),
          {% else %}
           pointerof(%var{index}),
