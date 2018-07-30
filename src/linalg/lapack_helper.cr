@@ -45,7 +45,7 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-      {% if T == Complex && name.stringify =~ /^or/
+      {% if T == Complex
            name = name.stringify.gsub(/^(or)/, "un").id
          end %}
       info = LibLAPACKE.{{typ}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
@@ -79,7 +79,7 @@ module LA
          end %}
       {% func_data = lapack_funcs[name.stringify] %}
 
-      {% if T == Complex && name.stringify =~ /^or/
+      {% if T == Complex
            name = name.stringify.gsub(/^(or)/, "un").id
          end %}
 
