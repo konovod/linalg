@@ -181,7 +181,7 @@ module LA
       when .lsy?
         jpvt = Slice(Int32).new(ncolumns)
         rcond = of_real_type(cond)
-        lapacke(gelsy, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows, jpvt, rcond, pointerof(rank))
+        lapack(gelsy, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows, jpvt, rcond, rank, worksize: [2*ncolumns])
         s = of_real_type(Array, 0)
       else
         s = of_real_type(Array, 0)

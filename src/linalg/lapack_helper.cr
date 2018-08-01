@@ -176,15 +176,15 @@ module LA
       {% if func_worksize && (func_worksize.values.includes?(WORK_DETECT) || func_worksize.values.includes?(WORK_DETECT_SPECIAL)) %}
         #let's detect sizes
         #1. init vars
-        {% if func_worksize["cwork"] == WORK_DETECT %}
+        {% if func_worksize["cwork"] %}
           %csize = -1
           %cresult = T.new(0.0)
         {% end %}
-        {% if func_worksize["rwork"] == WORK_DETECT %}
+        {% if func_worksize["rwork"] %}
           %rsize = -1
           %rresult = of_real_type(0.0)
         {% end %}
-        {% if func_worksize["iwork"] == WORK_DETECT %}
+        {% if func_worksize["iwork"] %}
           %isize = -1
           %iresult = 0
         {% end %}

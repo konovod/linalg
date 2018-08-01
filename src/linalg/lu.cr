@@ -63,7 +63,7 @@ module LA
     @ipiv : Slice(Int32)
 
     # TODO - more macro magic?
-    macro lapack(name, *args, **worksizes)
+    macro lapack(name, *args)
 
       {%
         lapack_funcs = {
