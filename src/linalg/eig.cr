@@ -42,10 +42,12 @@ module LA
       vals = Array(T).new(nrows, T.new(0))
       vectors = a.clone
       support = Slice(Int32).new(2*nrows)
-      lapacke(syevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
-        'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8, -1.0,
-        out nfound, vals,
+      lapack(syevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
+        T.new(0.0),T.new(0.0),0,0, T.new(-1.0),
+        nfound, vals,
         vectors, ncolumns, support)
+
+
       a.clear_flags
       vectors.clear_flags
       {vals, vectors}

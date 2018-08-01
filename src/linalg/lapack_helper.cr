@@ -141,7 +141,7 @@ module LA
           "orgrq" => {"cwork" => WORK_DETECT},
           "orglq" => {"cwork" => WORK_DETECT},
           "orgql" => {"cwork" => WORK_DETECT},
-          "syevr" => {"rwork" => WORK_DETECT, "iwork" => WORK_DETECT},
+          "syevr" => {"cwork" => WORK_DETECT, "iwork" => WORK_DETECT},
           "sygvd" => {"rwork" => WORK_DETECT, "iwork" => WORK_DETECT},
           "sysv"  => {"cwork" => WORK_DETECT},
 
