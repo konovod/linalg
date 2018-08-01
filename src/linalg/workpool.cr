@@ -6,7 +6,7 @@ module LA
     @used = 0
 
     def get(n) : Bytes
-      reallocate(n + @used)
+      # reallocate(n + @used)
       @area[@used, n]
     end
 
@@ -32,6 +32,7 @@ module LA
 
     def reallocate(required_size)
       n = @area.size
+      return if required_size <= n
       while n < required_size
         n = n*2
       end

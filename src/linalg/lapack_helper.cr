@@ -241,13 +241,14 @@ module LA
 
 
       {% if func_worksize %}
+        %asize = 0
         {% if func_worksize["cwork"] %}
           {% if func_worksize["cwork"] == WORK_PARAM1 %}
             %csize = {{worksize[0]}}
           {% elsif func_worksize["cwork"] == WORK_PARAM2 %}
             %csize = {{worksize[1]}}
           {% end %}
-          %cbuf = alloc_type(%csize)
+          %asize += %csize*sizeof(T)
         {% end %}
 
         {% if func_worksize["rwork"] %}
@@ -256,7 +257,7 @@ module LA
           {% elsif func_worksize["rwork"] == WORK_PARAM2 %}
             %rsize = {{worksize[1]}}
           {% end %}
-          %rbuf = alloc_real_type(%rsize)
+          %asize += %rsize*{% if T == Complex %} sizeof(Float64) {% else %} sizeof(T) {% end %}
         {% end %}
 
         {% if func_worksize["iwork"] %}
@@ -265,8 +266,23 @@ module LA
           {% elsif func_worksize["iwork"] == WORK_PARAM2 %}
             %isize = {{worksize[1]}}
           {% end %}
+          %asize += %isize*sizeof(Int32)
+        {% end %}
+
+        WORK_POOL.reallocate(%asize)
+
+        {% if func_worksize["cwork"] %}
+          %cbuf = alloc_type(%csize)
+        {% end %}
+
+        {% if func_worksize["rwork"] %}
+          %rbuf = alloc_real_type(%rsize)
+        {% end %}
+
+        {% if func_worksize["iwork"] %}
           %ibuf = WORK_POOL.get_i32(%isize)
         {% end %}
+
       {% end %}
 
        info = 0
