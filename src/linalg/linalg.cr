@@ -177,7 +177,7 @@ module LA
         ssize = {nrows, ncolumns}.min
         s = of_real_type(Array, ssize)
         rcond = of_real_type(cond)
-        lapacke(gelsd, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows, s, rcond, pointerof(rank))
+        lapack(gelsd, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows, s, rcond, rank)
       when .lsy?
         jpvt = Slice(Int32).new(ncolumns)
         rcond = of_real_type(cond)

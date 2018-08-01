@@ -210,7 +210,7 @@ module LA
                  pointerof(%csize),
                {% end %}
             {% end %}
-            {% if func_worksize["rwork"] %}
+            {% if T == Complex && func_worksize["rwork"] %}
               pointerof(%rresult),
                {% if func_worksize["rwork"] == WORK_DETECT %}
                  pointerof(%rsize),
@@ -232,7 +232,7 @@ module LA
          {% if func_worksize["cwork"] == WORK_DETECT %}
            %csize = {% if T == Complex %} %cresult.real.to_i {% else %}%cresult.to_i {% end %}
          {% end %}
-         {% if func_worksize["rwork"] == WORK_DETECT || func_worksize["rwork"] == WORK_DETECT_SPECIAL %}
+         {% if T == Complex && func_worksize["rwork"] == WORK_DETECT || func_worksize["rwork"] == WORK_DETECT_SPECIAL %}
            %rsize = %rresult.to_i
          {% end %}
          {% if func_worksize["iwork"] == WORK_DETECT || func_worksize["iwork"] == WORK_DETECT_SPECIAL %}
@@ -252,7 +252,7 @@ module LA
           %asize += %csize*sizeof(T)
         {% end %}
 
-        {% if func_worksize["rwork"] %}
+        {% if T == Complex && func_worksize["rwork"] %}
           {% if func_worksize["rwork"] == WORK_PARAM1 %}
             %rsize = {{worksize[0]}}
           {% elsif func_worksize["rwork"] == WORK_PARAM2 %}
@@ -276,7 +276,7 @@ module LA
           %cbuf = alloc_type(%csize)
         {% end %}
 
-        {% if func_worksize["rwork"] %}
+        {% if T == Complex && func_worksize["rwork"] %}
           %rbuf = alloc_real_type(%rsize)
         {% end %}
 
@@ -306,7 +306,7 @@ module LA
                 pointerof(%csize),
               {% end %}
            {% end %}
-           {% if func_worksize["rwork"] %}
+           {% if T == Complex && func_worksize["rwork"] %}
               %rbuf,
               {% if func_worksize["rwork"] == WORK_DETECT %}
                 pointerof(%rsize),
