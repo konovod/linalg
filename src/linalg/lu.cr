@@ -86,7 +86,7 @@ module LA
            %var{index} = {{arg}}
            {% end %}
          {% end %}
-       info = 0
+       %info = 0
        LibLAPACK.{{typ}}{{name}}_(
        {% for arg, index in args %}
        {% argtype = func_data[index + 1] %}
@@ -96,8 +96,8 @@ module LA
         pointerof(%var{index}),
        {% end %}
        {% end %}
-         pointerof(info))
-      raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{info}") if info != 0
+         pointerof(%info))
+      raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{%info}") if %info != 0
     end
 
     def initialize(@a, @ipiv)

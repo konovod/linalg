@@ -65,8 +65,8 @@ module LA
       {% if T == Complex
            name = name.stringify.gsub(/^(or)/, "un").id
          end %}
-      info = LibLAPACKE.{{typ}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
-      raise LinAlgError.new("LAPACKE.{{typ}}{{name}} returned #{info}") if info != 0
+      %info = LibLAPACKE.{{typ}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
+      raise LinAlgError.new("LAPACKE.{{typ}}{{name}} returned #{%info}") if %info != 0
     end
 
     macro lapack(name, *args, worksize = nil)
@@ -190,6 +190,7 @@ module LA
         {% end %}
 
         # 2. do workspace query
+        %info = 0
         LibLAPACK.{{typ}}{{name}}_(
           {% for arg, index in args %}
           {% argtype = func_args[index + 1] %}
@@ -226,7 +227,7 @@ module LA
             {% end %}
           {% end %}
 
-          pointerof(info))
+          pointerof(%info))
          #3. set sizes
          {% if func_worksize["cwork"] == WORK_DETECT %}
            %csize = {% if T == Complex %} %cresult.real.to_i {% else %}%cresult.to_i {% end %}
@@ -285,7 +286,7 @@ module LA
 
       {% end %}
 
-       info = 0
+       %info = 0
        LibLAPACK.{{typ}}{{name}}_(
          {% for arg, index in args %}
          {% argtype = func_args[index + 1] %}
@@ -322,14 +323,14 @@ module LA
            {% end %}
          {% end %}
 
-         pointerof(info))
+         pointerof(%info))
 
          {% if func_worksize %}
            {% if func_worksize["cwork"] %}
               WORK_POOL.release(%cbuf)
            {% end %}
          {% end %}
-      raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{info}") if info != 0
+      raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{%info}") if %info != 0
     end
   end
 end
