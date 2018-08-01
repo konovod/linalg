@@ -25,9 +25,9 @@ module LA
       vals = Array(Float64).new(nrows, 0.0)
       vectors = a.clone
       support = Slice(Int32).new(2*nrows)
-      lapacke(heevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
-        'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8,'N'.ord.to_u8, -1.0,
-        out nfound, vals,
+      lapack(heevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
+        0.0,0.0,0,0, -1.0,
+        nfound, vals,
         vectors, ncolumns, support)
       a.clear_flags
       vectors.clear_flags
@@ -125,7 +125,7 @@ module LA
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
       vals = Array(Float64).new(nrows, 0.0)
-      lapacke(hegvd, 1, job, uplo,
+      lapack(hegvd, 1, job, uplo,
         nrows, a, nrows,
         bb, nrows,
         vals)
