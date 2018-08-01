@@ -109,7 +109,7 @@ module LA
       a = overwrite_a ? self : clone
       bb = overwrite_b ? b : b.clone
       vals = Array(T).new(nrows, T.new(0))
-      lapacke(sygvd, 1, job, uplo,
+      lapack(sygvd, 1, job, uplo,
         nrows, a, nrows,
         bb, nrows,
         vals)
