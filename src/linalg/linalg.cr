@@ -195,10 +195,12 @@ module LA
       a = overwrite_a ? self : self.clone
       m = nrows
       n = ncolumns
-      s = of_real_type(Array, {m, n}.min)
+      mn = {m, n}.min
+      mx = {m, n}.max
+      s = of_real_type(Array, mn)
       u = GeneralMatrix(T).new(m, m)
       vt = GeneralMatrix(T).new(n, n)
-      lapacke(gesdd, 'A'.ord.to_u8, m, n, a, nrows, s, u, m, vt, n)
+      lapack(gesdd, 'A'.ord.to_u8, m, n, a, nrows, s, u, m, vt, n, worksize: [{5*mn*mn + 5*mn, 2*mx*mn + 2*mn*mn + mn}.max, 8*mn])
       a.clear_flags
       return {u, s, vt}
     end
@@ -207,8 +209,10 @@ module LA
       a = overwrite_a ? self : self.clone
       m = nrows
       n = ncolumns
-      s = of_real_type(Array, {m, n}.min)
-      lapacke(gesdd, 'N'.ord.to_u8, m, n, a, nrows, s, nil, m, nil, n)
+      mn = {m, n}.min
+      mx = {m, n}.max
+      s = of_real_type(Array, mn)
+      lapack(gesdd, 'N'.ord.to_u8, m, n, a, nrows, s, nil, m, nil, n, worksize: [5*mn, 8*mn])
       a.clear_flags
       s
     end
