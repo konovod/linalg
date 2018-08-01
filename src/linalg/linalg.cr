@@ -252,7 +252,7 @@ module LA
       lapack(gebal, 'S'.ord.to_u8, n, self, n, ilo, ihi, s)
       clear_flags
       tau = GeneralMatrix(T).new(1, n)
-      lapacke(gehrd, n, ilo, ihi, self, ncolumns, tau)
+      lapack(gehrd, n, ilo, ihi, self, ncolumns, tau)
       if calc_q
         q = clone
         lapacke(orghr, n, ilo, ihi, q, ncolumns, tau)

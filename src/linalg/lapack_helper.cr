@@ -159,6 +159,87 @@ module LA
       {% func_args = lapack_args[name.stringify] %}
       {% func_worksize = lapack_worksize[name.stringify] %}
 
+      {% if T == Complex
+           name = name.stringify.gsub(/^(or)/, "un").id
+         end %}
+
+      {% for arg, index in args %}
+        {% argtype = func_args[index + 1] %}
+        {% if argtype == ARG_MATRIX %}
+        {% elsif argtype == ARG_INTOUT %}
+          {{arg}} = 0
+        {% else %}
+        %var{index} = {{arg}}
+        {% end %}
+      {% end %}
+
+      {% if func_worksize && (func_worksize.values.includes?(WORK_DETECT) || func_worksize.values.includes?(WORK_DETECT_SPECIAL)) %}
+        #let's detect sizes
+        #1. init vars
+        {% if func_worksize["cwork"] == WORK_DETECT %}
+          %csize = -1
+          %cresult = T.new(0.0)
+        {% end %}
+        {% if func_worksize["rwork"] == WORK_DETECT %}
+          %rsize = -1
+          %rresult = of_real_type(0.0)
+        {% end %}
+        {% if func_worksize["iwork"] == WORK_DETECT %}
+          %isize = -1
+          %iresult = 0
+        {% end %}
+
+        # 2. do workspace query
+        LibLAPACK.{{typ}}{{name}}_(
+          {% for arg, index in args %}
+          {% argtype = func_args[index + 1] %}
+          {% if argtype == ARG_MATRIX %}
+            {{arg}},
+          {% elsif argtype == ARG_INTOUT %}
+            pointerof({{arg}}),
+          {% else %}
+           pointerof(%var{index}),
+          {% end %}
+          {% end %}
+
+          {% if func_worksize %}
+            {% if func_worksize["cwork"] %}
+              {% if T == Complex %} pointerof(%cresult).as(LibCBLAS::ComplexDouble*) {% else %}pointerof(%cresult) {% end %},
+               {% if func_worksize["cwork"] == WORK_DETECT %}
+                 pointerof(%csize),
+               {% end %}
+            {% end %}
+            {% if func_worksize["rwork"] %}
+              pointerof(%rresult),
+               {% if func_worksize["rwork"] == WORK_DETECT %}
+                 pointerof(%rsize),
+               {% end %}
+            {% end %}
+            {% if func_worksize["iwork"] %}
+              pointerof(%iresult),
+               {% if func_worksize["iwork"] == WORK_DETECT %}
+                 pointerof(%isize),
+               {% end %}
+            {% end %}
+            {% if func_worksize["bwork"] %}
+               nil,
+            {% end %}
+          {% end %}
+
+          pointerof(info))
+         #3. set sizes
+         {% if func_worksize["cwork"] == WORK_DETECT %}
+           %csize = {% if T == Complex %} %cresult.real.to_i {% else %}%cresult.to_i {% end %}
+         {% end %}
+         {% if func_worksize["rwork"] == WORK_DETECT || func_worksize["rwork"] == WORK_DETECT_SPECIAL %}
+           %rsize = %rresult.to_i
+         {% end %}
+         {% if func_worksize["iwork"] == WORK_DETECT || func_worksize["iwork"] == WORK_DETECT_SPECIAL %}
+           %isize = %iresult
+         {% end %}
+      {% end %}
+
+
       {% if func_worksize %}
         {% if func_worksize["cwork"] %}
           {% if func_worksize["cwork"] == WORK_PARAM1 %}
@@ -188,21 +269,6 @@ module LA
         {% end %}
       {% end %}
 
-
-      {% if T == Complex
-           name = name.stringify.gsub(/^(or)/, "un").id
-         end %}
-
-      {% for arg, index in args %}
-        {% argtype = func_args[index + 1] %}
-        {% if argtype == ARG_MATRIX %}
-        {% elsif argtype == ARG_INTOUT %}
-          {{arg}} = 0
-        {% else %}
-        %var{index} = {{arg}}
-        {% end %}
-      {% end %}
-
        info = 0
        LibLAPACK.{{typ}}{{name}}_(
          {% for arg, index in args %}
@@ -219,6 +285,24 @@ module LA
          {% if func_worksize %}
            {% if func_worksize["cwork"] %}
               %cbuf,
+              {% if func_worksize["cwork"] == WORK_DETECT %}
+                pointerof(%csize),
+              {% end %}
+           {% end %}
+           {% if func_worksize["rwork"] %}
+              %rbuf,
+              {% if func_worksize["rwork"] == WORK_DETECT %}
+                pointerof(%rsize),
+              {% end %}
+           {% end %}
+           {% if func_worksize["iwork"] %}
+              %ibuf,
+              {% if func_worksize["iwork"] == WORK_DETECT %}
+                pointerof(%isize),
+              {% end %}
+           {% end %}
+           {% if func_worksize["bwork"] %}
+              %bbuf,
            {% end %}
          {% end %}
 

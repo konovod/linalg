@@ -3,10 +3,11 @@ module LA
   # It isn't thread safe for now because crystal isn't multithreaded
   class WorkPool
     @area = Bytes.new(1024)
+    @used = 0
 
     def get(n) : Bytes
-      reallocate(n)
-      @area
+      reallocate(n + @used)
+      @area[@used, n]
     end
 
     def get_f32(n) : Slice(Float32)
@@ -26,6 +27,7 @@ module LA
     end
 
     def release(ptr)
+      @used = 0
     end
 
     def reallocate(required_size)
