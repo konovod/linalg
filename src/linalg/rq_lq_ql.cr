@@ -4,7 +4,7 @@ private def {{letters}}_initial(a)
   m = a.nrows
   n = a.ncolumns
   tau = GeneralMatrix(T).new(1, n)
-  lapacke(ge{{letters}}f, m, n, a, a.nrows, tau)
+  lapack(ge{{letters}}f, m, n, a, a.nrows, tau)
   a.clear_flags
   tau
 end
@@ -24,7 +24,7 @@ def {{letters}}(*, overwrite_a = false)
   m = a.nrows
   n = a.ncolumns
   k = {m,n}.min
-  lapacke(org{{letters}}, m, n, k, a, a.nrows, tau)
+  lapack(org{{letters}}, m, n, k, a, a.nrows, tau)
   a.assume! MatrixFlags::Orthogonal
   {% if letters.id.chars[0] == 'q' %}
     {a, r}
