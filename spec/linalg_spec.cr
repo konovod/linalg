@@ -114,17 +114,44 @@ describe LA do
     x.should be_close(x_octave, 1e-3)
   end
 
-  it "high-level: solve linear least square (complex)" do
-    a = GMatComplex[
-      [1, 2, 0],
-      [0, 4, 3]]
-    b = GMatComplex[[8], [18]]
-    x, rank, s = LA.lstsq(a, b, LSMethod::SVD)
-    x_octave = GMatComplex.columns([0.918032, 3.54098, 1.27869])
-    x.should be_close(x_octave, 1e-5)
-    rank.should eq 2
-    s[0].should be_close 5.273163, 1e-5
-    s[1].should be_close 1.481132, 1e-5
+  [LSMethod::QR, LSMethod::Orthogonal, LSMethod::SVD].each do |method|
+    it "high-level: solve linear least square (complex, #{method})" do
+      a = GMatComplex[
+        [1, 2, 0],
+        [0, 4, 3]]
+      b = GMatComplex[[8], [18]]
+      x, rank, s = LA.lstsq(a, b, method)
+      x_octave = GMatComplex.columns([0.918032, 3.54098, 1.27869])
+      x.should be_close(x_octave, 1e-5)
+      unless method == LSMethod::QR
+        rank.should eq 2
+      end
+      if method == LSMethod::SVD
+        s[0].should be_close 5.273163, 1e-5
+        s[1].should be_close 1.481132, 1e-5
+      else
+        s.empty?.should be_true
+      end
+    end
+
+    it "high-level: solve linear least square (real, #{method})" do
+      a = GMat[
+        [1, 2, 0],
+        [0, 4, 3]]
+      b = GMat[[8], [18]]
+      x, rank, s = LA.lstsq(a, b, method)
+      x_octave = GMat.columns([0.918032, 3.54098, 1.27869])
+      x.should be_close(x_octave, 1e-5)
+      unless method == LSMethod::QR
+        rank.should eq 2
+      end
+      if method == LSMethod::SVD
+        s[0].should be_close 5.273163, 1e-5
+        s[1].should be_close 1.481132, 1e-5
+      else
+        s.empty?.should be_true
+      end
+    end
   end
 
   it "high-level: calculate singular value decomposition" do
