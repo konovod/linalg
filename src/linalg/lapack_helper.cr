@@ -144,6 +144,8 @@ module LA
           "syevr" => {"cwork" => WORK_DETECT, "iwork" => WORK_DETECT},
           "sygvd" => {"cwork" => WORK_DETECT, "iwork" => WORK_DETECT},
           "sysv"  => {"cwork" => WORK_DETECT},
+          "sytrf" => {"cwork" => WORK_DETECT},
+          "sytri" => {"cwork" => WORK_PARAM1},
 
           # "lantr" => {"rwork" => WORK_PARAM1},
           # "lanhe" => {"rwork" => WORK_PARAM1},

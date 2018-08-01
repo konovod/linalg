@@ -87,8 +87,8 @@ module LA
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)
-        lapacke(sytrf, uplo, n, self, n, ipiv)
-        lapacke(sytri, uplo, n, self, n, ipiv)
+        lapack(sytrf, uplo, n, self, n, ipiv)
+        lapack(sytri, uplo, n, self, n, ipiv, worksize: [2*n])
         adjust_symmetric
       else
         ipiv = Slice(Int32).new(n)

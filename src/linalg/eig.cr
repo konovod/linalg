@@ -129,6 +129,7 @@ module LA
         nrows, a, nrows,
         bb, nrows,
         vals)
+
       a.clear_flags
       bb.clear_flags
       {vals, a}
