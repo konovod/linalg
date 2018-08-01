@@ -6,7 +6,7 @@ module LA
       tau = GeneralMatrix(T).new(1, n)
       if pivoting
         jpvt = Array(Int32).new(n, 0)
-        lapacke(geqp3, m, n, a, a.nrows, jpvt, tau)
+        lapack(geqp3, m, n, a, a.nrows, jpvt, tau, worksize: [2*n])
         a.clear_flags
       else
         jpvt = Array(Int32).new(0)
