@@ -10,7 +10,7 @@ module LA
         a.clear_flags
       else
         jpvt = Array(Int32).new(0)
-        lapacke(geqrf, m, n, a, a.nrows, tau)
+        lapack(geqrf, m, n, a, a.nrows, tau)
         a.clear_flags
       end
       {tau, jpvt}

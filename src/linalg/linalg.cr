@@ -79,7 +79,7 @@ module LA
       elsif {{T == Complex}} && flags.hermitian?
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
-        lapacke(hetrf, uplo, n, self, n, ipiv)
+        lapack(hetrf, uplo, n, self, n, ipiv)
         lapack(hetri, uplo, n, self, n, ipiv, worksize: [n])
         adjust_symmetric
         {% else %}
@@ -93,7 +93,7 @@ module LA
       else
         ipiv = Slice(Int32).new(n)
         lapack(getrf, n, n, self, n, ipiv)
-        lapacke(getri, n, self, n, ipiv)
+        lapack(getri, n, self, n, ipiv)
       end
       self
     end
@@ -115,11 +115,11 @@ module LA
       elsif flags.hermitian?
         {% if T == Complex %}
         ipiv = Slice(Int32).new(n)
-        lapacke(hesv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
+        lapack(hesv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)
-        lapacke(sysv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
+        lapack(sysv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
       else
         ipiv = Slice(Int32).new(n)
         lapack(gesv, n, b.ncolumns, a, n, ipiv, x, b.nrows)
@@ -150,7 +150,7 @@ module LA
       else
         x = overwrite_b ? b : b.clone
       end
-      lapacke(gels, 'N'.ord.to_u8, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
+      lapack(gels, 'N'.ord.to_u8, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
       a.clear_flags
       x.clear_flags
       x
@@ -171,7 +171,7 @@ module LA
       rank = 0
       case method
       when .ls?
-        lapacke(gels, 'N'.ord.to_u8, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
+        lapack(gels, 'N'.ord.to_u8, nrows, ncolumns, b.ncolumns, a, nrows, x, x.nrows)
         s = of_real_type(Array, 0)
       when .lsd?
         ssize = {nrows, ncolumns}.min
