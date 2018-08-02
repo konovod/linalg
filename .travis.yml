@@ -6,3 +6,4 @@ before_install:
   - sudo apt-get install -y libopenblas-base liblapacke
   - sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so
   - sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so
+  - sudo ln -s /usr/lib/openblas-base/liblapack.so.3 /usr/lib/liblapack.so
