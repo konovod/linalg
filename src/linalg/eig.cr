@@ -80,16 +80,16 @@ module LA
       eigvectorsr = need_right ? GeneralMatrix(T).new(nrows, nrows) : nil
       {% if T == Complex %}
         vals = Array(T).new(nrows, T.new(0,0))
-        lapacke(geev, need_left ? 'V'.ord.to_u8 : 'N'.ord.to_u8, need_right ? 'V'.ord.to_u8 : 'N'.ord.to_u8, nrows, a, nrows,
+        lapack(geev, need_left ? 'V'.ord.to_u8 : 'N'.ord.to_u8, need_right ? 'V'.ord.to_u8 : 'N'.ord.to_u8, nrows, a, nrows,
                 vals.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
-                eigvectorsr.try &.to_unsafe, nrows)
+                eigvectorsr.try &.to_unsafe, nrows, worksize: [nrows])
         a.clear_flags
         return {vals, eigvectorsl, eigvectorsr}
       {% else %}
         reals = Array(T).new(nrows, T.new(0))
         imags = Array(T).new(nrows, T.new(0))
-        lapacke(geev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
+        lapack(geev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
                 reals, imags,
                 eigvectorsl.try &.to_unsafe, nrows,
                 eigvectorsr.try &.to_unsafe, nrows)
@@ -168,12 +168,12 @@ module LA
       {% if T == Complex %}
         alpha = Array(T).new(nrows, T.new(0,0))
         beta = Array(T).new(nrows, T.new(0,0))
-        lapacke(ggev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
+        lapack(ggev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
                 bb, b.nrows,
                 alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 beta.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
-                eigvectorsr.try &.to_unsafe, nrows)
+                eigvectorsr.try &.to_unsafe, nrows, worksize: [8*nrows])
         a.clear_flags
         bb.clear_flags
         return {alpha, beta, eigvectorsl, eigvectorsr}
@@ -181,7 +181,7 @@ module LA
         alpha_reals = Array(T).new(nrows, T.new(0))
         alpha_imags = Array(T).new(nrows, T.new(0))
         beta = Array(T).new(nrows, T.new(0))
-        lapacke(ggev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
+        lapack(ggev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
                 overwrite_b ? b : b.clone, b.nrows,
                 alpha_reals, alpha_imags, beta,
                 eigvectorsl.try &.to_unsafe, nrows,

@@ -23,7 +23,7 @@ describe LA do
     vals[1].should be_close 1 - 2.i, 1e-3
   end
 
-  it "high-level: calculate nonsymmetric eigenvectors" do
+  pending "high-level: calculate nonsymmetric eigenvectors" do
     a = GMat32[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
     vals, vectors = a.eigs
     raise "" if vals.is_a? Array(Complex)

@@ -75,7 +75,7 @@ module LA
         lapack_args = {
           "gebal" => {3 => ARG_MATRIX, 5 => ARG_INTOUT, 6 => ARG_INTOUT, 7 => ARG_MATRIX},
           "gees"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 7 => ARG_INTOUT, 8 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX},
-          "geev"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
+          "geev"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_MATRIX},
           "gehrd" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "gels"  => {5 => ARG_MATRIX, 7 => ARG_MATRIX},
           "gelsd" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT},
@@ -119,7 +119,7 @@ module LA
           "gees" => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 7 => ARG_INTOUT, 8 => ARG_MATRIX, 9 => ARG_MATRIX},
           "geev" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
           "gges" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT, 11 => ARG_MATRIX, 12 => ARG_MATRIX, 13 => ARG_MATRIX, 15 => ARG_MATRIX},
-          "ggev" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX, 11 => ARG_MATRIX, 13 => ARG_MATRIX},
+          "ggev" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX, 12 => ARG_MATRIX},
         }
 
         lapack_worksize = {
