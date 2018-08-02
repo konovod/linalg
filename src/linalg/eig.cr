@@ -80,10 +80,10 @@ module LA
       eigvectorsr = need_right ? GeneralMatrix(T).new(nrows, nrows) : nil
       {% if T == Complex %}
         vals = Array(T).new(nrows, T.new(0,0))
-        lapack(geev, need_left ? 'V'.ord.to_u8 : 'N'.ord.to_u8, need_right ? 'V'.ord.to_u8 : 'N'.ord.to_u8, nrows, a, nrows,
+        lapacke(geev, need_left ? 'V'.ord.to_u8 : 'N'.ord.to_u8, need_right ? 'V'.ord.to_u8 : 'N'.ord.to_u8, nrows, a, nrows,
                 vals.to_unsafe.as(LibCBLAS::ComplexDouble*),
                 eigvectorsl.try &.to_unsafe, nrows,
-                eigvectorsr.try &.to_unsafe, nrows, worksize: [nrows])
+                eigvectorsr.try &.to_unsafe, nrows)
         a.clear_flags
         return {vals, eigvectorsl, eigvectorsr}
       {% else %}

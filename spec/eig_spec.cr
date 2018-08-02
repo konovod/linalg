@@ -34,6 +34,16 @@ describe LA do
     vals.each { |e| (vectors*a - vectors*e).det.should be_close 0, 1e-6 }
   end
 
+  it "high-level: calculate nonsymmetric eigenvectors (complex argument)" do
+    a = GMatComplex[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
+    vals, vectors = a.eigs
+    vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
+
+    a = GMatComplex[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
+    vals, vectors = a.eigs(left: true)
+    vals.each { |e| (vectors*a - vectors*e).det.should be_close 0, 1e-6 }
+  end
+
   it "high-level: calculate symmetric eigenvalues (real argument)" do
     a = GMat32[
       [1, 2, 3],
