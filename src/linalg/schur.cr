@@ -39,12 +39,12 @@ module LA
       {% if T == Complex %}
         alpha = Slice(T).new(nrows, T.new(0))
         beta = Slice(T).new(nrows, T.new(0))
-        lapacke(gges, 'V'.ord.to_u8,'V'.ord.to_u8, 'N'.ord.to_u8, nil,
+        lapack(gges, 'V'.ord.to_u8,'V'.ord.to_u8, 'N'.ord.to_u8, nil,
             nrows, a, ncolumns, bb, bb.ncolumns,
-            out sdim,
+            sdim,
             alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
             beta.to_unsafe.as(LibCBLAS::ComplexDouble*),
-            vsl, ncolumns, vsr, ncolumns)
+            vsl, ncolumns, vsr, ncolumns, worksize: [8*nrows])
         a.clear_flags
         bb.clear_flags
         bb.assume! MatrixFlags::UpperTriangular
@@ -52,7 +52,7 @@ module LA
         alphar = Slice(T).new(nrows)
         alphai = Slice(T).new(nrows)
         beta = Slice(T).new(nrows)
-        lapacke(gges, 'V'.ord.to_u8, 'V'.ord.to_u8, 'N'.ord.to_u8, nil, nrows, a, ncolumns, bb, ncolumns, out sdim,
+        lapack(gges, 'V'.ord.to_u8, 'V'.ord.to_u8, 'N'.ord.to_u8, nil, nrows, a, ncolumns, bb, ncolumns, sdim,
             alphar, alphai, beta, vsl, ncolumns,vsr, ncolumns)
         a.clear_flags
         bb.clear_flags
