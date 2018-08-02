@@ -1,5 +1,4 @@
 require "../matrix/*"
-require "./libLAPACKE"
 
 module LA
   abstract class Matrix(T)

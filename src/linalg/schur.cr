@@ -1,5 +1,5 @@
 require "../matrix/*"
-require "./libLAPACKE"
+require "./lapack_helper"
 
 module LA
   def self.qz(a, b, *, overwrite_a = false, overwrite_b = false)

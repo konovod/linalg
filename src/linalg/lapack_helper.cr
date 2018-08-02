@@ -1,4 +1,4 @@
-require "./libLAPACKE"
+require "./libLAPACK"
 
 module LA
   module LapackHelper
@@ -53,21 +53,6 @@ module LA
         buf)
       WORK_POOL.release
       result
-    end
-
-    macro lapacke(name, *args)
-      {% if T == Float32
-           typ = :s.id
-         elsif T == Float64
-           typ = :d.id
-         elsif T == Complex
-           typ = :z.id
-         end %}
-      {% if T == Complex
-           name = name.stringify.gsub(/^(or)/, "un").id
-         end %}
-      %info = LibLAPACKE.{{typ}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
-      raise LinAlgError.new("LAPACKE.{{typ}}{{name}} returned #{%info}") if %info != 0
     end
 
     macro lapack(name, *args, worksize = nil)

@@ -1,5 +1,5 @@
 require "../matrix/*"
-require "./libLAPACKE"
+require "./lapack_helper"
 
 module LA
   def self.eigs(a, b, *, need_left : Bool, need_right : Bool, overwrite_a = false, overwrite_b = false)

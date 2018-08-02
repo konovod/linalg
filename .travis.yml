@@ -3,7 +3,6 @@ sudo: required
 dist: trusty
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libopenblas-base liblapacke
-  - sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so
+  - sudo apt-get install -y libopenblas-base liblapack3
   - sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so
   - sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so

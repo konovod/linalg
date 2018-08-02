@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/konovod/linalg.svg?branch=master)](https://travis-ci.org/konovod/linalg)
 
 # linalg
-Linear algebra library in Crystal, uses LAPACKE.
+Linear algebra library in Crystal, uses LAPACK.
 - direct access to LAPACK methods
 - convenient Matrix(T) class, supports T=Float32, Float64 and Complex.
 - high-level interface similar to scipy.linalg or MATLAB.
@@ -10,11 +10,11 @@ Killing SciPy, one module at a time.
 
 ## Installation
 
-1. Install LAPACKE (and dependencies - LAPACK and BLAS). `sudo apt install libopenblas-base liblapacke` for Ubuntu, `sudo pacman -S lapacke` (for better performance use `openblas-lapack` package from AUR) for Arch.
+1. Install LAPACK and BLAS. `sudo apt install libopenblas-base liblapack3` for Ubuntu, `sudo pacman -S lapack` (for better performance use `openblas-lapack` package from AUR) for Arch.
 
 
 2. (for Ubuntu) it seems package doesn't create symlink, so use
-- `sudo ln -s /usr/lib/liblapacke.so.3 /usr/lib/liblapacke.so`
+- `sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so`
 - `sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so`
 
 Add this to your application's `shard.yml`:

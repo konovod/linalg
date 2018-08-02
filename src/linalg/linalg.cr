@@ -1,5 +1,4 @@
 require "../matrix/*"
-require "./libLAPACKE"
 require "./lapack_helper"
 
 module LA
