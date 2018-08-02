@@ -26,6 +26,7 @@ module LA
     end
 
     macro lapack_util(name, worksize, *args)
+      WORK_POOL.reallocate(worksize*{% if T == Complex %} sizeof(Float64) {% else %} sizeof(T) {% end %})
       buf = alloc_real_type(worksize)
       {% if T == Float32
            typ = :s.id
@@ -50,7 +51,7 @@ module LA
           {% end %}
         {% end %}
         buf)
-      WORK_POOL.release(buf)
+      WORK_POOL.release
       result
     end
 
@@ -343,9 +344,7 @@ module LA
          pointerof(%info))
 
          {% if func_worksize %}
-           {% if func_worksize["cwork"] %}
-              WORK_POOL.release(%cbuf)
-           {% end %}
+           WORK_POOL.release
          {% end %}
       raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{%info}") if %info != 0
     end

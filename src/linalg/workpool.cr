@@ -2,12 +2,12 @@ module LA
   # Work arrays pool for lapack routines
   # It isn't thread safe for now because crystal isn't multithreaded
   class WorkPool
-    @area = Bytes.new(1024)
+    @area = Bytes.new(1)
     @used = 0
 
     def get(n) : Bytes
       # reallocate(n + @used)
-      @area[@used, n]
+      @area[@used, n].tap { @used += n }
     end
 
     def get_f32(n) : Slice(Float32)
@@ -26,17 +26,29 @@ module LA
       get(n*sizeof(Int32)).unsafe_as(Slice(Int32))
     end
 
-    def release(ptr)
+    def release
+      return if @used == 0
+      # TODO - make it debug only
+      raise "worksize guard failed" unless @area[@used] == 0xDE &&
+                                           @area[@used + 1] == 0xAD &&
+                                           @area[@used + 2] == 0xBE &&
+                                           @area[@used + 3] == 0xEF
       @used = 0
     end
 
     def reallocate(required_size)
+      required_size += 4
       n = @area.size
-      return if required_size <= n
-      while n < required_size
-        n = n*2
+      if n < required_size
+        while n < required_size
+          n = n*2
+        end
+        @area = Bytes.new(n)
       end
-      @area = Bytes.new(n)
+      @area[required_size - 4] = 0xDE
+      @area[required_size - 3] = 0xAD
+      @area[required_size - 2] = 0xBE
+      @area[required_size - 1] = 0xEF
     end
   end
 
