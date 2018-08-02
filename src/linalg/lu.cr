@@ -87,7 +87,7 @@ module LA
            {% end %}
          {% end %}
        %info = 0
-       LibLAPACK.{{typ}}{{name}}_(
+       LibLAPACK.{{typ}}{{name}}(
        {% for arg, index in args %}
        {% argtype = func_data[index + 1] %}
        {% if argtype == LapackHelper::ARG_MATRIX %}

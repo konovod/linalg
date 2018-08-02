@@ -42,7 +42,7 @@ module LA
         {% end %}
       {% end %}
 
-      result = LibLAPACK.{{typ}}{{name}}_(
+      result = LibLAPACK.{{typ}}{{name}}(
         {% for arg, index in args %}
           {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
             pointerof(%var{index}),
@@ -194,7 +194,7 @@ module LA
 
         # 2. do workspace query
         %info = 0
-        LibLAPACK.{{typ}}{{name}}_(
+        LibLAPACK.{{typ}}{{name}}(
           {% for arg, index in args %}
           {% argtype = func_args[index + 1] %}
           {% if argtype == ARG_MATRIX %}
@@ -290,7 +290,7 @@ module LA
       {% end %}
 
        %info = 0
-       LibLAPACK.{{typ}}{{name}}_(
+       LibLAPACK.{{typ}}{{name}}(
          {% for arg, index in args %}
          {% argtype = func_args[index + 1] %}
          {% if argtype == ARG_MATRIX %}

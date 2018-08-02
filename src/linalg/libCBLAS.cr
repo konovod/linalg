@@ -1,4 +1,8 @@
-@[Link("cblas")]
+{% if flag?(:darwin) %}
+  @[Link(framework: "Accelerate")]
+{% else %}
+  @[Link("cblas")]
+{% end %}
 lib LibCBLAS
   struct ComplexDouble
     re : LibC::Double
