@@ -259,7 +259,7 @@ module LA
       lapack(gehrd, n, ilo, ihi, self, ncolumns, tau)
       if calc_q
         q = clone
-        lapacke(orghr, n, ilo, ihi, q, ncolumns, tau)
+        lapack(orghr, n, ilo, ihi, q, ncolumns, tau)
         q.flags = MatrixFlags::Orthogonal
       else
         q = Matrix(T).zeros(1, 1)

@@ -37,7 +37,7 @@ module LA
       m = a.nrows
       n = a.ncolumns
       k = {m, n}.min
-      lapacke(orgqr, m, n, k, a, a.nrows, tau)
+      lapack(orgqr, m, n, k, a, a.nrows, tau)
       a.assume! MatrixFlags::Orthogonal
       {a, r, pvt}
     end
