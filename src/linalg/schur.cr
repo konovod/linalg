@@ -13,7 +13,7 @@ module LA
       {% if T == Complex %}
         w = Slice(T).new(nrows, T.new(0))
         z = GeneralMatrix(T).new(*size)
-        lapacke(gees, 'V'.ord.to_u8, 'N'.ord.to_u8, nil, nrows, a, ncolumns, out sdim, w.to_unsafe.as(LibCBLAS::ComplexDouble*), z, ncolumns)
+        lapack(gees, 'V'.ord.to_u8, 'N'.ord.to_u8, nil, nrows, a, ncolumns, sdim, w.to_unsafe.as(LibCBLAS::ComplexDouble*), z, ncolumns, worksize: [nrows])
         a.clear_flags
         a.assume! MatrixFlags::UpperTriangular
         z.assume! MatrixFlags::Orthogonal
@@ -22,7 +22,7 @@ module LA
         wr = Slice(T).new(nrows)
         wi = Slice(T).new(nrows)
         z = GeneralMatrix(T).new(*size)
-        lapacke(gees, 'V'.ord.to_u8, 'N'.ord.to_u8, nil, nrows, a, ncolumns, out sdim, wr, wi, z, ncolumns)
+        lapack(gees, 'V'.ord.to_u8, 'N'.ord.to_u8, nil, nrows, a, ncolumns, sdim, wr, wi, z, ncolumns)
         a.clear_flags
         a.detect MatrixFlags::UpperTriangular
         z.assume! MatrixFlags::Orthogonal

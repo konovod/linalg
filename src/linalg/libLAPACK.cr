@@ -9,7 +9,7 @@ lib LibLAPACK
   alias Doublecomplex = LibCBLAS::ComplexDouble
   alias Logical = LibC::Char
   alias Ftnlen = LibC::Int
-  alias LFp = LibC::Char
+  alias LFp = Pointer(Void)
 
   fun caxpy_(n : Integer*, ca : Complex*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*) : LibC::Int
   fun ccopy_(n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*) : LibC::Int

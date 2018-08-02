@@ -74,8 +74,8 @@ module LA
       {%
         lapack_args = {
           "gebal" => {3 => ARG_MATRIX, 5 => ARG_INTOUT, 6 => ARG_INTOUT, 7 => ARG_MATRIX},
-          # "gees"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 7 => ARG_INTOUT, 8 => ARG_MATRIX, 9 => ARG_MATRIX}, SPECIAL CASE
-          # "geev"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX}, SPECIAL CASE
+          "gees"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 7 => ARG_INTOUT, 8 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX},
+          "geev"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
           "gehrd" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "gels"  => {5 => ARG_MATRIX, 7 => ARG_MATRIX},
           "gelsd" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT},
@@ -90,8 +90,8 @@ module LA
           "getrf" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
           "getri" => {2 => ARG_MATRIX, 4 => ARG_MATRIX},
           "getrs" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX},
-          # "gges" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT, 11 => ARG_MATRIX, 12 => ARG_MATRIX, 13 => ARG_MATRIX, 15 => ARG_MATRIX}, SPECIAL CASE
-          # "ggev" => {},SPECIAL CASE
+          "gges"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT, 11 => ARG_MATRIX, 12 => ARG_MATRIX, 13 => ARG_MATRIX, 15 => ARG_MATRIX},
+          "ggev"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX, 11 => ARG_MATRIX, 13 => ARG_MATRIX},
           "heevr" => {5 => ARG_MATRIX, 12 => ARG_INTOUT, 13 => ARG_MATRIX, 14 => ARG_MATRIX, 16 => ARG_MATRIX},
           "hegvd" => {5 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
           "hesv"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX},
@@ -113,6 +113,13 @@ module LA
           "sytri" => {3 => ARG_MATRIX, 5 => ARG_MATRIX},
           "trtri" => {4 => ARG_MATRIX},
           "trtrs" => {6 => ARG_MATRIX, 8 => ARG_MATRIX},
+        }
+
+        lapack_args_complex = {
+          "gees" => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 7 => ARG_INTOUT, 8 => ARG_MATRIX, 9 => ARG_MATRIX},
+          "geev" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 9 => ARG_MATRIX},
+          "gges" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_INTOUT, 11 => ARG_MATRIX, 12 => ARG_MATRIX, 13 => ARG_MATRIX, 15 => ARG_MATRIX},
+          "ggev" => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX, 11 => ARG_MATRIX, 13 => ARG_MATRIX},
         }
 
         lapack_worksize = {
@@ -162,7 +169,11 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-      {% func_args = lapack_args[name.stringify] %}
+      {% if T == Complex
+           func_args = lapack_args_complex[name.stringify] || lapack_args[name.stringify]
+         else
+           func_args = lapack_args[name.stringify]
+         end %}
       {% func_worksize = lapack_worksize[name.stringify] %}
 
       {% if T == Complex
@@ -325,7 +336,7 @@ module LA
               {% end %}
            {% end %}
            {% if func_worksize["bwork"] %}
-              %bbuf,
+              nil,
            {% end %}
          {% end %}
 
