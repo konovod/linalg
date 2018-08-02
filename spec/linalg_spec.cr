@@ -2,37 +2,50 @@ require "./spec_helper"
 
 include LA
 describe LA do
-  # TODO - uncomment direct usage
-  # it "calls LAPACK functions directly" do
-  #   m = [
-  #     1.0, 0.0, 1.0,
-  #     0.0, 4.0, 0.0,
-  #     0.0, 0.0, 1.0,
-  #   ]
-  #   ipiv = Slice(Int32).new(3)
-  #   info = 0
-  #   LibLAPACK.dgetrf_(3, 3, m, 3, ipiv, pointerof(info))
-  #   info.should eq 0
-  #   worksize = 0
-  #   LibLAPACK.dgetri_(3, m, 3, ipiv, nil, pointerof(worksize), pointerof(info))
-  #   work = Slice(Flot64).new(worksize)
-  #   LibLAPACK.dgetri_(3, m, 3, ipiv, work, worksize, pointerof(info))
-  #   info.should eq 0
-  #   m.should eq [1.0, 0.0, -1.0, 0.0, 0.25, 0.0, 0.0, 0.0, 1.0]
-  # end
+  it "calls LAPACK functions directly" do
+    m = [
+      1.0, 0.0, 1.0,
+      0.0, 4.0, 0.0,
+      0.0, 0.0, 1.0,
+    ]
+    ipiv = Slice(Int32).new(3)
+    info = 0
+    n = 3
+    LibLAPACK.dgetrf(pointerof(n), pointerof(n), m, pointerof(n), ipiv, pointerof(info))
+    info.should eq 0
+    size = -1
+    worksize = 0.0
+    LibLAPACK.dgetri(pointerof(n), m, pointerof(n), ipiv, pointerof(worksize), pointerof(size), pointerof(info))
+    size = worksize.to_i
+    work = Slice(Float64).new(size)
+    LibLAPACK.dgetri(pointerof(n), m, pointerof(n), ipiv, work, pointerof(size), pointerof(info))
+    info.should eq 0
+    m.should eq [1.0, 0.0, -1.0, 0.0, 0.25, 0.0, 0.0, 0.0, 1.0]
+  end
 
-  # it "calls functions using matrix class" do
-  #   matrix1 = GMat[
-  #     [1, 0, 1],
-  #     [0, 4, 0],
-  #     [0, 0, 1],
-  #   ]
-  #   matrix2 = matrix1*1
-  #   ipiv = Slice(Int32).new(3)
-  #   LibLAPACKE.dgetrf(LibCBLAS::COL_MAJOR, 3, 3, matrix2, 3, ipiv).should eq 0
-  #   LibLAPACKE.dgetri(LibCBLAS::COL_MAJOR, 3, matrix2, 3, ipiv).should eq 0
-  #   (matrix1*matrix2).should eq Mat.identity(3)
-  # end
+  it "calls functions using matrix class" do
+    matrix1 = GMat[
+      [1, 0, 1],
+      [0, 4, 0],
+      [0, 0, 1],
+    ]
+    matrix2 = matrix1*1
+    ipiv = Slice(Int32).new(3)
+    info = 0
+    n = 3
+    LibLAPACK.dgetrf(pointerof(n), pointerof(n), matrix2, pointerof(n), ipiv, pointerof(info))
+    info.should eq 0
+    size = -1
+    worksize = 0.0
+    LibLAPACK.dgetri(pointerof(n), matrix2, pointerof(n), ipiv, pointerof(worksize), pointerof(size), pointerof(info))
+    size = worksize.to_i
+    work = Slice(Float64).new(size)
+    LibLAPACK.dgetri(pointerof(n), matrix2, pointerof(n), ipiv, work, pointerof(size), pointerof(info))
+    info.should eq 0
+    # matrix1.getrf(3, 3, matrix2, 3, ipiv).should eq 0
+    # matrix1.getri(3, matrix2, 3, ipiv).should eq 0
+    (matrix1*matrix2).should eq Mat.identity(3)
+  end
 
   it "calls functions using high level wrapper" do
     matrix1 = GMat[
