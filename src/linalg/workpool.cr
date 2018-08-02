@@ -2,7 +2,7 @@ module LA
   # Work arrays pool for lapack routines
   # It isn't thread safe for now because crystal isn't multithreaded
   class WorkPool
-    @area = Bytes.new(1)
+    @area = Bytes.new(1024)
     @used = 0
 
     def get(n) : Bytes
@@ -27,17 +27,23 @@ module LA
     end
 
     def release
-      return if @used == 0
-      # TODO - make it debug only
-      raise "worksize guard failed" unless @area[@used] == 0xDE &&
-                                           @area[@used + 1] == 0xAD &&
-                                           @area[@used + 2] == 0xBE &&
-                                           @area[@used + 3] == 0xEF
-      @used = 0
+      {% if flag?(:release) %}
+        @used = 0
+      {% else %}
+        return if @used == 0
+        aused = @used
+        @used = 0
+        raise "worksize guard failed" unless @area[aused] == 0xDE &&
+                                             @area[aused + 1] == 0xAD &&
+                                             @area[aused + 2] == 0xBE &&
+                                             @area[aused + 3] == 0xEF
+      {% end %}
     end
 
     def reallocate(required_size)
-      required_size += 4
+      {% if !flag?(:release) %}
+        required_size += 4
+      {% end %}
       n = @area.size
       if n < required_size
         while n < required_size
@@ -45,10 +51,12 @@ module LA
         end
         @area = Bytes.new(n)
       end
-      @area[required_size - 4] = 0xDE
-      @area[required_size - 3] = 0xAD
-      @area[required_size - 2] = 0xBE
-      @area[required_size - 1] = 0xEF
+      {% if !flag?(:release) %}
+        @area[required_size - 4] = 0xDE
+        @area[required_size - 3] = 0xAD
+        @area[required_size - 2] = 0xBE
+        @area[required_size - 1] = 0xEF
+      {% end %}
     end
   end
 
