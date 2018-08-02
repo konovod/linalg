@@ -118,7 +118,7 @@ describe LA do
     end
   end
 
-  pending "high-level: generalized symmetric eigenvalues (complex argument)" do
+  it "high-level: generalized symmetric eigenvalues (complex argument)" do
     a = GMatComplex[
       [-2, 4.i, 1],
       [-4.i, -4, 0],
