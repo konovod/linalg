@@ -1,8 +1,10 @@
 language: crystal
 sudo: required
-dist: trusty
+os:
+  - linux
+  - osx
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libopenblas-base liblapack3
-  - sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so
-  - sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libopenblas-base liblapack3 ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so ; fi
