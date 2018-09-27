@@ -313,7 +313,7 @@ describe LA::Matrix do
     ]
     expect_raises(ArgumentError) { a.hcat(b) }
     a = a.t
-    a.cat!(b, 1)
+    a.cat!(b, Axis::Rows)
     a.t.should eq c
   end
 
@@ -437,5 +437,17 @@ describe LA::Matrix do
 
     m.each_index(all: false) { |i, j| m[i, j] = -m[i, j] }
     m.should eq -m2
+  end
+
+  it "have `reduce` method" do
+    m = GMat32[[1, 2, 5], [10, 4, 0.025]]
+    m.reduce(Axis::Rows, 1) { |memo, x| memo/x }.should eq GMat32[[0.1], [1]]
+    m.reduce(Axis::Columns, 0) { |memo, x| memo - x }.should eq GMat32[[-11, -6, -5.025]]
+  end
+
+  it "have `sum` and other aggregation methods" do
+    m = GMat[[0.1, 0.2, 0.3], [10, 20, 30]]
+    m.sum(Axis::Rows).should be_close GMat[[0.6], [60]], 1e-9
+    m.sum(Axis::Columns).should be_close GMat[[10.1, 20.2, 30.3]], 1e-9
   end
 end

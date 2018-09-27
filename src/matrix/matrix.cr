@@ -4,6 +4,11 @@ module LA
   # TODO - Complex64?
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
+  enum Axis
+    Columns
+    Rows
+  end
+
   # class that provide all utility matrix functions
   abstract class Matrix(T)
     include Enumerable(T)
@@ -363,28 +368,30 @@ module LA
       conjtranspose!
     end
 
-    def cat(other : Matrix(T), dimension)
-      raise ArgumentError.new("only dimesion = 0 or 1 supported") unless {0, 1}.includes? dimension
-      if self.size[1 - dimension] != other.size[1 - dimension]
-        raise ArgumentError.new("matrix size along other dimension should match for concatenation")
+    def cat(other : Matrix(T), axis : Axis)
+      if self.size[1 - axis.to_i] != other.size[1 - axis.to_i]
+        raise ArgumentError.new("matrix size along other axis should match for concatenation")
       end
-      if dimension == 0
+      case axis
+      when Axis::Columns
         GeneralMatrix(T).new(nrows + other.nrows, ncolumns) do |row, column|
           row < nrows ? unsafe_at(row, column) : other.unsafe_at(row - nrows, column)
         end
-      else
+      when Axis::Rows
         GeneralMatrix(T).new(nrows, ncolumns + other.ncolumns) do |row, column|
           column < ncolumns ? unsafe_at(row, column) : other.unsafe_at(row, column - ncolumns)
         end
+      else
+        raise "unsupported axis"
       end
     end
 
     def vcat(other)
-      cat other, 0
+      cat other, Axis::Columns
     end
 
     def hcat(other)
-      cat other, 1
+      cat other, axis: Axis::Rows
     end
 
     def map_with_index!(&block)
@@ -459,6 +466,41 @@ module LA
       map_with_index! { |v, i, j| k*v }
       new_flags = oldflags.scale(k.is_a?(Complex) && k.imag != 0)
       self
+    end
+
+    def reduce(axis : Axis, initial, &block)
+      case axis
+      when Axis::Columns
+        GeneralMatrix(T).new(1, ncolumns) do |_, column|
+          result = T.new(initial)
+          nrows.times { |row| result = yield(result, unsafe_at(row, column)) }
+          result
+        end
+      when Axis::Rows
+        GeneralMatrix(T).new(nrows, 1) do |row, _|
+          result = T.new(initial)
+          ncolumns.times { |column| result = yield(result, unsafe_at(row, column)) }
+          result
+        end
+      else
+        raise "unsupported axis"
+      end
+    end
+
+    def sum(axis : Axis)
+      reduce(axis, 0) { |memo, e| memo + e }
+    end
+
+    def product(axis : Axis)
+      reduce(axis, 1) { |memo, e| memo * e }
+    end
+
+    def max(axis : Axis)
+      reduce(axis, T::NEGINFINITY) { |memo, e| {memo, e}.max }
+    end
+
+    def min(axis : Axis)
+      reduce(axis, T::INFINITY) { |memo, e| {memo, e}.min }
     end
   end
 
