@@ -27,7 +27,7 @@ module LA
 
     macro lapack_util(name, worksize, *args)
       WORK_POOL.reallocate(worksize*{% if T == Complex %} sizeof(Float64) {% else %} sizeof(T) {% end %})
-      buf = alloc_real_type(worksize)
+      %buf = alloc_real_type(worksize)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -42,7 +42,7 @@ module LA
         {% end %}
       {% end %}
 
-      result = LibLAPACK.{{typ}}{{name}}(
+      %result = LibLAPACK.{{typ}}{{name}}(
         {% for arg, index in args %}
           {% if !(arg.stringify =~ /^matrix\(.*\)$/) %}
             pointerof(%var{index}),
@@ -50,9 +50,9 @@ module LA
             {{arg.stringify.gsub(/^matrix\((.*)\)$/, "(\\1)").id}},
           {% end %}
         {% end %}
-        buf)
+        %buf)
       WORK_POOL.release
-      result
+      %result
     end
 
     macro lapack(name, *args, worksize = nil)
