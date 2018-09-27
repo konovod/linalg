@@ -29,6 +29,7 @@ module LA
 
     def cholesky(*, lower = false, dont_clean = false)
       clone.cholesky!(lower: lower, dont_clean: dont_clean).tap do |m|
+        # if cholesky didn't raised, original matrix is positive definite
         self.assume! MatrixFlags::PositiveDefinite
       end
     end
