@@ -187,11 +187,14 @@ describe LA do
     s1[1].should be_close s[1], 1e-6
   end
 
-  # TODO - proper spec
   it "high-level: balance matrix" do
-    a = GMat32[[1, 2, 0], [9, 1, 0.01], [1, 2, 10*Math::PI]]
+    a = GMat[[1, 2, 0], [9, 1, 0.01], [1, 2, 10*Math::PI]]
     b, s = a.balance(separate: true)
-    s.should eq GMat32[[0.5, 1, 1]]
+    t = GMat.diag(s.to_a)
+    b.should be_close t.inv*a*t, 1e-6
+    # pp t
+    # pp (b.rows.map { |r| r.to_a.sum }) / (b.columns.map { |r| r.to_a.sum })
+    # pp (a.rows.map { |r| r.to_a.sum }) / (a.columns.map { |r| r.to_a.sum })
   end
 
   it "high-level: LU factorization" do
@@ -341,6 +344,9 @@ describe LA do
     b.norm(MatrixNorm::Inf).should eq 9
     a.norm(MatrixNorm::One).should eq 20
     b.norm(MatrixNorm::One).should eq 7
+
+    GMat32.new(a).norm(MatrixNorm::One).should eq 20
+    GMatComplex.new(b).norm(MatrixNorm::Inf).should eq 9
   end
 
   it "high-level: calculate rectangular matrix norms" do
