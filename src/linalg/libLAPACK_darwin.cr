@@ -1108,18 +1108,18 @@ lib LibLAPACK
   fun slalsd(uplo : LibC::Char*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, b : Real*, ldb : Integer*, rcond : Real*, rank : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
   fun slamrg(n1 : Integer*, n2 : Integer*, a : Real*, strd1 : Integer*, strd2 : Integer*, index : Integer*) : LibC::Int
   fun slaneg(n : Integer*, d__ : Real*, lld : Real*, sigma : Real*, pivmin : Real*, r__ : Integer*) : Integer
-  fun slangb(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Doublereal
-  fun slange(norm : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Doublereal
-  fun slangt(norm : LibC::Char*, n : Integer*, dl : Real*, d__ : Real*, du : Real*) : Doublereal
-  fun slanhs(norm : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Doublereal
-  fun slansb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Doublereal
-  fun slansf(norm : LibC::Char*, transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, work : Real*) : Doublereal
-  fun slansp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, work : Real*) : Doublereal
-  fun slanst(norm : LibC::Char*, n : Integer*, d__ : Real*, e : Real*) : Doublereal
-  fun slansy(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Doublereal
-  fun slantb(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Doublereal
-  fun slantp(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Real*, work : Real*) : Doublereal
-  fun slantr(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Doublereal
+  fun slangb(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Real
+  fun slange(norm : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
+  fun slangt(norm : LibC::Char*, n : Integer*, dl : Real*, d__ : Real*, du : Real*) : Real
+  fun slanhs(norm : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
+  fun slansb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Real
+  fun slansf(norm : LibC::Char*, transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, work : Real*) : Real
+  fun slansp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, work : Real*) : Real
+  fun slanst(norm : LibC::Char*, n : Integer*, d__ : Real*, e : Real*) : Real
+  fun slansy(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
+  fun slantb(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Real
+  fun slantp(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Real*, work : Real*) : Real
+  fun slantr(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
   fun slanv2(a : Real*, b : Real*, c__ : Real*, d__ : Real*, rt1r : Real*, rt1i : Real*, rt2r : Real*, rt2i : Real*, cs : Real*, sn : Real*) : LibC::Int
   fun slapll(n : Integer*, x : Real*, incx : Integer*, y : Real*, incy : Integer*, ssmin : Real*) : LibC::Int
   fun slapmt(forwrd : Logical*, m : Integer*, n : Integer*, x : Real*, ldx : Integer*, k : Integer*) : LibC::Int
