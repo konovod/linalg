@@ -445,4 +445,19 @@ describe LA::BandedMatrix do
     b1.should eq a1.t
     b1.flags.should eq MatrixFlags::UpperTriangular
   end
+
+  it "can evaluate norms" do
+    g = GMat[
+      [1, 2, 3, 0],
+      [4, 5, 6, 7],
+      [0, 8, 9, 1],
+      [0, 0, 2, 3],
+    ]
+    b = BMat.new(g)
+
+    b.norm(MatrixNorm::Inf).should eq g.norm(MatrixNorm::Inf)
+    b.norm(MatrixNorm::One).should eq g.norm(MatrixNorm::One)
+    b.norm(MatrixNorm::MaxAbs).should eq g.norm(MatrixNorm::MaxAbs)
+    b.norm(MatrixNorm::Frobenius).should eq g.norm(MatrixNorm::Frobenius)
+  end
 end

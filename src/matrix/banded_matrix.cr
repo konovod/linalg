@@ -346,6 +346,23 @@ module LA
 
     # def kron(b : Matrix(T))
     # def cat(other : Matrix(T), dimension)
+
+    # returns matrix norm
+    def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
+      let = case kind
+            when .frobenius?
+              'F'
+            when .one?
+              'O'
+            when .inf?
+              'I'
+            else
+              'M'
+            end.ord.to_u8
+
+      worksize = kind.inf? ? nrows : 0
+      lapack_util(langb, worksize, let, @nrows, @lower_band, @upper_band, matrix(self), @lower_band + @upper_band + 1)
+    end
   end
 
   alias BMat = BandedMatrix(Float64)
