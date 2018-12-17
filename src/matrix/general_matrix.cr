@@ -59,7 +59,7 @@ module LA
     end
 
     def unsafe_at(i, j)
-      @raw.unsafe_at(i + j*nrows)
+      @raw.unsafe_fetch(i + j*nrows)
     end
 
     def unsafe_set(i, j, value)
