@@ -12,7 +12,7 @@ module LA
           @base.n{{name.id}}
         end
         # unsafe_new for submatrix?
-        def unsafe_at(i)
+        def unsafe_fetch(i)
           SubMatrix(T).new(@base, {{offset}}, {{size}})
         end
       end
@@ -57,11 +57,11 @@ module LA
       end
 
       # unsafe_new for submatrix?
-      def unsafe_at(i)
+      def unsafe_fetch(i)
         if @offset >= 0
-          @base.unsafe_at(i, i + @offset)
+          @base.unsafe_fetch(i, i + @offset)
         else
-          @base.unsafe_at(i - @offset, i)
+          @base.unsafe_fetch(i - @offset, i)
         end
       end
     end

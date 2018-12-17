@@ -26,7 +26,7 @@ def pascal_incremental(n)
   m = Mat.ones(n, n)
   m.each_index do |i, j|
     next if i == 0 || j == 0
-    m.unsafe_set(i, j, m.unsafe_at(i - 1, j) + m.unsafe_at(i, j - 1))
+    m.unsafe_set(i, j, m.unsafe_fetch(i - 1, j) + m.unsafe_fetch(i, j - 1))
   end
   m
 end

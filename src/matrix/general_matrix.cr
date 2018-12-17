@@ -41,7 +41,7 @@ module LA
 
     def self.new(matrix : Matrix)
       new(matrix.nrows, matrix.ncolumns, matrix.flags) do |i, j|
-        matrix.unsafe_at(i, j)
+        matrix.unsafe_fetch(i, j)
       end
     end
 
@@ -58,8 +58,8 @@ module LA
       end
     end
 
-    def unsafe_at(i, j)
-      @raw.unsafe_at(i + j*nrows)
+    def unsafe_fetch(i, j)
+      @raw.unsafe_fetch(i + j*nrows)
     end
 
     def unsafe_set(i, j, value)
@@ -93,8 +93,8 @@ module LA
       if square?
         (0..@nrows - 2).each do |i|
           (i + 1..@ncolumns - 1).each do |j|
-            a = unsafe_at(i, j)
-            unsafe_set(i, j, unsafe_at(j, i))
+            a = unsafe_fetch(i, j)
+            unsafe_set(i, j, unsafe_fetch(j, i))
             unsafe_set(j, i, a)
           end
         end
@@ -144,7 +144,7 @@ module LA
           row_index = i*ancolumns + j
           arow = row_index / @ncolumns
           acol = row_index % @ncolumns
-          unsafe_at(arow, acol)
+          unsafe_fetch(arow, acol)
         end
       end
     end
@@ -154,7 +154,7 @@ module LA
       return self if anrows == @nrows && ancolumns == @ncolumns
       anew = GeneralMatrix(T).new(anrows, ancolumns) do |i, j|
         if j >= 0 && j < ncolumns && i >= 0 && i < nrows
-          unsafe_at(i, j)
+          unsafe_fetch(i, j)
         else
           T.new(0)
         end
@@ -173,7 +173,7 @@ module LA
         Array(T).new(@ncolumns*@nrows) do |i|
           row = i / @ncolumns
           col = i % @ncolumns
-          unsafe_at(row, col)
+          unsafe_fetch(row, col)
         end
       end
     end
@@ -189,7 +189,7 @@ module LA
       else
         Array(Array(T)).new(@nrows) do |i|
           Array(T).new(@ncolumns) do |j|
-            unsafe_at(i, j)
+            unsafe_fetch(i, j)
           end
         end
       end

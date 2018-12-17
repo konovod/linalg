@@ -107,13 +107,13 @@ module LA
         lower_band = i - 1
       end
       new(matrix.nrows, matrix.ncolumns, upper_band, lower_band, matrix.flags) do |i, j|
-        matrix.unsafe_at(i, j)
+        matrix.unsafe_fetch(i, j)
       end
     end
 
-    def unsafe_at(i, j)
+    def unsafe_fetch(i, j)
       if index = ij2index(i, j)
-        @raw_banded.unsafe_at(index)
+        @raw_banded.unsafe_fetch(index)
       else
         T.new(0.0)
       end
@@ -150,15 +150,15 @@ module LA
     end
 
     def map_with_index(&block)
-      BandedMatrix(T).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
+      BandedMatrix(T).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     def map_with_index_f64(&block)
-      BandedMatrix(Float64).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
+      BandedMatrix(Float64).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     def map_with_index_complex(&block)
-      BandedMatrix(Complex).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_at(i, j), i, j) }
+      BandedMatrix(Complex).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     def to_unsafe
@@ -177,7 +177,7 @@ module LA
       range = -maxupper..maxlower
       each_index(all: true) do |i, j|
         next unless range.includes? i - j
-        return false if other.unsafe_at(i, j) != unsafe_at(i, j)
+        return false if other.unsafe_fetch(i, j) != unsafe_fetch(i, j)
       end
       true
     end
@@ -262,7 +262,7 @@ module LA
     def +(m : BandedMatrix(T))
       assert_same_size(m)
       result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.sum(m.flags)) do |i, j|
-        self.unsafe_at(i, j) + m.unsafe_at(i, j)
+        self.unsafe_fetch(i, j) + m.unsafe_fetch(i, j)
       end
     end
 
@@ -270,7 +270,7 @@ module LA
     def -(m : BandedMatrix(T))
       assert_same_size(m)
       result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.sum(m.flags)) do |i, j|
-        self.unsafe_at(i, j) - m.unsafe_at(i, j)
+        self.unsafe_fetch(i, j) - m.unsafe_fetch(i, j)
       end
     end
 
@@ -278,7 +278,7 @@ module LA
     def transpose
       return clone if flags.symmetric?
       BandedMatrix(T).new(ncolumns, nrows, lower_band, upper_band, flags.transpose) do |i, j|
-        unsafe_at(j, i)
+        unsafe_fetch(j, i)
       end
     end
 
@@ -289,7 +289,7 @@ module LA
       {% end %}
       return clone if flags.hermitian?
       BandedMatrix(T).new(ncolumns, nrows, lower_band, upper_band, flags.transpose) do |i, j|
-        unsafe_at(j, i).conj
+        unsafe_fetch(j, i).conj
       end
     end
 
@@ -297,7 +297,7 @@ module LA
       assert_same_size(m)
       set_bands({upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max)
       oldflags = flags
-      map_with_index! { |v, i, j| v + k*m.unsafe_at(i, j) }
+      map_with_index! { |v, i, j| v + k*m.unsafe_fetch(i, j) }
       self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
       self
     end
@@ -319,12 +319,12 @@ module LA
         # just update upper_band
         return clone if k >= upper_band
         self.class.new(nrows, ncolumns, k, lower_band) do |i, j|
-          unsafe_at(i, j)
+          unsafe_fetch(i, j)
         end
       else
         # set upper band and cleanup lower elements
         self.class.new(nrows, ncolumns, 0, lower_band) do |i, j|
-          i >= j - k ? unsafe_at(i, j) : 0
+          i >= j - k ? unsafe_fetch(i, j) : 0
         end
       end
     end
@@ -334,12 +334,12 @@ module LA
         # just update lower_band
         return clone if -k >= lower_band
         self.class.new(nrows, ncolumns, upper_band, -k) do |i, j|
-          unsafe_at(i, j)
+          unsafe_fetch(i, j)
         end
       else
         # set lower band and cleanup upper elements
         self.class.new(nrows, ncolumns, upper_band, 0) do |i, j|
-          i <= j - k ? unsafe_at(i, j) : 0
+          i <= j - k ? unsafe_fetch(i, j) : 0
         end
       end
     end

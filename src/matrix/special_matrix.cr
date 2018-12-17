@@ -148,9 +148,9 @@ module LA
       result.each_index do |i, j|
         next if i == 0 || j == 0
         if j == 1
-          result.unsafe_set(i, j, w*result.unsafe_at(i - 1, j))
+          result.unsafe_set(i, j, w*result.unsafe_fetch(i - 1, j))
         else
-          result.unsafe_set(i, j, result.unsafe_at(i, 1)*result.unsafe_at(i, j - 1))
+          result.unsafe_set(i, j, result.unsafe_fetch(i, 1)*result.unsafe_fetch(i, j - 1))
         end
       end
       unless scale.none?
@@ -188,7 +188,7 @@ module LA
             if i == j || i == 0
               m.unsafe_set(i, j, T.new(1.0))
             else
-              m.unsafe_set(i, j, m.unsafe_at(i - 1, j - 1) + m.unsafe_at(i, j - 1))
+              m.unsafe_set(i, j, m.unsafe_fetch(i - 1, j - 1) + m.unsafe_fetch(i, j - 1))
             end
           end
           m.assume!(MatrixFlags::UpperTriangular)
@@ -200,7 +200,7 @@ module LA
             if i == j || j == 0
               m.unsafe_set(i, j, T.new(1.0))
             else
-              m.unsafe_set(i, j, m.unsafe_at(i - 1, j - 1) + m.unsafe_at(i - 1, j))
+              m.unsafe_set(i, j, m.unsafe_fetch(i - 1, j - 1) + m.unsafe_fetch(i - 1, j))
             end
           end
           m.assume!(MatrixFlags::LowerTriangular)
@@ -211,7 +211,7 @@ module LA
             if i == 0 || j == 0
               m.unsafe_set(i, j, T.new(1.0))
             else
-              m.unsafe_set(i, j, m.unsafe_at(i - 1, j) + m.unsafe_at(i, j - 1))
+              m.unsafe_set(i, j, m.unsafe_fetch(i - 1, j) + m.unsafe_fetch(i, j - 1))
             end
           end
           m.assume!(MatrixFlags::Symmetric | MatrixFlags::Hermitian | MatrixFlags::PositiveDefinite)

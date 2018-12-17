@@ -49,7 +49,7 @@ module LA
     # creates generic matrix with same content. Useful for banded\sparse matrices
     def to_general
       GeneralMatrix(T).new(nrows, ncolumns, flags) do |i, j|
-        unsafe_at(i, j)
+        unsafe_fetch(i, j)
       end
     end
 
@@ -77,7 +77,7 @@ module LA
     #     raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
     #   end
     #   result = GeneralMatrix(T).new(nrows, m.ncolumns) do |i, j|
-    #     (0...ncolumns).sum { |k| self.unsafe_at(i, k)*m.unsafe_at(k, j) }
+    #     (0...ncolumns).sum { |k| self.unsafe_fetch(i, k)*m.unsafe_fetch(k, j) }
     #   end
     #   result.tap { |r| r.flags = self.flags.mult(m.flags) }
     # end
@@ -112,7 +112,7 @@ module LA
     def +(m : Matrix(T))
       assert_same_size(m)
       result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
-        self.unsafe_at(i, j) + m.unsafe_at(i, j)
+        self.unsafe_fetch(i, j) + m.unsafe_fetch(i, j)
       end
     end
 
@@ -120,7 +120,7 @@ module LA
     def -(m : Matrix(T))
       assert_same_size(m)
       result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
-        self.unsafe_at(i, j) - m.unsafe_at(i, j)
+        self.unsafe_fetch(i, j) - m.unsafe_fetch(i, j)
       end
     end
 
@@ -128,7 +128,7 @@ module LA
     def transpose
       return clone if flags.symmetric?
       GeneralMatrix(T).new(ncolumns, nrows, flags.transpose) do |i, j|
-        unsafe_at(j, i)
+        unsafe_fetch(j, i)
       end
     end
 
@@ -139,7 +139,7 @@ module LA
       {% end %}
       return clone if flags.hermitian?
       GeneralMatrix(T).new(ncolumns, nrows, flags.transpose) do |i, j|
-        unsafe_at(j, i).conj
+        unsafe_fetch(j, i).conj
       end
     end
 
@@ -151,7 +151,7 @@ module LA
     # same as tril in scipy - returns lower triangular or trapezoidal part of matrix
     def tril(k = 0)
       x = GeneralMatrix(T).new(nrows, ncolumns, flags.tril(k <= 0, square?)) do |i, j|
-        i >= j - k ? unsafe_at(i, j) : 0
+        i >= j - k ? unsafe_fetch(i, j) : 0
       end
       x
     end
@@ -159,7 +159,7 @@ module LA
     # same as triu in scipy - returns upper triangular or trapezoidal part of matrix
     def triu(k = 0)
       x = GeneralMatrix(T).new(nrows, ncolumns, flags.triu(k >= 0, square?)) do |i, j|
-        i <= j - k ? unsafe_at(i, j) : 0
+        i <= j - k ? unsafe_fetch(i, j) : 0
       end
       x
     end
@@ -187,17 +187,17 @@ module LA
     end
 
     def each(*, all = false, &block)
-      each_index(all: all) { |i, j| yield(unsafe_at(i, j)) }
+      each_index(all: all) { |i, j| yield(unsafe_fetch(i, j)) }
     end
 
     def each_with_index(*, all = false, &block)
-      each_index(all: all) { |i, j| yield(unsafe_at(i, j), i, j) }
+      each_index(all: all) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     def ==(other)
       return false unless nrows == other.nrows && ncolumns == other.ncolumns
       each_with_index(all: true) do |value, row, column|
-        return false if other.unsafe_at(row, column) != value
+        return false if other.unsafe_fetch(row, column) != value
       end
       true
     end
@@ -210,7 +210,7 @@ module LA
     # return matrix repeated `arows` times by vertical and `acolumns` times by horizontal
     def repmat(arows, acolumns)
       GeneralMatrix(T).new(nrows*arows, ncolumns*acolumns) do |i, j|
-        unsafe_at(i % nrows, j % ncolumns)
+        unsafe_fetch(i % nrows, j % ncolumns)
       end
     end
 
@@ -218,7 +218,7 @@ module LA
       i += nrows if i < 0
       j += ncolumns if j < 0
       if j >= 0 && j < ncolumns && i >= 0 && i < nrows
-        unsafe_at(i, j)
+        unsafe_fetch(i, j)
       else
         raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{nrows}x#{ncolumns}")
       end
@@ -255,7 +255,7 @@ module LA
       submatrix = self[arows, acolumns]
       if value.is_a? Matrix
         raise IndexError.new("submatrix size must match assigned value") unless submatrix.size == value.size
-        submatrix.each_index { |i, j| submatrix.unsafe_set i, j, value.unsafe_at(i, j) }
+        submatrix.each_index { |i, j| submatrix.unsafe_set i, j, value.unsafe_fetch(i, j) }
       else
         submatrix.each_index { |i, j| submatrix.unsafe_set i, j, value }
       end
@@ -281,7 +281,7 @@ module LA
 
     def almost_eq(other : Matrix(T), eps)
       each_with_index(all: true) do |value, row, column|
-        return false if (value - other.unsafe_at(row, column)).abs > eps
+        return false if (value - other.unsafe_fetch(row, column)).abs > eps
       end
       true
     end
@@ -338,7 +338,7 @@ module LA
 
     def self.kron(a, b)
       GeneralMatrix(T).new(a.nrows*b.nrows, a.ncolumns*b.ncolumns) do |i, j|
-        a.unsafe_at(i / b.nrows, j / b.ncolumns) * b.unsafe_at(i % b.nrows, j % b.ncolumns)
+        a.unsafe_fetch(i / b.nrows, j / b.ncolumns) * b.unsafe_fetch(i % b.nrows, j % b.ncolumns)
       end
     end
 
@@ -375,11 +375,11 @@ module LA
       case axis
       when Axis::Columns
         GeneralMatrix(T).new(nrows + other.nrows, ncolumns) do |row, column|
-          row < nrows ? unsafe_at(row, column) : other.unsafe_at(row - nrows, column)
+          row < nrows ? unsafe_fetch(row, column) : other.unsafe_fetch(row - nrows, column)
         end
       when Axis::Rows
         GeneralMatrix(T).new(nrows, ncolumns + other.ncolumns) do |row, column|
-          column < ncolumns ? unsafe_at(row, column) : other.unsafe_at(row, column - ncolumns)
+          column < ncolumns ? unsafe_fetch(row, column) : other.unsafe_fetch(row, column - ncolumns)
         end
       else
         raise "unsupported axis"
@@ -405,7 +405,7 @@ module LA
     end
 
     def map_with_index(&block)
-      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
+      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     def map(&block)
@@ -414,11 +414,11 @@ module LA
 
     # TODO - macro magic?
     protected def map_with_index_f64(&block)
-      GeneralMatrix(Float64).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
+      GeneralMatrix(Float64).new(nrows, ncolumns) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     protected def map_with_index_complex(&block)
-      GeneralMatrix(Complex).new(nrows, ncolumns) { |i, j| yield(unsafe_at(i, j), i, j) }
+      GeneralMatrix(Complex).new(nrows, ncolumns) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     protected def map_f64(&block)
@@ -452,7 +452,7 @@ module LA
     def add!(k : Number, m : Matrix)
       assert_same_size(m)
       oldflags = flags
-      map_with_index! { |v, i, j| v + k*m.unsafe_at(i, j) }
+      map_with_index! { |v, i, j| v + k*m.unsafe_fetch(i, j) }
       self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
       self
     end
@@ -473,13 +473,13 @@ module LA
       when Axis::Columns
         GeneralMatrix(T).new(1, ncolumns) do |_, column|
           result = T.new(initial)
-          nrows.times { |row| result = yield(result, unsafe_at(row, column)) }
+          nrows.times { |row| result = yield(result, unsafe_fetch(row, column)) }
           result
         end
       when Axis::Rows
         GeneralMatrix(T).new(nrows, 1) do |row, _|
           result = T.new(initial)
-          ncolumns.times { |column| result = yield(result, unsafe_at(row, column)) }
+          ncolumns.times { |column| result = yield(result, unsafe_fetch(row, column)) }
           result
         end
       else

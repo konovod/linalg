@@ -31,8 +31,8 @@ module LA
       @base.unsafe_set(@offset[0] + x, @offset[1] + y, value)
     end
 
-    def unsafe_at(x, y)
-      @base.unsafe_at(@offset[0] + x, @offset[1] + y)
+    def unsafe_fetch(x, y)
+      @base.unsafe_fetch(@offset[0] + x, @offset[1] + y)
     end
 
     def dup

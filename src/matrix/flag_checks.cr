@@ -15,14 +15,14 @@ module LA
         # TODO - 2 times less work
         return false unless square?
         each_with_index do |value, row, column|
-          return false if row < column && (value - unsafe_at(column, row)).abs > eps
+          return false if row < column && (value - unsafe_fetch(column, row)).abs > eps
         end
         return true
       when .hermitian?
         {% if T == Complex %}
           return false unless square?
           each_with_index do |value, row, column|
-            return false if row < column && (value.conj - unsafe_at(column, row)).abs > eps
+            return false if row < column && (value.conj - unsafe_fetch(column, row)).abs > eps
           end
           return true
         {% else %}
