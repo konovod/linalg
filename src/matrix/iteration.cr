@@ -5,7 +5,8 @@ module LA
   abstract class Matrix(T)
     private macro def_indexable(name, offset, size)
       struct {{name.id.capitalize}}(T)
-        include Indexable(SubMatrix(T))
+	    # not Indexable(SubMatrix(T)) due to generics bug 
+        include Indexable(Matrix(T))
         protected def initialize(@base : Matrix(T))
         end
         def size
