@@ -467,4 +467,24 @@ describe LA::Matrix do
     m.sum(Axis::Rows).should be_close GMat[[0.6], [60]], 1e-9
     m.sum(Axis::Columns).should be_close GMat[[10.1, 20.2, 30.3]], 1e-9
   end
+
+  it "array of matrices can be summed without initial value" do
+    [GMat.ones(3, 4), GMat.ones(3, 4)].sum.should eq 2*GMat.ones(3, 4)
+    expect_raises(ArgumentError) { [GMat.ones(3, 4), GMat.ones(4, 3)].sum }
+  end
+
+  it "array of matrices can be multiplied without initial value" do
+    [GMat.ones(3, 4), GMat.ones(4, 3)].product.should eq 4*GMat.ones(3, 3)
+    expect_raises(ArgumentError) { [GMat.ones(3, 4), GMat.ones(3, 4)].product }
+  end
+
+  it "empty array of matrices sums to a scalar zero" do
+    x = ([] of GMat32).sum
+    typeof(x).should eq (Float32 | GMat32)
+    x.as(Float32).should eq 0
+  end
+
+  it "empty array of matrices multiplies to a scalar one" do
+    ([] of GMatComplex).product.as(Complex).should eq 1.0 + 0.i
+  end
 end
