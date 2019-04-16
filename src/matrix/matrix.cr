@@ -97,6 +97,21 @@ module LA
       result = self*(-1)
     end
 
+    # adds scalar element-wise
+    def +(k : Number)
+      return clone if k.zero?
+      map { |v| v + k }.tap { |result| result.flags = MatrixFlags::None }
+    end
+
+    def +(k : Complex)
+      return clone if k.zero?
+      map_complex { |v| v + k }.tap { |result| result.flags = MatrixFlags::None }
+    end
+
+    def -(k : (Number | Complex))
+      self + (-k)
+    end
+
     # divides at scalar
     def /(k : Number | Complex)
       self*(T.new(1.0) / k)

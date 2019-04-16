@@ -14,6 +14,14 @@ struct Complex
     m*self
   end
 
+  def +(m : LA::Matrix)
+    m + self
+  end
+
+  def -(m : LA::Matrix)
+    (-m) + self
+  end
+
   def sinh
     (self.exp - (-self).exp) / 2
   end
@@ -32,6 +40,14 @@ end
 abstract struct Number
   def *(m : LA::Matrix)
     m*self
+  end
+
+  def +(m : LA::Matrix)
+    m + self
+  end
+
+  def -(m : LA::Matrix)
+    (-m) + self
   end
 
   def conj

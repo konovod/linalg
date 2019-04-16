@@ -86,6 +86,23 @@ describe LA::Matrix do
     m.should eq GMatComplex.new(3, 4) { |i, j| 2 }
   end
 
+  it "can be added to scalar" do
+    m = GMat.eye(2)
+    m1 = m + 1
+    m1.should eq GMat[[2, 1], [1, 2]]
+    m1.flags.should eq MatrixFlags::None
+
+    (m1 - 1.0).should eq m
+    (1.i + m).should eq GMatComplex[[1 + 1.i, 1.i], [1.i, 1 + 1.i]]
+  end
+
+  it "don't reset flags if added to zero" do
+    m = GMat.eye(5)
+    m2 = (2.0 - 2) - m
+    m2.should eq -m
+    m2.flags.should eq (-m).flags
+  end
+
   it "can checks if it is square" do
     GMat.new(3, 4).square?.should be_false
     GMatComplex.new(30, 30).square?.should be_true
