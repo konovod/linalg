@@ -5,7 +5,7 @@ describe LA::Matrix do
     a = LA::Mat.rand(10, 10)
     a.flags.should eq LA::MatrixFlags::None
     a += a.transpose
-    a.detect(LA::MatrixFlags::Symmetric).should be_true
+    a.detect?(LA::MatrixFlags::Symmetric).should be_true
     a.transpose.flags.symmetric?.should be_true
     b = a + 5*LA::Mat.diag(*a.size, 1.5) / 2
     b.flags.should eq LA::MatrixFlags::Symmetric

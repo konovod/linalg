@@ -137,7 +137,8 @@ NOTE for complex matrices `Orthogonal` flag means `Unitary`.
 Main functions for flags are:
 ```crystal
   a.assume!(flag) # sets matrix flag without check, can lead to incorrect results if matrix do not have corresponding property.
-  a.detect(flag) # checks if matrix has property, if yes sets the flag. Returns true if check positive
+  a.detect?(flag) # checks if matrix has property, if yes sets the flag. Returns true if check positive
+  a.detect(flag) # same as `detect?`, but returns matrix a
   a.detect # detect all possible flags
   a.flags # returns matrix flags
 ```

@@ -346,7 +346,7 @@ describe LA::Matrix do
     (m + m2).should eq Mat.zeros(10, 15)
 
     m3 = m.map_with_index { |x, row, col| row < col ? -x : 0 }
-    (m + m3).detect(MatrixFlags::LowerTriangular).should be_true
+    (m + m3).detect?(MatrixFlags::LowerTriangular).should be_true
   end
 
   it "have map! and map_with_index! methods" do
@@ -356,7 +356,7 @@ describe LA::Matrix do
 
     m = Mat.ones(10, 15)
     m.map_with_index! { |x, row, col| row < col ? x : 0 }
-    m.detect(MatrixFlags::UpperTriangular).should be_true
+    m.detect?(MatrixFlags::UpperTriangular).should be_true
   end
 
   it "can evaluate trace" do

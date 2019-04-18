@@ -61,7 +61,7 @@ module LA
       end
     end
 
-    def detect(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
+    def detect?(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
       result = true
       {MatrixFlags::Symmetric,
        MatrixFlags::Hermitian,
@@ -79,12 +79,9 @@ module LA
       result
     end
 
-    def assume(aflags : MatrixFlags, value : Bool = true)
-      if value
-        detect(aflags)
-      else
-        assume! aflags, false
-      end
+    def detect(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
+      detect? aflags, eps
+      self
     end
 
     def clear_flags
