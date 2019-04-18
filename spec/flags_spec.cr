@@ -10,6 +10,7 @@ describe LA::Matrix do
     b = a + 5*LA::Mat.diag(*a.size, 1.5) / 2
     b.flags.should eq LA::MatrixFlags::Symmetric
     a.inv.flags.should eq LA::MatrixFlags::Symmetric
+    a.detect.should be a
   end
 
   it "correct flags for diag, zeros, ones" do
