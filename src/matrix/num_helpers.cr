@@ -29,12 +29,6 @@ struct Complex
   def cosh
     (self.exp + (-self).exp) / 2
   end
-
-  def sqrt
-    m = self.abs
-    s = imag.sign
-    Complex.new(Math.sqrt((m + real)/2), s*Math.sqrt((m - real)/2))
-  end
 end
 
 abstract struct Number
