@@ -64,14 +64,6 @@ module Math
         x.{{op.id}}
       end
   {% end %}
-
-  def exp(x : Complex)
-    x.exp
-  end
-
-  def exp(x : Complex)
-    x.exp
-  end
 end
 
 module Enumerable(T)
