@@ -521,6 +521,18 @@ module LA
     def min(axis : Axis)
       reduce(axis, T::INFINITY) { |memo, e| {memo, e}.min }
     end
+
+    def chop(eps = self.tolerance)
+      {% if T == Complex %}
+        if all? {|v| v.imag.abs < eps}
+          self.to_real
+        else
+          nil
+        end
+      {% else %}
+        self
+      {% end %}
+    end
   end
 
   alias Mat = Matrix(Float64)

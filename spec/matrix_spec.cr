@@ -487,4 +487,13 @@ describe LA::Matrix do
   it "empty array of matrices multiplies to a scalar one" do
     ([] of GMatComplex).product.as(Complex).should eq 1.0 + 0.i
   end
+
+  it "complex matrix can be chopped to real" do
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6]].chop.should be_a (GMat | Nil)
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6]].chop.not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
+    GMatComplex[[1, 2, 5.i], [10, 4, 1e-6]].chop.should be_a Nil
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-6.i]].chop.should be_a Nil
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-6.i]].chop(1e-3).not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-26.i]].chop.not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
+  end
 end

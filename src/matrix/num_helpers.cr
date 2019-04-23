@@ -29,6 +29,10 @@ struct Complex
   def cosh
     (self.exp + (-self).exp) / 2
   end
+
+  def chop
+    self.imag.zero? ? self.real : nil
+  end
 end
 
 abstract struct Number
