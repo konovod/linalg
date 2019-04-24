@@ -76,7 +76,7 @@ module LA
       raise ArgumentError.new("size must be power of two") unless n.popcount == 1
       return GeneralMatrix(T).new([[1]]) if n == 1
       return GeneralMatrix(T).new([[1, 1], [1, -1]]) if n == 2
-      return hadamard(n/2).kron(hadamard(2))
+      return hadamard(n//2).kron(hadamard(2))
     end
 
     def self.hankel(column : Indexable | Matrix, row : Indexable | Matrix | Nil = nil)

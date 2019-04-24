@@ -130,7 +130,7 @@ module LA
       # Evaluate Pade approximant.
       case m
       when 3, 5, 7, 9
-        m2 = (m + 3) / 2 # ((m + 1)/2.0).ceil
+        m2 = (m + 3) // 2 # ((m + 1)/2.0).ceil
         apowers = Array(Matrix(T)).new(m2)
         apowers << self.class.eye(n)
         apowers << a2
@@ -147,11 +147,11 @@ module LA
         v = self.class.zeros(n, n)
         #
         (2..m + 1).reverse_each.step(2).each do |j|
-          u.add!(c[j - 1], apowers[j/2 - 1])
+          u.add!(c[j - 1], apowers[j//2 - 1])
         end
         u = self*u
         (1..m).reverse_each.step(2).each do |j|
-          v.add!(c[j - 1], apowers[(j + 1)/2 - 1])
+          v.add!(c[j - 1], apowers[(j + 1)//2 - 1])
         end
       when 13
         raise "" unless a4

@@ -357,7 +357,7 @@ module LA
 
     def self.kron(a, b)
       GeneralMatrix(T).new(a.nrows*b.nrows, a.ncolumns*b.ncolumns) do |i, j|
-        a.unsafe_fetch(i / b.nrows, j / b.ncolumns) * b.unsafe_fetch(i % b.nrows, j % b.ncolumns)
+        a.unsafe_fetch(i // b.nrows, j // b.ncolumns) * b.unsafe_fetch(i % b.nrows, j % b.ncolumns)
       end
     end
 

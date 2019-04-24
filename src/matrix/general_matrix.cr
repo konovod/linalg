@@ -18,7 +18,7 @@ module LA
       check_type
       @raw = Slice(T).new(@nrows*@ncolumns) do |index|
         i = index % @nrows
-        j = index / @nrows
+        j = index // @nrows
         T.new(yield(i, j))
       end
     end
@@ -29,7 +29,7 @@ module LA
       @ncolumns = values[0].size
       @raw = Slice(T).new(nrows*ncolumns) do |index|
         i = index % @nrows
-        j = index / @nrows
+        j = index // @nrows
         raise IndexError.new("All rows must have same size") if j == 0 && values[i].size != @ncolumns
         T.new(values[i][j])
       end
@@ -52,7 +52,7 @@ module LA
       else
         @raw = Slice(T).new(nrows*ncolumns) do |i|
           row = i % nrows
-          col = i / nrows
+          col = i // nrows
           T.new(values[col + row*@ncolumns])
         end
       end
@@ -142,7 +142,7 @@ module LA
         raise ArgumentError.new("number of elements must not change") if anrows*ancolumns != @raw.size
         GeneralMatrix(T).new(anrows, ancolumns) do |i, j|
           row_index = i*ancolumns + j
-          arow = row_index / @ncolumns
+          arow = row_index // @ncolumns
           acol = row_index % @ncolumns
           unsafe_fetch(arow, acol)
         end
@@ -171,7 +171,7 @@ module LA
         @raw.to_a
       else
         Array(T).new(@ncolumns*@nrows) do |i|
-          row = i / @ncolumns
+          row = i // @ncolumns
           col = i % @ncolumns
           unsafe_fetch(row, col)
         end

@@ -28,7 +28,7 @@ module LA
     end
 
     private def index2ij(index) : {Int32, Int32}?
-      ai = index/band_len
+      ai = index//band_len
       j = index % band_len
       i = ai + j - @upper_band
       return nil if i < 0 || i >= nrows
@@ -62,7 +62,7 @@ module LA
       check_type
       # TODO check values sizes
       @raw_banded = Slice(T).new(bands_size) do |index|
-        band = index/band_len
+        band = index//band_len
         offset = band - @upper_band
         i = (index % band_len)
         if offset >= 0
