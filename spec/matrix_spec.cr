@@ -468,6 +468,18 @@ describe LA::Matrix do
     m.sum(Axis::Columns).should be_close GMat[[10.1, 20.2, 30.3]], 1e-9
   end
 
+  it "finds minimums along rows and columns" do
+    m = GMat[[0.1, 0.2, 0.3], [10, 20, 30]]
+    m.min(Axis::Rows).should be_close GMat[[0.1], [10]], 1e-9
+    m.min(Axis::Columns).should be_close GMat[[0.1, 0.2, 0.3]], 1e-9
+  end
+
+  it "finds maximums along rows and columns" do
+    m = GMat[[0.1, 0.2, 0.3], [10, 20, 30]]
+    m.max(Axis::Rows).should be_close GMat[[0.3], [30]], 1e-9
+    m.max(Axis::Columns).should be_close GMat[[10, 20, 30]], 1e-9
+  end
+
   it "array of matrices can be summed without initial value" do
     [GMat.ones(3, 4), GMat.ones(3, 4)].sum.should eq 2*GMat.ones(3, 4)
     expect_raises(ArgumentError) { [GMat.ones(3, 4), GMat.ones(4, 3)].sum }
