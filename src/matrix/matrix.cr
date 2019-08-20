@@ -515,7 +515,7 @@ module LA
     end
 
     def max(axis : Axis)
-      reduce(axis, T::NEGINFINITY) { |memo, e| {memo, e}.max }
+      reduce(axis, - T::INFINITY) { |memo, e| {memo, e}.max }
     end
 
     def min(axis : Axis)
