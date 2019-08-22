@@ -6,7 +6,7 @@ module LA
   class BandedMatrix(T) < Matrix(T)
     getter nrows : Int32
     getter ncolumns : Int32
-    property flags = MatrixFlags::None
+    property flags : MatrixFlags = MatrixFlags::None
     getter upper_band : Int32
     getter lower_band : Int32
     protected getter raw_banded : Slice(T)

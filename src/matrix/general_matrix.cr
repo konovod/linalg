@@ -7,7 +7,7 @@ module LA
     getter raw : Slice(T)
     getter nrows : Int32
     getter ncolumns : Int32
-    property flags = MatrixFlags::None
+    property flags : MatrixFlags = MatrixFlags::None
 
     def initialize(@nrows, @ncolumns, @flags = MatrixFlags::None)
       check_type
@@ -77,10 +77,10 @@ module LA
 
     def to_unsafe
       {% if T == Complex %}
-      @raw.to_unsafe.as(LibCBLAS::ComplexDouble*)
-    {% else %}
-      @raw.to_unsafe
-    {% end %}
+        @raw.to_unsafe.as(LibCBLAS::ComplexDouble*)
+      {% else %}
+        @raw.to_unsafe
+      {% end %}
     end
 
     def ==(other : self)
