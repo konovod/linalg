@@ -6,7 +6,7 @@ module LA
     @used = 0
 
     def get(n) : Bytes
-      # reallocate(n + @used)
+      reallocate(n + @used)
       @area[@used, n].tap { @used += n }
     end
 

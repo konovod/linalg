@@ -41,7 +41,7 @@ module LA
       return self.class.identity(nrows) if norm(MatrixNorm::One) == 0
       if flags.diagonal?
         return self.class.diag(nrows, nrows) do |i|
-          v = unsafe_at(i, i)
+          v = unsafe_fetch(i, i)
           {% if T == Complex %} v.exp {% else %} Math.exp(v) {% end %}
         end
       end
@@ -130,7 +130,7 @@ module LA
       # Evaluate Pade approximant.
       case m
       when 3, 5, 7, 9
-        m2 = (m + 3) / 2 # ((m + 1)/2.0).ceil
+        m2 = (m + 3) // 2 # ((m + 1)/2.0).ceil
         apowers = Array(Matrix(T)).new(m2)
         apowers << self.class.eye(n)
         apowers << a2
@@ -147,11 +147,11 @@ module LA
         v = self.class.zeros(n, n)
         #
         (2..m + 1).reverse_each.step(2).each do |j|
-          u.add!(c[j - 1], apowers[j/2 - 1])
+          u.add!(c[j - 1], apowers[j//2 - 1])
         end
         u = self*u
         (1..m).reverse_each.step(2).each do |j|
-          v.add!(c[j - 1], apowers[(j + 1)/2 - 1])
+          v.add!(c[j - 1], apowers[(j + 1)//2 - 1])
         end
       when 13
         raise "" unless a4
@@ -298,7 +298,7 @@ module LA
       # EXPM2_BY_2  Exponential for a general 2-by-2 matrix A.
       case nrows
       when 1
-        unsafe_set(0, 0, Math.exp(unsafe_at(0, 0)))
+        unsafe_set(0, 0, Math.exp(unsafe_fetch(0, 0)))
       when 2
         flags.upper_triangular? ? expmT2by2! : expm2by2full!
       else
@@ -314,10 +314,10 @@ module LA
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private def expm2by2full!
       # EXPM2BY2FULL   Exponential of 2-by-2 full matrix.
-      a = unsafe_at(0, 0)
-      b = unsafe_at(0, 1)
-      c = unsafe_at(1, 0)
-      d = unsafe_at(1, 1)
+      a = unsafe_fetch(0, 0)
+      b = unsafe_fetch(0, 1)
+      c = unsafe_fetch(1, 0)
+      d = unsafe_fetch(1, 1)
 
       delta = Math.sqrt((a - d)*(a - d) + 4*b*c)
       k = Math.exp((a + d)/2)
@@ -335,9 +335,9 @@ module LA
 
       # Modified from FUNM (EXPM2by2).
 
-      a1 = unsafe_at(0, 0)
-      a2 = unsafe_at(1, 1)
-      c = unsafe_at(0, 1)
+      a1 = unsafe_fetch(0, 0)
+      a2 = unsafe_fetch(1, 1)
+      c = unsafe_fetch(0, 1)
       ave = (a1 + a2)/2
       {% if T == Complex %}ave = ave.real{% end %}
       df = (a1 - a2).abs/2

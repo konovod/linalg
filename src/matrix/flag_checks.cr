@@ -15,14 +15,14 @@ module LA
         # TODO - 2 times less work
         return false unless square?
         each_with_index do |value, row, column|
-          return false if row < column && (value - unsafe_at(column, row)).abs > eps
+          return false if row < column && (value - unsafe_fetch(column, row)).abs > eps
         end
         return true
       when .hermitian?
         {% if T == Complex %}
           return false unless square?
           each_with_index do |value, row, column|
-            return false if row < column && (value.conj - unsafe_at(column, row)).abs > eps
+            return false if row < column && (value.conj - unsafe_fetch(column, row)).abs > eps
           end
           return true
         {% else %}
@@ -61,7 +61,7 @@ module LA
       end
     end
 
-    def detect(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
+    def detect?(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
       result = true
       {MatrixFlags::Symmetric,
        MatrixFlags::Hermitian,
@@ -79,12 +79,9 @@ module LA
       result
     end
 
-    def assume(aflags : MatrixFlags, value : Bool = true)
-      if value
-        detect(aflags)
-      else
-        assume! aflags, false
-      end
+    def detect(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
+      detect? aflags, eps
+      self
     end
 
     def clear_flags

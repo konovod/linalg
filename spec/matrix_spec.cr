@@ -86,6 +86,23 @@ describe LA::Matrix do
     m.should eq GMatComplex.new(3, 4) { |i, j| 2 }
   end
 
+  it "can be added to scalar" do
+    m = GMat.eye(2)
+    m1 = m + 1
+    m1.should eq GMat[[2, 1], [1, 2]]
+    m1.flags.should eq MatrixFlags::None
+
+    (m1 - 1.0).should eq m
+    (1.i + m).should eq GMatComplex[[1 + 1.i, 1.i], [1.i, 1 + 1.i]]
+  end
+
+  it "don't reset flags if added to zero" do
+    m = GMat.eye(5)
+    m2 = (2.0 - 2) - m
+    m2.should eq -m
+    m2.flags.should eq (-m).flags
+  end
+
   it "can checks if it is square" do
     GMat.new(3, 4).square?.should be_false
     GMatComplex.new(30, 30).square?.should be_true
@@ -329,7 +346,7 @@ describe LA::Matrix do
     (m + m2).should eq Mat.zeros(10, 15)
 
     m3 = m.map_with_index { |x, row, col| row < col ? -x : 0 }
-    (m + m3).detect(MatrixFlags::LowerTriangular).should be_true
+    (m + m3).detect?(MatrixFlags::LowerTriangular).should be_true
   end
 
   it "have map! and map_with_index! methods" do
@@ -339,7 +356,7 @@ describe LA::Matrix do
 
     m = Mat.ones(10, 15)
     m.map_with_index! { |x, row, col| row < col ? x : 0 }
-    m.detect(MatrixFlags::UpperTriangular).should be_true
+    m.detect?(MatrixFlags::UpperTriangular).should be_true
   end
 
   it "can evaluate trace" do
@@ -449,5 +466,46 @@ describe LA::Matrix do
     m = GMat[[0.1, 0.2, 0.3], [10, 20, 30]]
     m.sum(Axis::Rows).should be_close GMat[[0.6], [60]], 1e-9
     m.sum(Axis::Columns).should be_close GMat[[10.1, 20.2, 30.3]], 1e-9
+  end
+
+  it "finds minimums along rows and columns" do
+    m = GMat[[0.1, 0.2, 0.3], [10, 20, 30]]
+    m.min(Axis::Rows).should be_close GMat[[0.1], [10]], 1e-9
+    m.min(Axis::Columns).should be_close GMat[[0.1, 0.2, 0.3]], 1e-9
+  end
+
+  it "finds maximums along rows and columns" do
+    m = GMat[[0.1, 0.2, 0.3], [10, 20, 30]]
+    m.max(Axis::Rows).should be_close GMat[[0.3], [30]], 1e-9
+    m.max(Axis::Columns).should be_close GMat[[10, 20, 30]], 1e-9
+  end
+
+  it "array of matrices can be summed without initial value" do
+    [GMat.ones(3, 4), GMat.ones(3, 4)].sum.should eq 2*GMat.ones(3, 4)
+    expect_raises(ArgumentError) { [GMat.ones(3, 4), GMat.ones(4, 3)].sum }
+  end
+
+  it "array of matrices can be multiplied without initial value" do
+    [GMat.ones(3, 4), GMat.ones(4, 3)].product.should eq 4*GMat.ones(3, 3)
+    expect_raises(ArgumentError) { [GMat.ones(3, 4), GMat.ones(3, 4)].product }
+  end
+
+  it "empty array of matrices sums to a scalar zero" do
+    x = ([] of GMat32).sum
+    typeof(x).should eq (Float32 | GMat32)
+    x.as(Float32).should eq 0
+  end
+
+  it "empty array of matrices multiplies to a scalar one" do
+    ([] of GMatComplex).product.as(Complex).should eq 1.0 + 0.i
+  end
+
+  it "complex matrix can be chopped to real" do
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6]].chop.should be_a (GMat | Nil)
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6]].chop.not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
+    GMatComplex[[1, 2, 5.i], [10, 4, 1e-6]].chop.should be_a Nil
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-6.i]].chop.should be_a Nil
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-6.i]].chop(1e-3).not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-26.i]].chop.not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
   end
 end

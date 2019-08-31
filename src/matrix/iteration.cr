@@ -5,14 +5,15 @@ module LA
   abstract class Matrix(T)
     private macro def_indexable(name, offset, size)
       struct {{name.id.capitalize}}(T)
-        include Indexable(SubMatrix(T))
+	    # not Indexable(SubMatrix(T)) due to generics bug 
+        include Indexable(Matrix(T))
         protected def initialize(@base : Matrix(T))
         end
         def size
           @base.n{{name.id}}
         end
         # unsafe_new for submatrix?
-        def unsafe_at(i)
+        def unsafe_fetch(i)
           SubMatrix(T).new(@base, {{offset}}, {{size}})
         end
       end
@@ -57,11 +58,11 @@ module LA
       end
 
       # unsafe_new for submatrix?
-      def unsafe_at(i)
+      def unsafe_fetch(i)
         if @offset >= 0
-          @base.unsafe_at(i, i + @offset)
+          @base.unsafe_fetch(i, i + @offset)
         else
-          @base.unsafe_at(i - @offset, i)
+          @base.unsafe_fetch(i - @offset, i)
         end
       end
     end

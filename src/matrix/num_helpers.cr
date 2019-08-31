@@ -14,6 +14,14 @@ struct Complex
     m*self
   end
 
+  def +(m : LA::Matrix)
+    m + self
+  end
+
+  def -(m : LA::Matrix)
+    (-m) + self
+  end
+
   def sinh
     (self.exp - (-self).exp) / 2
   end
@@ -22,16 +30,22 @@ struct Complex
     (self.exp + (-self).exp) / 2
   end
 
-  def sqrt
-    m = self.abs
-    s = imag.sign
-    Complex.new(Math.sqrt((m + real)/2), s*Math.sqrt((m - real)/2))
+  def chop
+    self.imag.zero? ? self.real : nil
   end
 end
 
 abstract struct Number
   def *(m : LA::Matrix)
     m*self
+  end
+
+  def +(m : LA::Matrix)
+    m + self
+  end
+
+  def -(m : LA::Matrix)
+    (-m) + self
   end
 
   def conj
@@ -48,14 +62,6 @@ module Math
         x.{{op.id}}
       end
   {% end %}
-
-  def exp(x : Complex)
-    x.exp
-  end
-
-  def exp(x : Complex)
-    x.exp
-  end
 end
 
 module Enumerable(T)

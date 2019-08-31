@@ -145,7 +145,7 @@ module LA
       a = overwrite_a ? self : self.clone
       if ncolumns > nrows
         # make room for residuals
-        x = GeneralMatrix(T).new(ncolumns, b.ncolumns) { |r, c| r < nrows ? b.unsafe_at(r, c) : T.new(0) }
+        x = GeneralMatrix(T).new(ncolumns, b.ncolumns) { |r, c| r < nrows ? b.unsafe_fetch(r, c) : T.new(0) }
       else
         x = overwrite_b ? b : b.clone
       end
@@ -163,7 +163,7 @@ module LA
       a = overwrite_a ? self : self.clone
       if ncolumns > nrows
         # make room for residuals
-        x = GeneralMatrix(T).new(ncolumns, b.ncolumns) { |r, c| r < nrows ? b.unsafe_at(r, c) : T.new(0) }
+        x = GeneralMatrix(T).new(ncolumns, b.ncolumns) { |r, c| r < nrows ? b.unsafe_fetch(r, c) : T.new(0) }
       else
         x = overwrite_b ? b : b.clone
       end
