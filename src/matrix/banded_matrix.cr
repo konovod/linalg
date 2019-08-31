@@ -349,6 +349,7 @@ module LA
 
     # returns matrix norm
     def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
+      # TODO - check if not square
       let = case kind
             when .frobenius?
               'F'
@@ -362,6 +363,19 @@ module LA
 
       worksize = kind.inf? ? nrows : 0
       lapack_util(langb, worksize, let, @nrows, @lower_band, @upper_band, matrix(self), @lower_band + @upper_band + 1)
+    end
+
+    def det(*, overwrite_a = false)
+      raise ArgumentError.new("matrix must be square") unless square?
+      if flags.triangular?
+        return diag.product
+      end
+      lru = overwrite_a ? self : self.clone
+      lru.upper_band = @lower_band + @upper_band
+      ipiv = Slice(Int32).new(nrows)
+      lapack(gbtrf, nrows, nrows, @lower_band, @upper_band, lru, 2*@lower_band + @upper_band + 1, ipiv)
+      lru.clear_flags
+      lru.diag.product
     end
   end
 
