@@ -456,18 +456,35 @@ describe LA::BandedMatrix do
     b = BMat.new(g)
 
     b.norm(MatrixNorm::Inf).should eq g.norm(MatrixNorm::Inf)
-    # b.norm(MatrixNorm::One).should eq g.norm(MatrixNorm::One) TODO
     b.norm(MatrixNorm::MaxAbs).should eq g.norm(MatrixNorm::MaxAbs)
     b.norm(MatrixNorm::Frobenius).should eq g.norm(MatrixNorm::Frobenius)
   end
 
-  it "calculate determinant" do
+  pending "can evaluate 1-norm" do
+    g = GMat[
+      [1, 2, 3, 0],
+      [4, 5, 6, 7],
+      [0, 8, 9, 1],
+      [0, 0, 2, 3],
+    ]
+    b = BMat.new(g)
+    b.norm(MatrixNorm::One).should eq g.norm(MatrixNorm::One)
+  end
+
+  pending "calculate determinant" do
     a = GMat[
-      [1, 2.5, 0, 0],
-      [4, 5, 7, 0],
-      [0, 1, -1, 1],
-      [0, 0, 2, 1]]
-    pp a.det
+      # [1, 2.5, 0, 0],
+      # [4, 5, 7, 0],
+      # [0, 1, -1, 1],
+      # [0, 0, 2, 1]]
+      [11, 12, 0, 0, 0, 0],
+      [21, 22, 23, 0, 0, 0],
+      [31, 32, 33, 34, 0, 0],
+      [0, 42, 43, 44, 45, 0],
+      [0, 0, 53, 54, 55, 56],
+      [0, 0, 0, 64, 65, 66],
+    ]
+    pp a.det, BMat.new(a)
     BMat.new(a).det.should eq a.det
 
     a = GMatComplex[

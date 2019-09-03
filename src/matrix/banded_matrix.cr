@@ -354,7 +354,7 @@ module LA
             when .frobenius?
               'F'
             when .one?
-              'O'
+              'o'
             when .inf?
               'I'
             else
@@ -373,6 +373,7 @@ module LA
       lru = overwrite_a ? self : self.clone
       lru.upper_band = @lower_band + @upper_band
       ipiv = Slice(Int32).new(nrows)
+      pp! @lower_band, @upper_band, lru, lru.lower_band, lru.upper_band, lru.raw_banded
       lapack(gbtrf, nrows, nrows, @lower_band, @upper_band, lru, 2*@lower_band + @upper_band + 1, ipiv)
       lru.clear_flags
       lru.diag.product
