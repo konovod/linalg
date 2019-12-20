@@ -13,23 +13,28 @@ module LA
 
     @[AlwaysInline]
     private def band_len
-      ncolumns
+      @upper_band + @lower_band + 1
+    end
+
+    @[AlwaysInline]
+    private def bands_count
+      {ncolumns, nrows + upper_band}.min
     end
 
     @[AlwaysInline]
     private def bands_size
-      band_len*(@upper_band + @lower_band + 1)
+      bands_count*band_len
     end
 
     private def ij2index(i, j)
       return nil unless {0, j - @upper_band}.max <= i <= {nrows - 1, j + @lower_band}.min
       ai = @upper_band + i - j
-      ai*band_len + j
+      j*band_len + ai
     end
 
     private def index2ij(index) : {Int32, Int32}?
-      ai = index//band_len
-      j = index % band_len
+      ai = index % band_len
+      j = index // band_len
       i = ai + j - @upper_band
       return nil if i < 0 || i >= nrows
       {i, j}
@@ -60,22 +65,23 @@ module LA
 
     def initialize(@nrows, @ncolumns, @upper_band, @lower_band, values : Indexable)
       check_type
-      # TODO check values sizes
+      raise ArgumentError.new("#{values.size} diagonals are provided, expected #{band_len} ") if values.size != band_len
       @raw_banded = Slice(T).new(bands_size) do |index|
-        band = index//band_len
-        offset = band - @upper_band
-        i = (index % band_len)
+        diag = index % band_len
+        j = index // band_len
+        i = diag + j - @upper_band
+        offset = diag - @upper_band
         if offset >= 0
           len = {nrows - offset, ncolumns}.min
         else
           len = {nrows, ncolumns + offset}.min
         end
-        raise ArgumentError.new("#{band} item length is #{values[band].size}, expected #{len} ") if i == 0 && len != values[band].size
-        i += offset if offset < 0
-        if i >= 0 && i < len
-          T.new(values[band][i])
-        else
+        raise ArgumentError.new("#{diag} diagonal length is #{values[diag].size}, expected #{len} ") if j == 0 && len != values[diag].size
+        j += offset if offset < 0
+        if i < 0 || i >= nrows
           T.new(0)
+        else
+          T.new(values[diag][j])
         end
       end
       resized_flags
@@ -184,11 +190,15 @@ module LA
 
     def transpose!
       return self if flags.symmetric?
-      newraw = Slice(T).new(band_len*(@upper_band + @lower_band + 1), T.new(0))
-      each_with_index do |v, i, j|
-        # raise "#{i}, #{j}" unless {0, j - @lower_band}.max <= j <= {ncolumns - 1, i + @upper_band}.min
-        ai = @lower_band + j - i
-        newraw[ai*nrows + i] = v
+      newraw = Slice(T).new({nrows, ncolumns + lower_band}.min*band_len) do |index|
+        ai = index % band_len
+        j = index // band_len
+        i = ai + j - @lower_band
+        if i < 0 || i >= ncolumns
+          T.new(0)
+        else
+          unsafe_fetch(j, i)
+        end
       end
       @upper_band, @lower_band = @lower_band, @upper_band
       @nrows, @ncolumns = @ncolumns, @nrows
@@ -213,11 +223,11 @@ module LA
       return if aupper == @upper_band && alower == @lower_band
       raise ArgumentError.new "upper_band must be non-negative" unless aupper >= 0
       raise ArgumentError.new "lower_band must be non-negative" unless alower >= 0
-      newraw = Slice(T).new(band_len*(aupper + alower + 1), T.new(0))
+      newraw = Slice(T).new({ncolumns, nrows + aupper}.min*(aupper + alower + 1), T.new(0))
       each_with_index do |v, i, j|
         next unless {0, j - aupper}.max <= i <= {nrows - 1, j + alower}.min
         ai = aupper + i - j
-        newraw[ai*band_len + j] = v
+        newraw[j*(aupper + alower + 1) + ai] = v
       end
       @raw_banded = newraw
       @upper_band, @lower_band = aupper, alower
@@ -373,7 +383,6 @@ module LA
       lru = overwrite_a ? self : self.clone
       lru.upper_band = @lower_band + @upper_band
       ipiv = Slice(Int32).new(nrows)
-      pp! @lower_band, @upper_band, lru, lru.lower_band, lru.upper_band, lru.raw_banded
       lapack(gbtrf, nrows, nrows, @lower_band, @upper_band, lru, 2*@lower_band + @upper_band + 1, ipiv)
       lru.clear_flags
       lru.diag.product

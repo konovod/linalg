@@ -229,7 +229,6 @@ describe LA do
     a = GMatComplex[[1, -2.i], [2.i, 5]]
     chol1 = a.cholesky(lower: true, dont_clean: true)
     chol2 = a.cholesky(lower: false, dont_clean: false)
-    pp a.flags
     b = GMatComplex[[2], [4]]
     x1 = chol1.cho_solve(b)
     x2 = chol2.cho_solve(b)

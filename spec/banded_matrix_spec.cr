@@ -87,6 +87,9 @@ describe LA::BandedMatrix do
       BMat.new(3, 4, 1, {[1, 2], [4, 5, 6], [7, 8]})
     end
     expect_raises(ArgumentError) do
+      BMat.new(3, 4, 1, {[1, 2, 3], [4, 5, 6], [7, 8], [9]})
+    end
+    expect_raises(ArgumentError) do
       BMat.new(3, 4, 1, {[1, 2, 3], [4, 5, 6], [7, 8, 9]})
     end
   end
@@ -181,13 +184,13 @@ describe LA::BandedMatrix do
       elements << {i, j, v}
     end
     elements.should eq [
-      {0, 1, 1.0},
-      {1, 2, 2.0},
       {0, 0, 3.0},
-      {1, 1, 4.0},
-      {2, 2, 5.0},
       {1, 0, 6.0},
+      {0, 1, 1.0},
+      {1, 1, 4.0},
       {2, 1, 7.0},
+      {1, 2, 2.0},
+      {2, 2, 5.0},
     ]
   end
 
@@ -446,6 +449,40 @@ describe LA::BandedMatrix do
     b1.flags.should eq MatrixFlags::UpperTriangular
   end
 
+  it "storage match LAPACK convention" do
+    a = BMat.new(GMat[
+      [1, 2],
+      [3, 4]])
+    a.raw_banded.should eq Slice[0.0, 1.0, 3.0, 2.0, 4.0, 0.0]
+    a = BMat.new(GMat[
+      [11, 12, 0, 0, 0],
+      [21, 22, 23, 0, 0],
+      [31, 32, 33, 34, 0],
+      [0, 42, 43, 44, 45],
+      [0, 0, 53, 54, 55],
+    ])
+    a.raw_banded.should eq Slice[
+      0.0, 11.0, 21.0, 31.0,
+      12.0, 22.0, 32.0, 42.0,
+      23.0, 33.0, 43.0, 53.0,
+      34.0, 44.0, 54.0, 0.0,
+      45.0, 55.0, 0.0, 0.0]
+
+    BMat.new(GMat[
+      [11, 12, 0, 0, 0],
+      [0, 22, 23, 0, 0],
+    ]).raw_banded.should eq Slice[0, 11, 12, 22, 23, 0]
+
+    BMat.new(GMat[
+      [11, 0, 0],
+      [0, 22, 0],
+      [0, 0, 33],
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]).raw_banded.should eq Slice[11, 22, 33]
+  end
+
   it "can evaluate norms" do
     g = GMat[
       [1, 2, 3, 0],
@@ -460,7 +497,7 @@ describe LA::BandedMatrix do
     b.norm(MatrixNorm::Frobenius).should eq g.norm(MatrixNorm::Frobenius)
   end
 
-  pending "can evaluate 1-norm" do
+  it "can evaluate 1-norm" do
     g = GMat[
       [1, 2, 3, 0],
       [4, 5, 6, 7],
@@ -471,12 +508,8 @@ describe LA::BandedMatrix do
     b.norm(MatrixNorm::One).should eq g.norm(MatrixNorm::One)
   end
 
-  pending "calculate determinant" do
+  it "calculate determinant" do
     a = GMat[
-      # [1, 2.5, 0, 0],
-      # [4, 5, 7, 0],
-      # [0, 1, -1, 1],
-      # [0, 0, 2, 1]]
       [11, 12, 0, 0, 0, 0],
       [21, 22, 23, 0, 0, 0],
       [31, 32, 33, 34, 0, 0],
@@ -484,8 +517,14 @@ describe LA::BandedMatrix do
       [0, 0, 53, 54, 55, 56],
       [0, 0, 0, 64, 65, 66],
     ]
-    pp a.det, BMat.new(a)
-    BMat.new(a).det.should eq a.det
+    BMat.new(a).det.should be_close a.det, 1e-6
+
+    a = GMat32[
+      [1, 2.5, 0, 0],
+      [4, 5, 7, 0],
+      [0, 1, -1, 1],
+      [0, 0, 2, 1]]
+    BMat32.new(a).det.should eq a.det
 
     a = GMatComplex[
       [1.i, 2, 3],
