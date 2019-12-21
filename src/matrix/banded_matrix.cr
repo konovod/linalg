@@ -387,6 +387,22 @@ module LA
       lru.clear_flags
       lru.diag.product
     end
+
+    def solve(b : GeneralMatrix(T), *, overwrite_a = false, overwrite_b = false)
+      raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
+      raise ArgumentError.new("a must be square") unless square?
+      a = overwrite_b ? self : self.clone
+      x = overwrite_b ? b : b.clone
+      n = nrows
+      ku = upper_band
+      kl = lower_band
+      a.upper_band = kl + ku
+      ipiv = Slice(Int32).new(n)
+      lapack(gbsv, n, kl, ku, b.ncolumns, a.raw_banded, n, ipiv, x, b.nrows)
+      a.clear_flags
+      x.clear_flags
+      x
+    end
   end
 
   alias BMat = BandedMatrix(Float64)

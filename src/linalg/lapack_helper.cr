@@ -60,6 +60,7 @@ module LA
       {%
         lapack_args = {
           "gbtrf" => {5 => ARG_MATRIX, 7 => ARG_MATRIX},
+          "gbsv"  => {5 => ARG_MATRIX, 7 => ARG_MATRIX, 8 => ARG_MATRIX},
           "gebal" => {3 => ARG_MATRIX, 5 => ARG_INTOUT, 6 => ARG_INTOUT, 7 => ARG_MATRIX},
           "gees"  => {3 => ARG_MATRIX, 5 => ARG_MATRIX, 7 => ARG_INTOUT, 8 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX},
           "geev"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX, 7 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_MATRIX},
