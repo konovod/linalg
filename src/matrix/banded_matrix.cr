@@ -396,9 +396,31 @@ module LA
       n = nrows
       ku = upper_band
       kl = lower_band
-      a.upper_band = kl + ku
-      ipiv = Slice(Int32).new(n)
-      lapack(gbsv, n, kl, ku, b.ncolumns, a.raw_banded, n, ipiv, x, b.nrows)
+
+      if flags.triangular?
+        kd = flags.lower_triangular? ? kl : ku
+        if flags.lower_triangular?
+          self.upper_band = 0
+        else
+          self.lower_band = 0
+        end
+        lapack(tbtrs, uplo, 'N'.ord.to_u8, 'N'.ord.to_u8, n, kd, b.ncolumns, a, kd + 1, x, n)
+        # elsif flags.positive_definite?
+        #   lapack(posv, uplo, n, b.ncolumns, a, n, x, b.ncolumns)
+        # elsif flags.hermitian?
+        #   {% if T == Complex %}
+        #   ipiv = Slice(Int32).new(n)
+        #   lapack(hesv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
+        #   {% end %}
+        # elsif flags.symmetric?
+        #   ipiv = Slice(Int32).new(n)
+        #   lapack(sysv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
+      else
+        a.upper_band = kl + ku
+        ipiv = Slice(Int32).new(n)
+        lapack(gbsv, n, kl, ku, b.ncolumns, a.raw_banded, n, ipiv, x, b.nrows)
+      end
+
       a.clear_flags
       x.clear_flags
       x

@@ -543,7 +543,7 @@ describe LA::BandedMatrix do
     BMat.new(a).solve(b).should eq a.solve(b)
   end
 
-  pending "solves a linear equations in triangular case" do
+  it "solves a linear equations in triangular case" do
     a = GMat[
       [1, 2.5, 0, 0],
       [0, 5, 7, 0],
@@ -558,6 +558,6 @@ describe LA::BandedMatrix do
       [0, 1, -1, 0],
       [0, 0, 2, 1]]
     b = GMat[[1, 2, 3, 4]].t!
-    BMat.new(a).solve(b).should eq a.solve(b)
+    BMat.new(a).solve(b).should almost_eq a.solve(b)
   end
 end
