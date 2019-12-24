@@ -12,7 +12,7 @@ module LA
     # optimization idea for noncomplex matrix is from scipy
     def cosm
       {% if T == Complex %}
-        0.5*((1.i*self).expm+(-1.i*self).expm)
+        0.5*((1.i*self).expm + (-1.i*self).expm)
       {% else %}
         GMatComplex.new(1.i*self).expm.to_real
       {% end %}
@@ -20,7 +20,7 @@ module LA
 
     def sinm
       {% if T == Complex %}
-        -0.5.i*((1.i*self).expm-(-1.i*self).expm)
+        -0.5.i*((1.i*self).expm - (-1.i*self).expm)
       {% else %}
         GMatComplex.new(1.i*self).expm.to_imag
       {% end %}

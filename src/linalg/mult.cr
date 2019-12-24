@@ -33,19 +33,19 @@ module LA
       cbeta = T.new(beta)
       if {{T == Complex}} && (a.flags.hermitian? || b.flags.hermitian?)
         {% if T == Complex %}
-        side = a.flags.hermitian? ? LibCBLAS::CblasSide::CblasLeft : LibCBLAS::CblasSide::CblasRight
-        if side == LibCBLAS::CblasSide::CblasRight
-          aa, bb = bb, aa
-        end
-        up = LibCBLAS::CblasUplo::CblasUpper
-        blas(he, mm, side, up, a.ncolumns, b.nrows,
-          blas_const(calpha),
-          aa, a.nrows,
-          bb, b.nrows,
-          blas_const(cbeta),
-          self, self.nrows)
+          side = a.flags.hermitian? ? LibCBLAS::CblasSide::CblasLeft : LibCBLAS::CblasSide::CblasRight
+          if side == LibCBLAS::CblasSide::CblasRight
+            aa, bb = bb, aa
+          end
+          up = LibCBLAS::CblasUplo::CblasUpper
+          blas(he, mm, side, up, a.ncolumns, b.nrows,
+            blas_const(calpha),
+            aa, a.nrows,
+            bb, b.nrows,
+            blas_const(cbeta),
+            self, self.nrows)
         {% else %}
-        raise "" #to prevent type inference of nil
+          raise "" # to prevent type inference of nil
         {% end %}
       elsif a.flags.symmetric? || b.flags.symmetric?
         side = a.flags.symmetric? ? LibCBLAS::CblasSide::CblasLeft : LibCBLAS::CblasSide::CblasRight

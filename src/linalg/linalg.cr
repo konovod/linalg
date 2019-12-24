@@ -77,12 +77,12 @@ module LA
         adjust_symmetric
       elsif {{T == Complex}} && flags.hermitian?
         {% if T == Complex %}
-        ipiv = Slice(Int32).new(n)
-        lapack(hetrf, uplo, n, self, n, ipiv)
-        lapack(hetri, uplo, n, self, n, ipiv, worksize: [n])
-        adjust_symmetric
+          ipiv = Slice(Int32).new(n)
+          lapack(hetrf, uplo, n, self, n, ipiv)
+          lapack(hetri, uplo, n, self, n, ipiv, worksize: [n])
+          adjust_symmetric
         {% else %}
-        raise "error"
+          raise "error"
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)
@@ -110,11 +110,11 @@ module LA
       if flags.triangular?
         lapack(trtrs, uplo, 'N'.ord.to_u8, 'N'.ord.to_u8, n, b.nrows, a, n, x, b.nrows)
       elsif flags.positive_definite?
-        lapack(posv, uplo, n, b.ncolumns, a, n, x, b.ncolumns)
+        lapack(posv, 'U'.ord.to_u8, n, b.ncolumns, a, n, x, b.ncolumns)
       elsif flags.hermitian?
         {% if T == Complex %}
-        ipiv = Slice(Int32).new(n)
-        lapack(hesv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
+          ipiv = Slice(Int32).new(n)
+          lapack(hesv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)
@@ -300,9 +300,9 @@ module LA
         lapack_util(lantr, worksize, let, uplo, 'N'.ord.to_u8, @nrows, @ncolumns, matrix(self), @nrows)
       elsif flags.hermitian?
         {% if T == Complex %}
-        lapack_util(lanhe, worksize, let, uplo, @nrows,  matrix(self), @nrows)
+          lapack_util(lanhe, worksize, let, uplo, @nrows, matrix(self), @nrows)
         {% else %}
-        lapack_util(lange, worksize, let, @nrows, @ncolumns, matrix(self), @nrows)
+          lapack_util(lange, worksize, let, @nrows, @ncolumns, matrix(self), @nrows)
         {% end %}
       elsif flags.symmetric?
         lapack_util(lansy, worksize, let, uplo, @nrows, matrix(self), @nrows)

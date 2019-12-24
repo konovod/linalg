@@ -515,7 +515,7 @@ module LA
     end
 
     def max(axis : Axis)
-      reduce(axis, - T::INFINITY) { |memo, e| {memo, e}.max }
+      reduce(axis, -T::INFINITY) { |memo, e| {memo, e}.max }
     end
 
     def min(axis : Axis)
@@ -524,7 +524,7 @@ module LA
 
     def chop(eps = self.tolerance)
       {% if T == Complex %}
-        if all? {|v| v.imag.abs < eps}
+        if all? { |v| v.imag.abs < eps }
           self.to_real
         else
           nil

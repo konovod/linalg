@@ -406,7 +406,7 @@ module LA
         end
         lapack(tbtrs, uplo, 'N'.ord.to_u8, 'N'.ord.to_u8, n, kd, b.ncolumns, a, kd + 1, x, n)
         # elsif flags.positive_definite?
-        #   lapack(posv, uplo, n, b.ncolumns, a, n, x, b.ncolumns)
+        # lapack(pbsv, 'U'.ord.to_u8, n, kd, b.ncolumns, a, kd + 1, x, b.ncolumns)
         # elsif flags.hermitian?
         #   {% if T == Complex %}
         #   ipiv = Slice(Int32).new(n)
