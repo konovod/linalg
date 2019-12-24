@@ -123,6 +123,16 @@ describe LA::BandedMatrix do
     BMat.new(a).should eq a
   end
 
+  it "keep flags when converting from general matrix" do
+    a = GMat[
+      [2, -1, 0],
+      [-1, 2, -1],
+      [0, -1, 2],
+    ]
+    a.detect
+    BMat.new(a).flags.should eq a.flags
+  end
+
   it "can be created with given tolerance" do
     a = GMat[
       [11, 12, 0, 0, 0],
@@ -559,5 +569,18 @@ describe LA::BandedMatrix do
       [0, 0, 2, 1]]
     b = GMat[[1, 2, 3, 4]].t!
     BMat.new(a).solve(b).should almost_eq a.solve(b)
+  end
+
+  pending "solves a linear equations when positive definite" do
+    a = GMat[
+      [1, 0, 0, 0],
+      [4, 5, 1, 0],
+      [0, 1, -1, 0],
+      [0, 0, 2, 1]]
+    a = a*a.t
+    a.detect?(MatrixFlags::PositiveDefinite).should be_true
+    b = GMat[[1, 2, 7, 1]].t!
+    pp a.solve(b)
+    # a.solve(b).should eq a.solve(b)
   end
 end

@@ -43,7 +43,7 @@ module LA
     def initialize(@nrows, @ncolumns, @upper_band, @lower_band = upper_band, @flags = MatrixFlags::None)
       check_type
       @raw_banded = Slice(T).new(bands_size, T.new(0))
-      resized_flags
+      resized_flags(false)
     end
 
     def initialize(@nrows, @ncolumns, @upper_band, @lower_band = upper_band, @flags = MatrixFlags::None, &block)
@@ -56,7 +56,7 @@ module LA
           T.new(0)
         end
       end
-      resized_flags
+      resized_flags(false)
     end
 
     def self.new(nrows, ncolumns, upper_band, values : Indexable)
@@ -207,7 +207,7 @@ module LA
       self
     end
 
-    private def resized_flags
+    private def resized_flags(reset_to_none = true)
       if @upper_band == 0 && @lower_band == 0
         @flags = MatrixFlags.for_diag(nrows == ncolumns)
       elsif @upper_band == 0
@@ -215,7 +215,7 @@ module LA
       elsif @lower_band == 0
         @flags = MatrixFlags::UpperTriangular
       else
-        @flags = MatrixFlags::None
+        @flags = MatrixFlags::None if reset_to_none
       end
     end
 
@@ -406,7 +406,8 @@ module LA
         end
         lapack(tbtrs, uplo, 'N'.ord.to_u8, 'N'.ord.to_u8, n, kd, b.ncolumns, a, kd + 1, x, n)
         # elsif flags.positive_definite?
-        # lapack(pbsv, 'U'.ord.to_u8, n, kd, b.ncolumns, a, kd + 1, x, b.ncolumns)
+        #   a.lower_band = 0
+        #   lapack(pbsv, 'U'.ord.to_u8, n, upper_band, b.ncolumns, a, upper_band + 1, x, n)
         # elsif flags.hermitian?
         #   {% if T == Complex %}
         #   ipiv = Slice(Int32).new(n)

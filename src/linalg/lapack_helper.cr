@@ -91,6 +91,7 @@ module LA
           "orgrq" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "orglq" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "orgql" => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
+          "pbsv"  => {5 => ARG_MATRIX, 7 => ARG_MATRIX},
           "posv"  => {4 => ARG_MATRIX, 6 => ARG_MATRIX},
           "potrf" => {3 => ARG_MATRIX},
           "potri" => {3 => ARG_MATRIX},
