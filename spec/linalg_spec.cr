@@ -111,6 +111,20 @@ describe LA do
     LA.solve(a, b).should eq (a.inv * b)
   end
 
+  it "solves a linear equations when positive definite" do
+    a = GMat[
+      [1, 0, 0, 0],
+      [4, 5, 1, 0],
+      [0, 1, -1, 0],
+      [0, 0, 2, 1]]
+    a = a*a.t
+    a.detect?(MatrixFlags::PositiveDefinite).should be_true
+    b = GMat[[1, 2, 7, 1]].t!
+    x = a.solve(b)
+    (a*x).should be_close b, 1e-6
+    # a.solve(b).should eq a.solve(b)
+  end
+
   it "high-level: calculate determinant" do
     a = GMat[
       [1, 2, 3],

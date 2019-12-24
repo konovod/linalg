@@ -110,7 +110,7 @@ module LA
       if flags.triangular?
         lapack(trtrs, uplo, 'N'.ord.to_u8, 'N'.ord.to_u8, n, b.nrows, a, n, x, b.nrows)
       elsif flags.positive_definite?
-        lapack(posv, 'U'.ord.to_u8, n, b.ncolumns, a, n, x, b.ncolumns)
+        lapack(posv, 'U'.ord.to_u8, n, b.ncolumns, a, n, x, b.nrows)
       elsif flags.hermitian?
         {% if T == Complex %}
           ipiv = Slice(Int32).new(n)
