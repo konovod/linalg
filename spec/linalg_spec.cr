@@ -122,7 +122,17 @@ describe LA do
     b = GMat[[1, 2, 7, 1]].t!
     x = a.solve(b)
     (a*x).should be_close b, 1e-6
-    # a.solve(b).should eq a.solve(b)
+
+    a = GMatComplex[
+      [1, 0, 0, 0],
+      [4, 5, 1, 0],
+      [0, 1, -1, 0],
+      [0, 0, 2, 1]]
+    a = a*a.t
+    a.detect?(MatrixFlags::PositiveDefinite).should be_true
+    b = GMatComplex[[1, 2, 7, 1]].t!
+    x = a.solve(b)
+    (a*x).should be_close b, 1e-6
   end
 
   it "high-level: calculate determinant" do

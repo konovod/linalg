@@ -405,21 +405,12 @@ module LA
           self.lower_band = 0
         end
         lapack(tbtrs, uplo, 'N'.ord.to_u8, 'N'.ord.to_u8, n, kd, b.ncolumns, a, kd + 1, x, n)
-        # elsif flags.positive_definite?
-        #   a.lower_band = 0
-        #   lapack(pbsv, 'U'.ord.to_u8, n, upper_band, b.ncolumns, a, upper_band + 1, x, n)
-        # elsif flags.hermitian?
-        #   {% if T == Complex %}
-        #   ipiv = Slice(Int32).new(n)
-        #   lapack(hesv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
-        #   {% end %}
-        # elsif flags.symmetric?
-        #   ipiv = Slice(Int32).new(n)
-        #   lapack(sysv, uplo, n, b.ncolumns, a, n, ipiv, x, b.nrows)
+      elsif flags.positive_definite?
+        lapack(pbsv, 'U'.ord.to_u8, n, upper_band, b.ncolumns, a, upper_band + lower_band + 1, x, n)
       else
         a.upper_band = kl + ku
         ipiv = Slice(Int32).new(n)
-        lapack(gbsv, n, kl, ku, b.ncolumns, a.raw_banded, n, ipiv, x, b.nrows)
+        lapack(gbsv, n, kl, ku, b.ncolumns, a, 2*kl + ku + 1, ipiv, x, b.nrows)
       end
 
       a.clear_flags
