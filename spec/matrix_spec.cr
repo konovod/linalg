@@ -496,6 +496,23 @@ describe LA::Matrix do
     x.as(Float32).should eq 0
   end
 
+  it "supports range-based vectors" do
+    x = Mat.arange(2.1, 4.3)
+    typeof(x).should eq GeneralMatrix(Float64)
+    x.should eq GMat[[2.1, 3.1, 4.1]]
+
+    y = Mat.arange(10, 6, -2)
+    y.should eq GMat[[10, 8]]
+
+    z = Mat.arange(1, 5, 6)
+    z.should eq GMat[[1.0]]
+
+    Mat.arange(5,4,1).size.should eq({1,0})
+    Mat.arange(4,10,-1).size.should eq({1,0})
+    Mat.arange(14,10,3).size.should eq({1,0})
+    Mat.arange(14,10,0).size.should eq({1,0})
+  end
+
   it "empty array of matrices multiplies to a scalar one" do
     ([] of GMatComplex).product.as(Complex).should eq 1.0 + 0.i
   end
