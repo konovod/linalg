@@ -375,6 +375,14 @@ module LA
       self.identity(n)
     end
 
+    # Create row from start_val...end_val with step of delta between
+    def self.arange(start_val : T, end_val : T, delta = 1.0)
+      return GeneralMatrix(T).new(1,0) unless (end_val - start_val).sign == delta.sign && delta.abs > 0
+      GeneralMatrix(T).new(1, ((end_val - start_val).abs.ceil / delta.abs).ceil.to_i) do |i,j|
+        start_val + j*delta
+      end
+    end
+
     def t
       transpose
     end
