@@ -525,4 +525,33 @@ describe LA::Matrix do
     GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-6.i]].chop(1e-3).not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
     GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-26.i]].chop.not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
   end
+
+  it "can tolerate nil submatrix ranges" do
+    m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
+    #m1 = m[..3, 2..]
+    m1 = m[0..3, 2..3]
+    m1.size.should eq({4, 2})
+    m1[0, 0].should eq m[0, 2]
+    m1[0, 1].should eq m[0, 3]
+    m1[3, 0].should eq m[3, 2]
+    m1[3, 1].should eq m[3, 3]
+    m1[3, 1] = 10
+    m[3, 3].should eq 10
+    expect_raises(IndexError) do
+      m1[1, 2]
+    end
+    expect_raises(IndexError) do
+      m[-6..3, 2..3]
+    end
+    expect_raises(IndexError) do
+      m[0..3, 2..4]
+    end
+    m[1, ..1].should eq GMat32.new([[5, 6]])
+    m[.., 3].should eq m.columns[3]
+    m[.., 3].should eq GMat32.new([[4], [8], [12], [10]])
+    m[.., ..].should eq m
+    m[..., ...].should eq m
+    m[.., ...].should eq m
+    m[..., ..].should eq m
+  end
 end

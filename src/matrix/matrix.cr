@@ -237,7 +237,7 @@ module LA
       end
     end
 
-    def [](i, j)
+    def [](i : Int32, j : Int32)
       i += nrows if i < 0
       j += ncolumns if j < 0
       if j >= 0 && j < ncolumns && i >= 0 && i < nrows
@@ -247,7 +247,7 @@ module LA
       end
     end
 
-    def []=(i, j, value)
+    def []=(i : Int32, j : Int32, value)
       i += nrows if i < 0
       j += ncolumns if j < 0
       if j >= 0 && j < ncolumns && i >= 0 && i < nrows
@@ -258,19 +258,36 @@ module LA
     end
 
     # return submatrix over given ranges.
-    def [](arows : Range(Int32, Int32), acolumns : Range(Int32, Int32))
+    def [](arows : Range(Int32 | Nil, Int32 | Nil), acolumns : Range(Int32 | Nil, Int32 | Nil))
+      arows_begin = arows.begin || 0
+      acolumns_begin = acolumns.begin || 0
+
+      arows_end = arows.end || nrows
+      if arows.end # compensate if user wanted the endpoint only if not nil
+        arows_end += arows.excludes_end? ? 0 : 1
+      end
+
+      acolumns_end = acolumns.end || ncolumns
+      if acolumns.end
+        acolumns_end += acolumns.excludes_end? ? 0 : 1
+      end
+
+      # ranges are converted to have int endpoints and are always exclusive
+      arows = arows_begin...arows_end
+      acolumns = acolumns_begin...acolumns_end
+      
       start_row = arows.begin + (arows.begin < 0 ? nrows : 0)
       start_col = acolumns.begin + (acolumns.begin < 0 ? ncolumns : 0)
-      total_rows = arows.end + (arows.excludes_end? ? 0 : 1) - start_row + (arows.end < 0 ? nrows : 0)
-      total_cols = acolumns.end + (acolumns.excludes_end? ? 0 : 1) - start_col + (acolumns.end < 0 ? ncolumns : 0)
+      total_rows = arows.end - start_row + (arows.end < 0 ? nrows : 0)
+      total_cols = acolumns.end - start_col + (acolumns.end < 0 ? ncolumns : 0)
       SubMatrix(T).new(self, {start_row, start_col}, {total_rows, total_cols})
     end
 
-    def [](row : Int32, acolumns : Range(Int32, Int32))
+    def [](row : Int32, acolumns : Range(Int32 | Nil, Int32 | Nil))
       self[row..row, acolumns]
     end
 
-    def [](arows : Range(Int32, Int32), column : Int32)
+    def [](arows : Range(Int32 | Nil, Int32 | Nil), column : Int32)
       self[arows, column..column]
     end
 
