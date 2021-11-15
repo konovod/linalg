@@ -1,7 +1,12 @@
 require "./libCBLAS"
 
 {% if !flag?(:darwin) %}
+
+{% if flag?(:windows) %}
+  @[Link("libopenblas")]
+{% else %}
   @[Link("lapack")]
+{% end %}
   lib LibLAPACK
     alias Integer = LibC::Int
     alias Complex = LibCBLAS::ComplexFloat

@@ -1,5 +1,7 @@
 {% if flag?(:darwin) %}
   @[Link(framework: "Accelerate")]
+{% elsif flag?(:windows) %}
+  @[Link("libopenblas")]
 {% else %}
   @[Link("cblas")]
 {% end %}
