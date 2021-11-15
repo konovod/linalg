@@ -18,9 +18,9 @@ jobs:
     - name: Install dependencies
       run: apt-get install -y libopenblas-base liblapack3
     - name: create link to BLAS
-      run: ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/x86_64-linux-gnu/libcblas.so
+      run: ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 /usr/lib/x86_64-linux-gnu/libcblas.so
     - name: create link to LAPACK
-      run: ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblapack.so
+      run: ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblapack.so
     - name: Run tests
       run: crystal spec
   build-macos:
