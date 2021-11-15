@@ -23,15 +23,19 @@ struct Complex
   end
 
   def sinh
-    (self.exp - (-self).exp) / 2
+    (Math.exp(self) - Math.exp(-self)) / 2
   end
 
   def cosh
-    (self.exp + (-self).exp) / 2
+    (Math.exp(self) + Math.exp(-self)) / 2
   end
 
   def chop
     self.imag.zero? ? self.real : nil
+  end
+
+  def self.multiplicative_identity
+    new(1.0, 0.0)
   end
 end
 
@@ -54,7 +58,7 @@ abstract struct Number
 end
 
 module Math
-  {% for op in %i(exp cos sin tan cosh sinh sqrt) %}
+  {% for op in %i(cos sin tan cosh sinh) %}
       def {{op.id}}(x : Complex)
         x.{{op.id}}
       end

@@ -143,7 +143,7 @@ module LA
     def self.dft(n, scale : DFTScale = DFTScale::None)
       {% raise "DFT matrix must be Complex" unless T == Complex %}
       j = Complex.new(0, 1)
-      w = (-2*Math::PI*j / n).exp
+      w = Math.exp(-2*Math::PI*j / n)
       result = Matrix(T).ones(n, n).clone
       result.each_index do |i, j|
         next if i == 0 || j == 0

@@ -4,6 +4,6 @@ version: 0.2.0
 authors:
   - Konovod <konovod@gmail.com>
 
-crystal: 0.22.0
+crystal: 1.2.1
 
 license: MIT

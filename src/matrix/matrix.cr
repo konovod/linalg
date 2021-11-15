@@ -22,6 +22,10 @@ module LA
       T.new(0)
     end
 
+    def self.multiplicative_identity
+      T.new(1.0)
+    end
+
     # used in constructors to limit T at compile-time
     protected def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}

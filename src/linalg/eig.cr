@@ -81,8 +81,8 @@ module LA
         vals = Array(T).new(nrows, T.new(0, 0))
         lapack(geev, need_left ? 'V'.ord.to_u8 : 'N'.ord.to_u8, need_right ? 'V'.ord.to_u8 : 'N'.ord.to_u8, nrows, a, nrows,
           vals.to_unsafe.as(LibCBLAS::ComplexDouble*),
-          eigvectorsl.try &.to_unsafe, nrows,
-          eigvectorsr.try &.to_unsafe, nrows, worksize: [2*nrows])
+          eigvectorsl ? eigvectorsl.to_unsafe : Pointer(LibCBLAS::ComplexDouble).null, nrows,
+          eigvectorsr ? eigvectorsr.to_unsafe : Pointer(LibCBLAS::ComplexDouble).null, nrows, worksize: [2*nrows])
         a.clear_flags
         return {vals, eigvectorsl, eigvectorsr}
       {% else %}
@@ -90,8 +90,8 @@ module LA
         imags = Array(T).new(nrows, T.new(0))
         lapack(geev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
           reals, imags,
-          eigvectorsl.try &.to_unsafe, nrows,
-          eigvectorsr.try &.to_unsafe, nrows)
+          eigvectorsl ? eigvectorsl.to_unsafe : Pointer(T).null, nrows,
+          eigvectorsr ? eigvectorsr.to_unsafe : Pointer(T).null, nrows)
         a.clear_flags
         if imags.all? &.==(0)
           vals = reals
@@ -171,8 +171,8 @@ module LA
           bb, b.nrows,
           alpha.to_unsafe.as(LibCBLAS::ComplexDouble*),
           beta.to_unsafe.as(LibCBLAS::ComplexDouble*),
-          eigvectorsl.try &.to_unsafe, nrows,
-          eigvectorsr.try &.to_unsafe, nrows, worksize: [8*nrows])
+          eigvectorsl ? eigvectorsl.to_unsafe : Pointer(LibCBLAS::ComplexDouble).null, nrows,
+          eigvectorsr ? eigvectorsr.to_unsafe : Pointer(LibCBLAS::ComplexDouble).null, nrows, worksize: [8*nrows])
         a.clear_flags
         bb.clear_flags
         return {alpha, beta, eigvectorsl, eigvectorsr}
@@ -183,8 +183,8 @@ module LA
         lapack(ggev, (need_left ? 'V' : 'N').ord.to_u8, (need_right ? 'V' : 'N').ord.to_u8, nrows, a, nrows,
           overwrite_b ? b : b.clone, b.nrows,
           alpha_reals, alpha_imags, beta,
-          eigvectorsl.try &.to_unsafe, nrows,
-          eigvectorsr.try &.to_unsafe, nrows)
+          eigvectorsl ? eigvectorsl.to_unsafe : Pointer(T).null, nrows,
+          eigvectorsr ? eigvectorsr.to_unsafe : Pointer(T).null, nrows)
         a.clear_flags
         bb.clear_flags
         if alpha_imags.all? &.==(0)

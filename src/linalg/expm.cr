@@ -42,7 +42,7 @@ module LA
       if flags.diagonal?
         return self.class.diag(nrows, nrows) do |i|
           v = unsafe_fetch(i, i)
-          {% if T == Complex %} v.exp {% else %} Math.exp(v) {% end %}
+          Math.exp(v)
         end
       end
       return clone.expm2_by_2! if nrows == 2
