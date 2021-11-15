@@ -13,6 +13,8 @@ jobs:
       image: crystallang/crystal
     steps:
     - uses: actions/checkout@v2
+    - name: apt update?
+      run: apt-get update
     - name: Install dependencies
       run: apt-get install -y libopenblas-base liblapack3
     - name: create link to BLAS
