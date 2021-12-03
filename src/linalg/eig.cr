@@ -75,11 +75,13 @@ module LA
         end
       {% end %}
       {% if flag?(:darwin) && T == Float32 %}
-        raise "Eigenvectors for single precision on Darwin are not supported for now"
+        raise "Eigenvectors for single precision on Darwin are not supported for now" if need_left || need_right
       {% end %}
+
       a = overwrite_a ? self : clone
       eigvectorsl = need_left ? GeneralMatrix(T).new(nrows, nrows) : nil
       eigvectorsr = need_right ? GeneralMatrix(T).new(nrows, nrows) : nil
+
       {% if T == Complex %}
         vals = Array(T).new(nrows, T.new(0, 0))
         lapack(geev, need_left ? 'V'.ord.to_u8 : 'N'.ord.to_u8, need_right ? 'V'.ord.to_u8 : 'N'.ord.to_u8, nrows, a, nrows,

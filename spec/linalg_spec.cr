@@ -261,15 +261,17 @@ describe LA do
   end
 
   it "high-level: hessenberg decomposition" do
-    a = GMatComplex[[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]]
-    h, q = a.hessenberg(calc_q: true)
-    q.detect?(MatrixFlags::Orthogonal).should be_true
-    (q*h*q.conjtranspose).should almost_eq a
-
     a = GMat[[1, -2, 3], [2, 5, 4], [7, 0, 1]]
     h, q = a.hessenberg(calc_q: true)
     q.detect?(MatrixFlags::Orthogonal).should be_true
     (q*h*q.transpose).should almost_eq a
+  end
+
+  it "high-level: hessenberg decomposition (complex argument)" do
+    a = GMatComplex[[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]]
+    h, q = a.hessenberg(calc_q: true)
+    q.detect?(MatrixFlags::Orthogonal).should be_true
+    (q*h*q.conjtranspose).should almost_eq a
   end
 
   it "high-level: schur decomposition (real argument)" do
