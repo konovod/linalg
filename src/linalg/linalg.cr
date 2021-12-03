@@ -296,6 +296,10 @@ module LA
 
       worksize = kind.inf? ? nrows : 0
 
+      {% if flag?(:darwin) && T == Float32 %}
+      {% raise "Matrix norms for single precision on Darwin are not supported for now" %}
+      {% end %}
+
       if flags.triangular?
         lapack_util(lantr, worksize, let, uplo, 'N'.ord.to_u8, @nrows, @ncolumns, matrix(self), @nrows)
       elsif flags.hermitian?
