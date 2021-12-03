@@ -534,13 +534,13 @@ describe LA::BandedMatrix do
       [4, 5, 7, 0],
       [0, 1, -1, 1],
       [0, 0, 2, 1]]
-    BMat32.new(a).det.should eq a.det
+    BMat32.new(a).det.should be_close a.det, 1e-6
 
     a = GMatComplex[
       [1.i, 2, 3],
       [0, 5, 7],
       [0, 0, -1.i]]
-    BMatComplex.new(a).det.should eq a.det
+    BMatComplex.new(a).det.should be_close a.det, 1e-6
   end
 
   it "solves a linear equations in general case" do
