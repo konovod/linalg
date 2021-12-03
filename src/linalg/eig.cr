@@ -56,7 +56,7 @@ module LA
     def eigs(*, need_left : Bool, need_right : Bool, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       {% if flag?(:darwin) && T == Float32 %}
-      {% raise "Eigenvectors for single precision on Darwin are not supported for now" %}
+        raise "Eigenvectors for single precision on Darwin are not supported for now"
       {% end %}
 
       {% if T == Complex %}
