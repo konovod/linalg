@@ -1,14 +1,21 @@
-name: Crystal CI
+name: Linux CI
 
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+  schedule:
+    - cron: '0 6 * * 6'
 jobs:
   build-ubuntu:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-latest, crystal: latest}
+          - {os: ubuntu-latest, crystal: nightly}  
+    runs-on: ${{matrix.os}}
     container:
       image: crystallang/crystal
     steps:
@@ -21,18 +28,5 @@ jobs:
       run: ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 /usr/lib/x86_64-linux-gnu/libcblas.so
     - name: create link to LAPACK
       run: ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblapack.so
-    - name: Run tests
-      run: crystal spec
-  build-macos:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install Crystal
-      # You may pin to the exact commit or the version.
-      # uses: crystal-lang/install-crystal@bf1b0576fd275460f9d3b034005d2d9a506fa274
-      uses: crystal-lang/install-crystal@v1.5.3
-      with:
-        # The version of Crystal to install ("latest", "nightly", "0.35.1" etc)
-        crystal: latest
     - name: Run tests
       run: crystal spec

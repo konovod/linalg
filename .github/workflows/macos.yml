@@ -1,0 +1,23 @@
+name: Mac OSX CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '0 6 * * 6'
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Crystal
+      # You may pin to the exact commit or the version.
+      # uses: crystal-lang/install-crystal@bf1b0576fd275460f9d3b034005d2d9a506fa274
+      uses: crystal-lang/install-crystal@v1.5.3
+      with:
+        # The version of Crystal to install ("latest", "nightly", "0.35.1" etc)
+        crystal: latest
+    - name: Run tests
+      run: crystal spec
