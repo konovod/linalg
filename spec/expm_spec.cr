@@ -2,9 +2,21 @@ require "./spec_helper"
 
 include LA
 describe LA do
-  it "can evaluate matrix exponent" do
+  it "can evaluate matrix exponent for single precision" do
     Mat32.zeros(2, 2).expm.should almost_eq Mat32.identity(2)
     Mat32.ones(1, 1).expm.should almost_eq GMat32[[Math::E]]
+    m = GMat32[{0, 6, 0, 0}, {0, 0, 6, 0}, {0, 0, 0, 6}, {0, 0, 0, 0}]
+    mres = GMat32[
+      [1.0, 6.0, 18.0, 36.0],
+      [0.0, 1.0, 6.0, 18.0],
+      [0.0, 0.0, 1.0, 6.0],
+      [0.0, 0.0, 0.0, 1.0],
+    ]
+    m.expm.should almost_eq mres
+  end
+  it "can evaluate matrix exponent" do
+    GMat.zeros(2, 2).expm.should almost_eq GMat.identity(2)
+    GMat.ones(1, 1).expm.should almost_eq GMat[[Math::E]]
 
     m = GMat[{0, 6, 0, 0}, {0, 0, 6, 0}, {0, 0, 0, 6}, {0, 0, 0, 0}]
     mres = GMat[
