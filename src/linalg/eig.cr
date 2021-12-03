@@ -55,10 +55,6 @@ module LA
 
     def eigs(*, need_left : Bool, need_right : Bool, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
-      {% if flag?(:darwin) && T == Float32 %}
-        raise "Eigenvectors for single precision on Darwin are not supported for now"
-      {% end %}
-
       {% if T == Complex %}
         if flags.hermitian?
           vals, vectors = eigsh(need_vectors: need_left || need_right, overwrite_a: overwrite_a)
@@ -77,6 +73,9 @@ module LA
             return {vals, need_left ? vectors : nil, need_right ? vectors : nil}
           end
         end
+      {% end %}
+      {% if flag?(:darwin) && T == Float32 %}
+        raise "Eigenvectors for single precision on Darwin are not supported for now"
       {% end %}
       a = overwrite_a ? self : clone
       eigvectorsl = need_left ? GeneralMatrix(T).new(nrows, nrows) : nil

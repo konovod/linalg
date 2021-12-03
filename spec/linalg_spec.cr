@@ -371,14 +371,12 @@ describe LA do
     GMatComplex.new(b).norm(MatrixNorm::Inf).should eq 9
   end
 
-  {% if !flag?(:darwin) %}
-    it "high-level: calculate matrix norms for single precision" do
-      a = GMat[[-4, -3, -2, -1, 0, 1, 2, 3, 4]].t
-      GMat32.new(a).norm.should be_close(7.745966692414834, 1e-6)
-      GMat32.new(a).norm(MatrixNorm::Inf).should eq 4
-      GMat32.new(a).norm(MatrixNorm::One).should eq 20
-    end
-  {% end %}
+  it "high-level: calculate matrix norms for single precision" do
+    a = GMat[[-4, -3, -2, -1, 0, 1, 2, 3, 4]].t
+    GMat32.new(a).norm.should be_close(7.745966692414834, 1e-6)
+    GMat32.new(a).norm(MatrixNorm::Inf).should eq 4
+    GMat32.new(a).norm(MatrixNorm::One).should eq 20
+  end
 
   it "high-level: calculate rectangular matrix norms" do
     a = GMat[[-4, -3, -2, -1, 1, 2, 3, 4]].t
