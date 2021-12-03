@@ -275,7 +275,7 @@ module LA
       # ranges are converted to have int endpoints and are always exclusive
       arows = arows_begin...arows_end
       acolumns = acolumns_begin...acolumns_end
-      
+
       start_row = arows.begin + (arows.begin < 0 ? nrows : 0)
       start_col = acolumns.begin + (acolumns.begin < 0 ? ncolumns : 0)
       total_rows = arows.end - start_row + (arows.end < 0 ? nrows : 0)
@@ -316,6 +316,7 @@ module LA
         vabs = {% if T == Complex %}value.real.abs + value.imag.abs{% else %}value.abs{% end %}
         amax = vabs if amax < vabs
       end
+      amax = 1.0 if amax < 1.0
       amax * nrows * ncolumns * 10*real_type_const(EPSILON)
     end
 
@@ -394,8 +395,8 @@ module LA
 
     # Create row from start_val...end_val with step of delta between
     def self.arange(start_val : T, end_val : T, delta = 1.0)
-      return GeneralMatrix(T).new(1,0) unless (end_val - start_val).sign == delta.sign && delta.abs > 0
-      GeneralMatrix(T).new(1, ((end_val - start_val).abs.ceil / delta.abs).ceil.to_i) do |i,j|
+      return GeneralMatrix(T).new(1, 0) unless (end_val - start_val).sign == delta.sign && delta.abs > 0
+      GeneralMatrix(T).new(1, ((end_val - start_val).abs.ceil / delta.abs).ceil.to_i) do |i, j|
         start_val + j*delta
       end
     end
