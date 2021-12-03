@@ -1,6 +1,6 @@
 [![Linux CI](https://github.com/konovod/linalg/actions/workflows/linux.yml/badge.svg)](https://github.com/konovod/linalg/actions/workflows/linux.yml)
-[![MacOSX CI](https://github.com/konovod/linalg.cr/actions/workflows/macos.yml/badge.svg)](https://github.com/konovod/linalg/actions/workflows/macos.yml)
-[![Windows CI](https://github.com/konovod/linalg.cr/actions/workflows/windows.yml/badge.svg)](https://github.com/konovod/linalg/actions/workflows/windows.yml)
+[![MacOSX CI](https://github.com/konovod/linalg/actions/workflows/macos.yml/badge.svg)](https://github.com/konovod/linalg/actions/workflows/macos.yml)
+[![Windows CI](https://github.com/konovod/linalg/actions/workflows/windows.yml/badge.svg)](https://github.com/konovod/linalg/actions/workflows/windows.yml)
 
 # linalg
 Linear algebra library in Crystal, uses LAPACK.
