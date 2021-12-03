@@ -263,6 +263,7 @@ describe LA do
   it "high-level: hessenberg decomposition" do
     a = GMat[[1, -2, 3], [2, 5, 4], [7, 0, 1]]
     h, q = a.hessenberg(calc_q: true)
+    pp! h, q
     q.detect?(MatrixFlags::Orthogonal).should be_true
     (q*h*q.transpose).should almost_eq a
   end
@@ -270,6 +271,15 @@ describe LA do
   it "high-level: hessenberg decomposition (complex argument)" do
     a = GMatComplex[[1, -2.i, 3], [2.i, 5, 4], [7, 0, 1.i]]
     h, q = a.hessenberg(calc_q: true)
+    pp! h, q
+    q.detect?(MatrixFlags::Orthogonal).should be_true
+    (q*h*q.conjtranspose).should almost_eq a
+  end
+
+  it "high-level: hessenberg decomposition (single precision)" do
+    a = GMat32[[1, -2, 3], [2, 5, 4], [7, 0, 1]]
+    h, q = a.hessenberg(calc_q: true)
+    pp! h, q
     q.detect?(MatrixFlags::Orthogonal).should be_true
     (q*h*q.conjtranspose).should almost_eq a
   end
