@@ -13,8 +13,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install Crystal
-      # You may pin to the exact commit or the version.
-      # uses: crystal-lang/install-crystal@bf1b0576fd275460f9d3b034005d2d9a506fa274
       uses: crystal-lang/install-crystal@v1.5.3
+    - name: Download OpenBLAS
+      shell: powershell
+      run: Invoke-WebRequest -Uri "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.18/OpenBLAS-0.3.18-x64.zip" `
+                             -OutFile ./OpenBLAS.zip
+    - name: Unzip OpenBLAS
+      shell: cmd
+      run: |
+        mkdir OpenBLAS
+        move OpenBLAS.zip ./OpenBLAS
+        cd OpenBLAS
+        7z x -y OpenBLAS.zip
+        copy .\bin\libopenblas.dll ..\
+        copy .\lib\libopenblas.lib ..\
     - name: Run tests
       run: crystal spec

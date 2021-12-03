@@ -257,7 +257,7 @@ describe LA do
     x1 = chol1.cho_solve(b)
     x2 = chol2.cho_solve(b)
     x1.should eq x2
-    (a*x1 - b).should eq MatComplex.zeros(2, 1)
+    (a*x1 - b).should almost_eq MatComplex.zeros(2, 1)
   end
 
   it "high-level: hessenberg decomposition" do
