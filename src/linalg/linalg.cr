@@ -297,7 +297,7 @@ module LA
       worksize = kind.inf? ? nrows : 0
 
       {% if flag?(:darwin) && T == Float32 %}
-        raise "Matrix norms for single precision on Darwin are not supported for now"
+        return GMat.new(self).norm(kind)
       {% end %}
 
       if flags.triangular?
