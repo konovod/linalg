@@ -27,5 +27,7 @@ jobs:
         7z x -y OpenBLAS.zip
         copy .\bin\libopenblas.dll ..\
         copy .\lib\libopenblas.lib ..\
+        cd ..
+        copy .\lib\libopenblas.lib D:\a\_temp\crystal-nightly-true-undefined\bin\lib
     - name: Run tests
       run: crystal spec
