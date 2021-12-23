@@ -95,8 +95,7 @@ module LA
         matrix.each_with_index(all: false) do |v, i, j|
           result.push_element(i, j, v)
         end
-        result.clear_flags
-        result.assume!(matrix.flags, true)
+        result.flags = matrix.flags
         result
       end
 
@@ -113,6 +112,15 @@ module LA
         @raw_columns << j
         @raw_values << T.new(v)
         @dictionary[{i, j}] = @raw_rows.size - 1
+      end
+
+      protected def add_element(i, j, v)
+        if index = @dictionary[{i, j}]?
+          @raw_values[index] += T.new(value)
+        else
+          # TODO - delete elements?
+          push_element(i, j, value)
+        end
       end
 
       def unsafe_set(i, j, value)
@@ -225,16 +233,38 @@ module LA
         COOMatrix(T).new(@ncolumns, @nrows, @raw_columns.dup, @raw_rows.dup, @raw_values.map(&.conj), flags: @flags.transpose, dont_clone: true)
       end
 
+      # returns element-wise sum
+      def +(m : LA::Matrix)
+        result = clone.add!(T.one, m)
+        result.flags = self.flags.sum(m.flags)
+        result
+      end
+
+      def -(m : LA::Matrix)
+        result = clone.add!(-T.one, m)
+        result.flags = self.flags.sum(m.flags)
+        result
+      end
+
+      def add!(k : Number, m : Sparse::Matrix)
+        assert_same_size(m)
+        m.each_with_index(all: false) do |v, i, j|
+          add_element(i, j, k*v)
+        end
+        self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
+        self
+      end
+
+      def add!(k : Number, m : LA::Matrix)
+        raise ArgumentError.new "can't `add!` dense matrix to sparse"
+      end
+
       # def tril!(k = 0)
       # def triu!(k = 0)
-      # def +(m : BandedMatrix(T))
-      # def -(m : BandedMatrix(T))
-      # def add!(k : Number, m : BandedMatrix)
-      # def add!(k : Number, m : Matrix)
-      # def self.rand(nrows, ncolumns, upper_band : Int32, lower_band : Int32, rng : Random = Random::DEFAULT)
-      # def self.rand(nrows, ncolumns, upper_band : Int32, rng : Random = Random::DEFAULT)
       # def tril(k = 0)
       # def triu(k = 0)
+
+      # def self.rand(nrows, ncolumns, fill_factor, rng : Random = Random::DEFAULT)
     end
   end
 end
