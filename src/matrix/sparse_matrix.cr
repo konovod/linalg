@@ -38,6 +38,7 @@ module LA
         @raw_rows = Array(Int32).new(capacity)
         @raw_columns = Array(Int32).new(capacity)
         @raw_values = Array(T).new(capacity)
+        @flags = MatrixFlags.for_diag(@nrows == @ncolumns)
       end
 
       def initialize(@nrows, @ncolumns, rows : Array(Int32), columns : Array(Int32), values : Array(T), @flags = MatrixFlags::None, *, dont_clone : Bool = false, dont_check : Bool = false, dictionary = nil)
@@ -126,9 +127,12 @@ module LA
       def unsafe_set(i, j, value)
         clear_flags # TODO - not always?
         if index = @dictionary[{i, j}]?
-          @raw_values[index] = T.new(value)
+          if value == T.new(0)
+            remove_element(index)
+          else
+            @raw_values[index] = T.new(value)
+          end
         else
-          # TODO - delete elements?
           push_element(i, j, value)
         end
       end
@@ -259,12 +263,62 @@ module LA
         raise ArgumentError.new "can't `add!` dense matrix to sparse"
       end
 
-      # def tril!(k = 0)
-      # def triu!(k = 0)
-      # def tril(k = 0)
-      # def triu(k = 0)
+      protected def remove_element(index)
+        @dictionary.remove({@raw_rows[index], @raw_columns[index]})
+        n = nonzeros - 1
+        @dictionary[{@raw_rows[n], @raw_columns[n]}] = index
+        @raw_rows[index] = @raw_rows[n]
+        @raw_columns[index] = @raw_columns[n]
+        @raw_values[index] = @raw_values[n]
+        @raw_rows.pop
+        @raw_columns.pop
+        @raw_values.pop
+      end
+
+      def clear
+        @dictionary.clear
+        @raw_rows.clear
+        @raw_columns.clear
+        @raw_values.clear
+        @flags = MatrixFlags.for_diag(square?)
+      end
+
+      def triu!(k = 0)
+        (nonzeros - 1).downto(0) do |i|
+          remove_element(i) if i > j - k
+        end
+        self.flags = self.flags.triu(k >= 0, square?)
+        self
+      end
+
+      def tril!(k = 0)
+        (nonzeros - 1).downto(0) do |i|
+          remove_element(i) if i < j - k
+        end
+        self.flags = self.flags.tril(k <= 0, square?)
+        self
+      end
+
+      def tril(k = 0)
+        result = COOMatrix(T).new(@nrows, @ncolumns)
+        each_with_index do |v, i, j|
+          result.push_element(i, j, v) if i >= j - k
+        end
+        result.flags = self.flags.tril(k <= 0, square?)
+        result
+      end
+
+      def triu(k = 0)
+        result = COOMatrix(T).new(@nrows, @ncolumns)
+        each_with_index do |v, i, j|
+          result.push_element(i, j, v) if i <= j - k
+        end
+        result.flags = self.flags.triu(k >= 0, square?)
+        result
+      end
 
       # def self.rand(nrows, ncolumns, fill_factor, rng : Random = Random::DEFAULT)
+      # def self.rand(nrows, ncolumns, nonzero_elements, rng : Random = Random::DEFAULT)
     end
   end
 end
