@@ -17,11 +17,12 @@ module LA
           a, b = self, other
           a, b = b, a if a.nonzeros < b.nonzeros
           a.each_with_index(all: false) do |v, i, j|
-            return if b.unsafe_fetch(i, j) != v
+            return false if b.unsafe_fetch(i, j) != v
           end
           b.each_with_index(all: false) do |v, i, j|
-            return if a.unsafe_fetch(i, j) != v
+            return false if a.unsafe_fetch(i, j) != v
           end
+          true
         else
           super(other)
         end
@@ -117,10 +118,10 @@ module LA
 
       protected def add_element(i, j, v)
         if index = @dictionary[{i, j}]?
-          @raw_values[index] += T.new(value)
+          @raw_values[index] += T.new(v)
         else
           # TODO - delete elements?
-          push_element(i, j, value)
+          push_element(i, j, v)
         end
       end
 
@@ -191,17 +192,17 @@ module LA
 
       def map_with_index(&block)
         values = @raw_values.map_with_index { |v, i| T.new(yield(v, @raw_rows[i], @raw_columns[i])) }
-        COOMatrix(T).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: matrix.dictionary)
+        COOMatrix(T).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: @dictionary)
       end
 
       def map_with_index_f64(&block)
         values = @raw_values.map_with_index { |v, i| Float64.new(yield(v, @raw_rows[i], @raw_columns[i])) }
-        COOMatrix(Float64).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: matrix.dictionary)
+        COOMatrix(Float64).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: @dictionary)
       end
 
       def map_with_index_complex(&block)
         values = @raw_values.map_with_index { |v, i| Complex.new(yield(v, @raw_rows[i], @raw_columns[i])) }
-        COOMatrix(Complex).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: matrix.dictionary)
+        COOMatrix(Complex).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: @dictionary)
       end
 
       private def rebuild_dictionary
@@ -239,37 +240,39 @@ module LA
 
       # returns element-wise sum
       def +(m : LA::Matrix)
-        result = clone.add!(T.one, m)
+        result = clone.add!(T.new(1), m)
         result.flags = self.flags.sum(m.flags)
         result
       end
 
       def -(m : LA::Matrix)
-        result = clone.add!(-T.one, m)
+        result = clone.add!(-T.new(1), m)
         result.flags = self.flags.sum(m.flags)
         result
       end
 
-      def add!(k : Number, m : Sparse::Matrix)
+      def add!(k : Number | Complex, m : Sparse::Matrix)
         assert_same_size(m)
         m.each_with_index(all: false) do |v, i, j|
           add_element(i, j, k*v)
         end
-        self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
+        self.flags = self.flags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
         self
       end
 
-      def add!(k : Number, m : LA::Matrix)
+      def add!(k : Number | Complex, m : LA::Matrix)
         raise ArgumentError.new "can't `add!` dense matrix to sparse"
       end
 
       protected def remove_element(index)
         @dictionary.delete({@raw_rows[index], @raw_columns[index]})
         n = nonzeros - 1
-        @dictionary[{@raw_rows[n], @raw_columns[n]}] = index
-        @raw_rows[index] = @raw_rows[n]
-        @raw_columns[index] = @raw_columns[n]
-        @raw_values[index] = @raw_values[n]
+        if n >= 0 && index != n
+          @dictionary[{@raw_rows[n], @raw_columns[n]}] = index
+          @raw_rows[index] = @raw_rows[n]
+          @raw_columns[index] = @raw_columns[n]
+          @raw_values[index] = @raw_values[n]
+        end
         @raw_rows.pop
         @raw_columns.pop
         @raw_values.pop
@@ -325,15 +328,17 @@ module LA
         raise ArgumentError.new("Too many nonzero elements, maximum is nrows*ncolumns/2") if nonzero_elements > nrows * ncolumns // 2
         result = new(nrows, ncolumns, capacity: nonzero_elements)
         nonzero_elements.times do
+          i = j = 0
           loop do
             i = rng.rand(nrows)
             j = rng.rand(ncolumns)
-            break if !result.dictionary.has?({i, j})
+            break if !result.dictionary.has_key?({i, j})
           end
           v = rng.rand
           result.push_element(i, j, v)
         end
-        clear_flags
+        result.clear_flags
+        result
       end
 
       def self.rand(nrows, ncolumns, *, fill_factor, rng : Random = Random::DEFAULT)
@@ -345,7 +350,21 @@ module LA
             result.push_element(i, j, v)
           end
         end
-        clear_flags
+        result.clear_flags
+        result
+      end
+
+      def to_general
+        result = GeneralMatrix(T).new(nrows, ncolumns)
+        self.each_with_index(all: false) do |v, i, j|
+          result.unsafe_set(i, j, v)
+        end
+        result.flags = flags
+        result
+      end
+
+      def to_dense
+        to_general
       end
     end
   end
