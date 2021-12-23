@@ -264,7 +264,7 @@ module LA
       end
 
       protected def remove_element(index)
-        @dictionary.remove({@raw_rows[index], @raw_columns[index]})
+        @dictionary.delete({@raw_rows[index], @raw_columns[index]})
         n = nonzeros - 1
         @dictionary[{@raw_rows[n], @raw_columns[n]}] = index
         @raw_rows[index] = @raw_rows[n]
@@ -284,16 +284,20 @@ module LA
       end
 
       def triu!(k = 0)
-        (nonzeros - 1).downto(0) do |i|
-          remove_element(i) if i > j - k
+        (nonzeros - 1).downto(0) do |index|
+          i = @raw_rows[index]
+          j = @raw_columns[index]
+          remove_element(index) if i > j - k
         end
         self.flags = self.flags.triu(k >= 0, square?)
         self
       end
 
       def tril!(k = 0)
-        (nonzeros - 1).downto(0) do |i|
-          remove_element(i) if i < j - k
+        (nonzeros - 1).downto(0) do |index|
+          i = @raw_rows[index]
+          j = @raw_columns[index]
+          remove_element(index) if i < j - k
         end
         self.flags = self.flags.tril(k <= 0, square?)
         self
