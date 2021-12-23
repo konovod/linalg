@@ -9,6 +9,23 @@ module LA
       property flags : MatrixFlags = MatrixFlags::None
 
       abstract def nonzeros : Int32
+
+      def ==(other : Sparse::Matrix(T))
+        return false unless nrows == other.nrows && ncolumns == other.ncolumns
+        if other.nonzeros + self.nonzeros < nrows * ncolumns // 4
+          # TODO - 2x speed if we account already checked elements
+          a, b = self, other
+          a, b = b, a if a.nonzeros < b.nonzeros
+          a.each_with_index(all: false) do |v, i, j|
+            return if b.unsafe_fetch(i, j) != v
+          end
+          b.each_with_index(all: false) do |v, i, j|
+            return if a.unsafe_fetch(i, j) != v
+          end
+        else
+          super(other)
+        end
+      end
     end
 
     class COOMatrix(T) < Matrix(T)
@@ -62,11 +79,11 @@ module LA
       end
 
       def self.new(matrix : COOMatrix(T))
-        new(matrix.nrows, matrix.ncolumns, matrix.raw_rows, matrix.raw_columns, matrix.raw_values, dictionary: matrix.dictionary)
+        new(matrix.nrows, matrix.ncolumns, matrix.raw_rows, matrix.raw_columns, matrix.raw_values, dictionary: matrix.dictionary, flags: matrix.flags)
       end
 
       def self.new(matrix : COOMatrix)
-        new(matrix.nrows, matrix.ncolumns, matrix.raw_rows.dup, matrix.raw_columns.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, dictionary: matrix.dictionary)
+        new(matrix.nrows, matrix.ncolumns, matrix.raw_rows.dup, matrix.raw_columns.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, dictionary: matrix.dictionary, flags: matrix.flags)
       end
 
       def self.new(matrix : LA::Matrix)
@@ -78,6 +95,8 @@ module LA
         matrix.each_with_index(all: false) do |v, i, j|
           result.push_element(i, j, v)
         end
+        result.clear_flags
+        result.assume!(matrix.flags, true)
         result
       end
 
@@ -173,14 +192,43 @@ module LA
         COOMatrix(Complex).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: matrix.dictionary)
       end
 
-      # def ==(other : BandedMatrix(T))
-      # def transpose!
+      private def rebuild_dictionary
+        @dictionary.clear
+        nonzeros.times do |i|
+          row = @raw_rows[i]
+          column = @raw_columns[i]
+          @dictionary[{row, column}] = i
+        end
+      end
+
+      def transpose!
+        return self if flags.symmetric?
+        nonzeros.times do |i|
+          @raw_rows[i], @raw_columns[i] = @raw_columns[i], @raw_rows[i]
+        end
+        @nrows, @ncolumns = @ncolumns, @nrows
+        self.flags = flags.transpose
+        rebuild_dictionary
+        self
+      end
+
+      def transpose
+        return clone if flags.symmetric?
+        COOMatrix(T).new(@ncolumns, @nrows, @raw_columns, @raw_rows, @raw_values, flags: @flags.transpose)
+      end
+
+      def conjtranspose
+        {% if T != Complex %}
+          return transpose
+        {% end %}
+        return clone if flags.hermitian?
+        COOMatrix(T).new(@ncolumns, @nrows, @raw_columns.dup, @raw_rows.dup, @raw_values.map(&.conj), flags: @flags.transpose, dont_clone: true)
+      end
+
       # def tril!(k = 0)
       # def triu!(k = 0)
       # def +(m : BandedMatrix(T))
       # def -(m : BandedMatrix(T))
-      # def transpose
-      # def conjtranspose
       # def add!(k : Number, m : BandedMatrix)
       # def add!(k : Number, m : Matrix)
       # def self.rand(nrows, ncolumns, upper_band : Int32, lower_band : Int32, rng : Random = Random::DEFAULT)
