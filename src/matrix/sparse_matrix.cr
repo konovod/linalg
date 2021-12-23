@@ -96,15 +96,6 @@ module LA
         @dictionary[{i, j}] = @raw_rows.size - 1
       end
 
-      def add_element(i, j, v)
-        clear_flags # TODO - not always?
-        if index = @dictionary[{i, j}]?
-          @raw_values[index] += T.new(value)
-        else
-          push_element(i, j, v)
-        end
-      end
-
       def unsafe_set(i, j, value)
         clear_flags # TODO - not always?
         if index = @dictionary[{i, j}]?
@@ -122,6 +113,80 @@ module LA
       def clone
         dup
       end
+
+      def self.diag(nrows, ncolumns, values)
+        raise ArgumentError.new("Too much elements for diag matrix") if values.size > {nrows, ncolumns}.min
+        new(nrows, ncolumns, values.size)
+        values.each_with_index do |v, i|
+          push_element(i, i, v)
+        end
+      end
+
+      def self.diag(nrows, ncolumns, &block)
+        n = {nrows, ncolumns}.min
+        new(nrows, ncolumns, n)
+        n.times do |i|
+          value = yield(i)
+          push_element(i, i, T.new(v))
+        end
+      end
+
+      def each_index(*, all = false, &block)
+        if all
+          super(all: true) { |i, j| yield(i, j) }
+        else
+          nonzeros.times do |i|
+            yield(@raw_rows[i], @raw_columns[i])
+          end
+        end
+      end
+
+      def each_with_index(*, all = false, &block)
+        if all
+          super(all: true) { |v, i, j| yield(v, i, j) }
+        else
+          nonzeros.times do |i|
+            yield(@raw_values[i], @raw_rows[i], @raw_columns[i])
+          end
+        end
+      end
+
+      def map_with_index!(&block)
+        nonzeros.times do |i|
+          @raw_values[i] = T.new(yield(@raw_values[i], @raw_rows[i], @raw_columns[i]))
+        end
+        self
+      end
+
+      def map_with_index(&block)
+        values = @raw_values.map_with_index { |v, i| T.new(yield(v, @raw_rows[i], @raw_columns[i])) }
+        COOMatrix(T).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: matrix.dictionary)
+      end
+
+      def map_with_index_f64(&block)
+        values = @raw_values.map_with_index { |v, i| Float64.new(yield(v, @raw_rows[i], @raw_columns[i])) }
+        COOMatrix(Float64).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: matrix.dictionary)
+      end
+
+      def map_with_index_complex(&block)
+        values = @raw_values.map_with_index { |v, i| Complex.new(yield(v, @raw_rows[i], @raw_columns[i])) }
+        COOMatrix(Complex).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: matrix.dictionary)
+      end
+
+      # def ==(other : BandedMatrix(T))
+      # def transpose!
+      # def tril!(k = 0)
+      # def triu!(k = 0)
+      # def +(m : BandedMatrix(T))
+      # def -(m : BandedMatrix(T))
+      # def transpose
+      # def conjtranspose
+      # def add!(k : Number, m : BandedMatrix)
+      # def add!(k : Number, m : Matrix)
+      # def self.rand(nrows, ncolumns, upper_band : Int32, lower_band : Int32, rng : Random = Random::DEFAULT)
+      # def self.rand(nrows, ncolumns, upper_band : Int32, rng : Random = Random::DEFAULT)
+      # def tril(k = 0)
+      # def triu(k = 0)
     end
   end
 end

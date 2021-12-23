@@ -356,6 +356,7 @@ module LA
     end
 
     def self.diag(nrows, ncolumns, values)
+      # TODO - replace to BandedMatrix
       GeneralMatrix(T).diag(nrows, ncolumns, values)
     end
 
