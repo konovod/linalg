@@ -317,8 +317,32 @@ module LA
         result
       end
 
-      # def self.rand(nrows, ncolumns, fill_factor, rng : Random = Random::DEFAULT)
-      # def self.rand(nrows, ncolumns, nonzero_elements, rng : Random = Random::DEFAULT)
+      def self.rand(nrows, ncolumns, *, nonzero_elements, rng : Random = Random::DEFAULT)
+        raise ArgumentError.new("Too many nonzero elements, maximum is nrows*ncolumns/2") if nonzero_elements > nrows * ncolumns // 2
+        result = new(nrows, ncolumns, capacity: nonzero_elements)
+        nonzero_elements.times do
+          loop do
+            i = rng.rand(nrows)
+            j = rng.rand(ncolumns)
+            break if !result.dictionary.has?({i, j})
+          end
+          v = rng.rand
+          result.push_element(i, j, v)
+        end
+        clear_flags
+      end
+
+      def self.rand(nrows, ncolumns, *, fill_factor, rng : Random = Random::DEFAULT)
+        result = new(nrows, ncolumns, capacity: (nrows*ncolumns*fill_factor*1.1).to_i)
+        nrows.times do |i|
+          ncolumns.times do |j|
+            next if rng.rand >= fill_factor
+            v = rng.rand
+            result.push_element(i, j, v)
+          end
+        end
+        clear_flags
+      end
     end
   end
 end
