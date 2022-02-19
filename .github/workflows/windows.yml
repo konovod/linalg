@@ -28,11 +28,6 @@ jobs:
         copy .\bin\libopenblas.dll ..\
         copy .\lib\libopenblas.lib ..\
         cd ..
-        path
-        dir D:\a\_temp\crystal-nightly-true-undefined\bin
-        dir D:\a\_temp\crystal-nightly-true-undefined\
-        dir D:\a\_temp\crystal-nightly-true-undefined-shards\bin
-        dir D:\a\_temp\crystal-nightly-true-undefined-shards\
-        copy .\libopenblas.lib D:\a\_temp\crystal-nightly-true-undefined\bin\lib
+        copy .\libopenblas.lib D:\a\_temp\crystal-nightly-true-undefined\lib
     - name: Run tests
       run: crystal spec
