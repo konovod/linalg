@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install Crystal
-      uses: crystal-lang/install-crystal@v1.5.3
+      uses: crystal-lang/install-crystal@v1
     - name: Download OpenBLAS
       shell: powershell
       run: Invoke-WebRequest -Uri "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.18/OpenBLAS-0.3.18-x64.zip" `
