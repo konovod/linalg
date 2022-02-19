@@ -28,6 +28,6 @@ jobs:
         copy .\bin\libopenblas.dll ..\
         copy .\lib\libopenblas.lib ..\
         cd ..
-        copy .\libopenblas.lib D:\a\_temp\crystal-nightly-true-undefined\bin\lib
+        copy .\libopenblas.lib D:\a\_temp\crystal-nightly-true-undefined\lib
     - name: Run tests
       run: crystal spec
