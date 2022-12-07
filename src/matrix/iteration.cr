@@ -13,7 +13,7 @@ module LA
           @base.n{{name.id}}
         end
         # unsafe_new for submatrix?
-        def unsafe_fetch(i)
+        def unsafe_fetch(index)
           SubMatrix(T).new(@base, {{offset}}, {{size}})
         end
       end
@@ -22,8 +22,8 @@ module LA
       end
     end
 
-    def_indexable(columns, {0, i}, {@base.nrows, 1})
-    def_indexable(rows, {i, 0}, {1, @base.ncolumns})
+    def_indexable(columns, {0, index}, {@base.nrows, 1})
+    def_indexable(rows, {index, 0}, {1, @base.ncolumns})
 
     # TODO - more macro magic?
     struct Columns(T)
@@ -58,11 +58,11 @@ module LA
       end
 
       # unsafe_new for submatrix?
-      def unsafe_fetch(i)
+      def unsafe_fetch(index)
         if @offset >= 0
-          @base.unsafe_fetch(i, i + @offset)
+          @base.unsafe_fetch(index, index + @offset)
         else
-          @base.unsafe_fetch(i - @offset, i)
+          @base.unsafe_fetch(index - @offset, index)
         end
       end
     end

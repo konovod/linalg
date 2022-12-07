@@ -16,7 +16,7 @@ module LA
     abstract def nrows : Int32
     abstract def ncolumns : Int32
     abstract def flags : MatrixFlags
-    abstract def flags=(value : MatrixFlags)
+    abstract def flags=(flags : MatrixFlags)
 
     def self.zero
       T.new(0)
