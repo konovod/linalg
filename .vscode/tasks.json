@@ -6,7 +6,7 @@
     {
       "label": "spec",
       "type": "shell",
-      "command": "crystal spec --no-color",
+      "command": "crystal spec --no-color --error-trace",
       "problemMatcher": []
     }
   ]

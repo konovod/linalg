@@ -14,7 +14,7 @@ module LA
       MatrixFlags::None
     end
 
-    def flags=(value : MatrixFlags)
+    def flags=(flags : MatrixFlags)
       # do nothing (todo - raise?)
     end
 
