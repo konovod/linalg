@@ -45,3 +45,21 @@ x[0, 0] = 0 # m[1,1] is now 0 (questionable feature? maybe should be #[]! for mo
 y = x.clone # now y is a separate matrix
 y[0, 0] = 1 # m[1,1] is still 0
 pp m[1, 1]
+
+m_dash = m.append_row_zeros
+m_ddash = m.append_column_zeros
+puts m_dash
+puts m_ddash
+
+array = [1, 2, 3, 4, 5, 6]
+matrix = GMat.new(3, 2, array)
+
+pseudo_inverse = matrix.pinv # Computes the inverse of a non-square matrix
+puts pseudo_inverse
+
+array = [1, 2, 3, 4, 5, 6]
+complex_array = array.map { |e| Complex.new(e, e) }
+complex_matrix = GMatComplex.new(3, 2, complex_array)
+
+complex_pseudo_inverse = complex_matrix.pinv
+puts complex_pseudo_inverse
