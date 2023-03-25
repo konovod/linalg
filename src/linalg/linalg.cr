@@ -101,6 +101,88 @@ module LA
       clone.inv!
     end
 
+    def pinv 
+      clone.pinv! 
+    end
+
+    def pinv! 
+      # Pure Crystal implementation since LAPACK has no direct implementation of pseudo inverse
+      u, s, vt = self.svd
+      v = vt.transpose
+      u_transpose = u.transpose
+
+      s_inverse = s.map { |e|
+        if e != 0
+          1.0 / e
+        else
+          e
+        end
+      }
+      s_dash : GeneralMatrix(T) = GeneralMatrix(T).diag(s_inverse).transpose
+
+      append_rows = 0
+      append_cols = 0
+
+      if v.ncolumns >= s_dash.nrows
+        append_rows = v.ncolumns - s_dash.nrows
+      else
+        puts "S` #{s_dash}"
+        puts "v #{v}"
+        raise Exception.new("Invalid dimension, S` larger than v")
+      end
+
+      if u_transpose.nrows >= s_dash.ncolumns
+        append_cols = u_transpose.nrows - s_dash.ncolumns
+      else
+        puts "S` #{s_dash}\nShape #{s_dash.shape}"
+        puts "U #{u_transpose}\nShape #{u_transpose.shape}"
+        raise Exception.new("Invalid dimension, S` larger than U")
+      end
+
+      append_rows.times {
+        s_dash = s_dash.append_row_zeros
+      }
+
+      append_cols.times {
+        s_dash = s_dash.append_column_zeros
+      }
+      return v * s_dash * u_transpose
+    end
+
+    def append_column_zeros : GeneralMatrix(T)
+      i = 0
+      matrix_array = self.to_a
+      tmp = Array(T).new
+
+      while i < matrix_array.size
+        if (i > 0 && i % self.ncolumns == 0)
+          tmp << T.new(0)
+          tmp << matrix_array[i]
+        else
+          tmp << matrix_array[i]
+        end
+        i += 1
+      end
+
+      tmp << T.new(0)
+
+      appended_matrix = GeneralMatrix(T).new(self.nrows, self.ncolumns + 1, tmp)
+
+      return appended_matrix
+    end
+      
+    def append_row_zeros : GeneralMatrix(T)
+      zeros = [T.new(0)] * self.ncolumns
+      matrix_array = self.to_a
+      matrix_array += zeros
+      appended_matrix = GeneralMatrix(T).new(self.nrows + 1, self.ncolumns, matrix_array)
+      return appended_matrix
+    end
+
+    def shape : Array(Int32)
+      return [self.nrows, self.ncolumns]
+    end
+
     def solve(b : self, *, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       raise ArgumentError.new("a must be square") unless square?
