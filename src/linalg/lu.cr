@@ -110,10 +110,9 @@ module LA
     def solve(b, transpose = LUTranspose::None, *, overwrite_b = false)
       raise ArgumentError.new("nrows of a and b must match") unless @a.nrows == b.nrows
       trans = case transpose
-              when .none?           then 'N'
-              when .transpose?      then 'T'
-              when .conj_transpose? then 'C'
-              else                       'N'
+              in .none?           then 'N'
+              in .transpose?      then 'T'
+              in .conj_transpose? then 'C'
               end.ord.to_u8
       x = overwrite_b ? b : b.clone
       lapack(getrs, trans, size, b.ncolumns, @a, size, @ipiv, x, x.nrows)

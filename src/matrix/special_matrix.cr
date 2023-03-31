@@ -153,14 +153,15 @@ module LA
           result.unsafe_set(i, j, result.unsafe_fetch(i, 1)*result.unsafe_fetch(i, j - 1))
         end
       end
-      unless scale.none?
-        case scale
-        when .sqrt_n?
-          scale = 1.0 / Math.sqrt(n)
-        else
-          scale = 1.0 / n
-        end
+      case scale
+      in .sqrt_n?
+        scale = 1.0 / Math.sqrt(n)
         result.map! { |v| scale*v }
+      in .n?
+        scale = 1.0 / n
+        result.map! { |v| scale*v }
+      in .none?
+        # do nothing
       end
       result
     end
@@ -181,7 +182,7 @@ module LA
 
     def self.pascal(n, kind : PascalKind = PascalKind::Symmetric)
       case kind
-      when .upper?
+      in .upper?
         zeros(n, n).tap do |m|
           m.each_index do |i, j|
             next if i > j
@@ -193,7 +194,7 @@ module LA
           end
           m.assume!(MatrixFlags::UpperTriangular)
         end
-      when .lower?
+      in .lower?
         zeros(n, n).tap do |m|
           m.each_index do |i, j|
             next if i < j
@@ -205,7 +206,7 @@ module LA
           end
           m.assume!(MatrixFlags::LowerTriangular)
         end
-      else
+      in .symmetric?
         zeros(n, n).tap do |m|
           m.each_index do |i, j|
             if i == 0 || j == 0

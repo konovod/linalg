@@ -423,16 +423,14 @@ module LA
         raise ArgumentError.new("matrix size along other axis should match for concatenation")
       end
       case axis
-      when Axis::Columns
+      in Axis::Columns
         GeneralMatrix(T).new(nrows + other.nrows, ncolumns) do |row, column|
           row < nrows ? unsafe_fetch(row, column) : other.unsafe_fetch(row - nrows, column)
         end
-      when Axis::Rows
+      in Axis::Rows
         GeneralMatrix(T).new(nrows, ncolumns + other.ncolumns) do |row, column|
           column < ncolumns ? unsafe_fetch(row, column) : other.unsafe_fetch(row, column - ncolumns)
         end
-      else
-        raise "unsupported axis"
       end
     end
 
@@ -520,20 +518,18 @@ module LA
 
     def reduce(axis : Axis, initial, &block)
       case axis
-      when Axis::Columns
+      in Axis::Columns
         GeneralMatrix(T).new(1, ncolumns) do |_, column|
           result = T.new(initial)
           nrows.times { |row| result = yield(result, unsafe_fetch(row, column)) }
           result
         end
-      when Axis::Rows
+      in Axis::Rows
         GeneralMatrix(T).new(nrows, 1) do |row, _|
           result = T.new(initial)
           ncolumns.times { |column| result = yield(result, unsafe_fetch(row, column)) }
           result
         end
-      else
-        raise "unsupported axis"
       end
     end
 

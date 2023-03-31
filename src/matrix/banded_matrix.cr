@@ -361,13 +361,13 @@ module LA
     def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
       # TODO - check if not square
       let = case kind
-            when .frobenius?
+            in .frobenius?
               'F'
-            when .one?
+            in .one?
               'o'
-            when .inf?
+            in .inf?
               'I'
-            else
+            in .max_abs?
               'M'
             end.ord.to_u8
 

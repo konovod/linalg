@@ -326,13 +326,13 @@ module LA
     # returns matrix norm
     def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
       let = case kind
-            when .frobenius?
+            in .frobenius?
               'F'
-            when .one?
+            in .one?
               'O'
-            when .inf?
+            in .inf?
               'I'
-            else
+            in .max_abs?
               'M'
             end.ord.to_u8
 
@@ -367,10 +367,10 @@ module LA
       # if matrix is triangular no check needed
       return diag.count { |v| v.abs > eps } if flags.triangular?
       case method
-      when .qrp?
+      in .qrp?
         a, pvt = qr_r(overwrite_a: overwrite_a, pivoting: true)
         a.diag.count { |v| v.abs > eps }
-      when .svd?
+      in .svd?
         s = svdvals(overwrite_a: overwrite_a)
         s.count { |x| x.abs > eps }
       end
