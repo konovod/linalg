@@ -447,19 +447,25 @@ describe LA do
     m.rank(method: RankMethod::QRP).should eq 1
   end
 
-  it "Non Square complex matrix inverse" do
+  it "Non Square complex matrix pseudoinverse" do
     array = [1, 2, 3, 4, 5, 6]
     complex_array = array.map { |e| Complex.new(e, e) }
     matrix = GMatComplex.new(3, 2, complex_array)
     actual = matrix.pinv
 
     # Validated in python through numpy
-    array = [Complex.new(-0.66666667, -0.66666667), Complex.new(-0.16666667, -0.16666667), Complex.new(0.33333333, +0.33333333), Complex.new(0.54166667, +0.54166667), Complex.new(0.16666667, +0.16666667), Complex.new(-0.20833333, -0.20833333)]
+    array = [Complex.new(-0.66666667, 0.66666667), Complex.new(-0.16666667, 0.16666667), Complex.new(0.33333333, -0.33333333), Complex.new(0.54166667, -0.54166667), Complex.new(0.16666667, -0.16666667), Complex.new(-0.20833333, 0.20833333)]
     expected = GMatComplex.new(2, 3, array)
     actual.should be_close(expected, 1e-7)
+
+    # check pseudoinverse by definition
+    (matrix*actual*matrix).should be_close matrix, 1e-9
+    (actual*matrix*actual).should be_close actual, 1e-9
+    (matrix*actual).detect?(MatrixFlags::Hermitian).should be_true
+    (actual*matrix).detect?(MatrixFlags::Hermitian).should be_true
   end
 
-  it "Non Square matrix inverse" do
+  it "Non Square matrix pseudoinverse" do
     array = [1, 2, 3, 4, 5, 6]
     matrix = GMat.new(3, 2, array)
     actual = matrix.pinv
@@ -468,5 +474,11 @@ describe LA do
     array = [-1.33333333, -0.33333333, 0.66666667, 1.08333333, 0.33333333, -0.41666667]
     expected = GMat.new(2, 3, array)
     actual.should be_close(expected, 1e-7)
+
+    # check pseudoinverse by definition
+    (matrix*actual*matrix).should be_close matrix, 1e-9
+    (actual*matrix*actual).should be_close actual, 1e-9
+    (matrix*actual).detect?(MatrixFlags::Hermitian).should be_true
+    (actual*matrix).detect?(MatrixFlags::Hermitian).should be_true
   end
 end

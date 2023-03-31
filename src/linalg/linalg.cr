@@ -104,8 +104,8 @@ module LA
     def pinv
       # Pure Crystal implementation since LAPACK has no direct implementation of pseudo inverse
       u, s, v = self.svd
-      v.transpose!
-      u.transpose!
+      v.conjtranspose!
+      u.conjtranspose!
 
       s_inverse = s.map! { |e|
         if e != 0
