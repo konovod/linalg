@@ -14,8 +14,8 @@ module LA
       MatrixFlags::None
     end
 
-    def flags=(flags : MatrixFlags)
-      # do nothing (todo - raise?)
+    protected def flags=(flags : MatrixFlags)
+      raise "cannot set flags of submatrix"
     end
 
     def initialize(@base : Matrix(T), @offset : RowColumn, size : RowColumn)

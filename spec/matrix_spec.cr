@@ -528,8 +528,8 @@ describe LA::Matrix do
 
   it "can tolerate nil submatrix ranges" do
     m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
-    # m1 = m[..3, 2..]
-    m1 = m[0..3, 2..3]
+    m1 = m[..3, 2..]
+    # m1 = m[0..3, 2..3]
     m1.size.should eq({4, 2})
     m1[0, 0].should eq m[0, 2]
     m1[0, 1].should eq m[0, 3]
