@@ -159,7 +159,7 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [x] Column-major storage (optional?)
 - [ ] Other missing features from LAPACK (mostly selectable and orderable eigenvalues)
 - [ ] Sparse matrices (perhaps out of scope/deserves separate shard)
-- [ ] Other missing features from scipy.linalg (pseudoinverse, lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
+- [ ] Other missing features from scipy.linalg (lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
 
 ##### Not so important
 
@@ -175,3 +175,10 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
 5. Create a new Pull Request
+
+## Contributors
+
+- [konovod](https://github.com/konovod) - creator and maintainer
+- [RainbowZephyr](https://github.com/RainbowZephyr) - pseudoinverse implementation
+- [jtanderson](https://github.com/jtanderson) - `arange`, open-ended ranges in submatrices
+- [MatthiasWinkelmann](https://github.com/MatthiasWinkelmann) - `GMat.max` fix
