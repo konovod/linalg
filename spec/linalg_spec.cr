@@ -453,14 +453,10 @@ describe LA do
     matrix = GMatComplex.new(3, 2, complex_array)
     actual = matrix.pinv
 
-    actual.map! { |e| e.round(8) }
-
-    array = [Complex.new(-0.66666667, -0.66666667), Complex.new(-0.16666667, -0.16666667), Complex.new(0.33333333, +0.33333333), Complex.new(0.54166667, +0.54166667), Complex.new(0.16666667, +0.16666667), Complex.new(-0.20833333, -0.20833333)]
-
     # Validated in python through numpy
+    array = [Complex.new(-0.66666667, -0.66666667), Complex.new(-0.16666667, -0.16666667), Complex.new(0.33333333, +0.33333333), Complex.new(0.54166667, +0.54166667), Complex.new(0.16666667, +0.16666667), Complex.new(-0.20833333, -0.20833333)]
     expected = GMatComplex.new(2, 3, array)
-
-    actual.should eq(expected)
+    actual.should be_close(expected, 1e-7)
   end
 
   it "Non Square matrix inverse" do
@@ -468,11 +464,9 @@ describe LA do
     matrix = GMat.new(3, 2, array)
     actual = matrix.pinv
 
-    actual.map! { |e| e.round(8) }
-    array = [-1.33333333, -0.33333333, 0.66666667, 1.08333333, 0.33333333, -0.41666667]
     # Validated in python through numpy
+    array = [-1.33333333, -0.33333333, 0.66666667, 1.08333333, 0.33333333, -0.41666667]
     expected = GMat.new(2, 3, array)
-
-    actual.should eq(expected)
+    actual.should be_close(expected, 1e-7)
   end
 end
