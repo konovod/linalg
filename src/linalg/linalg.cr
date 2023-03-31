@@ -130,17 +130,13 @@ module LA
       if u.nrows >= s_dash.ncolumns
         append_cols = u.nrows - s_dash.ncolumns
       else
-        puts "S` #{s_dash}\nShape #{s_dash.shape}"
-        puts "U #{u}\nShape #{u.shape}"
+        puts "S` #{s_dash}\nShape #{s_dash.size}"
+        puts "U #{u}\nShape #{u.size}"
         raise Exception.new("Invalid dimension, S` larger than U")
       end
 
       s_dash.resize!(s_dash.nrows + append_rows, s_dash.ncolumns + append_cols)
       return v * s_dash * u
-    end
-
-    def shape
-      return {self.nrows, self.ncolumns}
     end
 
     def solve(b : self, *, overwrite_a = false, overwrite_b = false)
