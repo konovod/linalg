@@ -9,7 +9,7 @@ describe LA do
 
     (LA.cosm(m) + 1.i*LA.sinm(m)).should almost_eq LA.expm(1.i*m)
 
-    LA.tanm(m).should almost_eq (LA.sinm(m)*LA.cosm(m).inv)
+    LA.tanm(m).should almost_eq(LA.sinm(m)*LA.cosm(m).inv)
   end
 
   it "evalute sinhm, coshm, tanhm" do
@@ -18,6 +18,6 @@ describe LA do
       [10.57300653, 39.28826594],
       [13.09608865, 49.86127247]], 1e-6)
 
-    LA.tanhm(a).should almost_eq (LA.sinhm(a)*LA.coshm(a).inv)
+    LA.tanhm(a).should almost_eq(LA.sinhm(a)*LA.coshm(a).inv)
   end
 end

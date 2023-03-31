@@ -361,7 +361,7 @@ describe LA::Matrix do
 
   it "can evaluate trace" do
     m = MatComplex.diag([1, 2, 3, 4, 5])
-    m.trace.should eq (1 + 2 + 3 + 4 + 5)
+    m.trace.should eq(1 + 2 + 3 + 4 + 5)
     m = Mat.ones(10, 20)
     m.trace.should eq 10
   end
@@ -492,7 +492,7 @@ describe LA::Matrix do
 
   it "empty array of matrices sums to a scalar zero" do
     x = ([] of GMat32).sum
-    typeof(x).should eq (Float32 | GMat32)
+    typeof(x).should eq(Float32 | GMat32)
     x.as(Float32).should eq 0
   end
 
@@ -507,10 +507,10 @@ describe LA::Matrix do
     z = Mat.arange(1, 5, 6)
     z.should eq GMat[[1.0]]
 
-    Mat.arange(5,4,1).size.should eq({1,0})
-    Mat.arange(4,10,-1).size.should eq({1,0})
-    Mat.arange(14,10,3).size.should eq({1,0})
-    Mat.arange(14,10,0).size.should eq({1,0})
+    Mat.arange(5, 4, 1).size.should eq({1, 0})
+    Mat.arange(4, 10, -1).size.should eq({1, 0})
+    Mat.arange(14, 10, 3).size.should eq({1, 0})
+    Mat.arange(14, 10, 0).size.should eq({1, 0})
   end
 
   it "empty array of matrices multiplies to a scalar one" do
@@ -518,7 +518,7 @@ describe LA::Matrix do
   end
 
   it "complex matrix can be chopped to real" do
-    GMatComplex[[1, 2, 5], [10, 4, 1e-6]].chop.should be_a (GMat | Nil)
+    GMatComplex[[1, 2, 5], [10, 4, 1e-6]].chop.should be_a(GMat | Nil)
     GMatComplex[[1, 2, 5], [10, 4, 1e-6]].chop.not_nil!.should eq GMat[[1, 2, 5], [10, 4, 1e-6]]
     GMatComplex[[1, 2, 5.i], [10, 4, 1e-6]].chop.should be_a Nil
     GMatComplex[[1, 2, 5], [10, 4, 1e-6 + 1e-6.i]].chop.should be_a Nil
@@ -528,7 +528,7 @@ describe LA::Matrix do
 
   it "can tolerate nil submatrix ranges" do
     m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
-    #m1 = m[..3, 2..]
+    # m1 = m[..3, 2..]
     m1 = m[0..3, 2..3]
     m1.size.should eq({4, 2})
     m1[0, 0].should eq m[0, 2]

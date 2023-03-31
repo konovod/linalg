@@ -108,7 +108,7 @@ describe LA do
       [2, 4],
       [2, 8]]
     b = GMat32[[2], [4]]
-    LA.solve(a, b).should eq (a.inv * b)
+    LA.solve(a, b).should eq(a.inv * b)
   end
 
   it "solves a linear equations when positive definite" do
@@ -241,7 +241,7 @@ describe LA do
       [2, 8]]
     lu = a.lu_factor
     b = GMat32[[2], [4]]
-    lu.solve(b).should eq (a.inv * b)
+    lu.solve(b).should eq(a.inv * b)
   end
 
   it "high-level: cholesky decomposition" do
@@ -447,7 +447,7 @@ describe LA do
     m.rank(method: RankMethod::QRP).should eq 1
   end
 
-    it "Non Square complex matrix inverse" do
+  it "Non Square complex matrix inverse" do
     array = [1, 2, 3, 4, 5, 6]
     complex_array = array.map { |e| Complex.new(e, e) }
     matrix = GMatComplex.new(3, 2, complex_array)
@@ -461,9 +461,9 @@ describe LA do
     expected = GMatComplex.new(2, 3, array)
 
     actual.should eq(expected)
-  end 
+  end
 
-    it "Non Square matrix inverse" do
+  it "Non Square matrix inverse" do
     array = [1, 2, 3, 4, 5, 6]
     matrix = GMat.new(3, 2, array)
     actual = matrix.pinv
@@ -475,5 +475,4 @@ describe LA do
 
     actual.should eq(expected)
   end
-
 end

@@ -123,8 +123,8 @@ describe COOMatrix do
     mas = COOMatrix(Float64).new(ma)
     mbs = COOMatrix(Float64).new(mb)
 
-    (mas + mbs).should eq (ma + mb)
-    (3*mas - 6*mbs).should eq (3*ma - 6*mb)
+    (mas + mbs).should eq(ma + mb)
+    (3*mas - 6*mbs).should eq(3*ma - 6*mb)
     mas.add!(-5, mbs)
     mas.should_not eq ma
     ma.add!(-5, mb)

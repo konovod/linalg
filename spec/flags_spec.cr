@@ -83,11 +83,11 @@ describe LA::Matrix do
 
     diag = LA::GMat.eye(5)
     diag.tril(-1).flags.symmetric?.should be_true
-    diag.tril(1).flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
-    diag.triu(-1).flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
+    diag.tril(1).flags.should eq(LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
+    diag.triu(-1).flags.should eq(LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
     diag.triu(1).flags.symmetric?.should be_true
     diag.tril!(1)
-    diag.flags.should eq (LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
+    diag.flags.should eq(LA::MatrixFlags::UpperTriangular | LA::MatrixFlags::LowerTriangular)
     diag.tril!
     diag.flags.symmetric?.should be_true
     diag.tril!(-1)

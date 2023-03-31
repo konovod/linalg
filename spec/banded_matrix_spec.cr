@@ -262,7 +262,7 @@ describe LA::BandedMatrix do
     expect_raises(ArgumentError) { a.upper_band = -1 }
 
     a.set_bands(0, 0)
-    a.flags.should eq (MatrixFlags::LowerTriangular | MatrixFlags::UpperTriangular)
+    a.flags.should eq(MatrixFlags::LowerTriangular | MatrixFlags::UpperTriangular)
   end
 
   it "supports tril! and triu!" do
@@ -371,7 +371,7 @@ describe LA::BandedMatrix do
     ]
     aconj = a.conjt
     aconj.should be_a BMatComplex
-    aconj.should eq (BMatComplex.new(at.to_real) - BMatComplex.new(at.to_imag)*1.i)
+    aconj.should eq(BMatComplex.new(at.to_real) - BMatComplex.new(at.to_imag)*1.i)
   end
 
   it "multiplies to normal matrix" do
@@ -388,10 +388,10 @@ describe LA::BandedMatrix do
     b = BMat.new(5, 6, 1, 2) { |i, j| (i + 1)*10 + j + 1 }
     a2 = a.clone
     a2.add! b
-    a2.should eq (a + b)
+    a2.should eq(a + b)
     ag = a.to_general
     ag.add! b
-    ag.should eq (a + b)
+    ag.should eq(a + b)
     expect_raises(ArgumentError) { a.add! b.to_general }
   end
 

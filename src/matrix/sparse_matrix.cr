@@ -367,6 +367,6 @@ module LA::Sparse
     end
   end
 
-#  class CSRMatrix(T) < Matrix(T)
-#  end
+  #  class CSRMatrix(T) < Matrix(T)
+  #  end
 end
