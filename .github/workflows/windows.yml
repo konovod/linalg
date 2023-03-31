@@ -2,32 +2,33 @@ name: Windows CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
   schedule:
-    - cron: '0 6 * * 6'
+    - cron: "0 6 * * 6"
 jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install Crystal
-      uses: crystal-lang/install-crystal@v1
-    - name: Download OpenBLAS
-      shell: powershell
-      run: Invoke-WebRequest -Uri "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.18/OpenBLAS-0.3.18-x64.zip" `
-                             -OutFile ./OpenBLAS.zip
-    - name: Unzip OpenBLAS
-      shell: cmd
-      run: |
-        mkdir OpenBLAS
-        move OpenBLAS.zip ./OpenBLAS
-        cd OpenBLAS
-        7z x -y OpenBLAS.zip
-        copy .\bin\libopenblas.dll ..\
-        copy .\lib\libopenblas.lib ..\
-        cd ..
-        copy .\libopenblas.lib D:\a\_temp\crystal-nightly-true-undefined\lib
-    - name: Run tests
-      run: crystal spec
+      - uses: actions/checkout@v2
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+      - name: Download OpenBLAS
+        shell: powershell
+        run:
+          Invoke-WebRequest -Uri "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.21/OpenBLAS-0.3.21-x64.zip" `
+          -OutFile ./OpenBLAS.zip
+      - name: Unzip OpenBLAS
+        shell: powershell
+        run: |
+          mkdir OpenBLAS
+          move OpenBLAS.zip ./OpenBLAS
+          cd OpenBLAS
+          7z x -y OpenBLAS.zip
+          copy .\bin\libopenblas.dll ..\
+          copy .\lib\libopenblas.lib ..\
+          cd ..
+          copy .\libopenblas.lib (crystal env CRYSTAL_LIBRARY_PATH)
+      - name: Run tests
+        run: crystal spec
