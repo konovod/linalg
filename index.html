@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 1.6.2">
+<meta name="crystal_docs.project_version" content="master">
+<meta name="crystal_docs.project_name" content="linalg">
+
+
+
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/doc.js"></script>
+
+  <meta name="repository-name" content="linalg">
+  <title>linalg master</title>
+  <script type="text/javascript">
+  CrystalDocs.base_path = "";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="index.html">
+          linalg
+        </a>
+      </h1>
+
+      <span class="project-version">
+        master
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class=" " data-id="linalg/Complex" data-name="complex">
+      <a href="Complex.html">Complex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Enumerable" data-name="enumerable(t)">
+      <a href="Enumerable.html">Enumerable</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/LA" data-name="la">
+      <a href="LA.html">LA</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/LA/Axis" data-name="la::axis">
+      <a href="LA/Axis.html">Axis</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BandedMatrix" data-name="la::bandedmatrix(t)">
+      <a href="LA/BandedMatrix.html">BandedMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMat" data-name="la::bmat">
+      <a href="LA/BMat.html">BMat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMat32" data-name="la::bmat32">
+      <a href="LA/BMat32.html">BMat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMatComplex" data-name="la::bmatcomplex">
+      <a href="LA/BMatComplex.html">BMatComplex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/DFTScale" data-name="la::dftscale">
+      <a href="LA/DFTScale.html">DFTScale</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GeneralMatrix" data-name="la::generalmatrix(t)">
+      <a href="LA/GeneralMatrix.html">GeneralMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMat" data-name="la::gmat">
+      <a href="LA/GMat.html">GMat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMat32" data-name="la::gmat32">
+      <a href="LA/GMat32.html">GMat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMatComplex" data-name="la::gmatcomplex">
+      <a href="LA/GMatComplex.html">GMatComplex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LinAlgError" data-name="la::linalgerror">
+      <a href="LA/LinAlgError.html">LinAlgError</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LSMethod" data-name="la::lsmethod">
+      <a href="LA/LSMethod.html">LSMethod</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LUMatrix" data-name="la::lumatrix(t)">
+      <a href="LA/LUMatrix.html">LUMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LUTranspose" data-name="la::lutranspose">
+      <a href="LA/LUTranspose.html">LUTranspose</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Mat" data-name="la::mat">
+      <a href="LA/Mat.html">Mat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Mat32" data-name="la::mat32">
+      <a href="LA/Mat32.html">Mat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatComplex" data-name="la::matcomplex">
+      <a href="LA/MatComplex.html">MatComplex</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/LA/Matrix" data-name="la::matrix(t)">
+      <a href="LA/Matrix.html">Matrix</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/LA/Matrix/Columns" data-name="la::matrix::columns(t)">
+      <a href="LA/Matrix/Columns.html">Columns</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Matrix/Rows" data-name="la::matrix::rows(t)">
+      <a href="LA/Matrix/Rows.html">Rows</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatrixFlags" data-name="la::matrixflags">
+      <a href="LA/MatrixFlags.html">MatrixFlags</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatrixNorm" data-name="la::matrixnorm">
+      <a href="LA/MatrixNorm.html">MatrixNorm</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/PascalKind" data-name="la::pascalkind">
+      <a href="LA/PascalKind.html">PascalKind</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/RankMethod" data-name="la::rankmethod">
+      <a href="LA/RankMethod.html">RankMethod</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/RowColumn" data-name="la::rowcolumn">
+      <a href="LA/RowColumn.html">RowColumn</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/LA/Sparse" data-name="la::sparse">
+      <a href="LA/Sparse.html">Sparse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/LA/Sparse/COOMatrix" data-name="la::sparse::coomatrix(t)">
+      <a href="LA/Sparse/COOMatrix.html">COOMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Sparse/Matrix" data-name="la::sparse::matrix(t)">
+      <a href="LA/Sparse/Matrix.html">Matrix</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/SubMatrix" data-name="la::submatrix(t)">
+      <a href="LA/SubMatrix.html">SubMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/WorkPool" data-name="la::workpool">
+      <a href="LA/WorkPool.html">WorkPool</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Math" data-name="math">
+      <a href="Math.html">Math</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/MatrixParseError" data-name="matrixparseerror">
+      <a href="MatrixParseError.html">MatrixParseError</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Number" data-name="number">
+      <a href="Number.html">Number</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/Spec" data-name="spec">
+      <a href="Spec.html">Spec</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/Spec/AlmostEqualExpectation" data-name="spec::almostequalexpectation(t)">
+      <a href="Spec/AlmostEqualExpectation.html">AlmostEqualExpectation</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Spec/Expectations" data-name="spec::expectations">
+      <a href="Spec/Expectations.html">Expectations</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<p><a href="https://github.com/konovod/linalg/actions/workflows/linux.yml"><img src="https://github.com/konovod/linalg/actions/workflows/linux.yml/badge.svg" alt="Linux CI" /></a>
+<a href="https://github.com/konovod/linalg/actions/workflows/macos.yml"><img src="https://github.com/konovod/linalg/actions/workflows/macos.yml/badge.svg" alt="MacOSX CI" /></a>
+<a href="https://github.com/konovod/linalg/actions/workflows/windows.yml"><img src="https://github.com/konovod/linalg/actions/workflows/windows.yml/badge.svg" alt="Windows CI" /></a>
+<a href="https://konovod.github.io/linalg"><img src="https://img.shields.io/website?down_color=red&amp;down_message=Offline&amp;label=API%20Documentation&amp;up_message=Online&amp;url=https:/%25konovod.github.io/linalg/" alt="API Documentation" /></a></p>
+<h1><a id="linalg" class="anchor" href="#linalg">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>linalg</h1>
+<p>Linear algebra library in Crystal, uses LAPACK.</p>
+<ul>
+<li>direct access to LAPACK methods</li>
+<li>convenient Matrix(T) class, supports T=Float32, Float64 and Complex.</li>
+<li>high-level interface similar to scipy.linalg or MATLAB.</li>
+</ul>
+<p>Killing SciPy, one module at a time.</p>
+<h2><a id="installation" class="anchor" href="#installation">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Installation</h2>
+<ol>
+<li>
+<p>Install LAPACK and BLAS. <code>sudo apt install libopenblas-base liblapack3</code> for Ubuntu, <code>sudo pacman -S lapack</code> (for better performance use <code>openblas-lapack</code> package from AUR) for Arch. For Windows you need libopenblas.dll (and libopenblas.lib) from https://github.com/xianyi/OpenBLAS/releases</p>
+</li>
+<li>
+<p>(for Ubuntu 18) it seems package doesn't create symlink, so use</p>
+</li>
+</ol>
+<ul>
+<li><code>sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so</code></li>
+<li><code>sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so</code></li>
+</ul>
+<p>Add this to your application's <code>shard.yml</code>:</p>
+<pre><code class="language-yaml">dependencies:
+  linalg:
+    github: konovod/linalg</code></pre>
+<h2><a id="usage" class="anchor" href="#usage">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Usage</h2>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;linalg&quot;</span></code></pre>
+<p>Basic type aliases are</p>
+<ul>
+<li>Mat = Matrix(Float64)</li>
+<li>Mat32 = Matrix(Float32)</li>
+<li>MatComplex = Matrix(Complex)</li>
+</ul>
+<p>Complex consisting of two Float32 isn't supported for now (it is easy, but I'm not sure if it's useful).</p>
+<p>Types with prefix G (GMat, GMat32, GMatComplex) are for actually allocated matrices,
+others are automatically converted to them when needed.</p>
+<pre><code class="language-crystal"><span class="c">#suggested to don&#39;t prefix LA:: everywhere</span>
+<span class="k">include</span> <span class="t">LA</span>
+
+<span class="c"># create matrix from array of arrays (or tuple... everything Indexable)</span>
+m <span class="o">=</span> <span class="t">GMat</span>[
+  [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>],
+  [<span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>],
+  [<span class="n">7</span>, <span class="n">8</span>, <span class="n">9</span>],
+  [<span class="n">10</span>, <span class="n">11</span>, <span class="n">12</span>],
+]
+
+<span class="c"># or using block</span>
+m <span class="o">=</span> <span class="t">GMat32</span>.new(<span class="n">3</span>, <span class="n">4</span>) { <span class="o">|</span>i, j<span class="o">|</span> i<span class="o">*</span><span class="n">3</span> <span class="o">+</span> j <span class="o">+</span> <span class="n">1</span> }
+<span class="c"># or using one of other ways, check &quot;spec&quot; directory</span>
+
+<span class="c"># do basic arithmetics</span>
+a <span class="o">=</span> <span class="t">Mat</span>.eye(<span class="n">3</span>)
+pp <span class="n">2</span> <span class="o">*</span> a <span class="o">-</span> <span class="t">Mat</span>.diag([<span class="n">2</span>, <span class="n">2</span>, <span class="n">2</span>]) <span class="o">==</span> <span class="t">Mat</span>.zeros(<span class="n">3</span>, <span class="n">3</span>) <span class="c"># =&gt; true</span>
+
+<span class="c"># basic algebra</span>
+a <span class="o">=</span> <span class="t">Mat</span>.rand(<span class="n">5</span>, <span class="n">5</span>) <span class="o">+</span> <span class="n">2</span> <span class="o">*</span> <span class="t">Mat</span>.identity(<span class="n">5</span>)
+pp (a.inv <span class="o">*</span> a <span class="o">-</span> <span class="t">Mat</span>.identity(<span class="n">5</span>)).norm <span class="o">&lt;</span> <span class="n">1e-6</span>
+
+b <span class="o">=</span> <span class="t">Mat</span>.rand(<span class="n">5</span>, <span class="n">1</span>)
+x <span class="o">=</span> <span class="t">LA</span>.solve(a, b) <span class="c"># or a.solve(b)</span>
+pp (a<span class="o">*</span>x <span class="o">-</span> b).norm <span class="o">&lt;</span> <span class="n">1e-6</span>
+
+m <span class="o">=</span> <span class="t">GMat</span>[[<span class="n">-2</span>, <span class="n">4</span>, <span class="n">1</span>], [<span class="n">2</span>, <span class="n">-4</span>, <span class="n">1</span>], [<span class="n">1</span>, <span class="n">1</span>, <span class="n">1</span>]]
+pp m.eigvals <span class="c"># =&gt; [-6.0, -1.0, 2.0]</span>
+
+<span class="c"># extract submatrices (memory isn&#39;t copied as they reference to basic matrix)</span>
+m <span class="o">=</span> <span class="t">GMat</span>[
+  [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>],
+  [<span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>],
+  [<span class="n">7</span>, <span class="n">8</span>, <span class="n">9</span>],
+]
+pp m.columns[<span class="n">2</span>] <span class="c"># LA::SubMatrix(Float64) (3x1, None):</span>
+<span class="c"># [3.0]</span>
+<span class="c"># [6.0]</span>
+<span class="c"># [9.0]</span>
+
+x <span class="o">=</span> m[<span class="n">1</span>..<span class="n">1</span>, <span class="n">1</span>..<span class="n">2</span>]
+pp x        <span class="c"># =&gt; [5.0, 6.0]</span>
+x[<span class="n">0</span>, <span class="n">0</span>] <span class="o">=</span> <span class="n">0</span> <span class="c"># m[1,1] is now 0 (questionable feature? maybe should be ##[]! for modifiable submatrices and ##[] for CoW?)</span>
+y <span class="o">=</span> x.clone <span class="c"># now y is a separate matrix</span>
+y[<span class="n">0</span>, <span class="n">0</span>] <span class="o">=</span> <span class="n">1</span> <span class="c"># m[1,1] is still 0</span>
+pp m[<span class="n">1</span>, <span class="n">1</span>]
+</code></pre>
+<p>other present features:</p>
+<ul>
+<li>svd (<code>Mat#svd</code> or <code>Mat#svdvals</code> for just values)</li>
+<li>lu decomposition (<code>Mat#lu</code>)</li>
+</ul>
+<pre><code class="language-crystal"><span class="c"># to just get P L U matrices</span>
+p, l, u <span class="o">=</span> a.lu
+
+<span class="c"># to get them in compact form and use for solving linear equations:</span>
+a <span class="o">=</span> <span class="t">GMat32</span>[
+  [<span class="n">2</span>, <span class="n">4</span>],
+  [<span class="n">2</span>, <span class="n">8</span>]
+  ]
+
+lu <span class="o">=</span> a.lu_factor <span class="c"># lu is LUMatrix(T) - immutable object that can return it&#39;s content and solve systems</span>
+puts lu.solve(<span class="t">GMat32</span>[[<span class="n">2</span>], [<span class="n">4</span>]])</code></pre>
+<ul>
+<li>matrix rank determination (using SVD or QRP)</li>
+<li>linear least squares problem (<code>LA.solvels</code> to just get decision or <code>LA.lstsq</code> to also get rank and singular values (TODO - and residues))</li>
+<li>cholesky decomposition (<code>#cholesky</code>, <code>#cholesky!</code>, <code>#cho_solve</code>)</li>
+<li><code>hessenberg</code> form</li>
+<li><code>qr</code>, <code>rq</code>, <code>lq</code>, <code>ql</code> decompositions</li>
+<li><code>schur</code> and <code>qz</code> (generalized schur) decomposition</li>
+<li>generalized eigenproblem (<code>eigs(a, b, ...)</code>)</li>
+<li>creating special matrices like <code>pascal</code> or <code>toeplitz</code> (check scipy.md for a full list)</li>
+<li>matrix exponent and trigonomertic functions</li>
+<li>matrix exponentiation (to integer powers only atm (TODO - fractional))</li>
+</ul>
+<p>There is also concept of <code>Mat#flags</code> that represent properties of matrix (symmetric, positive definite etc), they are used to automatically select faster algorithms from LAPACK. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that <code>a.assume!(MatrixFlags::Symmetric)</code> then <code>a.transpose</code> or <code>a + Mat.diag(*a.size)</code> will also have this flag, so the LAPACK routines for symmetrical matrices will be used. In fact, <code>a.transpose</code> will return matrix clone as for symmetric matrices A=A'.</p>
+<p>Supported flags:</p>
+<pre><code class="language-crystal"><span class="k">enum</span> <span class="t">MatrixFlags</span>
+  <span class="t">Symmetric</span>
+  <span class="t">Hermitian</span>
+  <span class="t">PositiveDefinite</span>
+  <span class="t">Orthogonal</span>
+  <span class="t">UpperTriangular</span>
+  <span class="t">LowerTriangular</span>
+  <span class="t">Triangular</span>      <span class="o">=</span> <span class="t">UpperTriangular</span> <span class="o">|</span> <span class="t">LowerTriangular</span></code></pre>
+<p><span class="flag purple">NOTE</span>  for complex matrices <code>Orthogonal</code> flag means <code>Unitary</code>.</p>
+<p>Main functions for flags are:</p>
+<pre><code class="language-crystal">  a.assume!(flag) <span class="c"># sets matrix flag without check, can lead to incorrect results if matrix do not have corresponding property.</span>
+  a.detect?(flag) <span class="c"># checks if matrix has property, if yes sets the flag. Returns true if check positive</span>
+  a.detect(flag) <span class="c"># same as `detect?`, but returns matrix a</span>
+  a.detect <span class="c"># detect all possible flags</span>
+  a.flags <span class="c"># returns matrix flags</span></code></pre>
+<p>Most operations - matrix addition, multiplication, inversion, transposition and decompositions correctly update flags, but any direct access like <code>a[i,j] = 0</code> or <code>a.map!{|v| v+1}</code> resets flags to <code>None</code>, so use <code>a.detect</code> after them if you need to preserve flags (or <code>a.assume!(f)</code> if detection is too slow).</p>
+<h2><a id="development" class="anchor" href="#development">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Development</h2>
+<h3><a id="roadmap" class="anchor" href="#roadmap">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Roadmap:</h3>
+<h5><a id="important" class="anchor" href="#important">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Important</h5>
+<ul>
+<li>[x] saving/loading from files</li>
+<li>[x] ways to evade allocations during calculations</li>
+<li>[x] Matrix exponent and trigonometric</li>
+<li>[ ] other matrix functions</li>
+<li>[ ] Banded matrices</li>
+<li>[x] Column-major storage (optional?)</li>
+<li>[ ] Other missing features from LAPACK (mostly selectable and orderable eigenvalues)</li>
+<li>[ ] Sparse matrices (perhaps out of scope/deserves separate shard)</li>
+<li>[ ] Other missing features from scipy.linalg (lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)</li>
+</ul>
+<h5><a id="not-so-important" class="anchor" href="#not-so-important">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Not so important</h5>
+<ul>
+<li>[x] saving/loading to matlab-like string</li>
+<li>[ ] better pretty-print, with alignment and various precision</li>
+<li>[x] use blas for multiplication</li>
+<li>[ ] more flags support (inversion of diagonal matrix and other trivial cases)</li>
+</ul>
+<h2><a id="contributing" class="anchor" href="#contributing">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Contributing</h2>
+<ol>
+<li>Fork it ( https://github.com/konovod/linalg/fork )</li>
+<li>Create your feature branch (git checkout -b my-new-feature)</li>
+<li>Commit your changes (git commit -am 'Add some feature')</li>
+<li>Push to the branch (git push origin my-new-feature)</li>
+<li>Create a new Pull Request</li>
+</ol>
+<h2><a id="contributors" class="anchor" href="#contributors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Contributors</h2>
+<ul>
+<li><a href="https://github.com/konovod">konovod</a> - creator and maintainer</li>
+<li><a href="https://github.com/RainbowZephyr">RainbowZephyr</a> - pseudoinverse implementation</li>
+<li><a href="https://github.com/jtanderson">jtanderson</a> - <code>arange</code>, open-ended ranges in submatrices</li>
+<li><a href="https://github.com/MatthiasWinkelmann">MatthiasWinkelmann</a> - <code>GMat.max</code> fix</li>
+</ul>
+</div>
+</body>
+</html>

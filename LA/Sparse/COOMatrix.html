@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 1.6.2">
+<meta name="crystal_docs.project_version" content="master">
+<meta name="crystal_docs.project_name" content="linalg">
+
+
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../js/doc.js"></script>
+
+  <meta name="repository-name" content="linalg">
+  <title>LA::Sparse::COOMatrix(T) - linalg master</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../../index.html">
+          linalg
+        </a>
+      </h1>
+
+      <span class="project-version">
+        master
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class=" " data-id="linalg/Complex" data-name="complex">
+      <a href="../../Complex.html">Complex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Enumerable" data-name="enumerable(t)">
+      <a href="../../Enumerable.html">Enumerable</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="linalg/LA" data-name="la">
+      <a href="../../LA.html">LA</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/LA/Axis" data-name="la::axis">
+      <a href="../../LA/Axis.html">Axis</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BandedMatrix" data-name="la::bandedmatrix(t)">
+      <a href="../../LA/BandedMatrix.html">BandedMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMat" data-name="la::bmat">
+      <a href="../../LA/BMat.html">BMat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMat32" data-name="la::bmat32">
+      <a href="../../LA/BMat32.html">BMat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMatComplex" data-name="la::bmatcomplex">
+      <a href="../../LA/BMatComplex.html">BMatComplex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/DFTScale" data-name="la::dftscale">
+      <a href="../../LA/DFTScale.html">DFTScale</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GeneralMatrix" data-name="la::generalmatrix(t)">
+      <a href="../../LA/GeneralMatrix.html">GeneralMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMat" data-name="la::gmat">
+      <a href="../../LA/GMat.html">GMat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMat32" data-name="la::gmat32">
+      <a href="../../LA/GMat32.html">GMat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMatComplex" data-name="la::gmatcomplex">
+      <a href="../../LA/GMatComplex.html">GMatComplex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LinAlgError" data-name="la::linalgerror">
+      <a href="../../LA/LinAlgError.html">LinAlgError</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LSMethod" data-name="la::lsmethod">
+      <a href="../../LA/LSMethod.html">LSMethod</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LUMatrix" data-name="la::lumatrix(t)">
+      <a href="../../LA/LUMatrix.html">LUMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LUTranspose" data-name="la::lutranspose">
+      <a href="../../LA/LUTranspose.html">LUTranspose</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Mat" data-name="la::mat">
+      <a href="../../LA/Mat.html">Mat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Mat32" data-name="la::mat32">
+      <a href="../../LA/Mat32.html">Mat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatComplex" data-name="la::matcomplex">
+      <a href="../../LA/MatComplex.html">MatComplex</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/LA/Matrix" data-name="la::matrix(t)">
+      <a href="../../LA/Matrix.html">Matrix</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/LA/Matrix/Columns" data-name="la::matrix::columns(t)">
+      <a href="../../LA/Matrix/Columns.html">Columns</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Matrix/Rows" data-name="la::matrix::rows(t)">
+      <a href="../../LA/Matrix/Rows.html">Rows</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatrixFlags" data-name="la::matrixflags">
+      <a href="../../LA/MatrixFlags.html">MatrixFlags</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatrixNorm" data-name="la::matrixnorm">
+      <a href="../../LA/MatrixNorm.html">MatrixNorm</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/PascalKind" data-name="la::pascalkind">
+      <a href="../../LA/PascalKind.html">PascalKind</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/RankMethod" data-name="la::rankmethod">
+      <a href="../../LA/RankMethod.html">RankMethod</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/RowColumn" data-name="la::rowcolumn">
+      <a href="../../LA/RowColumn.html">RowColumn</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="linalg/LA/Sparse" data-name="la::sparse">
+      <a href="../../LA/Sparse.html">Sparse</a>
+      
+        <ul>
+  
+  <li class=" current" data-id="linalg/LA/Sparse/COOMatrix" data-name="la::sparse::coomatrix(t)">
+      <a href="../../LA/Sparse/COOMatrix.html">COOMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Sparse/Matrix" data-name="la::sparse::matrix(t)">
+      <a href="../../LA/Sparse/Matrix.html">Matrix</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/SubMatrix" data-name="la::submatrix(t)">
+      <a href="../../LA/SubMatrix.html">SubMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/WorkPool" data-name="la::workpool">
+      <a href="../../LA/WorkPool.html">WorkPool</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Math" data-name="math">
+      <a href="../../Math.html">Math</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/MatrixParseError" data-name="matrixparseerror">
+      <a href="../../MatrixParseError.html">MatrixParseError</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Number" data-name="number">
+      <a href="../../Number.html">Number</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/Spec" data-name="spec">
+      <a href="../../Spec.html">Spec</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/Spec/AlmostEqualExpectation" data-name="spec::almostequalexpectation(t)">
+      <a href="../../Spec/AlmostEqualExpectation.html">AlmostEqualExpectation</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Spec/Expectations" data-name="spec::expectations">
+      <a href="../../Spec/Expectations.html">Expectations</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> LA::Sparse::COOMatrix(T)
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../LA/Sparse/COOMatrix.html">LA::Sparse::COOMatrix(T)</a></li><li class="superclass"><a href="../../LA/Sparse/Matrix.html">LA::Sparse::Matrix(T)</a></li><li class="superclass"><a href="../../LA/Matrix.html">LA::Matrix(T)</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L33" target="_blank">
+        matrix/sparse_matrix.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28nrows%2Cncolumns%2Crows%3AArray%28Int32%29%2Ccolumns%3AArray%28Int32%29%2Cvalues%3AArray%28T%29%2Cflags%3DMatrixFlags%3A%3ANone%2C%2A%2Cdont_clone%3ABool%3Dfalse%2Cdont_check%3ABool%3Dfalse%2Cdictionary%3Dnil%29-class-method" class="signature"><strong>.new</strong>(nrows, ncolumns, rows : Array(Int32), columns : Array(Int32), values : Array(T), flags = <span class="t">MatrixFlags</span><span class="t">::</span><span class="t">None</span>, *, dont_clone : Bool = <span class="n">false</span>, dont_check : Bool = <span class="n">false</span>, dictionary = <span class="n">nil</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new%28nrows%2Cncolumns%2Ccapacity%3D0%29-class-method" class="signature"><strong>.new</strong>(nrows, ncolumns, capacity = <span class="n">0</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new%28matrix%3ACOOMatrix%28T%29%29-class-method" class="signature"><strong>.new</strong>(matrix : COOMatrix(T))</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new%28matrix%3ACOOMatrix%29-class-method" class="signature"><strong>.new</strong>(matrix : COOMatrix)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new%28matrix%3ALA%3A%3AMatrix%29-class-method" class="signature"><strong>.new</strong>(matrix : LA::Matrix)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>
+    <a id="class-method-summary" class="anchor" href="#class-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#diag%28nrows%2Cncolumns%2Cvalues%29-class-method" class="signature"><strong>.diag</strong>(nrows, ncolumns, values)</a>
+        
+          <div class="summary"><p>Returns diagonal matrix of given size with diagonal elements taken from array <code>values</code></p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#diag%28nrows%2Cncolumns%2C%26%29-class-method" class="signature"><strong>.diag</strong>(nrows, ncolumns, &)</a>
+        
+          <div class="summary"><p>Returns diagonal matrix of given size with diagonal elements equal to block value</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#rand%28nrows%2Cncolumns%2C%2A%2Cnonzero_elements%2Crng%3ARandom%3DRandom%3A%3ADEFAULT%29-class-method" class="signature"><strong>.rand</strong>(nrows, ncolumns, *, nonzero_elements, rng : Random = <span class="t">Random</span><span class="t">::</span><span class="t">DEFAULT</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#rand%28nrows%2Cncolumns%2C%2A%2Cfill_factor%2Crng%3ARandom%3DRandom%3A%3ADEFAULT%29-class-method" class="signature"><strong>.rand</strong>(nrows, ncolumns, *, fill_factor, rng : Random = <span class="t">Random</span><span class="t">::</span><span class="t">DEFAULT</span>)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#%2B%28m%3ALA%3A%3AMatrix%29-instance-method" class="signature"><strong>#+</strong>(m : LA::Matrix)</a>
+        
+          <div class="summary"><p>returns element-wise sum</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#-%28m%3ALA%3A%3AMatrix%29-instance-method" class="signature"><strong>#-</strong>(m : LA::Matrix)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#add%21%28k%3ANumber%7CComplex%2Cm%3ASparse%3A%3AMatrix%29-instance-method" class="signature"><strong>#add!</strong>(k : Number | Complex, m : Sparse::Matrix)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#add%21%28k%3ANumber%7CComplex%2Cm%3ALA%3A%3AMatrix%29-instance-method" class="signature"><strong>#add!</strong>(k : Number | Complex, m : LA::Matrix)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#clear-instance-method" class="signature"><strong>#clear</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#clone-instance-method" class="signature"><strong>#clone</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#conjtranspose-instance-method" class="signature"><strong>#conjtranspose</strong></a>
+        
+          <div class="summary"><p>Returns conjurgate transposed matrix</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#dup-instance-method" class="signature"><strong>#dup</strong></a>
+        
+          <div class="summary"><p>Returns a shallow copy of this object.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#each_index%28%2A%2Call%3Dfalse%2C%26%29-instance-method" class="signature"><strong>#each_index</strong>(*, all = <span class="n">false</span>, &)</a>
+        
+          <div class="summary"><p>Yields every index</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#each_with_index%28%2A%2Call%3Dfalse%2C%26%29-instance-method" class="signature"><strong>#each_with_index</strong>(*, all = <span class="n">false</span>, &)</a>
+        
+          <div class="summary"><p>Yields every element of matrix with corresponding row and column</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#map_with_index%28%26%29-instance-method" class="signature"><strong>#map_with_index</strong>(&)</a>
+        
+          <div class="summary"><p>Returns result of appliyng block to every element with index</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#map_with_index%21%28%26%29-instance-method" class="signature"><strong>#map_with_index!</strong>(&)</a>
+        
+          <div class="summary"><p>Yields each element with index and replace it with returned value</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#map_with_index_complex%28%26%29-instance-method" class="signature"><strong>#map_with_index_complex</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#map_with_index_f64%28%26%29-instance-method" class="signature"><strong>#map_with_index_f64</strong>(&)</a>
+        
+          <div class="summary"><p><span class="flag orange">TODO</span>  - macro magic?</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#nonzeros%3AInt32-instance-method" class="signature"><strong>#nonzeros</strong> : Int32</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#to_dense-instance-method" class="signature"><strong>#to_dense</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#to_general-instance-method" class="signature"><strong>#to_general</strong></a>
+        
+          <div class="summary"><p>Creates general matrix with same content.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#transpose-instance-method" class="signature"><strong>#transpose</strong></a>
+        
+          <div class="summary"><p>Returns transposed matrix</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#transpose%21-instance-method" class="signature"><strong>#transpose!</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#tril%28k%3D0%29-instance-method" class="signature"><strong>#tril</strong>(k = <span class="n">0</span>)</a>
+        
+          <div class="summary"><p>Same as tril in scipy - returns lower triangular or trapezoidal part of matrix</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#tril%21%28k%3D0%29-instance-method" class="signature"><strong>#tril!</strong>(k = <span class="n">0</span>)</a>
+        
+          <div class="summary"><p>Works like a tril in scipy - remove all elements above k-diagonal</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#triu%28k%3D0%29-instance-method" class="signature"><strong>#triu</strong>(k = <span class="n">0</span>)</a>
+        
+          <div class="summary"><p>Same as triu in scipy - returns upper triangular or trapezoidal part of matrix</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#triu%21%28k%3D0%29-instance-method" class="signature"><strong>#triu!</strong>(k = <span class="n">0</span>)</a>
+        
+          <div class="summary"><p>Works like a triu in scipy - remove all elements below k-diagonal</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#unsafe_fetch%28i%2Cj%29-instance-method" class="signature"><strong>#unsafe_fetch</strong>(i, j)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#unsafe_set%28i%2Cj%2Cvalue%29-instance-method" class="signature"><strong>#unsafe_set</strong>(i, j, value)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+  <h3>Instance methods inherited from class <code><a href="../../LA/Sparse/Matrix.html">LA::Sparse::Matrix(T)</a></code></h3>
+  
+  
+    <a href="../../LA/Sparse/Matrix.html#%3D%3D%28other%3ASparse%3A%3AMatrix%28T%29%29-instance-method" class="tooltip">
+      <span>==(other : Sparse::Matrix(T))</span>
+    ==</a>, 
+    
+  
+    <a href="../../LA/Sparse/Matrix.html#flags%3AMatrixFlags-instance-method" class="tooltip">
+      <span>flags : MatrixFlags</span>
+    flags</a>, 
+    
+  
+    <a href="../../LA/Sparse/Matrix.html#flags%3D%28flags%3AMatrixFlags%29-instance-method" class="tooltip">
+      <span>flags=(flags : MatrixFlags)</span>
+    flags=</a>, 
+    
+  
+    <a href="../../LA/Sparse/Matrix.html#ncolumns%3AInt32-instance-method" class="tooltip">
+      <span>ncolumns : Int32</span>
+    ncolumns</a>, 
+    
+  
+    <a href="../../LA/Sparse/Matrix.html#nonzeros%3AInt32-instance-method" class="tooltip">
+      <span>nonzeros : Int32</span>
+    nonzeros</a>, 
+    
+  
+    <a href="../../LA/Sparse/Matrix.html#nrows%3AInt32-instance-method" class="tooltip">
+      <span>nrows : Int32</span>
+    nrows</a>
+    
+  
+
+
+    
+
+
+    
+
+
+  
+    
+
+  <h3>Instance methods inherited from class <code><a href="../../LA/Matrix.html">LA::Matrix(T)</a></code></h3>
+  
+  
+    <a href="../../LA/Matrix.html#%2A%28k%3ANumber%29-instance-method" class="tooltip">
+      <span>*(k : Number)<br/>*(k : Complex)<br/>*(m : Matrix(T))</span>
+    *</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#%2A%2A%28other%3AInt%29-instance-method" class="tooltip">
+      <span>**(other : Int)</span>
+    **</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#%2B%28k%3ANumber%29-instance-method" class="tooltip">
+      <span>+(k : Number)<br/>+(k : Complex)<br/>+(m : Matrix(T))</span>
+    +</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#-%28k%3ANumber%7CComplex%29-instance-method" class="tooltip">
+      <span>-(k : Number | Complex)<br/>-(m : Matrix(T))<br/>-</span>
+    -</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#/%28k%3ANumber%7CComplex%29-instance-method" class="tooltip">
+      <span>/(k : Number | Complex)</span>
+    /</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#%3D%3D%28other%29-instance-method" class="tooltip">
+      <span>==(other)</span>
+    ==</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#%5B%5D%28i%3AInt32%2Cj%3AInt32%29-instance-method" class="tooltip">
+      <span>[](i : Int32, j : Int32)<br/>[](arows : Range(Int32 | Nil, Int32 | Nil), acolumns : Range(Int32 | Nil, Int32 | Nil))<br/>[](row : Int32, acolumns : Range(Int32 | Nil, Int32 | Nil))<br/>[](arows : Range(Int32 | Nil, Int32 | Nil), column : Int32)</span>
+    []</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#%5B%5D%3D%28i%3AInt32%2Cj%3AInt32%2Cvalue%29-instance-method" class="tooltip">
+      <span>[]=(i : Int32, j : Int32, value)<br/>[]=(arows : Range(Int32, Int32), acolumns : Range(Int32, Int32), value)<br/>[]=(row : Int32, acolumns : Range(Int32, Int32), value)<br/>[]=(nrows : Range(Int32, Int32), column : Int32, value)</span>
+    []=</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#abs%28kind%3AMatrixNorm%3DMatrixNorm%3A%3AFrobenius%29-instance-method" class="tooltip">
+      <span>abs(kind : MatrixNorm = <span class="t">MatrixNorm</span><span class="t">::</span><span class="t">Frobenius</span>)</span>
+    abs</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#add%21%28k%3ANumber%2Cm%3AMatrix%29-instance-method" class="tooltip">
+      <span>add!(k : Number, m : Matrix)<br/>add!(m)</span>
+    add!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#add_mult%28a%2Cb%3AMatrix%28T%29%2C%2A%2Calpha%3D1.0%2Cbeta%3D1.0%29-instance-method" class="tooltip">
+      <span>add_mult(a, b : Matrix(T), *, alpha = <span class="n">1.0</span>, beta = <span class="n">1.0</span>)</span>
+    add_mult</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#almost_eq%28other%3AMatrix%28T%29%2Ceps%29-instance-method" class="tooltip">
+      <span>almost_eq(other : Matrix(T), eps)<br/>almost_eq(other : Matrix(T))</span>
+    almost_eq</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#assume%21%28flag%3AMatrixFlags%2Cvalue%3ABool%3Dtrue%29-instance-method" class="tooltip">
+      <span>assume!(flag : MatrixFlags, value : Bool = <span class="n">true</span>)</span>
+    assume!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#balance%28%2A%2Cpermute%3Dtrue%2Cscale%3Dtrue%2Cseparate%3Dfalse%29-instance-method" class="tooltip">
+      <span>balance(*, permute = <span class="n">true</span>, scale = <span class="n">true</span>, separate = <span class="n">false</span>)</span>
+    balance</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#balance%21%28%2A%2Cpermute%3Dtrue%2Cscale%3Dtrue%2Cseparate%3Dfalse%29-instance-method" class="tooltip">
+      <span>balance!(*, permute = <span class="n">true</span>, scale = <span class="n">true</span>, separate = <span class="n">false</span>)</span>
+    balance!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#cat%28other%3AMatrix%28T%29%2Caxis%3AAxis%29-instance-method" class="tooltip">
+      <span>cat(other : Matrix(T), axis : Axis)</span>
+    cat</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#cho_solve%28b%3Aself%2C%2A%2Coverwrite_b%3Dfalse%29-instance-method" class="tooltip">
+      <span>cho_solve(b : <span class="k">self</span>, *, overwrite_b = <span class="n">false</span>)</span>
+    cho_solve</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#cholesky%28%2A%2Clower%3Dfalse%2Cdont_clean%3Dfalse%29-instance-method" class="tooltip">
+      <span>cholesky(*, lower = <span class="n">false</span>, dont_clean = <span class="n">false</span>)</span>
+    cholesky</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#cholesky%21%28%2A%2Clower%3Dfalse%2Cdont_clean%3Dfalse%29-instance-method" class="tooltip">
+      <span>cholesky!(*, lower = <span class="n">false</span>, dont_clean = <span class="n">false</span>)</span>
+    cholesky!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#chop%28eps%3Dself.tolerance%29-instance-method" class="tooltip">
+      <span>chop(eps = <span class="k">self</span>.tolerance)</span>
+    chop</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#clear_flags-instance-method" class="tooltip">
+      <span>clear_flags</span>
+    clear_flags</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#columns-instance-method" class="tooltip">
+      <span>columns</span>
+    columns</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#conjt-instance-method" class="tooltip">
+      <span>conjt</span>
+    conjt</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#conjt%21-instance-method" class="tooltip">
+      <span>conjt!</span>
+    conjt!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#conjtranspose-instance-method" class="tooltip">
+      <span>conjtranspose</span>
+    conjtranspose</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#coshm-instance-method" class="tooltip">
+      <span>coshm</span>
+    coshm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#cosm-instance-method" class="tooltip">
+      <span>cosm</span>
+    cosm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#det%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>det(*, overwrite_a = <span class="n">false</span>)</span>
+    det</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#detect%28aflags%3AMatrixFlags%3DMatrixFlags%3A%3AAll%2Ceps%3Dtolerance%29-instance-method" class="tooltip">
+      <span>detect(aflags : MatrixFlags = <span class="t">MatrixFlags</span><span class="t">::</span><span class="t">All</span>, eps = tolerance)</span>
+    detect</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#detect%3F%28aflags%3AMatrixFlags%3DMatrixFlags%3A%3AAll%2Ceps%3Dtolerance%29-instance-method" class="tooltip">
+      <span>detect?(aflags : MatrixFlags = <span class="t">MatrixFlags</span><span class="t">::</span><span class="t">All</span>, eps = tolerance)</span>
+    detect?</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#diag%28offset%3D0%29-instance-method" class="tooltip">
+      <span>diag(offset = <span class="n">0</span>)</span>
+    diag</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#each%28%2A%2Call%3Dfalse%2C%26%29-instance-method" class="tooltip">
+      <span>each(*, all = <span class="n">false</span>, &)</span>
+    each</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#each_index%28%2A%2Call%3Dfalse%2C%26%29-instance-method" class="tooltip">
+      <span>each_index(*, all = <span class="n">false</span>, &)</span>
+    each_index</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#each_with_index%28%2A%2Call%3Dfalse%2C%26%29-instance-method" class="tooltip">
+      <span>each_with_index(*, all = <span class="n">false</span>, &)</span>
+    each_with_index</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#eigs%28%2A%2Cleft%3Dfalse%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>eigs(*, left = <span class="n">false</span>, overwrite_a = <span class="n">false</span>)<br/>eigs(*, need_left : Bool, need_right : Bool, overwrite_a = <span class="n">false</span>)<br/>eigs(*, b : Matrix(T), need_left : Bool, need_right : Bool, overwrite_a = <span class="n">false</span>, overwrite_b = <span class="n">false</span>)</span>
+    eigs</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#eigvals%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>eigvals(*, overwrite_a = <span class="n">false</span>)</span>
+    eigvals</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#expm%28%2A%2Cschur_fact%3Dfalse%29-instance-method" class="tooltip">
+      <span>expm(*, schur_fact = <span class="n">false</span>)</span>
+    expm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#expm_sqtri%28t%2Cf%2Cs%29-instance-method" class="tooltip">
+      <span>expm_sqtri(t, f, s)</span>
+    expm_sqtri</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#flags%3AMatrixFlags-instance-method" class="tooltip">
+      <span>flags : MatrixFlags</span>
+    flags</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#hcat%28other%29-instance-method" class="tooltip">
+      <span>hcat(other)</span>
+    hcat</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#hessenberg-instance-method" class="tooltip">
+      <span>hessenberg<br/>hessenberg(*, calc_q = <span class="n">false</span>)</span>
+    hessenberg</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#hessenberg%21-instance-method" class="tooltip">
+      <span>hessenberg!<br/>hessenberg!(*, calc_q = <span class="n">false</span>)</span>
+    hessenberg!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#inspect%28io%29-instance-method" class="tooltip">
+      <span>inspect(io)</span>
+    inspect</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#inv-instance-method" class="tooltip">
+      <span>inv</span>
+    inv</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#inv%21-instance-method" class="tooltip">
+      <span>inv!</span>
+    inv!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#kron%28b%3AMatrix%28T%29%29-instance-method" class="tooltip">
+      <span>kron(b : Matrix(T))</span>
+    kron</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#lq%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>lq(*, overwrite_a = <span class="n">false</span>)</span>
+    lq</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#lq_r%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>lq_r(*, overwrite_a = <span class="n">false</span>)</span>
+    lq_r</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#lstsq%28b%3Aself%2Cmethod%3ALSMethod%3DLSMethod%3A%3AAuto%2C%2A%2Coverwrite_a%3Dfalse%2Coverwrite_b%3Dfalse%2Ccond%3D-1%29-instance-method" class="tooltip">
+      <span>lstsq(b : <span class="k">self</span>, method : LSMethod = <span class="t">LSMethod</span><span class="t">::</span><span class="t">Auto</span>, *, overwrite_a = <span class="n">false</span>, overwrite_b = <span class="n">false</span>, cond = <span class="n">-1</span>)</span>
+    lstsq</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#lu%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>lu(*, overwrite_a = <span class="n">false</span>)</span>
+    lu</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#lu_factor-instance-method" class="tooltip">
+      <span>lu_factor</span>
+    lu_factor</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#lu_factor%21-instance-method" class="tooltip">
+      <span>lu_factor!</span>
+    lu_factor!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#map%28%26%29-instance-method" class="tooltip">
+      <span>map(&)</span>
+    map</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#map%21%28%26%29-instance-method" class="tooltip">
+      <span>map!(&)</span>
+    map!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#map_with_index%28%26%29-instance-method" class="tooltip">
+      <span>map_with_index(&)</span>
+    map_with_index</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#map_with_index%21%28%26%29-instance-method" class="tooltip">
+      <span>map_with_index!(&)</span>
+    map_with_index!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#max%28axis%3AAxis%29-instance-method" class="tooltip">
+      <span>max(axis : Axis)</span>
+    max</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#min%28axis%3AAxis%29-instance-method" class="tooltip">
+      <span>min(axis : Axis)</span>
+    min</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#ncolumns%3AInt32-instance-method" class="tooltip">
+      <span>ncolumns : Int32</span>
+    ncolumns</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#norm%28kind%3AMatrixNorm%3DMatrixNorm%3A%3AFrobenius%29-instance-method" class="tooltip">
+      <span>norm(kind : MatrixNorm = <span class="t">MatrixNorm</span><span class="t">::</span><span class="t">Frobenius</span>)</span>
+    norm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#nrows%3AInt32-instance-method" class="tooltip">
+      <span>nrows : Int32</span>
+    nrows</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#pinv-instance-method" class="tooltip">
+      <span>pinv</span>
+    pinv</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#product%28axis%3AAxis%29-instance-method" class="tooltip">
+      <span>product(axis : Axis)</span>
+    product</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#ql%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>ql(*, overwrite_a = <span class="n">false</span>)</span>
+    ql</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#ql_r%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>ql_r(*, overwrite_a = <span class="n">false</span>)</span>
+    ql_r</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#qr%28%2A%2Coverwrite_a%3Dfalse%2Cpivoting%3Dfalse%29-instance-method" class="tooltip">
+      <span>qr(*, overwrite_a = <span class="n">false</span>, pivoting = <span class="n">false</span>)</span>
+    qr</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#qr_r%28%2A%2Coverwrite_a%3Dfalse%2Cpivoting%3Dfalse%29-instance-method" class="tooltip">
+      <span>qr_r(*, overwrite_a = <span class="n">false</span>, pivoting = <span class="n">false</span>)</span>
+    qr_r</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#qr_raw%28%2A%2Coverwrite_a%3Dfalse%2Cpivoting%3Dfalse%29-instance-method" class="tooltip">
+      <span>qr_raw(*, overwrite_a = <span class="n">false</span>, pivoting = <span class="n">false</span>)</span>
+    qr_raw</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#qz%28b%2Coverwrite_a%3Dfalse%2Coverwrite_b%3Dfalse%29-instance-method" class="tooltip">
+      <span>qz(b, overwrite_a = <span class="n">false</span>, overwrite_b = <span class="n">false</span>)</span>
+    qz</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#rank%28eps%3Dself.tolerance%2C%2A%2Cmethod%3ARankMethod%3DRankMethod%3A%3ASVD%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>rank(eps = <span class="k">self</span>.tolerance, *, method : RankMethod = <span class="t">RankMethod</span><span class="t">::</span><span class="t">SVD</span>, overwrite_a = <span class="n">false</span>)</span>
+    rank</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#reduce%28axis%3AAxis%2Cinitial%2C%26%29-instance-method" class="tooltip">
+      <span>reduce(axis : Axis, initial, &)</span>
+    reduce</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#repmat%28arows%2Cacolumns%29-instance-method" class="tooltip">
+      <span>repmat(arows, acolumns)</span>
+    repmat</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#rows-instance-method" class="tooltip">
+      <span>rows</span>
+    rows</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#rq%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>rq(*, overwrite_a = <span class="n">false</span>)</span>
+    rq</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#rq_r%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>rq_r(*, overwrite_a = <span class="n">false</span>)</span>
+    rq_r</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#save_csv%28filename%29-instance-method" class="tooltip">
+      <span>save_csv(filename)</span>
+    save_csv</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#scale%21%28k%3ANumber%7CComplex%29-instance-method" class="tooltip">
+      <span>scale!(k : Number | Complex)</span>
+    scale!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#schur%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>schur(*, overwrite_a = <span class="n">false</span>)</span>
+    schur</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#shape-instance-method" class="tooltip">
+      <span>shape</span>
+    shape</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#sinhm-instance-method" class="tooltip">
+      <span>sinhm</span>
+    sinhm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#sinm-instance-method" class="tooltip">
+      <span>sinm</span>
+    sinm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#size%3ATuple%28Int32%2CInt32%29-instance-method" class="tooltip">
+      <span>size : Tuple(Int32, Int32)</span>
+    size</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#solve%28b%3Aself%2C%2A%2Coverwrite_a%3Dfalse%2Coverwrite_b%3Dfalse%29-instance-method" class="tooltip">
+      <span>solve(b : <span class="k">self</span>, *, overwrite_a = <span class="n">false</span>, overwrite_b = <span class="n">false</span>)</span>
+    solve</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#solvels%28b%3Aself%2C%2A%2Coverwrite_a%3Dfalse%2Coverwrite_b%3Dfalse%2Ccond%3D-1%29-instance-method" class="tooltip">
+      <span>solvels(b : <span class="k">self</span>, *, overwrite_a = <span class="n">false</span>, overwrite_b = <span class="n">false</span>, cond = <span class="n">-1</span>)</span>
+    solvels</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#square%3F-instance-method" class="tooltip">
+      <span>square?</span>
+    square?</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#sum%28axis%3AAxis%29-instance-method" class="tooltip">
+      <span>sum(axis : Axis)</span>
+    sum</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#svd%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>svd(*, overwrite_a = <span class="n">false</span>)</span>
+    svd</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#svdvals%28%2A%2Coverwrite_a%3Dfalse%29-instance-method" class="tooltip">
+      <span>svdvals(*, overwrite_a = <span class="n">false</span>)</span>
+    svdvals</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#t-instance-method" class="tooltip">
+      <span>t</span>
+    t</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#t%21-instance-method" class="tooltip">
+      <span>t!</span>
+    t!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#tanhm-instance-method" class="tooltip">
+      <span>tanhm</span>
+    tanhm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#tanm-instance-method" class="tooltip">
+      <span>tanm</span>
+    tanm</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#to_custom%28io%2Cprefix%2Ccolumns_separator%2Crows_separator%2Cpostfix%29-instance-method" class="tooltip">
+      <span>to_custom(io, prefix, columns_separator, rows_separator, postfix)<br/>to_custom(prefix, columns_separator, rows_separator, postfix)</span>
+    to_custom</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#to_general-instance-method" class="tooltip">
+      <span>to_general</span>
+    to_general</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#to_imag-instance-method" class="tooltip">
+      <span>to_imag</span>
+    to_imag</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#to_matlab%28io%29-instance-method" class="tooltip">
+      <span>to_matlab(io)<br/>to_matlab</span>
+    to_matlab</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#to_real-instance-method" class="tooltip">
+      <span>to_real</span>
+    to_real</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#to_s%28io%29-instance-method" class="tooltip">
+      <span>to_s(io)</span>
+    to_s</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#to_unsafe-instance-method" class="tooltip">
+      <span>to_unsafe</span>
+    to_unsafe</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#tolerance-instance-method" class="tooltip">
+      <span>tolerance</span>
+    tolerance</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#tr_mult%21%28a%3AMatrix%28T%29%2C%2A%2Calpha%3D1.0%2Cleft%3Dfalse%29-instance-method" class="tooltip">
+      <span>tr_mult!(a : Matrix(T), *, alpha = <span class="n">1.0</span>, left = <span class="n">false</span>)</span>
+    tr_mult!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#trace-instance-method" class="tooltip">
+      <span>trace</span>
+    trace</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#transpose-instance-method" class="tooltip">
+      <span>transpose</span>
+    transpose</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#tril%28k%3D0%29-instance-method" class="tooltip">
+      <span>tril(k = <span class="n">0</span>)</span>
+    tril</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#tril%21%28k%3D0%29-instance-method" class="tooltip">
+      <span>tril!(k = <span class="n">0</span>)</span>
+    tril!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#triu%28k%3D0%29-instance-method" class="tooltip">
+      <span>triu(k = <span class="n">0</span>)</span>
+    triu</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#triu%21%28k%3D0%29-instance-method" class="tooltip">
+      <span>triu!(k = <span class="n">0</span>)</span>
+    triu!</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#vcat%28other%29-instance-method" class="tooltip">
+      <span>vcat(other)</span>
+    vcat</a>
+    
+  
+
+
+    
+
+
+    
+
+  <h3>Class methods inherited from class <code><a href="../../LA/Matrix.html">LA::Matrix(T)</a></code></h3>
+  
+  
+    <a href="../../LA/Matrix.html#arange%28start_val%3AT%2Cend_val%3AT%2Cdelta%3D1.0%29-class-method" class="tooltip">
+      <span>arange(start_val : T, end_val : T, delta = <span class="n">1.0</span>)</span>
+    arange</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#block_diag%28%2Aargs%29-class-method" class="tooltip">
+      <span>block_diag(*args)</span>
+    block_diag</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#circulant%28c%29-class-method" class="tooltip">
+      <span>circulant(c)</span>
+    circulant</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#column%28values%29-class-method" class="tooltip">
+      <span>column(values)</span>
+    column</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#companion%28a%29-class-method" class="tooltip">
+      <span>companion(a)</span>
+    companion</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#dft%28n%2Cscale%3ADFTScale%3DDFTScale%3A%3ANone%29-class-method" class="tooltip">
+      <span>dft(n, scale : DFTScale = <span class="t">DFTScale</span><span class="t">::</span><span class="t">None</span>)</span>
+    dft</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#diag%28nrows%2Cncolumns%2Cvalue%3ANumber%7CComplex%29-class-method" class="tooltip">
+      <span>diag(nrows, ncolumns, value : Number | Complex)<br/>diag(nrows, ncolumns, values)<br/>diag(values)<br/>diag(nrows, ncolumns, &)</span>
+    diag</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#eye%28n%29-class-method" class="tooltip">
+      <span>eye(n)</span>
+    eye</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#from_custom%28str%3AString%2Cprefix%2Ccolumns_separator%2Crows_separator%2Cpostfix%29-class-method" class="tooltip">
+      <span>from_custom(str : String, prefix, columns_separator, rows_separator, postfix)<br/>from_custom(io, prefix, columns_separator, rows_separator, postfix)</span>
+    from_custom</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#from_matlab%28s%29-class-method" class="tooltip">
+      <span>from_matlab(s)</span>
+    from_matlab</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#hadamard%28n%29-class-method" class="tooltip">
+      <span>hadamard(n)</span>
+    hadamard</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#hankel%28column%3AIndexable%7CMatrix%2Crow%3AIndexable%7CMatrix%7CNil%3Dnil%29-class-method" class="tooltip">
+      <span>hankel(column : Indexable | Matrix, row : Indexable | Matrix | Nil = <span class="n">nil</span>)</span>
+    hankel</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#helmert%28n%2Cfull%3Dfalse%29-class-method" class="tooltip">
+      <span>helmert(n, full = <span class="n">false</span>)</span>
+    helmert</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#hilbert%28n%29-class-method" class="tooltip">
+      <span>hilbert(n)</span>
+    hilbert</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#identity%28n%29-class-method" class="tooltip">
+      <span>identity(n)</span>
+    identity</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#invpascal%28n%2Ckind%3APascalKind%3DPascalKind%3A%3ASymmetric%29-class-method" class="tooltip">
+      <span>invpascal(n, kind : PascalKind = <span class="t">PascalKind</span><span class="t">::</span><span class="t">Symmetric</span>)</span>
+    invpascal</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#kron%28a%2Cb%29-class-method" class="tooltip">
+      <span>kron(a, b)</span>
+    kron</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#leslie%28f%2Cs%29-class-method" class="tooltip">
+      <span>leslie(f, s)</span>
+    leslie</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#load_csv%28filename%29-class-method" class="tooltip">
+      <span>load_csv(filename)</span>
+    load_csv</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#ones%28nrows%2Cncolumns%29-class-method" class="tooltip">
+      <span>ones(nrows, ncolumns)</span>
+    ones</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#pascal%28n%2Ckind%3APascalKind%3DPascalKind%3A%3ASymmetric%29-class-method" class="tooltip">
+      <span>pascal(n, kind : PascalKind = <span class="t">PascalKind</span><span class="t">::</span><span class="t">Symmetric</span>)</span>
+    pascal</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#rand%28nrows%2Cncolumns%2Crng%3DRandom%3A%3ADEFAULT%29-class-method" class="tooltip">
+      <span>rand(nrows, ncolumns, rng = <span class="t">Random</span><span class="t">::</span><span class="t">DEFAULT</span>)</span>
+    rand</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#repmat%28a%3AMatrix%28T%29%2Cnrows%2Cncolumns%29-class-method" class="tooltip">
+      <span>repmat(a : Matrix(T), nrows, ncolumns)</span>
+    repmat</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#row%28values%29-class-method" class="tooltip">
+      <span>row(values)</span>
+    row</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#toeplitz%28column%3AIndexable%7CMatrix%2Crow%3AIndexable%7CMatrix%7CNil%3Dnil%29-class-method" class="tooltip">
+      <span>toeplitz(column : Indexable | Matrix, row : Indexable | Matrix | Nil = <span class="n">nil</span>)</span>
+    toeplitz</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#tri%28nrows%2Cncolumns%2Ck%3D0%29-class-method" class="tooltip">
+      <span>tri(nrows, ncolumns, k = <span class="n">0</span>)</span>
+    tri</a>, 
+    
+  
+    <a href="../../LA/Matrix.html#zeros%28nrows%2Cncolumns%29-class-method" class="tooltip">
+      <span>zeros(nrows, ncolumns)</span>
+    zeros</a>
+    
+  
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+  <h3>Instance methods inherited from module <code><a href="../../Enumerable.html">Enumerable(T)</a></code></h3>
+  
+  
+    <a href="../../Enumerable.html#product%28initial%3AComplex%29-instance-method" class="tooltip">
+      <span>product(initial : Complex)<br/>product(initial : Complex, &)</span>
+    product</a>
+    
+  
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(nrows,ncolumns,rows:Array(Int32),columns:Array(Int32),values:Array(T),flags=MatrixFlags::None,*,dont_clone:Bool=false,dont_check:Bool=false,dictionary=nil)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(nrows, ncolumns, rows : Array(Int32), columns : Array(Int32), values : Array(T), flags = <span class="t">MatrixFlags</span><span class="t">::</span><span class="t">None</span>, *, dont_clone : Bool = <span class="n">false</span>, dont_check : Bool = <span class="n">false</span>, dictionary = <span class="n">nil</span>)
+
+        <a class="method-permalink" href="#new%28nrows%2Cncolumns%2Crows%3AArray%28Int32%29%2Ccolumns%3AArray%28Int32%29%2Cvalues%3AArray%28T%29%2Cflags%3DMatrixFlags%3A%3ANone%2C%2A%2Cdont_clone%3ABool%3Dfalse%2Cdont_check%3ABool%3Dfalse%2Cdictionary%3Dnil%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L46" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new(nrows,ncolumns,capacity=0)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(nrows, ncolumns, capacity = <span class="n">0</span>)
+
+        <a class="method-permalink" href="#new%28nrows%2Cncolumns%2Ccapacity%3D0%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L39" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new(matrix:COOMatrix(T))-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(matrix : <a href="../../LA/Sparse/COOMatrix.html">COOMatrix</a>(T))
+
+        <a class="method-permalink" href="#new%28matrix%3ACOOMatrix%28T%29%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L84" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new(matrix:COOMatrix)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(matrix : <a href="../../LA/Sparse/COOMatrix.html">COOMatrix</a>)
+
+        <a class="method-permalink" href="#new%28matrix%3ACOOMatrix%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L88" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new(matrix:LA::Matrix)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(matrix : <a href="../../LA/Matrix.html">LA::Matrix</a>)
+
+        <a class="method-permalink" href="#new%28matrix%3ALA%3A%3AMatrix%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L92" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>
+    <a id="class-method-detail" class="anchor" href="#class-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="diag(nrows,ncolumns,values)-class-method">
+      <div class="signature">
+        
+        def self.<strong>diag</strong>(nrows, ncolumns, values)
+
+        <a class="method-permalink" href="#diag%28nrows%2Cncolumns%2Cvalues%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns diagonal matrix of given size with diagonal elements taken from array <code>values</code></p>
+<p>Raises if <code>values.size &gt; {nrows, ncolumns}.min</code></p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L153" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="diag(nrows,ncolumns,&amp;)-class-method">
+      <div class="signature">
+        
+        def self.<strong>diag</strong>(nrows, ncolumns, &)
+
+        <a class="method-permalink" href="#diag%28nrows%2Cncolumns%2C%26%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns diagonal matrix of given size with diagonal elements equal to block value</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L162" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="rand(nrows,ncolumns,*,nonzero_elements,rng:Random=Random::DEFAULT)-class-method">
+      <div class="signature">
+        
+        def self.<strong>rand</strong>(nrows, ncolumns, *, nonzero_elements, rng : Random = <span class="t">Random</span><span class="t">::</span><span class="t">DEFAULT</span>)
+
+        <a class="method-permalink" href="#rand%28nrows%2Cncolumns%2C%2A%2Cnonzero_elements%2Crng%3ARandom%3DRandom%3A%3ADEFAULT%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L332" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="rand(nrows,ncolumns,*,fill_factor,rng:Random=Random::DEFAULT)-class-method">
+      <div class="signature">
+        
+        def self.<strong>rand</strong>(nrows, ncolumns, *, fill_factor, rng : Random = <span class="t">Random</span><span class="t">::</span><span class="t">DEFAULT</span>)
+
+        <a class="method-permalink" href="#rand%28nrows%2Cncolumns%2C%2A%2Cfill_factor%2Crng%3ARandom%3DRandom%3A%3ADEFAULT%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L349" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="+(m:LA::Matrix)-instance-method">
+      <div class="signature">
+        
+        def <strong>+</strong>(m : <a href="../../LA/Matrix.html">LA::Matrix</a>)
+
+        <a class="method-permalink" href="#%2B%28m%3ALA%3A%3AMatrix%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>returns element-wise sum</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L247" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="-(m:LA::Matrix)-instance-method">
+      <div class="signature">
+        
+        def <strong>-</strong>(m : <a href="../../LA/Matrix.html">LA::Matrix</a>)
+
+        <a class="method-permalink" href="#-%28m%3ALA%3A%3AMatrix%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L253" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="add!(k:Number|Complex,m:Sparse::Matrix)-instance-method">
+      <div class="signature">
+        
+        def <strong>add!</strong>(k : <a href="../../Number.html">Number</a> | <a href="../../Complex.html">Complex</a>, m : <a href="../../LA/Sparse/Matrix.html">Sparse::Matrix</a>)
+
+        <a class="method-permalink" href="#add%21%28k%3ANumber%7CComplex%2Cm%3ASparse%3A%3AMatrix%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L259" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="add!(k:Number|Complex,m:LA::Matrix)-instance-method">
+      <div class="signature">
+        
+        def <strong>add!</strong>(k : <a href="../../Number.html">Number</a> | <a href="../../Complex.html">Complex</a>, m : <a href="../../LA/Matrix.html">LA::Matrix</a>)
+
+        <a class="method-permalink" href="#add%21%28k%3ANumber%7CComplex%2Cm%3ALA%3A%3AMatrix%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L268" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="clear-instance-method">
+      <div class="signature">
+        
+        def <strong>clear</strong>
+
+        <a class="method-permalink" href="#clear-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L286" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="clone-instance-method">
+      <div class="signature">
+        
+        def <strong>clone</strong>
+
+        <a class="method-permalink" href="#clone-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L146" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="conjtranspose-instance-method">
+      <div class="signature">
+        
+        def <strong>conjtranspose</strong>
+
+        <a class="method-permalink" href="#conjtranspose-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Returns conjurgate transposed matrix</p>
+<p>result is same as <code><a href="../../LA/Sparse/COOMatrix.html#transpose-instance-method">#transpose</a></code> for real matrices</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L238" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="dup-instance-method">
+      <div class="signature">
+        
+        def <strong>dup</strong>
+
+        <a class="method-permalink" href="#dup-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class Reference
+            </div>
+          
+          <p>Returns a shallow copy of this object.</p>
+<p>This allocates a new object and copies the contents of
+<code>self</code> into it.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L142" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="each_index(*,all=false,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>each_index</strong>(*, all = <span class="n">false</span>, &)
+
+        <a class="method-permalink" href="#each_index%28%2A%2Call%3Dfalse%2C%26%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Yields every index</p>
+<p><code>all</code> argument controls whether to yield all or non-empty elements for banded\sparse matrices
+Example:
+<code>m.each_index { |i, j| m[i, j] = -m[i, j] }</code></p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L171" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="each_with_index(*,all=false,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>each_with_index</strong>(*, all = <span class="n">false</span>, &)
+
+        <a class="method-permalink" href="#each_with_index%28%2A%2Call%3Dfalse%2C%26%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Yields every element of matrix with corresponding row and column</p>
+<p><code>all</code> argument controls whether to yield all or non-empty elements for banded\sparse matrices
+Example:
+m.each_with_index { |v, i, j| m2[i, j] = v }</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L181" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="map_with_index(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>map_with_index</strong>(&)
+
+        <a class="method-permalink" href="#map_with_index%28%26%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Returns result of appliyng block to every element with index</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L198" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="map_with_index!(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>map_with_index!</strong>(&)
+
+        <a class="method-permalink" href="#map_with_index%21%28%26%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Yields each element with index and replace it with returned value</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L191" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="map_with_index_complex(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>map_with_index_complex</strong>(&)
+
+        <a class="method-permalink" href="#map_with_index_complex%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L208" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="map_with_index_f64(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>map_with_index_f64</strong>(&)
+
+        <a class="method-permalink" href="#map_with_index_f64%28%26%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p><span class="flag orange">TODO</span>  - macro magic?</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L203" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="nonzeros:Int32-instance-method">
+      <div class="signature">
+        
+        def <strong>nonzeros</strong> : Int32
+
+        <a class="method-permalink" href="#nonzeros%3AInt32-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L80" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="to_dense-instance-method">
+      <div class="signature">
+        
+        def <strong>to_dense</strong>
+
+        <a class="method-permalink" href="#to_dense-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L371" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="to_general-instance-method">
+      <div class="signature">
+        
+        def <strong>to_general</strong>
+
+        <a class="method-permalink" href="#to_general-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Creates general matrix with same content. Useful for banded\sparse matrices</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L362" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="transpose-instance-method">
+      <div class="signature">
+        
+        def <strong>transpose</strong>
+
+        <a class="method-permalink" href="#transpose-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Returns transposed matrix</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L233" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="transpose!-instance-method">
+      <div class="signature">
+        
+        def <strong>transpose!</strong>
+
+        <a class="method-permalink" href="#transpose%21-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L222" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="tril(k=0)-instance-method">
+      <div class="signature">
+        
+        def <strong>tril</strong>(k = <span class="n">0</span>)
+
+        <a class="method-permalink" href="#tril%28k%3D0%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Same as tril in scipy - returns lower triangular or trapezoidal part of matrix</p>
+<p>Returns a matrix with all elements above k-th diagonal zeroed</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L314" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="tril!(k=0)-instance-method">
+      <div class="signature">
+        
+        def <strong>tril!</strong>(k = <span class="n">0</span>)
+
+        <a class="method-permalink" href="#tril%21%28k%3D0%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Works like a tril in scipy - remove all elements above k-diagonal</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L304" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="triu(k=0)-instance-method">
+      <div class="signature">
+        
+        def <strong>triu</strong>(k = <span class="n">0</span>)
+
+        <a class="method-permalink" href="#triu%28k%3D0%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Same as triu in scipy - returns upper triangular or trapezoidal part of matrix</p>
+<p>Returns a matrix with all elements below k-th diagonal zeroed</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L323" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="triu!(k=0)-instance-method">
+      <div class="signature">
+        
+        def <strong>triu!</strong>(k = <span class="n">0</span>)
+
+        <a class="method-permalink" href="#triu%21%28k%3D0%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../LA/Matrix.html">LA::Matrix(T)</a>
+            </div>
+          
+          <p>Works like a triu in scipy - remove all elements below k-diagonal</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L294" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="unsafe_fetch(i,j)-instance-method">
+      <div class="signature">
+        
+        def <strong>unsafe_fetch</strong>(i, j)
+
+        <a class="method-permalink" href="#unsafe_fetch%28i%2Cj%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L105" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="unsafe_set(i,j,value)-instance-method">
+      <div class="signature">
+        
+        def <strong>unsafe_set</strong>(i, j, value)
+
+        <a class="method-permalink" href="#unsafe_set%28i%2Cj%2Cvalue%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/sparse_matrix.cr#L129" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>

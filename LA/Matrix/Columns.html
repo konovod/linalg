@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 1.6.2">
+<meta name="crystal_docs.project_version" content="master">
+<meta name="crystal_docs.project_name" content="linalg">
+
+
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../js/doc.js"></script>
+
+  <meta name="repository-name" content="linalg">
+  <title>LA::Matrix::Columns(T) - linalg master</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../../index.html">
+          linalg
+        </a>
+      </h1>
+
+      <span class="project-version">
+        master
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class=" " data-id="linalg/Complex" data-name="complex">
+      <a href="../../Complex.html">Complex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Enumerable" data-name="enumerable(t)">
+      <a href="../../Enumerable.html">Enumerable</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="linalg/LA" data-name="la">
+      <a href="../../LA.html">LA</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/LA/Axis" data-name="la::axis">
+      <a href="../../LA/Axis.html">Axis</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BandedMatrix" data-name="la::bandedmatrix(t)">
+      <a href="../../LA/BandedMatrix.html">BandedMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMat" data-name="la::bmat">
+      <a href="../../LA/BMat.html">BMat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMat32" data-name="la::bmat32">
+      <a href="../../LA/BMat32.html">BMat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/BMatComplex" data-name="la::bmatcomplex">
+      <a href="../../LA/BMatComplex.html">BMatComplex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/DFTScale" data-name="la::dftscale">
+      <a href="../../LA/DFTScale.html">DFTScale</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GeneralMatrix" data-name="la::generalmatrix(t)">
+      <a href="../../LA/GeneralMatrix.html">GeneralMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMat" data-name="la::gmat">
+      <a href="../../LA/GMat.html">GMat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMat32" data-name="la::gmat32">
+      <a href="../../LA/GMat32.html">GMat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/GMatComplex" data-name="la::gmatcomplex">
+      <a href="../../LA/GMatComplex.html">GMatComplex</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LinAlgError" data-name="la::linalgerror">
+      <a href="../../LA/LinAlgError.html">LinAlgError</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LSMethod" data-name="la::lsmethod">
+      <a href="../../LA/LSMethod.html">LSMethod</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LUMatrix" data-name="la::lumatrix(t)">
+      <a href="../../LA/LUMatrix.html">LUMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/LUTranspose" data-name="la::lutranspose">
+      <a href="../../LA/LUTranspose.html">LUTranspose</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Mat" data-name="la::mat">
+      <a href="../../LA/Mat.html">Mat</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Mat32" data-name="la::mat32">
+      <a href="../../LA/Mat32.html">Mat32</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatComplex" data-name="la::matcomplex">
+      <a href="../../LA/MatComplex.html">MatComplex</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="linalg/LA/Matrix" data-name="la::matrix(t)">
+      <a href="../../LA/Matrix.html">Matrix</a>
+      
+        <ul>
+  
+  <li class=" current" data-id="linalg/LA/Matrix/Columns" data-name="la::matrix::columns(t)">
+      <a href="../../LA/Matrix/Columns.html">Columns</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Matrix/Rows" data-name="la::matrix::rows(t)">
+      <a href="../../LA/Matrix/Rows.html">Rows</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatrixFlags" data-name="la::matrixflags">
+      <a href="../../LA/MatrixFlags.html">MatrixFlags</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/MatrixNorm" data-name="la::matrixnorm">
+      <a href="../../LA/MatrixNorm.html">MatrixNorm</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/PascalKind" data-name="la::pascalkind">
+      <a href="../../LA/PascalKind.html">PascalKind</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/RankMethod" data-name="la::rankmethod">
+      <a href="../../LA/RankMethod.html">RankMethod</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/RowColumn" data-name="la::rowcolumn">
+      <a href="../../LA/RowColumn.html">RowColumn</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/LA/Sparse" data-name="la::sparse">
+      <a href="../../LA/Sparse.html">Sparse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/LA/Sparse/COOMatrix" data-name="la::sparse::coomatrix(t)">
+      <a href="../../LA/Sparse/COOMatrix.html">COOMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/Sparse/Matrix" data-name="la::sparse::matrix(t)">
+      <a href="../../LA/Sparse/Matrix.html">Matrix</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/SubMatrix" data-name="la::submatrix(t)">
+      <a href="../../LA/SubMatrix.html">SubMatrix</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/LA/WorkPool" data-name="la::workpool">
+      <a href="../../LA/WorkPool.html">WorkPool</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Math" data-name="math">
+      <a href="../../Math.html">Math</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/MatrixParseError" data-name="matrixparseerror">
+      <a href="../../MatrixParseError.html">MatrixParseError</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Number" data-name="number">
+      <a href="../../Number.html">Number</a>
+      
+    </li>
+  
+  <li class="parent " data-id="linalg/Spec" data-name="spec">
+      <a href="../../Spec.html">Spec</a>
+      
+        <ul>
+  
+  <li class=" " data-id="linalg/Spec/AlmostEqualExpectation" data-name="spec::almostequalexpectation(t)">
+      <a href="../../Spec/AlmostEqualExpectation.html">AlmostEqualExpectation</a>
+      
+    </li>
+  
+  <li class=" " data-id="linalg/Spec/Expectations" data-name="spec::expectations">
+      <a href="../../Spec/Expectations.html">Expectations</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">struct</span> LA::Matrix::Columns(T)
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../LA/Matrix/Columns.html">LA::Matrix::Columns(T)</a></li><li class="superclass">Struct</li><li class="superclass">Value</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>Indexable(SubMatrix(T)) that allows iterating over columns</p>
+
+
+
+
+
+  <h2>
+    <a id="included-modules" class="anchor" href="#included-modules">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Included Modules
+  </h2>
+  <ul class="other-types-list">
+    
+      <li class="other-type">Indexable(<a href="../../LA/SubMatrix.html">LA::SubMatrix(T)</a>)</li>
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/iteration.cr#L30" target="_blank">
+        matrix/iteration.cr:30
+      </a>
+    
+    <br/>
+  
+    
+      <a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/iteration.cr#L35" target="_blank">
+        matrix/iteration.cr:35
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#%5B%5D%28range%3ARange%29-instance-method" class="signature"><strong>#[]</strong>(range : Range)</a>
+        
+          <div class="summary"><p>Returns <code><a href="../../LA/SubMatrix.html">SubMatrix</a></code> that consist of given columns</p></div>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+  <h3>Instance methods inherited from module <code><a href="../../Enumerable.html">Enumerable</a>(<a href="../../LA/SubMatrix.html">LA::SubMatrix(T)</a>)</code></h3>
+  
+  
+    <a href="../../Enumerable.html#product%28initial%3AComplex%29-instance-method" class="tooltip">
+      <span>product(initial : Complex)<br/>product(initial : Complex, &)</span>
+    product</a>
+    
+  
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+
+
+
+
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="[](range:Range)-instance-method">
+      <div class="signature">
+        
+        def <strong>[]</strong>(range : Range)
+
+        <a class="method-permalink" href="#%5B%5D%28range%3ARange%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code><a href="../../LA/SubMatrix.html">SubMatrix</a></code> that consist of given columns</p>
+<p><span class="flag orange">TODO</span>  - open ranges</p>
+<p>Example:</p>
+<pre><code class="language-crystal">m <span class="o">=</span> <span class="t">GMat32</span>.new([[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>], [<span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">8</span>], [<span class="n">9</span>, <span class="n">10</span>, <span class="n">11</span>, <span class="n">12</span>]])
+m.columns[<span class="n">1</span>...<span class="n">3</span>].should eq m[<span class="n">0</span>..<span class="n">2</span>, <span class="n">1</span>..<span class="n">2</span>]</code></pre>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/konovod/linalg/blob/3dba6c5610a87fa6cb2866a7855fa38541a56376/src/matrix/iteration.cr#L45" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>
