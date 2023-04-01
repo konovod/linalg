@@ -1,3 +1,5 @@
+# TODO - inline docs
+
 module LA
   # this is a direct conversion to Crystal of matlab code
 

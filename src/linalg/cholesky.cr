@@ -1,6 +1,8 @@
 require "../matrix/*"
 require "./lapack_helper"
 
+# TODO - inline docs
+
 module LA
   def self.cho_solve(a, b, *, overwrite_b = false)
     a.cho_solve(b, overwrite_b: overwrite_b)

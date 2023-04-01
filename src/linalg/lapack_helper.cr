@@ -1,5 +1,7 @@
 require "./libLAPACK"
 
+# TODO - inline docs
+
 module LA
   module LapackHelper
     ARG_NORMAL = 0

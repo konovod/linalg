@@ -1,6 +1,8 @@
 require "./matrix"
 require "./submatrix"
 
+# TODO - inline docs
+
 module LA
   # banded matrix, heap-allocated
   class BandedMatrix(T) < Matrix(T)

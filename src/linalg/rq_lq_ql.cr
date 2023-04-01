@@ -1,3 +1,5 @@
+# TODO - inline docs
+
 private macro decomposition(letters, trix)
 
 private def {{letters}}_initial(a)

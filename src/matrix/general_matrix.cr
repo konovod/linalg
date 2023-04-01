@@ -1,6 +1,8 @@
 require "./matrix"
 require "./submatrix"
 
+# TODO - inline docs
+
 module LA
   # generic matrix, heap-allocated
   class GeneralMatrix(T) < Matrix(T)

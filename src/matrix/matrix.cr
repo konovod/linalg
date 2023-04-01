@@ -1,7 +1,9 @@
 require "complex"
 
 module LA
-  # TODO - Complex64?
+  # Types supported by LAPACK
+  #
+  #  TODO - Complex64?
   SUPPORTED_TYPES = {Float32, Float64, Complex}
 
   enum Axis

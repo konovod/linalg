@@ -1,5 +1,7 @@
 module LA
   abstract class Matrix(T)
+    # Directly set or reset matrix `flag` without check
+    # See `MatrixFlags` for description of flags
     def assume!(flag : MatrixFlags, value : Bool = true)
       if value
         self.flags |= flag
@@ -61,6 +63,10 @@ module LA
       end
     end
 
+    # Detect if given `aflags` are true or flase for a matrix with tolerance `eps`
+    # Update `flags` property
+    # See `MatrixFlags` for description of matrix flags
+    # Returns True if _all_ given flags are set
     def detect?(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
       result = true
       {MatrixFlags::Symmetric,
@@ -79,11 +85,18 @@ module LA
       result
     end
 
+    # Detect if given `aflags` are true or flase for a matrix with tolerance `eps`
+    # Update `flags` property
+    # See `MatrixFlags` for description of matrix flags
+    # Returns `self` for method chaining
     def detect(aflags : MatrixFlags = MatrixFlags::All, eps = tolerance)
       detect? aflags, eps
       self
     end
 
+    # Reset matrix flags to None
+    # Usually is done automatically,
+    # but this method could be needed if internal content was changed using `to_unsafe`
     def clear_flags
       self.flags = MatrixFlags::None
     end

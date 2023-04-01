@@ -1,3 +1,5 @@
+# TODO - inline docs
+
 module LA
   {% for op in %i(expm cosm sinm tanm coshm sinhm tanhm) %}
      def self.{{op.id}}(mat)

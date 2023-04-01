@@ -2,6 +2,8 @@ require "complex"
 require "./matrix"
 require "./general_matrix"
 
+# TODO - inline docs
+
 module LA
   abstract class Matrix(T)
     def self.tri(nrows, ncolumns, k = 0)

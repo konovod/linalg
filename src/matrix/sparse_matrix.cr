@@ -1,6 +1,8 @@
 require "./matrix"
 require "./submatrix"
 
+# TODO - inline docs
+
 module LA::Sparse
   abstract class Matrix(T) < LA::Matrix(T)
     getter nrows : Int32 = 0

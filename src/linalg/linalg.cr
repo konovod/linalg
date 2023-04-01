@@ -1,6 +1,8 @@
 require "../matrix/*"
 require "./lapack_helper"
 
+# TODO - inline docs
+
 module LA
   enum LSMethod
     Auto       = 0

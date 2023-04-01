@@ -1,3 +1,5 @@
+# TODO - inline docs
+
 module LA
   abstract class Matrix(T)
     private def qr_initial(a, pivoting)

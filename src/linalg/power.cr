@@ -1,3 +1,5 @@
+# TODO - inline docs
+
 abstract class LA::Matrix(T)
   # Taken from https://github.com/Exilor/matrix/
   def **(other : Int)

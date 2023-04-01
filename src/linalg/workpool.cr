@@ -1,6 +1,9 @@
+# TODO - inline docs
+
 module LA
   # Work arrays pool for lapack routines
   # It isn't thread safe for now because crystal isn't multithreaded
+  # TODO - Crystal is now multithreaded!
   class WorkPool
     @area = Bytes.new(1024)
     @used = 0

@@ -1,19 +1,20 @@
 require "./matrix"
 require "./submatrix"
 
+# TODO - inline docs
+
 module LA
   abstract class Matrix(T)
     private macro def_indexable(name, offset, size)
       struct {{name.id.capitalize}}(T)
-	    # not Indexable(SubMatrix(T)) due to generics bug 
-        include Indexable(Matrix(T))
+        include Indexable(SubMatrix(T))
         protected def initialize(@base : Matrix(T))
         end
         def size
           @base.n{{name.id}}
         end
-        # unsafe_new for submatrix?
         def unsafe_fetch(index)
+          # TODO unsafe_new for submatrix?
           SubMatrix(T).new(@base, {{offset}}, {{size}})
         end
       end
@@ -26,6 +27,7 @@ module LA
     def_indexable(rows, {index, 0}, {1, @base.ncolumns})
 
     # TODO - more macro magic?
+
     struct Columns(T)
       def [](range : Range)
         start = range.begin + (range.begin < 0 ? @base.ncolumns : 0)
@@ -57,7 +59,6 @@ module LA
         end
       end
 
-      # unsafe_new for submatrix?
       def unsafe_fetch(index)
         if @offset >= 0
           @base.unsafe_fetch(index, index + @offset)

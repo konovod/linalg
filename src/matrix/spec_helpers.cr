@@ -1,4 +1,6 @@
 module Spec
+  # Similar to `EqualExpectation(T)`, but calls `Matrix#almost_eq`
+  # Useful in Matrix specs where exact equality isn't possible
   struct AlmostEqualExpectation(T)
     def initialize(@expected_value : T)
     end
@@ -23,6 +25,8 @@ module Spec
   end
 
   module Expectations
+    # Similar to `#eq`, but calls `Matrix#almost_eq`
+    # Useful in Matrix specs where exact equality isn't possible
     def almost_eq(value)
       Spec::AlmostEqualExpectation.new value
     end

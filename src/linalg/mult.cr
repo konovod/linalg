@@ -1,5 +1,7 @@
 require "../matrix/*"
 
+# TODO - inline docs
+
 module LA
   abstract class Matrix(T)
     macro blas(storage, name, *args)

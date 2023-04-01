@@ -1,3 +1,5 @@
+# TODO - inline docs
+
 module LA
   abstract class Matrix(T)
     def lu(*, overwrite_a = false)

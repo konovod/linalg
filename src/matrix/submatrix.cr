@@ -1,6 +1,9 @@
 require "./matrix"
 
+# TODO - inline docs
+
 module LA
+  # tuple of coordinates - row and column
   alias RowColumn = {Int32, Int32}
 
   # it's like Slice, but for matrices.
