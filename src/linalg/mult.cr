@@ -4,6 +4,7 @@ require "../matrix/*"
 
 module LA
   abstract class Matrix(T)
+    # :nodoc:
     macro blas(storage, name, *args)
       {% if T == Float32
            typ = :s.id
@@ -23,7 +24,7 @@ module LA
       {% end %}
     end
 
-    # performs c = alpha*a*b + beta*c (BLAS routines gemm/symm/hemm/trmm)
+    # performs c = alpha*a*b + beta*c (BLAS routines gemm/symm/hemm)
     def add_mult(a, b : Matrix(T), *, alpha = 1.0, beta = 1.0)
       if a.ncolumns != b.nrows || a.nrows != nrows || b.ncolumns != ncolumns
         raise ArgumentError.new("matrix size mismatch")
@@ -71,6 +72,11 @@ module LA
       end
     end
 
+    # performs b = alpha*a*b or b = alpha*b*a (BLAS routine trmm)
+    #
+    # `a` must be a square triangular `GeneralMatrix(T)`
+    #
+    # if `left` is true, `alpha*a*b` is calculated, otherwise `alpha*b*a`
     def tr_mult!(a : Matrix(T), *, alpha = 1.0, left = false)
       raise "GeneralMatrix required for tr_mult!" unless self.is_a?(GeneralMatrix(T))
       raise ArgumentError.new("matrix size should match") if ncolumns != a.nrows
@@ -87,6 +93,15 @@ module LA
       self
     end
 
+    # Matrix product to given m
+    #
+    # This method automatically calls optimal function depending on `MatrixFlags`.
+    #
+    # If one of the matrix is square and triangular - trmm is called
+    #
+    # If one of the matrix is symmetric\hermitian - symm/hemm is called
+    #
+    # Otherwise - gemm is called
     def *(m : Matrix(T))
       if ncolumns != m.nrows
         raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")

@@ -1,23 +1,27 @@
 require "./matrix"
 require "./submatrix"
 
-# TODO - inline docs
-
 module LA
   abstract class Matrix(T)
     private macro def_indexable(name, offset, size)
+      # Indexable(SubMatrix(T)) that allows iterating over {{name.id}}
       struct {{name.id.capitalize}}(T)
         include Indexable(SubMatrix(T))
+        # Creates {{name.id.capitalize}}(T) from matrix `base`
         protected def initialize(@base : Matrix(T))
         end
+        # :nodoc:
         def size
           @base.n{{name.id}}
         end
+        # :nodoc:
         def unsafe_fetch(index)
           # TODO unsafe_new for submatrix?
           SubMatrix(T).new(@base, {{offset}}, {{size}})
         end
       end
+
+      # Returns Indexable(SubMatrix(T)) that allows iterating over {{name.id}}
       def {{name.id}}
         {{name.id.capitalize}}(T).new(self)
       end
@@ -29,6 +33,15 @@ module LA
     # TODO - more macro magic?
 
     struct Columns(T)
+      # Returns `SubMatrix` that consist of given columns
+      #
+      # TODO - open ranges
+      #
+      # Example:
+      # ```
+      # m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+      # m.columns[1...3].should eq m[0..2, 1..2]
+      # ```
       def [](range : Range)
         start = range.begin + (range.begin < 0 ? @base.ncolumns : 0)
         size = range.end - start + (range.end < 0 ? @base.ncolumns : 0)
@@ -37,6 +50,15 @@ module LA
     end
 
     struct Rows(T)
+      # Returns `SubMatrix` that consist of given rows
+      #
+      # TODO - open ranges
+      #
+      # Example:
+      # ```
+      # m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+      # m.rows[1..2].should eq m[1..2, 0..3]
+      # ```
       def [](range : Range)
         size = range.size
         size += @base.nrows if range.end < 0
@@ -44,9 +66,11 @@ module LA
       end
     end
 
+    # :nodoc:
     struct Diagonal(T)
       include Indexable(T)
 
+      # Creates `Indexable(T)` that allows iterating over `offset`-th diagonal of `base` matrix
       protected def initialize(@base : Matrix(T), @offset = 0)
         raise ArgumentError.new("Offset #{offset} is too big (matrix size #{@base.nrows}x#{@base.ncolumns})") if size <= 0
       end
@@ -68,6 +92,23 @@ module LA
       end
     end
 
+    # Returns `Indexable(T)` that allow iterating over k-th diagonal of matrix
+    #
+    # Example:
+    # ```
+    # m = GMat32.new([[-1, 2, 3, 4],
+    #                 [5, -6, 7, 8],
+    #                 [9, 10, -11, 12]])
+    # m.diag(0).to_a.should eq [-1, -6, -11]
+    # m.diag(1).to_a.should eq [2, 7, 12]
+    # m.diag(2).to_a.should eq [3, 8]
+    # m.diag(3).to_a.should eq [4]
+    # expect_raises(ArgumentError) { m.diag(4) }
+    # m.diag(-1).to_a.should eq [5, 10]
+    # m.diag(-2).to_a.should eq [9]
+    # expect_raises(ArgumentError) { m.diag(-3) }
+    # expect_raises(ArgumentError) { m.diag(-4) }
+    # ```
     def diag(offset = 0)
       Diagonal(T).new(self, offset)
     end

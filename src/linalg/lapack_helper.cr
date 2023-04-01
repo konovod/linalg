@@ -1,8 +1,7 @@
 require "./libLAPACK"
 
-# TODO - inline docs
-
 module LA
+  # :nodoc:
   module LapackHelper
     ARG_NORMAL = 0
     ARG_MATRIX = 1
@@ -27,6 +26,14 @@ module LA
       {% if T == Complex %} WORK_POOL.get_cmplx({{size}}) {% elsif T == Float32 %} WORK_POOL.get_f32({{size}}) {% else %} WORK_POOL.get_f64({{size}}) {% end %}
     end
 
+    # Utility macros that simplifies calling certain LAPACK functions
+    # Arguments that point to matrix should be passed as `matrix(arg)`
+    # Example:
+    # ```
+    # # Calling *lange to calculate infinity-norm
+    # lapack_util(lange, worksize, 'I', m.nrows, m.ncolumns, matrix(m), m.nrows)
+    # ```
+    # Note that it should be called only from methods of `Matrix` or its descendants
     macro lapack_util(name, worksize, *args)
       WORK_POOL.reallocate(worksize*{% if T == Complex %} sizeof(Float64) {% else %} sizeof(T) {% end %})
       %buf = alloc_real_type(worksize)
@@ -57,6 +64,18 @@ module LA
       %result
     end
 
+    # Complex utility macros that simplifies calling certain LAPACK functions
+    # It substitute first letter, allocate workareas, raise exception if return value is negative
+    # Check source to see supported functions
+    # Example:
+    # ```
+    # # Calling *geev to calculate eigenvalues
+    # lapack(geev, 'N'.ord.to_u8, 'N'.ord.to_u8, nrows, a, nrows,
+    #   vals.to_unsafe.as(LibCBLAS::ComplexDouble*),
+    #   Pointer(LibCBLAS::ComplexDouble).null, nrows,
+    #   Pointer(LibCBLAS::ComplexDouble).null, nrows, worksize: [2*nrows])
+    # ```
+    # Note that it should be called only from methods of `Matrix` or its descendants
     macro lapack(name, *args, worksize = nil)
 
       {%
