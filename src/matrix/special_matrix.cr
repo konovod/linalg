@@ -2,16 +2,48 @@ require "complex"
 require "./matrix"
 require "./general_matrix"
 
-# TODO - inline docs
-
 module LA
   abstract class Matrix(T)
+    # Construct (nrows, ncolumns) matrix filled with ones at and below the kth diagonal.
+    #
+    # The matrix has A[i,j] == 1 for j <= i + k
+    #
+    # `k` - Number of subdiagonal below which matrix is filled with ones. k = 0 is the main diagonal, k < 0 subdiagonal and k > 0 superdiagonal.
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.tri.html)
+    #
+    # Example:
+    # ```
+    # Mat.tri(3, 5, 2).to_aa # => [[
+    # # [1, 1, 1, 0, 0],
+    # # [1, 1, 1, 1, 0],
+    # # [1, 1, 1, 1, 1]]
+    # Mat.tri(3, 5, -1).to_aa # => [[
+    # # [0, 0, 0, 0, 0],
+    # # [1, 0, 0, 0, 0],
+    # # [1, 1, 0, 0, 0]]
+    # ```
     def self.tri(nrows, ncolumns, k = 0)
-      GeneralMatrix(T).new(nrows, ncolumns) do |i, j|
+      flags = k <= 0 ? MatrixFlags::LowerTriangular : MatrixFlags::None
+      GeneralMatrix(T).new(nrows, ncolumns, flags) do |i, j|
         i >= j - k ? 1 : 0
       end
     end
 
+    # Create a block diagonal matrix from provided matrices
+    #
+    # Given the inputs A, B and C, the output will have these matrices arranged on the diagonal:
+    #
+    # Example:
+    # ```
+    # m = Mat.block_diag(a, b, c)
+    # ```
+    # m will have following structure:
+    # ```
+    # [[a, 0, 0],
+    #  [0, b, 0],
+    #  [0, 0, c]]
+    # ```
     def self.block_diag(*args)
       nrows = args.sum &.nrows
       ncolumns = args.sum &.ncolumns
@@ -26,6 +58,27 @@ module LA
       end
     end
 
+    # Create a [Toeplitz matrix](https://en.wikipedia.org/wiki/Toeplitz_matrix)
+    #
+    # `column` - first column of matrix
+    #
+    # `row` - first row of matrix (if nil, it is assumed that `row = column.map(&.conj)`)
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.toeplitz.html)
+    #
+    # Example:
+    # ```
+    # MatComplex.toeplitz([1, 2, 3], [1, 4, 5, 6]) # =>
+    # # LA::GeneralMatrix(Float64) (3x4, None):
+    # # [1.0, 4.0, 5.0, 6.0]
+    # # [2.0, 1.0, 4.0, 5.0]
+    # # [3.0, 2.0, 1.0, 4.0]
+    # MatComplex.toeplitz([1.0, 2 + 3.i, 4 - 1.i]) # =>
+    # # LA::GeneralMatrix(Complex) (3x3, Hermitian):
+    # # [1.0 + 0.0i, 2.0 - 3.0i, 4.0 + 1.0i]
+    # # [2.0 + 3.0i, 1.0 + 0.0i, 2.0 - 3.0i]
+    # # [4.0 - 1.0i, 2.0 + 3.0i, 1.0 + 0.0i]
+    # ```
     def self.toeplitz(column : Indexable | Matrix, row : Indexable | Matrix | Nil = nil)
       row = row.to_a if row.is_a? Matrix
       column = column.to_a if column.is_a? Matrix
@@ -39,7 +92,7 @@ module LA
           end
         end
       else
-        GeneralMatrix(T).new(column.size, column.size) do |i, j|
+        GeneralMatrix(T).new(column.size, column.size, MatrixFlags::Hermitian) do |i, j|
           k = i - j
           if k >= 0
             column[k]
@@ -50,6 +103,16 @@ module LA
       end
     end
 
+    # Construct a [Circulant matrix](https://en.wikipedia.org/wiki/Circulant_matrix)
+    #
+    # c - first column of matrix
+    #
+    # Example:
+    # ```
+    # a = circulant([1, 2, 3])
+    # a.to_aa # => [[1, 3, 2],[2, 1, 3],[3, 2, 1]])
+    # ```
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.circulant.html)
     def self.circulant(c)
       GeneralMatrix(T).new(c.size, c.size) do |i, j|
         k = i - j
@@ -57,6 +120,21 @@ module LA
       end
     end
 
+    # Create a Leslie matrix
+    #
+    # Given the length n array of fecundity coefficients `f` and the length n-1 array of survival coefficients `s`, return the associated Leslie matrix.
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.leslie.html)
+    #
+    # Example:
+    # ```
+    # Mat.leslie([0.1, 2.0, 1.0, 0.1], [0.2, 0.8, 0.7]) # =>
+    # # LA::GeneralMatrix(Float64) (4x4, None):
+    # # [0.1, 2.0, 1.0, 0.1]
+    # # [0.2, 0.0, 0.0, 0.0]
+    # # [0.0, 0.8, 0.0, 0.0]
+    # # [0.0, 0.0, 0.7, 0.0]
+    # ```
     def self.leslie(f, s)
       GeneralMatrix(T).new(s.size + 1, f.size).tap do |matrix|
         f.each_with_index { |fi, i| matrix.unsafe_set 0, i, T.new(fi) }
@@ -64,6 +142,18 @@ module LA
       end
     end
 
+    # Create a companion matrix associated with the polynomial whose coefficients are given in `a`
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.companion.html)
+    #
+    # Example:
+    # ```
+    # Mat.companion([1, -10, 31, -30]) # =>
+    # # LA::GeneralMatrix(Float64) (3x3, None):
+    # # [10.0, -31.0, 30.0]
+    # # [1.0, 0.0, 0.0]
+    # # [0.0, 1.0, 0.0]
+    # ```
     def self.companion(a)
       k = -1.0/a[0]
       GeneralMatrix(T).new(a.size - 1, a.size - 1).tap do |matrix|
@@ -72,15 +162,53 @@ module LA
       end
     end
 
-    # TODO - faster implementation
+    # Constructs an n-by-n Hadamard matrix, n must be power of 2
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.hadamard.html)
+    #
+    # Example:
+    # ```
+    # Mat.hadamard(4) # =>
+    # # LA::GeneralMatrix(Float64) (4x4,  Symmetric | Hermitian):
+    # # [1.0, 1.0, 1.0, 1.0]
+    # # [1.0, -1.0, 1.0, -1.0]
+    # # [1.0, 1.0, -1.0, -1.0]
+    # # [1.0, -1.0, -1.0, 1.0]
+    # ```
     def self.hadamard(n)
+      # TODO - faster implementation
       raise ArgumentError.new("size must be positive") unless n > 0
       raise ArgumentError.new("size must be power of two") unless n.popcount == 1
-      return GeneralMatrix(T).new([[1]]) if n == 1
-      return GeneralMatrix(T).new([[1, 1], [1, -1]]) if n == 2
-      return hadamard(n//2).kron(hadamard(2))
+      m = case n
+          when 1
+            GeneralMatrix(T).new([[1]])
+          when 2
+            GeneralMatrix(T).new([[1, 1], [1, -1]])
+          else
+            hadamard(n//2).kron(hadamard(2))
+          end
+      m.assume!(MatrixFlags::Symmetric | MatrixFlags::Hermitian)
+      m
     end
 
+    # Create a Hankel matrix
+    # The Hankel matrix has constant anti-diagonals, with `column` as its first column and `row` as its last row.
+    # If `row is nil, then row with elements equal to zero is assumed.
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.hankel.html)
+    # Examples:
+    # ```
+    # a = Mat.hankel([1, 17, 99])
+    # a.to_aa # => [
+    # # [ 1, 17, 99],
+    # # [17, 99,  0],
+    # # [99,  0,  0]]
+    # a = Mat.hankel([1, 2, 3, 4], [4, 7, 7, 8, 9])
+    # a.to_aa # => [
+    # # [1, 2, 3, 4, 7],
+    # # [2, 3, 4, 7, 7],
+    # # [3, 4, 7, 7, 8],
+    # # [4, 7, 7, 8, 9]]
+    # ```
     def self.hankel(column : Indexable | Matrix, row : Indexable | Matrix | Nil = nil)
       row = row.to_a if row.is_a? Matrix
       column = column.to_a if column.is_a? Matrix
@@ -94,7 +222,7 @@ module LA
           end
         end
       else
-        GeneralMatrix(T).new(column.size, column.size) do |i, j|
+        GeneralMatrix(T).new(column.size, column.size, MatrixFlags::Symmetric) do |i, j|
           k = i + j
           if k < column.size
             column[k]
@@ -105,6 +233,23 @@ module LA
       end
     end
 
+    # Create an Helmert matrix of order n
+    #
+    # If `full` is true the (n x n) matrix will be returned.
+    # Otherwise the submatrix that does not include the first row will be returned
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.helmert.html)
+    #
+    # Example:
+    # ```
+    # Mat.helmert(5, full: true) # =>
+    # # LA::GeneralMatrix(Float64) (5x5, Orthogonal):
+    # # [0.4472135954999579, 0.4472135954999579, 0.4472135954999579, 0.4472135954999579, 0.4472135954999579]
+    # # [0.7071067811865476, -0.7071067811865476, 0.0, 0.0, 0.0]
+    # # [0.408248290463863, 0.408248290463863, -0.816496580927726, 0.0, 0.0]
+    # # [0.28867513459481287, 0.28867513459481287, 0.28867513459481287, -0.8660254037844386, 0.0]
+    # # [0.22360679774997896, 0.22360679774997896, 0.22360679774997896, 0.22360679774997896, -0.8944271909999159]
+    # ```
     def self.helmert(n, full = false)
       if full
         result = GeneralMatrix(T).new(n, n)
@@ -125,11 +270,26 @@ module LA
         result.unsafe_set i + rowdelta, i + 1, -v*x
         result[i + rowdelta, 0..i] = v
       end
+      result.assume!(MatrixFlags::Orthogonal) if full
       result
     end
 
+    # Create a Hilbert matrix of order n.
+    #
+    # Returns the n by n matrix with entries h[i,j] = 1 / (i + j + 1).
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.hilbert.html)
+    #
+    # Example:
+    # ```
+    # Mat.hilbert(3) # =>
+    # # LA::GeneralMatrix(Float64) (3x3, Symmetric | Hermitian | PositiveDefinite):
+    # # [1.0, 0.5, 0.3333333333333333]
+    # # [0.5, 0.3333333333333333, 0.25]
+    # # [0.3333333333333333, 0.25, 0.2]
+    # ```
     def self.hilbert(n)
-      GeneralMatrix(T).new(n, n) do |i, j|
+      GeneralMatrix(T).new(n, n, MatrixFlags::Symmetric | MatrixFlags::Hermitian | MatrixFlags::PositiveDefinite) do |i, j|
         T.new(1.0) / (i + j + 1)
       end
     end
@@ -168,9 +328,7 @@ module LA
       result
     end
   end
-end
 
-module LA
   enum PascalKind
     Upper
     Lower
@@ -182,6 +340,29 @@ module LA
       (1..n).product(T.new(1.0)) / ((1..k).product(T.new(1.0)) * (1..n - k).product(T.new(1.0)))
     end
 
+    # Returns the n x n Pascal matrix.
+    #
+    # The Pascal matrix is a matrix containing the binomial coefficients as its elements.
+    #
+    # `kind` : see `PascalKind`
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.pascal.html)
+    #
+    # Example:
+    # ```
+    # Mat.pascal(4) # =>
+    # # LA::GeneralMatrix(Float64) (4x4, Symmetric | Hermitian | PositiveDefinite):
+    # # [1.0, 1.0, 1.0, 1.0]
+    # # [1.0, 2.0, 3.0, 4.0]
+    # # [1.0, 3.0, 6.0, 10.0]
+    # # [1.0, 4.0, 10.0, 20.0]
+    # Mat.pascal(4, PascalKind::Lower) # =>
+    # # LA::GeneralMatrix(Float64) (4x4, LowerTriangular):
+    # # [1.0, 0.0, 0.0, 0.0]
+    # # [1.0, 1.0, 0.0, 0.0]
+    # # [1.0, 2.0, 1.0, 0.0]
+    # # [1.0, 3.0, 3.0, 1.0]
+    # ```
     def self.pascal(n, kind : PascalKind = PascalKind::Symmetric)
       case kind
       in .upper?
@@ -222,6 +403,31 @@ module LA
       end
     end
 
+    # Returns the inverse of the n x n Pascal matrix
+    #
+    # The Pascal matrix is a matrix containing the binomial coefficients as its elements.
+    #
+    # `kind` : see `PascalKind`
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.invpascal.html)
+    #
+    # Example:
+    # ```
+    # Mat.invpascal(4) # =>
+    # # LA::GeneralMatrix(Float64) (5x5, Symmetric | Hermitian | PositiveDefinite):
+    # # [5.0, -10.0, 10.0, -5.0, 1.0]
+    # # [-10.0, 30.0, -35.0, 19.0, -4.0]
+    # # [10.0, -35.0, 46.0, -27.0, 6.0]
+    # # [-5.0, 19.0, -27.0, 17.0, -4.0]
+    # # [1.0, -4.0, 6.0, -4.0, 1.0]
+    # Mat.invpascal(5, PascalKind::Lower) # =>
+    # # LA::GeneralMatrix(Float64) (5x5, LowerTriangular):
+    # # [1.0, 0.0, 0.0, 0.0, 0.0]
+    # # [-1.0, 1.0, 0.0, 0.0, 0.0]
+    # # [1.0, -2.0, 1.0, 0.0, 0.0]
+    # # [-1.0, 3.0, -3.0, 1.0, 0.0]
+    # # [1.0, -4.0, 6.0, -4.0, 1.0]
+    # ```
     def self.invpascal(n, kind : PascalKind = PascalKind::Symmetric)
       case kind
       when .symmetric?

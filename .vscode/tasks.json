@@ -8,6 +8,12 @@
       "type": "shell",
       "command": "crystal spec --no-color --error-trace",
       "problemMatcher": []
+    },
+    {
+      "label": "demo",
+      "type": "shell",
+      "command": "crystal demo.cr",
+      "problemMatcher": []
     }
   ]
 }

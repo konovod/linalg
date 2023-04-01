@@ -147,6 +147,9 @@ module LA::Sparse
       dup
     end
 
+    # Returns diagonal matrix of given size with diagonal elements taken from array `values`
+    #
+    # Raises if `values.size > {nrows, ncolumns}.min`
     def self.diag(nrows, ncolumns, values)
       raise ArgumentError.new("Too much elements for diag matrix") if values.size > {nrows, ncolumns}.min
       new(nrows, ncolumns, values.size)
@@ -155,6 +158,7 @@ module LA::Sparse
       end
     end
 
+    # Returns diagonal matrix of given size with diagonal elements equal to block value
     def self.diag(nrows, ncolumns, &block)
       n = {nrows, ncolumns}.min
       new(nrows, ncolumns, n)

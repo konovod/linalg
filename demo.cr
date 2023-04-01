@@ -46,11 +46,6 @@ y = x.clone # now y is a separate matrix
 y[0, 0] = 1 # m[1,1] is still 0
 pp m[1, 1]
 
-m_dash = m.append_row_zeros
-m_ddash = m.append_column_zeros
-puts m_dash
-puts m_ddash
-
 array = [1, 2, 3, 4, 5, 6]
 matrix = GMat.new(3, 2, array)
 
@@ -63,3 +58,5 @@ complex_matrix = GMatComplex.new(3, 2, complex_array)
 
 complex_pseudo_inverse = complex_matrix.pinv
 puts complex_pseudo_inverse
+
+p Mat.invpascal(5, PascalKind::Lower).detect
