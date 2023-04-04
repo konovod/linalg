@@ -30,22 +30,34 @@ module LA
   class LinAlgError < Exception
   end
 
+  # Calculate matrix inversion
+  #
+  # if `overwrite_a` is true, source matrix isn't needed anymore and can be overriden in process
+  # See `#inv!` for details of algorithm
   def self.inv(matrix, *, overwrite_a = false)
     overwrite_a ? matrix.inv! : matrix.inv
   end
 
+  # See `#solve`
+  # `Matrix.solve(a,b)` is an alias for `a.solve(b)`
   def self.solve(a, b, *, overwrite_a = false, overwrite_b = false)
     a.solve(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end
 
+  # See `#lstsq`
+  # `Matrix.lstsq(a,b)` is an alias for `a.lstsq(b)`
   def self.lstsq(a, b, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
     a.lstsq(b, method, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
   end
 
+  # See `#solvels`
+  # `Matrix.solvels(a,b)` is an alias for `a.solvels(b)`
   def self.solvels(a, b, *, overwrite_a = false, overwrite_b = false, cond = -1)
     a.solvels(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
   end
 
+  # See `#svd`
+  # `Matrix.svd(a)` is an alias for `a.svd`
   def self.svd(matrix, *, overwrite_a = false)
     matrix.svd(overwrite_a: overwrite_a)
   end
@@ -66,6 +78,14 @@ module LA
       tril! if flags.lower_triangular?
     end
 
+    # Calculate matrix inversion inplace
+    # Method selects optimal algorithm depending on `MatrixFlags`
+    # `transpose` returned if matrix is orthogonal
+    # `trtri` is used if matrix is triangular
+    # `potrf`, `potri` are used if matrix is positive definite
+    # `hetrf`, `hetri` are used if matrix is hermitian
+    # `sytrf`, `sytri` are used if matrix is symmetric
+    # `getrf`, `getri` are used otherwise
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       return transpose! if flags.orthogonal?
@@ -99,10 +119,16 @@ module LA
       self
     end
 
+    # Calculate matrix inversion
+    # See `#inv!` for details on algorithm
     def inv
       clone.inv!
     end
 
+    # Calculate Moore–Penrose inverse of a matrix
+    #
+    # https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse
+    # Implemented using an svd decomposition
     def pinv
       # Pure Crystal implementation since LAPACK has no direct implementation of pseudo inverse
       u, s, v = self.svd
@@ -141,6 +167,17 @@ module LA
       return v * s_dash * u
     end
 
+    # Solves matrix equation `self*x = b` and returns x
+    #
+    # Method returns matrix of same size as `b`
+    #
+    # Matrix must be square, number of rows must match `b`
+    #
+    # if overwrite_a is true, a will be overriden in process of calculation
+    #
+    # if overwrite_b is true, b will be overriden in process of calculation
+    #
+    # Uses LAPACK routines `trtrs`, `posv`, `hesv`, `sysv`, `gesv` depending on matrix `flags`
     def solve(b : self, *, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       raise ArgumentError.new("a must be square") unless square?
@@ -168,6 +205,11 @@ module LA
       x
     end
 
+    # Calculates determinant for a square matrix
+    #
+    # if overwrite_a is true, a will be overriden in process of calculation
+    #
+    # Uses `getrf` LAPACK routine
     def det(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       if flags.triangular?
@@ -359,11 +401,15 @@ module LA
       end
     end
 
+    # Alias for `#norm`
     def abs(kind : MatrixNorm = MatrixNorm::Frobenius)
       norm(kind)
     end
 
     # determine effective rank either by SVD method or QR-factorization with pivoting
+    #
+    # if overwrite_a is true, a will be overriden in process of calculation
+    #
     # QR method is faster, but could fail to determine rank in some cases
     def rank(eps = self.tolerance, *, method : RankMethod = RankMethod::SVD, overwrite_a = false)
       # if matrix is triangular no check needed
