@@ -14,17 +14,16 @@ module LA
     private def check_single(flag : MatrixFlags, eps = tolerance)
       case flag
       when .symmetric?
-        # TODO - 2 times less work
         return false unless square?
-        each_with_index do |value, row, column|
-          return false if row < column && (value - unsafe_fetch(column, row)).abs > eps
+        each_upper(diagonal: false) do |value, row, column|
+          return false if (value - unsafe_fetch(column, row)).abs > eps
         end
         return true
       when .hermitian?
         {% if T == Complex %}
           return false unless square?
-          each_with_index do |value, row, column|
-            return false if row < column && (value.conj - unsafe_fetch(column, row)).abs > eps
+          each_upper(diagonal: false) do |value, row, column|
+            return false if (value.conj - unsafe_fetch(column, row)).abs > eps
           end
           return true
         {% else %}
@@ -42,13 +41,13 @@ module LA
       when .orthogonal?
         return square? && (self*self.conjt).almost_eq Matrix(T).identity(nrows), eps
       when .upper_triangular?
-        each_with_index do |value, row, column|
-          return false if row > column && (value).abs > eps
+        each_lower(diagonal: false) do |value, row, column|
+          return false if value.abs > eps
         end
         return true
       when .lower_triangular?
-        each_with_index do |value, row, column|
-          return false if row < column && (value).abs > eps
+        each_upper(diagonal: false) do |value, row, column|
+          return false if value.abs > eps
         end
         return true
       else

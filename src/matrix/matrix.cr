@@ -278,6 +278,36 @@ module LA
       each_index(all: all) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
+    # For every element of matrix that is above main diagonal it
+    # yields a block with value and with corresponding row and column
+    #
+    # This method is useful for symmetric matrices and similar cases
+    # `include_diagonal` argument controls whether to include elements on main diagonal
+    # `all` argument controls whether to yield all or non-empty elements for banded\sparse matrices
+    def each_upper(*, diagonal = true, all = false, &block)
+      nrows.times do |row|
+        range = diagonal ? (row...ncolumns) : (row + 1...ncolumns)
+        range.each do |column|
+          yield unsafe_fetch(row, column), row, column
+        end
+      end
+    end
+
+    # For every element of matrix that is below main diagonal it
+    # yields a block with value and with corresponding row and column
+    #
+    # This method is useful for symmetric matrices and similar cases
+    # `include_diagonal` argument controls whether to include elements on main diagonal
+    # `all` argument controls whether to yield all or non-empty elements for banded\sparse matrices
+    def each_lower(*, diagonal = true, all = false, &block)
+      nrows.times do |row|
+        range = diagonal ? (0..row) : (0...row)
+        range.each do |column|
+          yield unsafe_fetch(row, column), row, column
+        end
+      end
+    end
+
     # Compare with another matrix
     #
     # Returns True only if all element are exactly equal.

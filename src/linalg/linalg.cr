@@ -57,7 +57,7 @@ module LA
 
     private def adjust_symmetric
       f = flags
-      each_with_index { |v, i, j| unsafe_set(j, i, v) if i < j }
+      each_upper(diagonal: false) { |v, i, j| unsafe_set(j, i, v) }
       self.flags = f
     end
 

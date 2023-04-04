@@ -136,12 +136,9 @@ module LA
     def transpose!
       return self if flags.symmetric?
       if square?
-        (0..@nrows - 2).each do |i|
-          (i + 1..@ncolumns - 1).each do |j|
-            a = unsafe_fetch(i, j)
-            unsafe_set(i, j, unsafe_fetch(j, i))
-            unsafe_set(j, i, a)
-          end
+        each_upper(diagonal: false) do |v, i, j|
+          unsafe_set(i, j, unsafe_fetch(j, i))
+          unsafe_set(j, i, v)
         end
       elsif nrows == 1 || ncolumns == 1
         @nrows, @ncolumns = @ncolumns, @nrows

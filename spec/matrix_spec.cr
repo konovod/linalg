@@ -434,6 +434,28 @@ describe LA::Matrix do
     ]
   end
 
+  it "have `each_upper` method" do
+    m = GMat[[1, 2, 3], [4, 5, 6]]
+    elements = [] of Float64
+    m.each_upper { |v, i, j| elements << v }
+    elements.should eq [1, 2, 3, 5, 6]
+
+    elements = [] of Float64
+    m.each_upper(diagonal: false) { |v, i, j| elements << v }
+    elements.should eq [2, 3, 6]
+  end
+
+  it "have `each_lower` method" do
+    m = GMat[[1, 2, 3], [4, 5, 6]]
+    elements = [] of Float64
+    m.each_lower { |v, i, j| elements << v }
+    elements.should eq [1, 4, 5]
+
+    elements = [] of Float64
+    m.each_lower(diagonal: false) { |v, i, j| elements << v }
+    elements.should eq [4]
+  end
+
   it "have `each` methods" do
     m = GMat[[1, 2, 3], [4, 5, 6]]
     elements = [] of Float64
