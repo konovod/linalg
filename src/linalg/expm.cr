@@ -1,5 +1,3 @@
-# TODO - inline docs
-
 module LA
   # this is a direct conversion to Crystal of matlab code
 
@@ -26,19 +24,17 @@ module LA
   } # m_vals = 13
 
   abstract class Matrix(T)
+    # Computes matrix exponential
+    #
+    # It exploits triangularity (if any) of A.
+    # if schur_fact is true, function uses an initial transformation to Schur form.
+    #  Reference: A. H. Al-Mohy and N. J. Higham, A New Scaling and Squaring
+    #  Algorithm for the Matrix Exponential, SIAM J. Matrix Anal. Appl. 31(3):
+    #  970-989, 2009.
+    #  Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
     def expm(*, schur_fact = false)
-      # EXPM_NEW  Matrix exponential.
       #  EXPM_NEW(A) is the matrix exponential of A computed using
       #  an improved scaling and squaring algorithm with a Pade approximation.
-      #  It exploits triangularity (if any) of A.
-      #  EXPM_NEW(A,1) uses an initial transformation to complex Schur form.
-      #  EXPM_NEW(A,2) uses an initial transformation to real Schur form if A
-      #  is real.
-      #
-      #  Reference: A. H. Al-Mohy and N. J. Higham, A New Scaling and Squaring
-      #  Algorithm for the Matrix Exponential, SIAM J. Matrix Anal. Appl. 31(3):
-      #  970-989, 2009.
-      #  Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
       raise ArgumentError.new("Matrix must be square for expm") unless square?
       return self.class.identity(nrows) if norm(MatrixNorm::One) == 0
       if flags.diagonal?
@@ -112,7 +108,7 @@ module LA
       return schur_fact ? q*f*q.conjt : f
     end
 
-    protected def eval_alpha(a, k)
+    private def eval_alpha(a, k)
       eps = real_type_const(EPSILON)
       u = eps/2
       alpha = Coeff[k - 1]*a.map(&.abs).normAm(2*M_VALS[k - 1] + 1, overwrite_a: true) / a.norm(MatrixNorm::One)
@@ -168,7 +164,7 @@ module LA
       return (v - u).inv!*(u + v)
     end
 
-    protected def getPadeCoefficients(m)
+    private def getPadeCoefficients(m)
       # GETPADECOEFFICIENTS Coefficients of numerator P of Pade approximant
       #    C = GETPADECOEFFICIENTS returns coefficients of numerator
       #    of [M/M] Pade approximant, where M = 3,5,7,9,13.
@@ -243,7 +239,7 @@ module LA
     #   end
     # end
 
-    def expm_sqtri(t, f, s)
+    private def expm_sqtri(t, f, s)
       # EXPM_SQTRI   Squaring phase of scaling and squaring method.
       #   X = EXPM_SQTRI(T/2^s,F,s) carries out the squaring phase
       #   of the scaling and squaring method for an upper quasitriangular T,

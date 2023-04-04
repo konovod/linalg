@@ -1,7 +1,7 @@
-# TODO - inline docs
-
 abstract class LA::Matrix(T)
-  # Taken from https://github.com/Exilor/matrix/
+  # Raises the square matrix to the integer power `other`
+  #
+  # Implementation taken from https://github.com/Exilor/matrix/
   def **(other : Int)
     raise ArgumentError.new("matrix must be square") unless square?
     m = self
@@ -29,6 +29,7 @@ abstract class LA::Matrix(T)
     result
   end
 
+  # TODO - floating power
   #
   # function [X,nsq,m] = powerm_pade(A,p)
   # %POWERM_PADE The Schur-Pade algorithm for an arbitrary matrix power.

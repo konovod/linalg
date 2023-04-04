@@ -1,7 +1,5 @@
 require "../matrix/*"
 
-# TODO - inline docs
-
 module LA
   abstract class Matrix(T)
     # :nodoc:
@@ -24,7 +22,7 @@ module LA
       {% end %}
     end
 
-    # performs c = alpha*a*b + beta*c (BLAS routines gemm/symm/hemm)
+    # performs c = alpha*a*b + beta*c (BLAS routines `gemm`/`symm`/`hemm`)
     def add_mult(a, b : Matrix(T), *, alpha = 1.0, beta = 1.0)
       if a.ncolumns != b.nrows || a.nrows != nrows || b.ncolumns != ncolumns
         raise ArgumentError.new("matrix size mismatch")
@@ -72,7 +70,7 @@ module LA
       end
     end
 
-    # performs b = alpha*a*b or b = alpha*b*a (BLAS routine trmm)
+    # performs b = alpha*a*b or b = alpha*b*a (BLAS routine `trmm`)
     #
     # `a` must be a square triangular `GeneralMatrix(T)`
     #
@@ -95,13 +93,15 @@ module LA
 
     # Matrix product to given m
     #
+    # Raises ArgumentError if inner dimensions do not match
+    #
     # This method automatically calls optimal function depending on `MatrixFlags`.
     #
-    # If one of the matrix is square and triangular - trmm is called
+    # If one of the matrix is square and triangular - `trmm` is called
     #
-    # If one of the matrix is symmetric\hermitian - symm/hemm is called
+    # If one of the matrix is symmetric\hermitian - `symm`/`hemm` is called
     #
-    # Otherwise - gemm is called
+    # Otherwise - `gemm` is called
     def *(m : Matrix(T))
       if ncolumns != m.nrows
         raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
