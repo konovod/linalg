@@ -1,7 +1,17 @@
-# TODO - inline docs
-
 module LA
   abstract class Matrix(T)
+    # Compute pivoted LU decomposition of a matrix
+    #
+    # If you call `p,l,u = a.lu` for a matrix m*n `a` then
+    #
+    #  - `p` will be m*m permutation matrix
+    #  - `l` will be m*k lower triangular matrix with unit diagonal. K = min(M, N)
+    #  - `u` will be k*n upper triangular matrix
+    #  - `(p*l*u)` will be equal to `a` (within calculation tolerance)
+    #
+    # if overwrite_a is true, a will be overriden in process of calculation
+    #
+    # Uses `getrf` LAPACK routine
     def lu(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
       m = nrows
@@ -41,7 +51,13 @@ module LA
       {p, l, u}
     end
 
-    def lu_factor!
+    # Compute pivoted LU decomposition of a matrix and returns it in a compact form,
+    # useful for solving linear equation systems.
+    #
+    # Overrides source matrix in a process of calculation
+    #
+    # Uses `getrf` LAPACK routine
+    def lu_factor! : LUMatrix(T)
       raise ArgumentError.new("matrix must be square") unless square?
       ipiv = Slice(Int32).new(nrows)
       lapack(getrf, nrows, ncolumns, self, nrows, ipiv)
@@ -49,7 +65,11 @@ module LA
       LUMatrix(T).new(self, ipiv)
     end
 
-    def lu_factor
+    # Compute pivoted LU decomposition of a matrix and returns it in a compact form,
+    # useful for solving linear equation systems.
+    #
+    # Uses `getrf` LAPACK routine
+    def lu_factor : LUMatrix(T)
       clone.lu_factor!
     end
   end
@@ -60,12 +80,17 @@ module LA
     ConjTranspose
   end
 
+  # Struct holding lu-decomposition of a matrix
+  #
+  # Can be used to solve linear equations
   struct LUMatrix(T)
-    @a : Matrix(T)
-    @ipiv : Slice(Int32)
+    # L and U matrices packed in one matrix
+    getter a : Matrix(T)
+    # indices of permutations
+    getter ipiv : Slice(Int32)
 
+    private macro lapack(name, *args)
     # TODO - more macro magic?
-    macro lapack(name, *args)
 
       {%
         lapack_funcs = {
@@ -105,10 +130,18 @@ module LA
     def initialize(@a, @ipiv)
     end
 
+    # Returns size of a system
     def size
       @a.nrows
     end
 
+    # Solves `A*x = b` equations system with given b and returns `x`
+    #
+    # `transpose` allows to solve `A.t * x = b` and `A.conjt * x = b` systems instead
+    #
+    # if overwrite_b is true, b will be overriden in process of calculation
+    #
+    # Uses `getrs` LAPACK routine
     def solve(b, transpose = LUTranspose::None, *, overwrite_b = false)
       raise ArgumentError.new("nrows of a and b must match") unless @a.nrows == b.nrows
       trans = case transpose

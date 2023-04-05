@@ -28,10 +28,12 @@ module LA
     #
     # It exploits triangularity (if any) of A.
     # if schur_fact is true, function uses an initial transformation to Schur form.
-    #  Reference: A. H. Al-Mohy and N. J. Higham, A New Scaling and Squaring
-    #  Algorithm for the Matrix Exponential, SIAM J. Matrix Anal. Appl. 31(3):
-    #  970-989, 2009.
-    #  Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
+    #
+    # Reference:
+    # A. H. Al-Mohy and N. J. Higham, A New Scaling and Squaring
+    # Algorithm for the Matrix Exponential, SIAM J. Matrix Anal. Appl. 31(3):
+    # 970-989, 2009.
+    # Awad H. Al-Mohy and Nicholas J. Higham, April 20, 2010.
     def expm(*, schur_fact = false)
       #  EXPM_NEW(A) is the matrix exponential of A computed using
       #  an improved scaling and squaring algorithm with a Pade approximation.

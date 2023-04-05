@@ -272,6 +272,18 @@ module LA
       {x, rank, s}
     end
 
+    # Calculates singular value decomposition for a matrix
+    #
+    # If you call `u,s,vt = a.svd` for a matrix m*n `a` then
+    #
+    #  - `u` will be m*m matrix
+    #  - `s` will be Array(T) with size equal to `{m, n}.min`
+    #  - `vt` will be n*n matrix
+    #  - `(u*Mat.diag(a.nrows, a.ncolumns, s)*vt)` will be equal to `a` (within calculation tolerance)
+    #
+    # if overwrite_a is true, a will be overriden in process of calculation
+    #
+    # Uses `gesdd` LAPACK routine
     def svd(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
       m = nrows
@@ -286,6 +298,11 @@ module LA
       return {u, s, vt}
     end
 
+    # Calculates array of singular values for a matrix
+    #
+    # if `overwrite_a` is true, a will be overriden in process of calculation
+    #
+    # Uses `gesdd` LAPACK routine
     def svdvals(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
       m = nrows
@@ -368,6 +385,11 @@ module LA
     end
 
     # returns matrix norm
+    #
+    # `kind` defines type of norm
+    #
+    # Uses LAPACK routines `lantr`, `lanhe`, `lansy`, `lange` depending on matrix `flags`
+    #
     def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
       let = case kind
             in .frobenius?
