@@ -74,7 +74,7 @@ module LA
     end
   end
 
-  enum LUTranspose
+  enum Enums::LUTranspose
     None          = 0
     Transpose
     ConjTranspose
@@ -83,7 +83,7 @@ module LA
   # Struct holding lu-decomposition of a matrix
   #
   # Can be used to solve linear equations
-  struct LUMatrix(T)
+  struct Utils::LUMatrix(T)
     # L and U matrices packed in one matrix
     getter a : Matrix(T)
     # indices of permutations

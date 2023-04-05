@@ -4,30 +4,32 @@ require "./lapack_helper"
 # TODO - inline docs
 
 module LA
-  enum LSMethod
-    Auto       = 0
-    QR
-    Orthogonal
-    SVD
-    LS         = QR
-    LSY        = Orthogonal
-    LSD        = SVD
+  module Enums
+    enum LSMethod
+      Auto       = 0
+      QR
+      Orthogonal
+      SVD
+      LS         = QR
+      LSY        = Orthogonal
+      LSD        = SVD
+    end
+
+    enum RankMethod
+      SVD
+      QRP
+    end
+
+    enum MatrixNorm
+      Frobenius
+      One
+      # Two
+      Inf
+      MaxAbs
+    end
   end
 
-  enum RankMethod
-    SVD
-    QRP
-  end
-
-  enum MatrixNorm
-    Frobenius
-    One
-    # Two
-    Inf
-    MaxAbs
-  end
-
-  class LinAlgError < Exception
+  class Utils::LinAlgError < Exception
   end
 
   # Calculate matrix inversion

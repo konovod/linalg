@@ -3,7 +3,9 @@ require "./submatrix"
 
 module LA
   # generic matrix, heap-allocated
+  #
   # Data are stored in column-major as this is a storage used by LAPACK
+  #
   # See `SUPPORTED_TYPES` for supported types
   class GeneralMatrix(T) < Matrix(T)
     # Pointer to a raw data
@@ -342,7 +344,9 @@ module LA
     end
   end
 
-  alias GMat = GeneralMatrix(Float64)
-  alias GMat32 = GeneralMatrix(Float32)
-  alias GMatComplex = GeneralMatrix(Complex)
+  module Aliases
+    alias GMat = GeneralMatrix(Float64)
+    alias GMat32 = GeneralMatrix(Float32)
+    alias GMatComplex = GeneralMatrix(Complex)
+  end
 end

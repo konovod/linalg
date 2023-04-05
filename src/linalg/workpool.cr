@@ -1,4 +1,4 @@
-module LA
+module LA::Utils
   # Work arrays pool for lapack routines
   # It isn't thread safe for now because crystal isn't multithreaded
   # TODO - Crystal is now multithreaded!

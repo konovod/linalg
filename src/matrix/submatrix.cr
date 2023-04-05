@@ -2,7 +2,7 @@ require "./matrix"
 
 module LA
   # tuple of coordinates - row and column
-  alias RowColumn = {Int32, Int32}
+  alias Utils::RowColumn = {Int32, Int32}
 
   # it's like Slice, but for matrices.
   # Lightweight class that stores only pointer to basic matrix, size and offset

@@ -421,7 +421,9 @@ module LA
     end
   end
 
-  alias BMat = BandedMatrix(Float64)
-  alias BMat32 = BandedMatrix(Float32)
-  alias BMatComplex = BandedMatrix(Complex)
+  module Aliases
+    alias BMat = BandedMatrix(Float64)
+    alias BMat32 = BandedMatrix(Float32)
+    alias BMatComplex = BandedMatrix(Complex)
+  end
 end

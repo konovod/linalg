@@ -1,8 +1,8 @@
 require "./general_matrix"
 require "./matrix"
 
-# :nodoc:
 module LA::Utils
+  # :nodoc:
   # reads io until one of the delimiters found
   # returns nil if none of the delimiters found
   # otherwise returns tuple consisting of delimiter index and substring
@@ -14,6 +14,7 @@ module LA::Utils
     scanner
   end
 
+  # :nodoc:
   def self.multi_gets(io, scanner) : {Int32, String}?
     # The 'hard' case: we read until we match the last byte,
     # and then compare backwards
@@ -37,7 +38,7 @@ module LA::Utils
   end
 end
 
-class MatrixParseError < Exception
+class LA::Utils::MatrixParseError < Exception
 end
 
 abstract class LA::Matrix(T)

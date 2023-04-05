@@ -295,7 +295,7 @@ module LA
     end
   end
 
-  enum DFTScale
+  enum Enums::DFTScale
     None
     N
     SqrtN
@@ -329,7 +329,7 @@ module LA
     end
   end
 
-  enum PascalKind
+  enum Enums::PascalKind
     Upper
     Lower
     Symmetric

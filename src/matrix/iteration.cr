@@ -5,7 +5,7 @@ module LA
   abstract class Matrix(T)
     private macro def_indexable(name, offset, size)
       # Indexable(SubMatrix(T)) that allows iterating over {{name.id}}
-      struct {{name.id.capitalize}}(T)
+      struct ::LA::Utils::{{name.id.capitalize}}(T)
         include Indexable(SubMatrix(T))
         # Creates {{name.id.capitalize}}(T) from matrix `base`
         protected def initialize(@base : Matrix(T))
@@ -32,7 +32,7 @@ module LA
 
     # TODO - more macro magic?
 
-    struct Columns(T)
+    struct ::LA::Utils::Columns(T)
       # Returns `SubMatrix` that consist of given columns
       #
       # TODO - open ranges
@@ -49,7 +49,7 @@ module LA
       end
     end
 
-    struct Rows(T)
+    struct ::LA::Utils::Rows(T)
       # Returns `SubMatrix` that consist of given rows
       #
       # TODO - open ranges

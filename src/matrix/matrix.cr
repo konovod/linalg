@@ -1,12 +1,14 @@
 require "complex"
 
 module LA
-  # Types supported by LAPACK
-  #
-  #  TODO - Complex64?
-  SUPPORTED_TYPES = {Float32, Float64, Complex}
+  module Utils
+    # Types supported by LAPACK
+    #
+    #  TODO - Complex64?
+    SUPPORTED_TYPES = {Float32, Float64, Complex}
+  end
 
-  enum Axis
+  enum Enums::Axis
     Columns
     Rows
   end
@@ -738,7 +740,9 @@ module LA
     end
   end
 
-  alias Mat = Matrix(Float64)
-  alias Mat32 = Matrix(Float32)
-  alias MatComplex = Matrix(Complex)
+  module Aliases
+    alias Mat = Matrix(Float64)
+    alias Mat32 = Matrix(Float32)
+    alias MatComplex = Matrix(Complex)
+  end
 end
