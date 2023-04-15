@@ -1,8 +1,41 @@
 module LA::Utils
-  # Work arrays pool for lapack routines
-  # It isn't thread safe for now because crystal isn't multithreaded
-  # TODO - Crystal is now multithreaded!
-  class WorkPool
+  class ThreadSafePool(T)
+    def initialize(@size : Int32, factory : -> T)
+      @factory = factory
+      @pool = Array(T).new(@size) { factory.call }
+      @mutex = Mutex.new
+    end
+
+    def get_object : T
+      @mutex.lock
+      if @pool.empty?
+        object = @factory.call
+      else
+        object = @pool.pop
+      end
+      @mutex.unlock
+      object
+    end
+
+    def with_object(&block : (T) -> U) : U
+      object = get_object
+      begin
+        block.call(object)
+      ensure
+        return_object(object)
+      end
+    end
+
+    def return_object(object : T)
+      @mutex.lock
+      @pool << object
+      @mutex.unlock
+    end
+  end
+
+  # Work arrays area for lapack routines
+  # It is not thread safe, so should be used inside `ThreadSafePool`
+  class WorkArea
     @area = Bytes.new(1024)
     @used = 0
 
@@ -47,7 +80,7 @@ module LA::Utils
       {% end %}
     end
 
-    # increase internal pool to `required_size`
+    # increase internal area to `required_size`
     def reallocate(required_size)
       {% if !flag?(:release) %}
         required_size += 4
@@ -68,6 +101,5 @@ module LA::Utils
     end
   end
 
-  # Actual work pool used by lapack routines
-  WORK_POOL = WorkPool.new
+  WORK_POOL = ThreadSafePool(WorkArea).new(1, ->{ WorkArea.new })
 end

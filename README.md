@@ -161,6 +161,8 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [ ] Other missing features from LAPACK (mostly selectable and orderable eigenvalues)
 - [ ] Sparse matrices (perhaps out of scope/deserves separate shard)
 - [ ] Other missing features from scipy.linalg (lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
+- [x] Support multithreading\reenterability
+- [ ] Allow matrices of unsupported types (use `check_type` only when actually needed)
 
 ##### Not so important
 

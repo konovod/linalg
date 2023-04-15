@@ -481,4 +481,26 @@ describe LA do
     (matrix*actual).detect?(MatrixFlags::Hermitian).should be_true
     (actual*matrix).detect?(MatrixFlags::Hermitian).should be_true
   end
+
+  it "supports multithreading" do
+    can_start = Channel(Nil).new
+    chan_finish = Channel(Tuple(Int32, GMat)).new
+    rng = Random::PCG32.new(123456)
+    base1 = GMat.rand(100, 100, rng)
+    base2 = GMat.rand(100, 100, rng)
+    50.times do |i|
+      spawn do
+        can_start.receive
+        chan_finish.send({i, (base1 + i/100).pinv})
+      end
+    end
+    50.times do
+      can_start.send nil
+    end
+    50.times do
+      i, inverted = chan_finish.receive
+      matrix = base1 + i/100
+      (matrix*inverted*matrix).should be_close matrix, 1e-9
+    end
+  end
 end

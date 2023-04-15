@@ -18,12 +18,12 @@ module LA
   abstract class Matrix(T)
     include LapackHelper
 
-    private macro alloc_real_type(size)
-      {% if T == Float32 %} WORK_POOL.get_f32({{size}}) {% else %} WORK_POOL.get_f64({{size}}) {% end %}
+    private macro alloc_real_type(area, size)
+      {% if T == Float32 %} {{area}}.get_f32({{size}}) {% else %}{{area}}.get_f64({{size}}) {% end %}
     end
 
-    private macro alloc_type(size)
-      {% if T == Complex %} WORK_POOL.get_cmplx({{size}}) {% elsif T == Float32 %} WORK_POOL.get_f32({{size}}) {% else %} WORK_POOL.get_f64({{size}}) {% end %}
+    private macro alloc_type(area, size)
+      {% if T == Complex %} {{area}}.get_cmplx({{size}}) {% elsif T == Float32 %} {{area}}.get_f32({{size}}) {% else %} {{area}}.get_f64({{size}}) {% end %}
     end
 
     # Utility macros that simplifies calling certain LAPACK functions
@@ -35,8 +35,9 @@ module LA
     # ```
     # Note that it should be called only from methods of `Matrix` or its descendants
     macro lapack_util(name, worksize, *args)
-      WORK_POOL.reallocate(worksize*{% if T == Complex %} sizeof(Float64) {% else %} sizeof(T) {% end %})
-      %buf = alloc_real_type(worksize)
+      area = WORK_POOL.get_object
+      area.reallocate(worksize*{% if T == Complex %} sizeof(Float64) {% else %} sizeof(T) {% end %})
+      %buf = alloc_real_type(area, worksize)
       {% if T == Float32
            typ = :s.id
          elsif T == Float64
@@ -60,7 +61,8 @@ module LA
           {% end %}
         {% end %}
         %buf)
-      WORK_POOL.release
+        area.release
+        WORK_POOL.return_object(area)
       %result
     end
 
@@ -299,18 +301,19 @@ module LA
           %asize += %isize*sizeof(Int32)
         {% end %}
 
-        WORK_POOL.reallocate(%asize)
+        area = WORK_POOL.get_object
+        area.reallocate(%asize)
 
         {% if func_worksize["cwork"] %}
-          %cbuf = alloc_type(%csize)
+          %cbuf = alloc_type(area, %csize)
         {% end %}
 
         {% if T == Complex && func_worksize["rwork"] %}
-          %rbuf = alloc_real_type(%rsize)
+          %rbuf = alloc_real_type(area, %rsize)
         {% end %}
 
         {% if func_worksize["iwork"] %}
-          %ibuf = WORK_POOL.get_i32(%isize)
+          %ibuf = area.get_i32(%isize)
         {% end %}
 
       {% end %}
@@ -355,7 +358,8 @@ module LA
          pointerof(%info))
 
          {% if func_worksize %}
-           WORK_POOL.release
+            area.release
+            WORK_POOL.return_object area
          {% end %}
       raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{%info}") if %info != 0
     end
