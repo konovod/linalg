@@ -162,7 +162,9 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [ ] Sparse matrices (perhaps out of scope/deserves separate shard)
 - [ ] Other missing features from scipy.linalg (lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
 - [x] Support multithreading\reenterability
-- [ ] Allow matrices of unsupported types (use `check_type` only when actually needed)
+- [x] Allow matrices of unsupported types (use `check_type` only when actually needed)
+  - [ ] type still has to support `T.new(value)`, maybe this requirement can be relaxed
+  - [ ] also `map` signature has to be changed?
 
 ##### Not so important
 

@@ -576,4 +576,19 @@ describe LA::Matrix do
     m[.., ...].should eq m
     m[..., ..].should eq m
   end
+
+  it "can be created with integer type" do
+    a = GeneralMatrix(Int32).new([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
+    a.tril(-1).should eq GeneralMatrix(Int32).new([
+      [0, 0, 0],
+      [4, 0, 0],
+      [7, 8, 0],
+      [10, 11, 12],
+    ])
+  end
+
+  pending "can be created with totally wrong type" do
+    a = GeneralMatrix(Bool).new([[true, true], [true, false]])
+    p a.map { |x| x ? 0.0 : 1.0 }
+  end
 end

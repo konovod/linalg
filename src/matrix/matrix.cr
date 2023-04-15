@@ -40,7 +40,7 @@ module LA
     # Used in constructors to limit T at compile-time
     protected def check_type
       {% unless T == Float32 || T == Float64 || T == Complex %}
-        {% raise "Wrong matrix members type: #{T}. Types supported by linalg are: #{SUPPORTED_TYPES}" %}
+        # raise "Wrong matrix members type: #{T}. Types supported by linalg are: #{SUPPORTED_TYPES}"
       {% end %}
     end
 
