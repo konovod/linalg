@@ -2,7 +2,7 @@ require "simplepool"
 
 module LA::Utils
   # Work arrays area for lapack routines
-  # It is not thread safe, so should be used inside `ThreadSafePool`
+  # It is not thread safe, so should be used inside `SimplePool`
   class WorkArea
     @area = Bytes.new(1024)
     @used = 0
@@ -69,5 +69,6 @@ module LA::Utils
     end
   end
 
+  # Pool used by linalg routines
   WORK_POOL = SimplePool(WorkArea).new
 end

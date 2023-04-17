@@ -17,6 +17,7 @@ jobs:
       - name: Download OpenBLAS
         shell: powershell
         run:
+          # release 0.3.22 is broken, release 0.3.23 is btter but has broken .lib file
           Invoke-WebRequest -Uri "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.21/OpenBLAS-0.3.21-x64.zip" `
           -OutFile ./OpenBLAS.zip
       - name: Unzip OpenBLAS
@@ -27,9 +28,8 @@ jobs:
           cd OpenBLAS
           7z x -y OpenBLAS.zip
           copy .\bin\libopenblas.dll ..\
-          copy .\lib\libopenblas.lib ..\
+          copy .\lib\libopenblas.lib (crystal env CRYSTAL_LIBRARY_PATH)
           cd ..
-          copy .\libopenblas.lib (crystal env CRYSTAL_LIBRARY_PATH)
       - name: Install crystal land dependencies
         run: shards install
       - name: Run tests
