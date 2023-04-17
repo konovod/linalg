@@ -30,5 +30,7 @@ jobs:
           copy .\lib\libopenblas.lib ..\
           cd ..
           copy .\libopenblas.lib (crystal env CRYSTAL_LIBRARY_PATH)
+      - name: Install crystal land dependencies
+        run: shards install
       - name: Run tests
         run: crystal spec

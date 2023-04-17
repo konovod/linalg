@@ -30,6 +30,8 @@ jobs:
         run: ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 /usr/lib/x86_64-linux-gnu/libcblas.so
       - name: create link to LAPACK
         run: ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblapack.so
+      - name: Install crystal land dependencies
+        run: shards install
       - name: Run tests
         run: crystal spec
       - name: Run tests in multithreaded mode
