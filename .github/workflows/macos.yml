@@ -16,3 +16,5 @@ jobs:
         uses: crystal-lang/install-crystal@v1
       - name: Run tests
         run: crystal spec
+      - name: Run tests in multithreaded mode
+        run: crystal spec -Dpreview_mt

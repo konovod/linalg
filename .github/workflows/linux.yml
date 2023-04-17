@@ -32,3 +32,5 @@ jobs:
         run: ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3 /usr/lib/x86_64-linux-gnu/liblapack.so
       - name: Run tests
         run: crystal spec
+      - name: Run tests in multithreaded mode
+        run: crystal spec -Dpreview_mt
