@@ -35,7 +35,7 @@ module LA
     # ```
     # Note that it should be called only from methods of `Matrix` or its descendants
     macro lapack_util(name, worksize, *args)
-      area = WORK_POOL.get_object
+      area = WORK_POOL.get
       area.reallocate(worksize*{% if T == Complex %} sizeof(Float64) {% else %} sizeof(T) {% end %})
       %buf = alloc_real_type(area, worksize)
       {% if T == Float32
@@ -62,7 +62,7 @@ module LA
         {% end %}
         %buf)
         area.release
-        WORK_POOL.return_object(area)
+        WORK_POOL.return(area)
       %result
     end
 
@@ -301,7 +301,7 @@ module LA
           %asize += %isize*sizeof(Int32)
         {% end %}
 
-        area = WORK_POOL.get_object
+        area = WORK_POOL.get
         area.reallocate(%asize)
 
         {% if func_worksize["cwork"] %}
@@ -359,7 +359,7 @@ module LA
 
          {% if func_worksize %}
             area.release
-            WORK_POOL.return_object area
+            WORK_POOL.return area
          {% end %}
       raise LinAlgError.new("LAPACK.{{typ}}{{name}} returned #{%info}") if %info != 0
     end

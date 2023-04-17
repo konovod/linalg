@@ -4,6 +4,10 @@ version: 0.2.0
 authors:
   - Konovod <konovod@gmail.com>
 
+dependencies:
+  simplepool:
+    github: konovod/simplepool
+
 crystal: 1.2.1
 
 license: MIT

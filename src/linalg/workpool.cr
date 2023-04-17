@@ -1,38 +1,6 @@
+require "simplepool"
+
 module LA::Utils
-  class ThreadSafePool(T)
-    def initialize(@size : Int32, factory : -> T)
-      @factory = factory
-      @pool = Array(T).new(@size) { factory.call }
-      @mutex = Mutex.new
-    end
-
-    def get_object : T
-      @mutex.lock
-      if @pool.empty?
-        object = @factory.call
-      else
-        object = @pool.pop
-      end
-      @mutex.unlock
-      object
-    end
-
-    def with_object(&block : (T) -> U) : U
-      object = get_object
-      begin
-        block.call(object)
-      ensure
-        return_object(object)
-      end
-    end
-
-    def return_object(object : T)
-      @mutex.lock
-      @pool << object
-      @mutex.unlock
-    end
-  end
-
   # Work arrays area for lapack routines
   # It is not thread safe, so should be used inside `ThreadSafePool`
   class WorkArea
@@ -101,5 +69,5 @@ module LA::Utils
     end
   end
 
-  WORK_POOL = ThreadSafePool(WorkArea).new(1, ->{ WorkArea.new })
+  WORK_POOL = SimplePool(WorkArea).new
 end

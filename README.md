@@ -19,14 +19,14 @@ Killing SciPy, one module at a time.
 - `sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so`
 - `sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so`
 
-Add this to your application's `shard.yml`:
+3. Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
   linalg:
     github: konovod/linalg
 ```
-
+4. Run `shards install` 
 ## Usage
 
 ```crystal
