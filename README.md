@@ -15,14 +15,18 @@ Killing SciPy, one module at a time.
 
 1. Install LAPACK and BLAS. `sudo apt install libopenblas-base liblapack3` for Ubuntu, `sudo pacman -S lapack` (for better performance use `openblas-lapack` package from AUR) for Arch. For Windows you need libopenblas.dll (and libopenblas.lib) from https://github.com/xianyi/OpenBLAS/releases
 
-2. Add this to your application's `shard.yml`:
+2. (for Ubuntu 18) it seems package doesn't create symlink, so use
+- `sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so`
+- `sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so`
+
+3. Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
   linalg:
     github: konovod/linalg
 ```
-3. Run `shards install` 
+4. Run `shards install` 
 ## Usage
 
 ```crystal
