@@ -337,7 +337,20 @@ describe LA::Matrix do
   it "columns and rows can be extracted by range" do
     m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
     m.rows[1..2].should eq m[1..2, 0..3]
+    m.columns[1..2].should eq m[0..2, 1..2]
     m.columns[1...3].should eq m[0..2, 1..2]
+  end
+
+  it "columns tolerate open ranges" do
+    m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+    m.columns[..2].should eq m[0..2, 0..2]
+    m.columns[1..].should eq m[.., 1..3]
+  end
+
+  it "rows tolerate open ranges" do
+    m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+    m.rows[...1].should eq m[0..0, ..]
+    m.rows[1..].should eq m[1.., ..]
   end
 
   it "have map and map_with_index methods" do

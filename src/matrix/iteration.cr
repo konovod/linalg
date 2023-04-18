@@ -35,16 +35,24 @@ module LA
     struct ::LA::Utils::Columns(T)
       # Returns `SubMatrix` that consist of given columns
       #
-      # TODO - open ranges
-      #
       # Example:
       # ```
       # m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
       # m.columns[1...3].should eq m[0..2, 1..2]
       # ```
       def [](range : Range)
-        start = range.begin + (range.begin < 0 ? @base.ncolumns : 0)
-        size = range.end - start + (range.end < 0 ? @base.ncolumns : 0)
+        start = range.begin || 0
+        start += @base.ncolumns if start < 0
+
+        aend = range.end || @base.ncolumns
+        aend += @base.ncolumns if aend < 0
+
+        if range.end && !range.excludes_end? # compensate if user wanted the endpoint only if not nil
+          aend += 1
+        end
+
+        size = aend - start
+
         SubMatrix(T).new(@base, {0, start}, {@base.nrows, size})
       end
     end
@@ -52,17 +60,25 @@ module LA
     struct ::LA::Utils::Rows(T)
       # Returns `SubMatrix` that consist of given rows
       #
-      # TODO - open ranges
-      #
       # Example:
       # ```
       # m = GMat32.new([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
       # m.rows[1..2].should eq m[1..2, 0..3]
       # ```
       def [](range : Range)
-        size = range.size
-        size += @base.nrows if range.end < 0
-        SubMatrix(T).new(@base, {range.begin, 0}, {size, @base.ncolumns})
+        start = range.begin || 0
+        start += @base.nrows if start < 0
+
+        aend = range.end || @base.nrows
+        aend += @base.nrows if aend < 0
+
+        if range.end && !range.excludes_end? # compensate if user wanted the endpoint only if not nil
+          aend += 1
+        end
+
+        size = aend - start
+
+        SubMatrix(T).new(@base, {start, 0}, {size, @base.ncolumns})
       end
     end
 
