@@ -14,7 +14,6 @@ module LA::Sparse
     def ==(other : Sparse::Matrix(T))
       return false unless nrows == other.nrows && ncolumns == other.ncolumns
       if other.nonzeros + self.nonzeros < nrows * ncolumns // 4
-        # TODO - 2x speed if we account already checked elements
         a, b = self, other
         a, b = b, a if a.nonzeros < b.nonzeros
         a.each_with_index(all: false) do |v, i, j|

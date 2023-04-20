@@ -9,7 +9,7 @@ module LA
   # But allow all operations that allow `Matrix(T)`
   class SubMatrix(T) < Matrix(T)
     # index of a submatrix first row and column
-    getter offset : RowColumn
+    getter offset : Utils::RowColumn
     # number of rows in submatrix
     getter nrows : Int32
     # number of columns in submatrix
