@@ -615,4 +615,14 @@ describe LA::BandedMatrix do
     b = GMatComplex[[1, 2, 7, 1]].t!
     BMatComplex.new(a).solve(b).should almost_eq a.solve(b)
   end
+
+  it "can estimate bandwidth of dense matrix" do
+    a = GMat[
+      [3, 0, 0, 0, 0],
+      [0, 4, 0, 0, 0],
+      [0, 0, 5, 1, 0],
+      [8, 0, 0, 6, 2],
+      [0, 9, 0, 0, 7]]
+    BandedMatrix.estimate(a).should eq({3, 1})
+  end
 end

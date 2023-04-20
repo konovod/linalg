@@ -22,7 +22,7 @@
 - [ ] orthogonal_procrustes(A, B[, check_finite])	Compute the matrix solution of the orthogonal Procrustes problem.
 - [x] matrix_balance(A[, permute, scale, ...])	Compute a diagonal similarity transformation for row/column balancing.
 - [ ] subspace_angles(A, B) Compute the subspace angles between two matrices.
-- [ ] bandwidth(a)  Return the lower and upper bandwidth of a 2D numeric array.
+- [x] bandwidth(a)  Return the lower and upper bandwidth of a 2D numeric array.
 - [x] issymmetric(a[, atol, rtol])  Check if a square 2D array is symmetric.
 - [x] ishermitian(a[, atol, rtol])  Check if a square 2D array is Hermitian.
 - [x] LinAlgError	Generic Python-exception-derived object raised by linalg functions.

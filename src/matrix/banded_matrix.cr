@@ -103,7 +103,8 @@ module LA
       end
     end
 
-    def self.new(matrix : Matrix, tolerance = matrix.tolerance)
+    def self.estimate(matrix : Matrix(T), tolerance = matrix.tolerance)
+      # TODO - scipy uses more effecient algorithm?
       upper_band = matrix.ncolumns - 1
       (matrix.ncolumns - 1).to(1) do |i|
         break unless matrix.diag(i).all? { |v| v.abs <= tolerance }
@@ -114,6 +115,11 @@ module LA
         break unless matrix.diag(-i).all? { |v| v.abs <= tolerance }
         lower_band = i - 1
       end
+      return lower_band, upper_band
+    end
+
+    def self.new(matrix : Matrix, tolerance = matrix.tolerance)
+      lower_band, upper_band = estimate(matrix, tolerance)
       new(matrix.nrows, matrix.ncolumns, upper_band, lower_band, matrix.flags) do |i, j|
         matrix.unsafe_fetch(i, j)
       end
