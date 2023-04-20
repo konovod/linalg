@@ -445,5 +445,11 @@ module LA
         end
       end
     end
+
+    def self.fiedler(values)
+      GeneralMatrix(T).new(values.size, values.size, flags: MatrixFlags::Symmetric | MatrixFlags::Hermitian) do |i, j|
+        (values[i] - values[j]).abs
+      end
+    end
   end
 end

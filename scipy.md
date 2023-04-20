@@ -106,7 +106,7 @@
 - [x] circulant(c)	Construct a circulant matrix.
 - [x] companion(a)	Create a companion matrix.
 - [x] dft(n[, scale])	Discrete Fourier transform matrix.
-- [ ] fiedler(a)  Returns a symmetric Fiedler matrix
+- [x] fiedler(a)  Returns a symmetric Fiedler matrix
 - [ ] fiedler_companion(a)  Returns a Fiedler companion matrix
 - [x] hadamard(n[, dtype])	Construct a Hadamard matrix.
 - [x] hankel(c[, r])	Construct a Hankel matrix.

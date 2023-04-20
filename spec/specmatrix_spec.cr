@@ -126,4 +126,14 @@ describe "constructing of special matrices" do
     Mat32.invpascal(10, PascalKind::Lower).should almost_eq Mat32.pascal(10, PascalKind::Lower).inv
     MatComplex.invpascal(10).should almost_eq MatComplex.pascal(10).inv
   end
+
+  it "fiedler matrix" do
+    Mat.fiedler([1, 4, 12, 45, 77]).should eq GMat.new [
+      [0, 3, 11, 44, 76],
+      [3, 0, 8, 41, 73],
+      [11, 8, 0, 33, 65],
+      [44, 41, 33, 0, 32],
+      [76, 73, 65, 32, 0],
+    ]
+  end
 end
