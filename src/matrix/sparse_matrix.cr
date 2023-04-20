@@ -95,7 +95,7 @@ module LA::Sparse
         result = new(matrix.nrows, matrix.ncolumns)
       end
       matrix.each_with_index(all: false) do |v, i, j|
-        result.push_element(i, j, v)
+        result.push_element(i, j, v) unless v.zero?
       end
       result.flags = matrix.flags
       result
@@ -299,21 +299,15 @@ module LA::Sparse
     end
 
     def triu!(k = 0)
-      (nonzeros - 1).downto(0) do |index|
-        i = @raw_rows[index]
-        j = @raw_columns[index]
-        remove_element(index) if i > j - k
-      end
+      flags = self.flags
+      select_index! { |i, j| i <= j - k }
       self.flags = self.flags.triu(k >= 0, square?)
       self
     end
 
     def tril!(k = 0)
-      (nonzeros - 1).downto(0) do |index|
-        i = @raw_rows[index]
-        j = @raw_columns[index]
-        remove_element(index) if i < j - k
-      end
+      flags = self.flags
+      select_index! { |i, j| i >= j - k }
       self.flags = self.flags.tril(k <= 0, square?)
       self
     end
@@ -377,6 +371,40 @@ module LA::Sparse
 
     def to_dense
       to_general
+    end
+
+    def select!(& : T -> Bool)
+      (nonzeros - 1).downto(0) do |i|
+        remove_element(i) unless yield(@raw_values[i])
+      end
+      clear_flags
+    end
+
+    def select_with_index!(& : (T, Int32, Int32) -> Bool)
+      (nonzeros - 1).downto(0) do |i|
+        remove_element(i) unless yield(@raw_values[i], @raw_rows[i], @raw_columns[i])
+      end
+      clear_flags
+    end
+
+    def select_index!(& : (Int32, Int32) -> Bool)
+      (nonzeros - 1).downto(0) do |i|
+        remove_element(i) unless yield(@raw_rows[i], @raw_columns[i])
+      end
+      clear_flags
+    end
+
+    def resize!(anrows, ancolumns)
+      return if anrows == self.nrows && ancolumns == self.ncolumns
+      if anrows < self.nrows || ancolumns < self.ncolumns
+        select_index! do |i, j|
+          i < anrows && j < ancolumns
+        end
+      end
+      @nrows = anrows
+      @ncolumns = ancolumns
+      clear_flags
+      self
     end
   end
 

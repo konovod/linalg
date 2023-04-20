@@ -8,6 +8,7 @@ describe COOMatrix do
     m[3, 1] = 2.0
     ms = COOMatrix(Float64).new(m)
     ms.should eq m
+    ms.nonzeros.should eq 6
   end
 
   it "can be constructed from arrays" do
@@ -175,5 +176,50 @@ describe COOMatrix do
     m.should_not eq ma
     m.triu!(1)
     m.should eq ma
+  end
+
+  it "support select!" do
+    m1 = COOMatrix(Float64).new(10, 10)
+    m1[0, 0] = 10
+    m1[1, 1] = -15
+    m1[5, 2] = 11
+    m1[3, 6] = 12
+
+    m2 = m1.clone
+    m2[1, 1] = 0
+    m1.should_not eq m2
+    m1.select! { |v| v >= 0 }
+    m1.should eq m2
+  end
+
+  it "support select_with_index!" do
+    m1 = COOMatrix(Float64).new(10, 10)
+    m1[0, 0] = 10
+    m1[1, 1] = -15
+    m1[5, 2] = 11
+    m1[3, 6] = 12
+
+    m2 = m1.clone
+    m2[1, 1] = 0
+    m2[0, 0] = 0
+    m1.should_not eq m2
+    m1.select_with_index! { |v, i, j| i != j }
+    m1.should eq m2
+  end
+
+  it "support resize!" do
+    ma = GMat[
+      [1, 2, 0],
+      [0, 0, 5],
+      [0, 1, 0],
+      [-2, -1, -3],
+    ]
+    mas = COOMatrix(Float64).new ma
+    ma.resize!(3, 2)
+    mas.resize!(3, 2)
+    mas.should eq ma
+    ma.resize!(10, 10)
+    mas.resize!(10, 10)
+    mas.should eq ma
   end
 end
