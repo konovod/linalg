@@ -395,6 +395,19 @@ describe LA::BandedMatrix do
     expect_raises(ArgumentError) { a.add! b.to_general }
   end
 
+  it "support arithmetic operations with dense matrices" do
+    a = BMat.new(5, 6, 2, 1) { |i, j| (i + 1)*10 + j + 1 }
+    b = BMat.new(5, 6, 1, 2) { |i, j| (i + 1)*10 + j + 1 }
+    ag = a.to_general
+    bg = b.to_general
+
+    (a + b).should eq(ag + bg)
+    (a + bg).should eq(ag + bg)
+    (ag + b).should eq(ag + bg)
+    (a - bg).should eq(ag - bg)
+    (ag - b).should eq(ag - bg)
+  end
+
   it "can be created with rand" do
     a = BMatComplex.rand(5, 6, 1, 2)
     a.should be_a BandedMatrix(Complex)

@@ -244,16 +244,24 @@ module LA::Sparse
     end
 
     # returns element-wise sum
-    def +(m : LA::Matrix)
+    def +(m : Sparse::Matrix)
       result = clone.add!(T.new(1), m)
       result.flags = self.flags.sum(m.flags)
       result
     end
 
-    def -(m : LA::Matrix)
+    def -(m : Sparse::Matrix)
       result = clone.add!(-T.new(1), m)
       result.flags = self.flags.sum(m.flags)
       result
+    end
+
+    def +(m : LA::Matrix)
+      m.clone.add! self
+    end
+
+    def -(m : LA::Matrix)
+      (-m).add! self
     end
 
     def add!(k : Number | Complex, m : Sparse::Matrix)

@@ -286,6 +286,14 @@ module LA
       end
     end
 
+    def +(m : LA::Matrix)
+      m.clone.add! self
+    end
+
+    def -(m : LA::Matrix)
+      (-m).add! self
+    end
+
     # returns transposed matrix
     def transpose
       return clone if flags.symmetric?

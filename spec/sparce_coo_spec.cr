@@ -131,6 +131,34 @@ describe COOMatrix do
     mas.should eq ma
   end
 
+  it "support arithmetic operations with dense matrices" do
+    ma = GMat[
+      [1, 2, 0],
+      [0, 0, 5],
+      [0, 1, 0],
+      [-2, -1, -3],
+    ]
+    mb = GMat[
+      [0, -2, 0],
+      [0, 1, -5],
+      [0, -1, 1],
+      [10, 0, 0],
+    ]
+    mas = COOMatrix(Float64).new(ma)
+    mbs = COOMatrix(Float64).new(mb)
+
+    (ma + mbs).should eq(ma + mb)
+    (mas + mb).should eq(ma + mb)
+    (ma - mbs).should eq(ma - mb)
+    (mas - mb).should eq(ma - mb)
+
+    banded = BMat.new(3, 4, 2, 1) { |i, j| (i + 1)*10 + j + 1 }
+    expect_raises(Exception) { mas + banded }
+    expect_raises(Exception) { banded + mas }
+    expect_raises(Exception) { mas - banded }
+    expect_raises(Exception) { banded - mas }
+  end
+
   it "support #tril and #triu" do
     m = COOMatrix(Float64).new(10, 10)
     m[0, 0] = 10
