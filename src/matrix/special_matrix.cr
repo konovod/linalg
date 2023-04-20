@@ -446,9 +446,49 @@ module LA
       end
     end
 
+    # Returns a symmetric Fiedler matrix
+    #
+    # Given an sequence of numbers `values`, Fiedler matrices have the structure `f[i, j] = (values[i] - values[j]).abs`, and hence zero diagonals and nonnegative entries.
+    # A Fiedler matrix has a dominant positive eigenvalue and other eigenvalues are negative.
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.fiedler.html)
+    #
+    # Example:
+    # ```
+    # Mat.fiedler([1, 4, 12, 45, 77]) # =>
+    # # LA::GeneralMatrix(Float64) (5x5, Symmetric | Hermitian):
+    # # [0.0, 3.0, 11.0, 44.0, 76.0]
+    # # [3.0, 0.0, 8.0, 41.0, 73.0]
+    # # [11.0, 8.0, 0.0, 33.0, 65.0]
+    # # [44.0, 41.0, 33.0, 0.0, 32.0]
+    # # [76.0, 73.0, 65.0, 32.0, 0.0]
+    # ```
     def self.fiedler(values)
       GeneralMatrix(T).new(values.size, values.size, flags: MatrixFlags::Symmetric | MatrixFlags::Hermitian) do |i, j|
         (values[i] - values[j]).abs
+      end
+    end
+
+    # Compute the inverse of the Hilbert matrix of order n.
+    #
+    # The entries in the inverse of a Hilbert matrix are integers.
+    #
+    # Behaviour copied from [scipy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.invhilbert.html)
+    #
+    # Example:
+    # ```
+    # Mat.invhilbert(4) # => LA::GeneralMatrix(Float64) (4x4, Symmetric | Hermitian | PositiveDefinite):
+    # # [16.0, -120.0, 240.0, -140.0]
+    # # [-120.0, 1200.0, -2700.0, 1680.0]
+    # # [240.0, -2700.0, 6480.0, -4200.0]
+    # # [-140.0, 1680.0, -4200.0, 2800.0]
+    #
+    # Mat.invhilbert(16)[7, 7] # => 4.247509952853739e+19
+    # ```
+    def self.invhilbert(n)
+      GeneralMatrix(T).new(n, n, flags: MatrixFlags::Symmetric | MatrixFlags::Hermitian | MatrixFlags::PositiveDefinite) do |i1, j1|
+        i, j = i1 + 1, j1 + 1
+        ((i + j).odd? ? -1 : 1)*(i + j - 1)*n_choose_k(n + i - 1, n - j)*n_choose_k(n + j - 1, n - i)*(n_choose_k(i + j - 2, i - 1)**2)
       end
     end
   end

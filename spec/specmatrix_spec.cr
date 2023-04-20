@@ -136,4 +136,14 @@ describe "constructing of special matrices" do
       [76, 73, 65, 32, 0],
     ]
   end
+
+  it "invhilbert matrix" do
+    Mat.invhilbert(4).should eq GMat.new [
+      [16.0, -120.0, 240.0, -140.0],
+      [-120.0, 1200.0, -2700.0, 1680.0],
+      [240.0, -2700.0, 6480.0, -4200.0],
+      [-140.0, 1680.0, -4200.0, 2800.0],
+    ]
+    Mat.invhilbert(16)[7, 7].should be_close 4.2475099528537506e+19, 1e10
+  end
 end

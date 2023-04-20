@@ -59,4 +59,5 @@ complex_matrix = GMatComplex.new(3, 2, complex_array)
 complex_pseudo_inverse = complex_matrix.pinv
 puts complex_pseudo_inverse
 
-p Mat.invpascal(5, PascalKind::Lower).detect
+# p Mat.invpascal(5, PascalKind::Lower).detect
+p Mat.invhilbert(16)[7, 7]

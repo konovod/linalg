@@ -112,7 +112,7 @@
 - [x] hankel(c[, r])	Construct a Hankel matrix.
 - [x] helmert(n[, full])	Create a Helmert matrix of order n.
 - [x] hilbert(n)	Create a Hilbert matrix of order n.
-- [ ] invhilbert(n[, exact])	Compute the inverse of the Hilbert matrix of order n.
+- [x] invhilbert(n[, exact])	Compute the inverse of the Hilbert matrix of order n.
 - [x] leslie(f, s)	Create a Leslie matrix.
 - [x] pascal(n[, kind, exact])	Returns the n x n Pascal matrix.
 - [x] invpascal(n[, kind, exact])	Returns the inverse of the n x n Pascal matrix.
