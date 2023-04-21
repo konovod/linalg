@@ -9,7 +9,7 @@ module LA::Sparse
     protected getter raw_values : Array(T)
 
     def initialize(@nrows, @ncolumns, capacity = 0)
-      @raw_rows = Array(Int32).new(nrows + 1)
+      @raw_rows = Array(Int32).new(nrows + 1, 0)
       @raw_columns = Array(Int32).new(capacity)
       @raw_values = Array(T).new(capacity)
       @flags = MatrixFlags.for_diag(@nrows == @ncolumns)
@@ -127,7 +127,13 @@ module LA::Sparse
     # def transpose TODO
     # def conjtranspose TODO
     # def add!(k : Number | Complex, m : Sparse::Matrix) TODO
-    # def clear TODO
+
+    def clear
+      @raw_rows.fill(0)
+      @raw_values.clear
+      @raw_columns.clear
+    end
+
     # def triu!(k = 0) TODO
     # def tril!(k = 0) TODO
     # def tril(k = 0) TODO
