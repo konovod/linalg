@@ -20,16 +20,16 @@ module LA::Sparse
         raise ArgumentError.new("Can't construct CSR Matrix from arrays of different size: rows.size(#{raw_rows.size}) != nrows+1 (#{@nrows + 1}")
       end
       if raw_columns.size != raw_values.size
-        raise ArgumentError.new("Can't construct CSR Matrix from arrays of different size: columns.size(#{raw_columns.size}) != values.size(#{values.size})")
+        raise ArgumentError.new("Can't construct CSR Matrix from arrays of different size: columns.size(#{raw_columns.size}) != values.size(#{raw_values.size})")
       end
       if dont_clone
-        @raw_rows = rows
-        @raw_columns = columns
-        @raw_values = values
+        @raw_rows = raw_rows
+        @raw_columns = raw_columns
+        @raw_values = raw_values
       else
-        @raw_rows = rows.dup
-        @raw_columns = columns.dup
-        @raw_values = values.dup
+        @raw_rows = raw_rows.dup
+        @raw_columns = raw_columns.dup
+        @raw_values = raw_values.dup
       end
     end
 
@@ -45,13 +45,17 @@ module LA::Sparse
       new(matrix.nrows, matrix.ncolumns, matrix.raw_rows.dup, matrix.raw_columns.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, flags: matrix.flags)
     end
 
-    # def self.new(matrix : LA::Matrix) TODO
+    def self.new(matrix : LA::Matrix)
+      # TODO
+      raise "not implemented"
+    end
 
     private def ij2index(i, j) : Int32?
       row_start = @raw_rows[i]
       row_end = @raw_rows[i + 1]
       index = (row_start...row_end).bsearch { |n| @raw_columns[n] >= j }
-      @raw_columns[n] == j ? index : nil
+      return nil unless index
+      @raw_columns[index] == j ? index : nil
     end
 
     private def index2ij(index) : {Int32, Int32}?
@@ -60,10 +64,18 @@ module LA::Sparse
     end
 
     def unsafe_fetch(i, j)
-      @raw_values[ij2index(i, j)]
+      if index = ij2index(i, j)
+        @raw_values.unsafe_fetch(index)
+      else
+        T.new(0.0)
+      end
     end
 
-    # def unsafe_set(i, j, value)
+    def unsafe_set(i, j, value)
+      # TODO
+      raise "not implemented"
+    end
+
     # def self.diag(nrows, ncolumns, values) TODO
     # def self.diag(nrows, ncolumns, &block) TODO
     def each_index(*, all = false, &block)
@@ -71,7 +83,7 @@ module LA::Sparse
         row_start = @raw_rows[i]
         row_end = @raw_rows[i + 1]
         (row_start...row_end).each do |index|
-          yield(i, @row_columns[index])
+          yield(i, @raw_columns[index])
         end
       end
     end
@@ -81,7 +93,7 @@ module LA::Sparse
         row_start = @raw_rows[i]
         row_end = @raw_rows[i + 1]
         (row_start...row_end).each do |index|
-          yield(@row_values[index], i, @row_columns[index])
+          yield(@raw_values[index], i, @raw_columns[index])
         end
       end
     end
@@ -91,7 +103,7 @@ module LA::Sparse
         row_start = @raw_rows[i]
         row_end = @raw_rows[i + 1]
         (row_start...row_end).each do |index|
-          @row_values[index] = yield(@row_values[index], i, @row_columns[index])
+          @raw_values[index] = T.new(yield(@raw_values[index], i, @raw_columns[index]))
         end
       end
     end
