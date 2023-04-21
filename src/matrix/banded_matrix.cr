@@ -28,7 +28,7 @@ module LA
       bands_count*band_len
     end
 
-    private def ij2index(i, j)
+    private def ij2index(i, j) : Int32?
       return nil unless {0, j - @upper_band}.max <= i <= {nrows - 1, j + @lower_band}.min
       ai = @upper_band + i - j
       j*band_len + ai

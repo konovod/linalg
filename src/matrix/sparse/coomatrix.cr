@@ -1,76 +1,8 @@
-require "./matrix"
-require "./submatrix"
+require "./sparse_matrix.cr"
 
 # TODO - inline docs
 
 module LA::Sparse
-  abstract class Matrix(T) < LA::Matrix(T)
-    getter nrows : Int32 = 0
-    getter ncolumns : Int32 = 0
-    property flags : MatrixFlags = MatrixFlags::None
-
-    abstract def nonzeros : Int32
-
-    def ==(other : Sparse::Matrix(T))
-      return false unless nrows == other.nrows && ncolumns == other.ncolumns
-      if other.nonzeros + self.nonzeros < nrows * ncolumns // 4
-        a, b = self, other
-        a, b = b, a if a.nonzeros < b.nonzeros
-        a.each_with_index(all: false) do |v, i, j|
-          return false if b.unsafe_fetch(i, j) != v
-        end
-        b.each_with_index(all: false) do |v, i, j|
-          return false if a.unsafe_fetch(i, j) != v
-        end
-        true
-      else
-        super(other)
-      end
-    end
-
-    def to_general
-      result = GeneralMatrix(T).new(nrows, ncolumns)
-      self.each_with_index(all: false) do |v, i, j|
-        result.unsafe_set(i, j, v)
-      end
-      result.flags = flags
-      result
-    end
-
-    def to_dense
-      to_general
-    end
-
-    def dup
-      self.class.new(self)
-    end
-
-    def clone
-      dup
-    end
-
-    # returns element-wise sum
-    def +(m : Sparse::Matrix)
-      result = clone.add!(T.new(1), m)
-      result.flags = self.flags.sum(m.flags)
-      result
-    end
-
-    def -(m : Sparse::Matrix)
-      result = clone.add!(-T.new(1), m)
-      result.flags = self.flags.sum(m.flags)
-      result
-    end
-
-    def +(m : LA::Matrix)
-      m.clone.add! self
-    end
-
-    def -(m : LA::Matrix)
-      (-m).add! self
-    end
-  end
-
   class COOMatrix(T) < Matrix(T)
     protected getter raw_columns : Array(Int32)
     protected getter raw_rows : Array(Int32)
@@ -285,10 +217,6 @@ module LA::Sparse
       self
     end
 
-    def add!(k : Number | Complex, m : LA::Matrix)
-      raise ArgumentError.new "can't `add!` dense matrix to sparse"
-    end
-
     protected def remove_element(index)
       @dictionary.delete({@raw_rows[index], @raw_columns[index]})
       n = nonzeros - 1
@@ -405,55 +333,6 @@ module LA::Sparse
       @ncolumns = ancolumns
       clear_flags
       self
-    end
-  end
-
-  class CSRMatrix(T) < Matrix(T)
-    protected getter raw_columns : Array(Int32)
-    protected getter raw_rows : Array(Int32)
-    protected getter raw_values : Array(T)
-
-    def initialize(@nrows, @ncolumns, capacity = 0)
-      @raw_rows = Array(Int32).new(nrows + 1)
-      @raw_columns = Array(Int32).new(capacity)
-      @raw_values = Array(T).new(capacity)
-      @flags = MatrixFlags.for_diag(@nrows == @ncolumns)
-    end
-
-    def initialize(@nrows, @ncolumns, raw_rows : Array(Int32), raw_columns : Array(Int32), raw_values : Array(T), @flags = MatrixFlags::None, *, dont_clone : Bool = false)
-      if raw_rows.size != @nrows + 1
-        raise ArgumentError.new("Can't construct CSR Matrix from arrays of different size: rows.size(#{raw_rows.size}) != nrows+1 (#{@nrows + 1}")
-      end
-      if raw_columns.size != raw_values.size
-        raise ArgumentError.new("Can't construct CSR Matrix from arrays of different size: columns.size(#{raw_columns.size}) != values.size(#{values.size})")
-      end
-      if dont_clone
-        @raw_rows = rows
-        @raw_columns = columns
-        @raw_values = values
-      else
-        @raw_rows = rows.dup
-        @raw_columns = columns.dup
-        @raw_values = values.dup
-      end
-    end
-
-    def nonzeros : Int32
-      @raw_values.size
-    end
-
-    def self.new(matrix : CSRMatrix(T))
-      new(matrix.nrows, matrix.ncolumns, matrix.raw_rows, matrix.raw_columns, matrix.raw_values, flags: matrix.flags)
-    end
-
-    def self.new(matrix : CSRMatrix)
-      new(matrix.nrows, matrix.ncolumns, matrix.raw_rows.dup, matrix.raw_columns.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, flags: matrix.flags)
-    end
-
-    def unsafe_fetch(i, j)
-      row_start = @raw_rows[i]
-      row_end = @raw_rows[i + 1]
-      index = (row_start..row_end).bsearch { }
     end
   end
 end
