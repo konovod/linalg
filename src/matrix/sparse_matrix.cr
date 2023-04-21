@@ -27,6 +27,48 @@ module LA::Sparse
         super(other)
       end
     end
+
+    def to_general
+      result = GeneralMatrix(T).new(nrows, ncolumns)
+      self.each_with_index(all: false) do |v, i, j|
+        result.unsafe_set(i, j, v)
+      end
+      result.flags = flags
+      result
+    end
+
+    def to_dense
+      to_general
+    end
+
+    def dup
+      self.class.new(self)
+    end
+
+    def clone
+      dup
+    end
+
+    # returns element-wise sum
+    def +(m : Sparse::Matrix)
+      result = clone.add!(T.new(1), m)
+      result.flags = self.flags.sum(m.flags)
+      result
+    end
+
+    def -(m : Sparse::Matrix)
+      result = clone.add!(-T.new(1), m)
+      result.flags = self.flags.sum(m.flags)
+      result
+    end
+
+    def +(m : LA::Matrix)
+      m.clone.add! self
+    end
+
+    def -(m : LA::Matrix)
+      (-m).add! self
+    end
   end
 
   class COOMatrix(T) < Matrix(T)
@@ -44,10 +86,10 @@ module LA::Sparse
 
     def initialize(@nrows, @ncolumns, rows : Array(Int32), columns : Array(Int32), values : Array(T), @flags = MatrixFlags::None, *, dont_clone : Bool = false, dont_check : Bool = false, dictionary = nil)
       if rows.size != columns.size
-        raise ArgumentError.new("Can't construct COO Matrix from arrays of different size: rows.size=#{rows.size} != columns.size=#{columns.size}")
+        raise ArgumentError.new("Can't construct COO Matrix from arrays of different size: rows.size(#{rows.size}) != columns.size(#{columns.size})")
       end
       if rows.size != values.size
-        raise ArgumentError.new("Can't construct COO Matrix from arrays of different size: rows.size=#{rows.size} != values.size=#{values.size}")
+        raise ArgumentError.new("Can't construct COO Matrix from arrays of different size: rows.size(#{rows.size}) != values.size(#{values.size})")
       end
       if dont_clone
         @raw_rows = rows
@@ -136,14 +178,6 @@ module LA::Sparse
       else
         push_element(i, j, value)
       end
-    end
-
-    def dup
-      COOMatrix(T).new(self)
-    end
-
-    def clone
-      dup
     end
 
     # Returns diagonal matrix of given size with diagonal elements taken from array `values`
@@ -240,27 +274,6 @@ module LA::Sparse
       {% end %}
       return clone if flags.hermitian?
       COOMatrix(T).new(@ncolumns, @nrows, @raw_columns.dup, @raw_rows.dup, @raw_values.map(&.conj), flags: @flags.transpose, dont_clone: true)
-    end
-
-    # returns element-wise sum
-    def +(m : Sparse::Matrix)
-      result = clone.add!(T.new(1), m)
-      result.flags = self.flags.sum(m.flags)
-      result
-    end
-
-    def -(m : Sparse::Matrix)
-      result = clone.add!(-T.new(1), m)
-      result.flags = self.flags.sum(m.flags)
-      result
-    end
-
-    def +(m : LA::Matrix)
-      m.clone.add! self
-    end
-
-    def -(m : LA::Matrix)
-      (-m).add! self
     end
 
     def add!(k : Number | Complex, m : Sparse::Matrix)
@@ -360,19 +373,6 @@ module LA::Sparse
       result
     end
 
-    def to_general
-      result = GeneralMatrix(T).new(nrows, ncolumns)
-      self.each_with_index(all: false) do |v, i, j|
-        result.unsafe_set(i, j, v)
-      end
-      result.flags = flags
-      result
-    end
-
-    def to_dense
-      to_general
-    end
-
     def select!(& : T -> Bool)
       (nonzeros - 1).downto(0) do |i|
         remove_element(i) unless yield(@raw_values[i])
@@ -408,6 +408,52 @@ module LA::Sparse
     end
   end
 
-  #  class CSRMatrix(T) < Matrix(T)
-  #  end
+  class CSRMatrix(T) < Matrix(T)
+    protected getter raw_columns : Array(Int32)
+    protected getter raw_rows : Array(Int32)
+    protected getter raw_values : Array(T)
+
+    def initialize(@nrows, @ncolumns, capacity = 0)
+      @raw_rows = Array(Int32).new(nrows + 1)
+      @raw_columns = Array(Int32).new(capacity)
+      @raw_values = Array(T).new(capacity)
+      @flags = MatrixFlags.for_diag(@nrows == @ncolumns)
+    end
+
+    def initialize(@nrows, @ncolumns, raw_rows : Array(Int32), raw_columns : Array(Int32), raw_values : Array(T), @flags = MatrixFlags::None, *, dont_clone : Bool = false)
+      if raw_rows.size != @nrows + 1
+        raise ArgumentError.new("Can't construct CSR Matrix from arrays of different size: rows.size(#{raw_rows.size}) != nrows+1 (#{@nrows + 1}")
+      end
+      if raw_columns.size != raw_values.size
+        raise ArgumentError.new("Can't construct CSR Matrix from arrays of different size: columns.size(#{raw_columns.size}) != values.size(#{values.size})")
+      end
+      if dont_clone
+        @raw_rows = rows
+        @raw_columns = columns
+        @raw_values = values
+      else
+        @raw_rows = rows.dup
+        @raw_columns = columns.dup
+        @raw_values = values.dup
+      end
+    end
+
+    def nonzeros : Int32
+      @raw_values.size
+    end
+
+    def self.new(matrix : CSRMatrix(T))
+      new(matrix.nrows, matrix.ncolumns, matrix.raw_rows, matrix.raw_columns, matrix.raw_values, flags: matrix.flags)
+    end
+
+    def self.new(matrix : CSRMatrix)
+      new(matrix.nrows, matrix.ncolumns, matrix.raw_rows.dup, matrix.raw_columns.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, flags: matrix.flags)
+    end
+
+    def unsafe_fetch(i, j)
+      row_start = @raw_rows[i]
+      row_end = @raw_rows[i + 1]
+      index = (row_start..row_end).bsearch { }
+    end
+  end
 end
