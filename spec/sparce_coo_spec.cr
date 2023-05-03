@@ -234,4 +234,22 @@ describe COOMatrix do
     mas.resize!(10, 10)
     mas.should eq ma
   end
+
+  it "can be created using `diag`" do
+    ms = COOMatrix(Float64).eye(3)
+    ms.should eq GMat.new [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ]
+    ms = COOMatrix(Float64).diag(4, 5, [1, 2, 3])
+    ms.should eq GMat.new [
+      [1, 0, 0, 0, 0],
+      [0, 2, 0, 0, 0],
+      [0, 0, 3, 0, 0],
+      [0, 0, 0, 0, 0],
+    ]
+    ms.nonzeros.should eq 3
+    expect_raises(Exception) { COOMatrix(Float64).diag(4, 5, [1, 2, 3, 4, 5]) }
+  end
 end

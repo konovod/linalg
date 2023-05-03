@@ -90,8 +90,33 @@ module LA::Sparse
       end
     end
 
-    # def self.diag(nrows, ncolumns, values) TODO
-    # def self.diag(nrows, ncolumns, &block) TODO
+    # Returns diagonal matrix of given size with diagonal elements taken from array `values`
+    #
+    # Raises if `values.size > {nrows, ncolumns}.min`
+    def self.diag(nrows, ncolumns, values)
+      raise ArgumentError.new("Too much elements (#{values.size}) for diag matrix [#{nrows}x#{ncolumns}]") if values.size > {nrows, ncolumns}.min
+      n = values.size
+      new(nrows, ncolumns,
+        Array(Int32).new(nrows + 1) { |i| i <= n ? i : n },
+        Array(Int32).new(n) { |i| i },
+        Array(T).new(n) { |i| T.new(values[i]) },
+        MatrixFlags.for_diag(nrows == ncolumns),
+        dont_clone: true
+      )
+    end
+
+    # Returns diagonal matrix of given size with diagonal elements equal to block value
+    def self.diag(nrows, ncolumns, &block)
+      n = {nrows, ncolumns}.min
+      new(nrows, ncolumns,
+        Array(Int32).new(nrows + 1) { |i| i <= n ? i : n },
+        Array(Int32).new(n) { |i| i },
+        Array(T).new(n) { |i| T.new(yield(i)) },
+        MatrixFlags.for_diag(nrows == ncolumns),
+        dont_clone: true
+      )
+    end
+
     def each_index(*, all = false, &block)
       if all
         super(all: true) { |i, j| yield(i, j) }

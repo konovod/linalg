@@ -116,21 +116,25 @@ module LA::Sparse
     #
     # Raises if `values.size > {nrows, ncolumns}.min`
     def self.diag(nrows, ncolumns, values)
-      raise ArgumentError.new("Too much elements (#{values.size}) for diag matrix #{shape_str}") if values.size > {nrows, ncolumns}.min
-      new(nrows, ncolumns, values.size)
+      raise ArgumentError.new("Too much elements (#{values.size}) for diag matrix [#{nrows}x#{ncolumns}]") if values.size > {nrows, ncolumns}.min
+      result = new(nrows, ncolumns, values.size)
       values.each_with_index do |v, i|
-        push_element(i, i, v)
+        result.push_element(i, i, T.new(v))
       end
+      result.flags = MatrixFlags.for_diag(nrows == ncolumns)
+      result
     end
 
     # Returns diagonal matrix of given size with diagonal elements equal to block value
     def self.diag(nrows, ncolumns, &block)
       n = {nrows, ncolumns}.min
-      new(nrows, ncolumns, n)
+      result = new(nrows, ncolumns, n)
       n.times do |i|
         value = yield(i)
-        push_element(i, i, T.new(v))
+        result.push_element(i, i, T.new(value))
       end
+      result.flags = MatrixFlags.for_diag(nrows == ncolumns)
+      result
     end
 
     def each_index(*, all = false, &block)

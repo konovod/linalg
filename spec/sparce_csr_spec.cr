@@ -74,4 +74,22 @@ describe CSRMatrix do
     ms[3, 1].should eq 0
     expect_raises(Exception) { ms[4, 2] = 0 }
   end
+
+  it "can be created using `diag`" do
+    ms = CSRMatrix(Float64).eye(3)
+    ms.should eq GMat.new [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ]
+    ms = CSRMatrix(Float64).diag(4, 5, [1, 2, 3])
+    ms.should eq GMat.new [
+      [1, 0, 0, 0, 0],
+      [0, 2, 0, 0, 0],
+      [0, 0, 3, 0, 0],
+      [0, 0, 0, 0, 0],
+    ]
+    ms.nonzeros.should eq 3
+    expect_raises(Exception) { CSRMatrix(Float64).diag(4, 5, [1, 2, 3, 4, 5]) }
+  end
 end
