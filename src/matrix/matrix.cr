@@ -74,6 +74,11 @@ module LA
       size
     end
 
+    # Returns shape of matrix as a string `[5x7]`
+    def shape_str
+      "[#{nrows}x#{ncolumns}]"
+    end
+
     # Creates general matrix with same content. Useful for banded\sparse matrices
     def to_general
       GeneralMatrix(T).new(nrows, ncolumns, flags) do |i, j|
@@ -102,7 +107,7 @@ module LA
     # matrix product to given m
     # def *(m : Matrix(T))
     #   if ncolumns != m.nrows
-    #     raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+    #     raise ArgumentError.new("matrix size should match (#{shape_str} * #{m.shape_str}")
     #   end
     #   result = GeneralMatrix(T).new(nrows, m.ncolumns) do |i, j|
     #     (0...ncolumns).sum { |k| self.unsafe_fetch(i, k)*m.unsafe_fetch(k, j) }
@@ -151,7 +156,7 @@ module LA
 
     protected def assert_same_size(m : Matrix)
       if ncolumns != m.ncolumns || nrows != m.nrows
-        raise ArgumentError.new("matrix size doesn't match ([#{nrows}x#{ncolumns}] and [#{m.nrows}x#{m.ncolumns}]")
+        raise ArgumentError.new("matrix size doesn't match (#{shape_str} and #{m.shape_str}")
       end
     end
 
@@ -345,7 +350,7 @@ module LA
       if j >= 0 && j < ncolumns && i >= 0 && i < nrows
         unsafe_fetch(i, j)
       else
-        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{nrows}x#{ncolumns}")
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{shape_str}")
       end
     end
 
@@ -361,7 +366,7 @@ module LA
       if j >= 0 && j < ncolumns && i >= 0 && i < nrows
         unsafe_set(i, j, value)
       else
-        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{nrows}x#{ncolumns}")
+        raise IndexError.new("access to [#{i}, #{j}] in matrix with size #{shape_str}")
       end
     end
 

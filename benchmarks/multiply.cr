@@ -12,7 +12,7 @@ include LA
 abstract class LA::Matrix(T)
   def naive_mult(m : Matrix(T))
     if ncolumns != m.nrows
-      raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+      raise ArgumentError.new("matrix size should match (#{shape_str} * #{m.shape_str}")
     end
     result = GeneralMatrix(T).new(nrows, m.ncolumns, self.flags.mult(m.flags)) do |i, j|
       (0...ncolumns).sum { |k| self[i, k]*m[k, j] }
@@ -21,7 +21,7 @@ abstract class LA::Matrix(T)
 
   def ge_mult(m : Matrix(T))
     if ncolumns != m.nrows
-      raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+      raise ArgumentError.new("matrix size should match (#{shape_str} * #{m.shape_str}")
     end
     result = Matrix(T).zeros(nrows, m.ncolumns)
     result.add_mult(self, m)
@@ -30,7 +30,7 @@ abstract class LA::Matrix(T)
 
   def ge_mult2(m : Matrix(T))
     if ncolumns != m.nrows
-      raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+      raise ArgumentError.new("matrix size should match (#{shape_str} * #{m.shape_str}")
     end
     result = Matrix(T).zeros(nrows, m.ncolumns)
     result.add_mult(self, m, beta: 0.0)
@@ -39,7 +39,7 @@ abstract class LA::Matrix(T)
 
   def tr_mult(m : Matrix(T))
     if ncolumns != m.nrows
-      raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+      raise ArgumentError.new("matrix size should match (#{shape_str} * #{shape_str}")
     end
     if (square? && flags.triangular?) || (m.square? && m.flags.triangular?)
       if m.square? && m.flags.triangular?

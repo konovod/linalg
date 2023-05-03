@@ -604,4 +604,9 @@ describe LA::Matrix do
     a = GeneralMatrix(Bool).new([[true, true], [true, false]])
     p a.map { |x| x ? 0.0 : 1.0 }
   end
+
+  it "have `shape_str` method" do
+    a = GeneralMatrix(Int32).new([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
+    a.shape_str.should eq "[4x3]"
+  end
 end

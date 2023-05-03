@@ -88,7 +88,7 @@ module LA
 
       # Creates `Indexable(T)` that allows iterating over `offset`-th diagonal of `base` matrix
       protected def initialize(@base : Matrix(T), @offset = 0)
-        raise ArgumentError.new("Offset #{offset} is too big (matrix size #{@base.nrows}x#{@base.ncolumns})") if size <= 0
+        raise ArgumentError.new("Offset #{offset} is too big (matrix size #{@base.shape_str})") if size <= 0
       end
 
       def size

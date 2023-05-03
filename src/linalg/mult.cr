@@ -104,7 +104,7 @@ module LA
     # Otherwise - `gemm` is called
     def *(m : Matrix(T))
       if ncolumns != m.nrows
-        raise ArgumentError.new("matrix size should match ([#{nrows}x#{ncolumns}] * [#{m.nrows}x#{m.ncolumns}]")
+        raise ArgumentError.new("matrix size should match (#{shape_str} * #{m.shape_str}")
       end
       if (square? && flags.triangular?) || (m.square? && m.flags.triangular?)
         if m.square? && m.flags.triangular?

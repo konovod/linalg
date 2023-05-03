@@ -116,7 +116,7 @@ module LA::Sparse
     #
     # Raises if `values.size > {nrows, ncolumns}.min`
     def self.diag(nrows, ncolumns, values)
-      raise ArgumentError.new("Too much elements for diag matrix") if values.size > {nrows, ncolumns}.min
+      raise ArgumentError.new("Too much elements (#{values.size}) for diag matrix #{shape_str}") if values.size > {nrows, ncolumns}.min
       new(nrows, ncolumns, values.size)
       values.each_with_index do |v, i|
         push_element(i, i, v)
