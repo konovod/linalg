@@ -52,6 +52,18 @@ module LA::Sparse
         nonzeros = matrix.count { |v| !v.zero? }
       end
       result = new(matrix.nrows, matrix.ncolumns, nonzeros)
+      index = 0
+      result.nrows.times do |row|
+        result.ncolumns.times do |column|
+          v = matrix.unsafe_fetch(row, column)
+          next if v.zero?
+          result.raw_values << T.new(v)
+          result.raw_columns << column
+          index += 1
+        end
+        result.raw_rows[row + 1] = index
+      end
+      result
     end
 
     private def ij2index(i, j) : Int32?

@@ -24,7 +24,7 @@ describe CSRMatrix do
     expect_raises(ArgumentError) { CSRMatrix(Float64).new(4, 4, raw_rows: [0, 1, 2, 3, 4], raw_columns: [0, 1, 2, 1], raw_values: [5.0, 8.0, 3.0]) }
   end
 
-  pending "can be created from dense matrix" do
+  it "can be created from dense matrix" do
     m = GMat.eye(5)
     m[3, 1] = 2.0
     ms = CSRMatrix(Float64).new(m)
@@ -32,7 +32,7 @@ describe CSRMatrix do
     ms.nonzeros.should eq 6
   end
 
-  pending "can be created from COO matrix" do
+  it "can be created from COO matrix" do
     m = GMat.eye(5)
     m[3, 1] = 2.0
     m = COOMatrix(Float64).new(m)
