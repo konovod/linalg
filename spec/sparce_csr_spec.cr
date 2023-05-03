@@ -63,4 +63,15 @@ describe CSRMatrix do
     m.should_not eq ms
     ms.should eq GMat.new(5, 5)
   end
+
+  it "elements can be accessed and changed" do
+    m = GMat.eye(5)
+    m[3, 1] = 2.0
+    ms = CSRMatrix(Float64).new(m)
+    ms[3, 1].should eq 2
+    ms[3, 2].should eq 0
+    ms[3, 1] = 0.0
+    ms[3, 1].should eq 0
+    expect_raises(Exception) { ms[4, 2] = 0 }
+  end
 end

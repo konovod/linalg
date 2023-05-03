@@ -83,8 +83,11 @@ module LA::Sparse
     end
 
     def unsafe_set(i, j, value)
-      # TODO
-      raise "not implemented"
+      if index = ij2index(i, j)
+        @raw_values.unsafe_put(index, T.new(value))
+      else
+        raise "cannot add values to CSR matrix"
+      end
     end
 
     # def self.diag(nrows, ncolumns, values) TODO
