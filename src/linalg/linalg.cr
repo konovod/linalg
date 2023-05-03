@@ -32,6 +32,11 @@ module LA
   class Utils::LinAlgError < Exception
   end
 
+  def self.lapack_version
+    LibLAPACK.ilaver(out major, out minor, out patch)
+    {major, minor, patch}
+  end
+
   # Calculate matrix inversion
   #
   # if `overwrite_a` is true, source matrix isn't needed anymore and can be overriden in process
