@@ -272,7 +272,7 @@ module LA::Sparse
     end
 
     def self.rand(nrows, ncolumns, *, nonzero_elements, rng : Random = Random::DEFAULT)
-      raise ArgumentError.new("Too many nonzero elements, maximum is nrows*ncolumns/2") if nonzero_elements > nrows * ncolumns // 2
+      raise ArgumentError.new("Too many nonzero elements (#{nonzero_elements}), maximum is nrows*ncolumns/2 (#{nrows * ncolumns // 2})") if nonzero_elements > nrows * ncolumns // 2
       result = new(nrows, ncolumns, capacity: nonzero_elements)
       nonzero_elements.times do
         i = j = 0

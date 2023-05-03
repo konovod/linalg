@@ -46,8 +46,12 @@ module LA::Sparse
     end
 
     def self.new(matrix : LA::Matrix)
-      # TODO
-      raise "not implemented"
+      if matrix.is_a? Sparse::Matrix
+        nonzeros = matrix.nonzeros
+      else
+        nonzeros = matrix.count { |v| !v.zero? }
+      end
+      result = new(matrix.nrows, matrix.ncolumns, nonzeros)
     end
 
     private def ij2index(i, j) : Int32?
@@ -56,11 +60,6 @@ module LA::Sparse
       index = (row_start...row_end).bsearch { |n| @raw_columns[n] >= j }
       return nil unless index
       @raw_columns[index] == j ? index : nil
-    end
-
-    private def index2ij(index) : {Int32, Int32}?
-      # TODO
-      return nil
     end
 
     def unsafe_fetch(i, j)
@@ -79,21 +78,29 @@ module LA::Sparse
     # def self.diag(nrows, ncolumns, values) TODO
     # def self.diag(nrows, ncolumns, &block) TODO
     def each_index(*, all = false, &block)
-      @nrows.times do |i|
-        row_start = @raw_rows[i]
-        row_end = @raw_rows[i + 1]
-        (row_start...row_end).each do |index|
-          yield(i, @raw_columns[index])
+      if all
+        super(all: true) { |i, j| yield(i, j) }
+      else
+        @nrows.times do |i|
+          row_start = @raw_rows[i]
+          row_end = @raw_rows[i + 1]
+          (row_start...row_end).each do |index|
+            yield(i, @raw_columns[index])
+          end
         end
       end
     end
 
     def each_with_index(*, all = false, &block)
-      @nrows.times do |i|
-        row_start = @raw_rows[i]
-        row_end = @raw_rows[i + 1]
-        (row_start...row_end).each do |index|
-          yield(@raw_values[index], i, @raw_columns[index])
+      if all
+        super(all: true) { |v, i, j| yield(v, i, j) }
+      else
+        @nrows.times do |i|
+          row_start = @raw_rows[i]
+          row_end = @raw_rows[i + 1]
+          (row_start...row_end).each do |index|
+            yield(@raw_values[index], i, @raw_columns[index])
+          end
         end
       end
     end

@@ -72,6 +72,18 @@ describe COOMatrix do
     m.should eq GMat32.new(5, 5)
   end
 
+  it "can be compared with matrix when empty" do
+    m = GMat.eye(5)
+    ms = COOMatrix(Float64).new(*m.shape)
+    ms.should_not eq m
+    m.should_not eq ms
+    ms.should eq GMat.new(5, 5)
+    ms.clear
+    ms.should_not eq m
+    m.should_not eq ms
+    ms.should eq GMat.new(5, 5)
+  end
+
   it "can be transposed" do
     m = COOMatrix(Float64).new(GMat32.eye(5))
     m[3, 2] = 20.0
