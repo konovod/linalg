@@ -62,5 +62,19 @@ module LA
       x.clear_flags
       x
     end
+
+    def eigs_sy(*, need_vectors, overwrite_a = false)
+      {% if T != Complex %}
+        job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
+        a = overwrite_a ? self : clone
+        vals = Array(T).new(nrows, T.new(0))
+        vectors = GeneralMatrix(T).new(*a.size)
+        lapack(sbevd, job, 'U'.ord.to_u8, nrows, upper_band, a, upper_band + lower_band + 1,
+          vals, vectors, ncolumns)
+        a.clear_flags
+        vectors.clear_flags
+        {vals, vectors}
+      {% end %}
+    end
   end
 end

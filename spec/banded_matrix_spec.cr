@@ -628,11 +628,11 @@ describe LA::BandedMatrix do
 
   it "can evaluate eigenvalues" do
     a = GMat[
-      [2, -1, 0],
-      [-1, 2, -1],
-      [0, -1, 2],
+      [2, 0.5, 0],
+      [0.5, 2, 1],
+      [0, 1, 2],
     ]
     b = BMat.new(a)
-    # pp! a.eigs, b.eigs
+    pp! a.eigs, b.eigs_sy(need_vectors: true)
   end
 end
