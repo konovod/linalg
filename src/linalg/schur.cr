@@ -8,7 +8,7 @@ module LA
     a.qz(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end
 
-  abstract class Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
     def schur(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       a = overwrite_a ? self : clone

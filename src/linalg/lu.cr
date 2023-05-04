@@ -1,5 +1,5 @@
 module LA
-  abstract class Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
     # Compute pivoted LU decomposition of a matrix
     #
     # If you call `p,l,u = a.lu` for a matrix m*n `a` then

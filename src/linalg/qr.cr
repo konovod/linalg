@@ -1,7 +1,7 @@
 # TODO - inline docs
 
 module LA
-  abstract class Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
     private def qr_initial(a, pivoting)
       m = a.nrows
       n = a.ncolumns

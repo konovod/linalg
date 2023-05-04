@@ -625,4 +625,14 @@ describe LA::BandedMatrix do
       [0, 9, 0, 0, 7]]
     BandedMatrix.estimate(a).should eq({3, 1})
   end
+
+  it "can evaluate eigenvalues" do
+    a = GMat[
+      [2, -1, 0],
+      [-1, 2, -1],
+      [0, -1, 2],
+    ]
+    b = BMat.new(a)
+    # pp! a.eigs, b.eigs
+  end
 end

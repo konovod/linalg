@@ -9,6 +9,15 @@ module LA
   end
 
   abstract class Matrix(T)
+    def cholesky(*, lower = false, dont_clean = false)
+      to_general.cholesky!(lower: lower, dont_clean: dont_clean).tap do |m|
+        # if cholesky didn't raised, original matrix is positive definite
+        self.assume! MatrixFlags::PositiveDefinite
+      end
+    end
+  end
+
+  class GeneralMatrix(T) < Matrix(T)
     def cholesky!(*, lower = false, dont_clean = false)
       raise ArgumentError.new("Matrix must be square for cholesky decomposition") unless square?
       char = lower ? 'L' : 'U'
@@ -27,13 +36,6 @@ module LA
         end
       end
       self
-    end
-
-    def cholesky(*, lower = false, dont_clean = false)
-      clone.cholesky!(lower: lower, dont_clean: dont_clean).tap do |m|
-        # if cholesky didn't raised, original matrix is positive definite
-        self.assume! MatrixFlags::PositiveDefinite
-      end
     end
 
     def cho_solve(b : self, *, overwrite_b = false)

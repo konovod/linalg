@@ -8,7 +8,7 @@ module LA
     a.eigs(b: b, need_left: need_left, need_right: need_right, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end
 
-  abstract class Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
     def eigvals(*, overwrite_a = false)
       vals, aleft, aright = eigs(overwrite_a: overwrite_a, need_left: false, need_right: false)
       vals

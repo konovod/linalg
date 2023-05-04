@@ -1,7 +1,7 @@
 require "../matrix/*"
 
 module LA
-  abstract class Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
     # :nodoc:
     macro blas(storage, name, *args)
       {% if T == Float32
@@ -90,7 +90,9 @@ module LA
         self, nrows)
       self
     end
+  end
 
+  abstract class Matrix(T)
     # Matrix product to given m
     #
     # Raises ArgumentError if inner dimensions do not match
@@ -108,16 +110,16 @@ module LA
       end
       if (square? && flags.triangular?) || (m.square? && m.flags.triangular?)
         if m.square? && m.flags.triangular?
-          result = self.clone
+          result = self.to_general
           result.tr_mult!(m, left: false)
           result
         else
-          result = m.clone
+          result = m.to_general
           result.tr_mult!(self, left: true)
           result
         end
       else
-        result = Matrix(T).zeros(nrows, m.ncolumns)
+        result = GeneralMatrix(T).zeros(nrows, m.ncolumns)
         result.add_mult(self, m)
         result.tap { |r| r.flags = self.flags.mult(m.flags) }
       end

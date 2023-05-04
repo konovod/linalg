@@ -38,7 +38,7 @@ end
 end
 
 module LA
-  abstract class Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
     decomposition(rq, triu)
     decomposition(lq, tril)
     decomposition(ql, tril)
