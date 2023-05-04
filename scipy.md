@@ -34,8 +34,8 @@
 - [x] eigvals(a[, b, overwrite_a, check_finite, ...])	Compute eigenvalues from an ordinary or generalized eigenvalue problem.
 - [x] eigh(a[, b, lower, eigvals_only, ...])	Solve an ordinary or generalized eigenvalue problem for a complex Hermitian or real symmetric matrix.
 - [x] eigvalsh(a[, b, lower, overwrite_a, ...])	Solve an ordinary or generalized eigenvalue problem for a complex Hermitian or real symmetric matrix.
-- [ ] eig_banded(a_band[, lower, eigvals_only, ...])	Solve real symmetric or complex hermitian band matrix eigenvalue problem.
-- [ ] eigvals_banded(a_band[, lower, ...])	Solve real symmetric or complex hermitian band matrix eigenvalue problem.
+- [x] eig_banded(a_band[, lower, eigvals_only, ...])	Solve real symmetric or complex hermitian band matrix eigenvalue problem.
+- [x] eigvals_banded(a_band[, lower, ...])	Solve real symmetric or complex hermitian band matrix eigenvalue problem.
 - [ ] eigh_tridiagonal(d, e[, eigvals_only, ...]) Solve eigenvalue problem for a real symmetric tridiagonal matrix.
 - [ ] eigvalsh_tridiagonal(d, e[, select, ...]) Solve eigenvalue problem for a real symmetric tridiagonal matrix.
 

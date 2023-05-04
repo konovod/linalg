@@ -642,4 +642,18 @@ describe LA::BandedMatrix do
     vals, vectors = b.eigs
     vals.each { |e| (b*vectors - vectors*e).det.should be_close 0, 1e-4 }
   end
+
+  it "can evaluate eigenvalues(complex matrices)" do
+    a = GMatComplex[
+      [1, 2 - 1.i, 0],
+      [2 + 1.i, 3, 4],
+      [0, 4, 5],
+    ]
+    b = BMatComplex.new(a)
+
+    b.eigvals.product.should be_close a.eigvals.product, 1e-6
+
+    vals, vectors = b.eigs
+    vals.each { |e| (b*vectors - vectors*e).det.should be_close 0, 1e-4 }
+  end
 end

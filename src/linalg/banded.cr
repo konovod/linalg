@@ -81,7 +81,7 @@ module LA
       {% if T == Complex %}
         job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
         a = overwrite_a ? self : clone
-        vals = Array(T).new(nrows, T.new(0))
+        vals = Array(Float64).new(nrows, 0.0)
         vectors = need_vectors ? GeneralMatrix(T).new(*a.size) : GeneralMatrix(T).new(0, 0)
         lapack(hbevd, job, 'U'.ord.to_u8, nrows, upper_band, a, upper_band + lower_band + 1,
           vals, vectors, ncolumns)
@@ -113,7 +113,7 @@ module LA
         detect(:hermitian) unless flags.hermitian?
         if flags.hermitian?
           vals, vectors = eigs_he(need_vectors: true, overwrite_a: overwrite_a)
-          return vals, need_vectors
+          return vals, vectors
         end
       {% else %}
         detect(:symmetric) unless flags.symmetric?

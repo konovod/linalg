@@ -170,7 +170,7 @@ module LA
           "sytrf" => {"cwork" => WORK_DETECT},
           "sytri" => {"cwork" => WORK_PARAM1},
           "sbevd" => {"cwork" => WORK_DETECT, "iwork" => WORK_DETECT},
-          "hbevd" => {"work" => WORK_DETECT, "rwork" => WORK_DETECT, "iwork" => WORK_DETECT},
+          "hbevd" => {"cwork" => WORK_DETECT, "rwork" => WORK_DETECT, "iwork" => WORK_DETECT},
 
           # "lantr" => {"rwork" => WORK_PARAM1},
           # "lanhe" => {"rwork" => WORK_PARAM1},
