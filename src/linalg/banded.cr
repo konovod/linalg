@@ -63,66 +63,39 @@ module LA
       x
     end
 
-    def eigs_sy(*, need_vectors, overwrite_a = false)
-      {% if T != Complex %}
-        job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
-        a = overwrite_a ? self : clone
-        vals = Array(T).new(nrows, T.new(0))
-        vectors = need_vectors ? GeneralMatrix(T).new(*a.size) : GeneralMatrix(T).new(0, 0)
-        lapack(sbevd, job, 'U'.ord.to_u8, nrows, upper_band, a, upper_band + lower_band + 1,
-          vals, vectors, ncolumns)
-        a.clear_flags
-        vectors.clear_flags
-        {vals, vectors}
-      {% end %}
-    end
-
-    def eigs_he(*, need_vectors, overwrite_a = false)
+    private def eigs_call(*, need_vectors, overwrite_a = false)
       {% if T == Complex %}
-        job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
-        a = overwrite_a ? self : clone
-        vals = Array(Float64).new(nrows, 0.0)
-        vectors = need_vectors ? GeneralMatrix(T).new(*a.size) : GeneralMatrix(T).new(0, 0)
+        detect(:hermitian) unless flags.hermitian?
+        raise "only hermitian banded matrices are supported in `eigvals`. Use `to_general.eigvals`" unless flags.hermitian?
+      {% else %}
+        detect(:symmetric) unless flags.symmetric?
+        raise "only symmetric banded matrices are supported in `eigvals`. Use `to_general.eigvals`" unless flags.symmetric?
+      {% end %}
+      job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
+      a = overwrite_a ? self : clone
+      vals = of_real_type(Array, nrows)
+      vectors = need_vectors ? GeneralMatrix(T).new(*a.size) : GeneralMatrix(T).new(0, 0)
+
+      {% if T == Complex %}
         lapack(hbevd, job, 'U'.ord.to_u8, nrows, upper_band, a, upper_band + lower_band + 1,
           vals, vectors, ncolumns)
-        a.clear_flags
-        vectors.clear_flags
-        {vals, vectors}
+      {% else %}
+        lapack(sbevd, job, 'U'.ord.to_u8, nrows, upper_band, a, upper_band + lower_band + 1,
+          vals, vectors, ncolumns)
       {% end %}
+      a.clear_flags
+      vectors.clear_flags
+      {vals, vectors}
     end
 
     def eigvals(*, overwrite_a = false)
-      {% if T == Complex %}
-        detect(:hermitian) unless flags.hermitian?
-        if flags.hermitian?
-          vals, vectors = eigs_he(need_vectors: false, overwrite_a: overwrite_a)
-          return vals
-        end
-      {% else %}
-        detect(:symmetric) unless flags.symmetric?
-        if flags.symmetric?
-          vals, vectors = eigs_sy(need_vectors: false, overwrite_a: overwrite_a)
-          return vals
-        end
-      {% end %}
-      raise "only symmetric \\ hermitian banded matrices are supported in `eigvals`. Use `to_general.eigvals`"
+      vals, vectors = eigs_call(need_vectors: false, overwrite_a: overwrite_a)
+      return vals
     end
 
     def eigs(*, overwrite_a = false)
-      {% if T == Complex %}
-        detect(:hermitian) unless flags.hermitian?
-        if flags.hermitian?
-          vals, vectors = eigs_he(need_vectors: true, overwrite_a: overwrite_a)
-          return vals, vectors
-        end
-      {% else %}
-        detect(:symmetric) unless flags.symmetric?
-        if flags.symmetric?
-          vals, vectors = eigs_sy(need_vectors: true, overwrite_a: overwrite_a)
-          return vals, vectors
-        end
-      {% end %}
-      raise "only symmetric \\ hermitian banded matrices are supported in `eigs`. Use `to_general.eigs`"
+      vals, vectors = eigs_call(need_vectors: true, overwrite_a: overwrite_a)
+      return vals, vectors
     end
   end
 end
