@@ -129,6 +129,8 @@ module LA
           "trtrs" => {6 => ARG_MATRIX, 8 => ARG_MATRIX},
           "sbevd" => {5 => ARG_MATRIX, 7 => ARG_MATRIX, 8 => ARG_MATRIX},
           "hbevd" => {5 => ARG_MATRIX, 7 => ARG_MATRIX, 8 => ARG_MATRIX},
+          "gbbrd" => {7 => ARG_MATRIX, 9 => ARG_MATRIX, 10 => ARG_MATRIX, 11 => ARG_MATRIX, 13 => ARG_MATRIX, 15 => ARG_MATRIX},
+          "bdsdc" => {4 => ARG_MATRIX, 5 => ARG_MATRIX, 6 => ARG_MATRIX, 8 => ARG_MATRIX, 10 => ARG_MATRIX, 11 => ARG_MATRIX},
         }
 
         lapack_args_complex = {
@@ -171,6 +173,8 @@ module LA
           "sytri" => {"cwork" => WORK_PARAM1},
           "sbevd" => {"cwork" => WORK_DETECT, "iwork" => WORK_DETECT},
           "hbevd" => {"cwork" => WORK_DETECT, "rwork" => WORK_DETECT, "iwork" => WORK_DETECT},
+          "gbbrd" => {"cwork" => WORK_PARAM1, "rwork" => WORK_PARAM1},
+          "bdsdc" => {"cwork" => WORK_PARAM1, "iwork" => WORK_PARAM2},
 
           # "lantr" => {"rwork" => WORK_PARAM1},
           # "lanhe" => {"rwork" => WORK_PARAM1},

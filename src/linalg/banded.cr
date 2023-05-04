@@ -97,5 +97,18 @@ module LA
       vals, vectors = eigs_call(need_vectors: true, overwrite_a: overwrite_a)
       return vals, vectors
     end
+
+    def svdvals(*, overwrite_a = false)
+      # Convert to bidiagonal form
+      a = overwrite_a ? self : self.clone
+      dsize = {nrows, ncolumns}.min
+      wsize = {nrows, ncolumns}.max
+      diag = of_real_type(Array, dsize)
+      sdiag = of_real_type(Slice, dsize - 1)
+      lapack(gbbrd, 'N'.ord.to_u8, nrows, ncolumns, 0, lower_band, upper_band, a, lower_band + upper_band + 1, diag, sdiag, nil, 1, nil, 1, nil, 1, worksize: [wsize])
+      # calculate svd
+      lapack(bdsdc, 'U'.ord.to_u8, 'N'.ord.to_u8, dsize, diag, sdiag, nil, 1, nil, 1, nil, nil, worksize: [4*dsize, 8*dsize])
+      diag
+    end
   end
 end

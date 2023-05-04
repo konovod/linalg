@@ -656,4 +656,23 @@ describe LA::BandedMatrix do
     vals, vectors = b.eigs
     vals.each { |e| (b*vectors - vectors*e).det.should be_close 0, 1e-4 }
   end
+
+  it "can calculate singular values" do
+    a = GMat[
+      [2, 5, 0, 0, 0],
+      [5, 2, 1, 0, 0],
+      [6, 1, 2, 3, 0],
+      [0, 4, 3, 1, 1],
+    ]
+    GMat[BMat.new(a).svdvals].should be_close GMat[a.svdvals], 1e-6
+  end
+
+  pending "can calculate singular values (complex argument)" do
+    a = GMatComplex[
+      [1, 2 - 1.i, 0],
+      [2 + 1.i, 3, 4],
+      [0, 4, 5],
+    ]
+    GMat[BMatComplex.new(a).svdvals].should be_close GMat[a.svdvals], 1e-6
+  end
 end
