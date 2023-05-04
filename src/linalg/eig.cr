@@ -25,7 +25,7 @@ module LA
         job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
         a = overwrite_a ? self : clone
         vals = Array(Float64).new(nrows, 0.0)
-        vectors = a.clone
+        vectors = need_vectors ? GeneralMatrix(T).new(*a.size) : GeneralMatrix(T).new(0, 0)
         support = Slice(Int32).new(2*nrows)
         lapack(heevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
           0.0, 0.0, 0, 0, -1.0,
@@ -42,7 +42,7 @@ module LA
         job = need_vectors ? 'V'.ord.to_u8 : 'N'.ord.to_u8
         a = overwrite_a ? self : clone
         vals = Array(T).new(nrows, T.new(0))
-        vectors = a.clone
+        vectors = need_vectors ? GeneralMatrix(T).new(*a.size) : GeneralMatrix(T).new(0, 0)
         support = Slice(Int32).new(2*nrows)
         lapack(syevr, job, 'A'.ord.to_u8, uplo, nrows, a, nrows,
           T.new(0.0), T.new(0.0), 0, 0, T.new(-1.0),

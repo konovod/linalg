@@ -626,13 +626,20 @@ describe LA::BandedMatrix do
     BandedMatrix.estimate(a).should eq({3, 1})
   end
 
-  it "can evaluate eigenvalues" do
+  it "can evaluate eigenvalues(real matrices)" do
     a = GMat[
-      [2, 0.5, 0],
-      [0.5, 2, 1],
-      [0, 1, 2],
+      [2, 5, 0, 0],
+      [5, 2, 1, 0],
+      [0, 1, 2, 3],
+      [0, 0, 3, 1],
     ]
     b = BMat.new(a)
-    pp! a.eigs, b.eigs_sy(need_vectors: true)
+
+    a_eigs = a.eigvals
+    raise "" if a_eigs.is_a? Array(Complex)
+    GMat[b.eigvals.sort].should be_close GMat[a_eigs.sort], 1e-6
+
+    vals, vectors = b.eigs
+    vals.each { |e| (b*vectors - vectors*e).det.should be_close 0, 1e-4 }
   end
 end
