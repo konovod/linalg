@@ -1,7 +1,7 @@
 require "./libCBLAS"
 
 {% if flag?(:darwin) %}
-  @[Link(ldflags: "-DACCELERATE_NEW_LAPACK")]
+  @[Link(ldflags: "-DACCELERATE_NEW_LAPACK=1")]
   @[Link(framework: "Accelerate")]
 {% elsif flag?(:windows) %}
   @[Link("libopenblas")]
