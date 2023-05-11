@@ -356,7 +356,9 @@ module LA
         q = calc_q ? Matrix(T).identity(nrows) : Matrix(T).zeros(1, 1)
         return {self, q}
       end
-
+      {% if flag?(:darwin) %}
+        raise "Hessenberg decomposition is not supported on mac"
+      {% end %}
       n = nrows
       s = of_real_type(Slice, n)
       lapack(gebal, 'S'.ord.to_u8, n, self, n, ilo, ihi, s)
