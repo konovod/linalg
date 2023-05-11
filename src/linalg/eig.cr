@@ -76,9 +76,6 @@ module LA
           end
         end
       {% end %}
-      {% if flag?(:darwin) && T == Float32 %}
-        raise "Eigenvectors for single precision on Darwin are not supported for now" if need_left || need_right
-      {% end %}
 
       a = overwrite_a ? self : clone
       eigvectorsl = need_left ? GeneralMatrix(T).new(nrows, nrows) : nil

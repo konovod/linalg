@@ -356,9 +356,6 @@ module LA
         q = calc_q ? Matrix(T).identity(nrows) : Matrix(T).zeros(1, 1)
         return {self, q}
       end
-      {% if flag?(:darwin) %}
-        raise "Hessenberg decomposition is not supported on mac"
-      {% end %}
 
       n = nrows
       s = of_real_type(Slice, n)
@@ -410,10 +407,6 @@ module LA
             end.ord.to_u8
 
       worksize = kind.inf? ? nrows : 0
-
-      {% if flag?(:darwin) && T == Float32 %}
-        return GMat.new(self).norm(kind)
-      {% end %}
 
       if flags.triangular?
         lapack_util(lantr, worksize, let, uplo, 'N'.ord.to_u8, @nrows, @ncolumns, matrix(self), @nrows)
