@@ -533,6 +533,12 @@ require "./libCBLAS"
     fun dlals0(icompq : Int32*, nl : Int32*, nr : Int32*, sqre : Int32*, nrhs : Int32*, b : LibC::Double*, ldb : Int32*, bx : LibC::Double*, ldbx : Int32*, perm : Int32*, givptr : Int32*, givcol : Int32*, ldgcol : Int32*, givnum : LibC::Double*, ldgnum : Int32*, poles : LibC::Double*, difl : LibC::Double*, difr : LibC::Double*, z__ : LibC::Double*, k : Int32*, c__ : LibC::Double*, s : LibC::Double*, work : LibC::Double*, info : Int32*) : LibC::Int
     fun dlalsa(icompq : Int32*, smlsiz : Int32*, n : Int32*, nrhs : Int32*, b : LibC::Double*, ldb : Int32*, bx : LibC::Double*, ldbx : Int32*, u : LibC::Double*, ldu : Int32*, vt : LibC::Double*, k : Int32*, difl : LibC::Double*, difr : LibC::Double*, z__ : LibC::Double*, poles : LibC::Double*, givptr : Int32*, givcol : Int32*, ldgcol : Int32*, perm : Int32*, givnum : LibC::Double*, c__ : LibC::Double*, s : LibC::Double*, work : LibC::Double*, iwork : Int32*, info : Int32*) : LibC::Int
     fun dlalsd(uplo : LibC::Char*, smlsiz : Int32*, n : Int32*, nrhs : Int32*, d__ : LibC::Double*, e : LibC::Double*, b : LibC::Double*, ldb : Int32*, rcond : LibC::Double*, rank : Int32*, work : LibC::Double*, iwork : Int32*, info : Int32*) : LibC::Int
+    fun dlamc1(beta : Int32*, t : Int32*, rnd : LibC::Char*, ieee1 : LibC::Char*) : LibC::Int
+    fun dlamc2(beta : Int32*, t : Int32*, rnd : LibC::Char*, eps : LibC::Double*, emin : Int32*, rmin : LibC::Double*, emax : Int32*, rmax : LibC::Double*) : LibC::Int
+    fun dlamc3(a : LibC::Double*, b : LibC::Double*) : LibC::Double
+    fun dlamc4(emin : Int32*, start : LibC::Double*, base : Int32*) : LibC::Int
+    fun dlamc5(beta : Int32*, p : Int32*, emin : Int32*, ieee : LibC::Char*, emax : Int32*, rmax : LibC::Double*) : LibC::Int
+    fun dlamch(cmach : LibC::Char*) : LibC::Double
     fun dlamrg(n1 : Int32*, n2 : Int32*, a : LibC::Double*, dtrd1 : Int32*, dtrd2 : Int32*, index : Int32*) : LibC::Int
     fun dlaneg(n : Int32*, d__ : LibC::Double*, lld : LibC::Double*, sigma : LibC::Double*, pivmin : LibC::Double*, r__ : Int32*) : Int32
     fun dlangb(norm : LibC::Char*, n : Int32*, kl : Int32*, ku : Int32*, ab : LibC::Double*, ldab : Int32*, work : LibC::Double*) : LibC::Double
@@ -709,6 +715,7 @@ require "./libCBLAS"
     fun dsbgvd(jobz : LibC::Char*, uplo : LibC::Char*, n : Int32*, ka : Int32*, kb : Int32*, ab : LibC::Double*, ldab : Int32*, bb : LibC::Double*, ldbb : Int32*, w : LibC::Double*, z__ : LibC::Double*, ldz : Int32*, work : LibC::Double*, lwork : Int32*, iwork : Int32*, liwork : Int32*, info : Int32*) : LibC::Int
     fun dsbgvx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Int32*, ka : Int32*, kb : Int32*, ab : LibC::Double*, ldab : Int32*, bb : LibC::Double*, ldbb : Int32*, q : LibC::Double*, ldq : Int32*, vl : LibC::Double*, vu : LibC::Double*, il : Int32*, iu : Int32*, abstol : LibC::Double*, m : Int32*, w : LibC::Double*, z__ : LibC::Double*, ldz : Int32*, work : LibC::Double*, iwork : Int32*, ifail : Int32*, info : Int32*) : LibC::Int
     fun dsbtrd(vect : LibC::Char*, uplo : LibC::Char*, n : Int32*, kd : Int32*, ab : LibC::Double*, ldab : Int32*, d__ : LibC::Double*, e : LibC::Double*, q : LibC::Double*, ldq : Int32*, work : LibC::Double*, info : Int32*) : LibC::Int
+    fun dsecnd = dsecnd_ : LibC::Double(
     fun dsfrk(transr : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, n : Int32*, k : Int32*, alpha : LibC::Double*, a : LibC::Double*, lda : Int32*, beta : LibC::Double*, c__ : LibC::Double*) : LibC::Int
     fun dsgesv(n : Int32*, nrhs : Int32*, a : LibC::Double*, lda : Int32*, ipiv : Int32*, b : LibC::Double*, ldb : Int32*, x : LibC::Double*, ldx : Int32*, work : LibC::Double*, swork : LibC::Float*, iter : Int32*, info : Int32*) : LibC::Int
     fun dspcon(uplo : LibC::Char*, n : Int32*, ap : LibC::Double*, ipiv : Int32*, anorm : LibC::Double*, rcond : LibC::Double*, work : LibC::Double*, iwork : Int32*, info : Int32*) : LibC::Int
@@ -814,12 +821,13 @@ require "./libCBLAS"
     fun ilazlr(m : Int32*, n : Int32*, a : ComplexDouble*, lda : Int32*) : Int32
     fun iparmq(ispec : Int32*, name__ : LibC::Char*, opts : LibC::Char*, n : Int32*, ilo : Int32*, ihi : Int32*, lwork : Int32*) : Int32
     fun izmax1(n : Int32*, cx : ComplexDouble*, incx : Int32*) : Int32
+    fun lsame(ca : LibC::Char*, cb : LibC::Char*) : LibC::Char
     fun lsamen(n : Int32*, ca : LibC::Char*, cb : LibC::Char*) : LibC::Char
-    fun smaxloc(a : LibC::Float*, dimm : Int32*) : Int32
     fun sbdsdc(uplo : LibC::Char*, compq : LibC::Char*, n : Int32*, d__ : LibC::Float*, e : LibC::Float*, u : LibC::Float*, ldu : Int32*, vt : LibC::Float*, ldvt : Int32*, q : LibC::Float*, iq : Int32*, work : LibC::Float*, iwork : Int32*, info : Int32*) : LibC::Int
     fun sbdsqr(uplo : LibC::Char*, n : Int32*, ncvt : Int32*, nru : Int32*, ncc : Int32*, d__ : LibC::Float*, e : LibC::Float*, vt : LibC::Float*, ldvt : Int32*, u : LibC::Float*, ldu : Int32*, c__ : LibC::Float*, ldc : Int32*, work : LibC::Float*, info : Int32*) : LibC::Int
     fun scsum1(n : Int32*, cx : ComplexFloat*, incx : Int32*) : LibC::Double
     fun sdisna(job : LibC::Char*, m : Int32*, n : Int32*, d__ : LibC::Float*, sep : LibC::Float*, info : Int32*) : LibC::Int
+    fun second = second_ : LibC::Double(
     fun sgbbrd(vect : LibC::Char*, m : Int32*, n : Int32*, ncc : Int32*, kl : Int32*, ku : Int32*, ab : LibC::Float*, ldab : Int32*, d__ : LibC::Float*, e : LibC::Float*, q : LibC::Float*, ldq : Int32*, pt : LibC::Float*, ldpt : Int32*, c__ : LibC::Float*, ldc : Int32*, work : LibC::Float*, info : Int32*) : LibC::Int
     fun sgbcon(norm : LibC::Char*, n : Int32*, kl : Int32*, ku : Int32*, ab : LibC::Float*, ldab : Int32*, ipiv : Int32*, anorm : LibC::Float*, rcond : LibC::Float*, work : LibC::Float*, iwork : Int32*, info : Int32*) : LibC::Int
     fun sgbequ(m : Int32*, n : Int32*, kl : Int32*, ku : Int32*, ab : LibC::Float*, ldab : Int32*, r__ : LibC::Float*, c__ : LibC::Float*, rowcnd : LibC::Float*, colcnd : LibC::Float*, amax : LibC::Float*, info : Int32*) : LibC::Int
@@ -958,6 +966,12 @@ require "./libCBLAS"
     fun slals0(icompq : Int32*, nl : Int32*, nr : Int32*, sqre : Int32*, nrhs : Int32*, b : LibC::Float*, ldb : Int32*, bx : LibC::Float*, ldbx : Int32*, perm : Int32*, givptr : Int32*, givcol : Int32*, ldgcol : Int32*, givnum : LibC::Float*, ldgnum : Int32*, poles : LibC::Float*, difl : LibC::Float*, difr : LibC::Float*, z__ : LibC::Float*, k : Int32*, c__ : LibC::Float*, s : LibC::Float*, work : LibC::Float*, info : Int32*) : LibC::Int
     fun slalsa(icompq : Int32*, smlsiz : Int32*, n : Int32*, nrhs : Int32*, b : LibC::Float*, ldb : Int32*, bx : LibC::Float*, ldbx : Int32*, u : LibC::Float*, ldu : Int32*, vt : LibC::Float*, k : Int32*, difl : LibC::Float*, difr : LibC::Float*, z__ : LibC::Float*, poles : LibC::Float*, givptr : Int32*, givcol : Int32*, ldgcol : Int32*, perm : Int32*, givnum : LibC::Float*, c__ : LibC::Float*, s : LibC::Float*, work : LibC::Float*, iwork : Int32*, info : Int32*) : LibC::Int
     fun slalsd(uplo : LibC::Char*, smlsiz : Int32*, n : Int32*, nrhs : Int32*, d__ : LibC::Float*, e : LibC::Float*, b : LibC::Float*, ldb : Int32*, rcond : LibC::Float*, rank : Int32*, work : LibC::Float*, iwork : Int32*, info : Int32*) : LibC::Int
+    fun slamc1(beta : Int32*, t : Int32*, rnd : LibC::Char*, ieee1 : LibC::Char*) : LibC::Int
+    fun slamc2(beta : Int32*, t : Int32*, rnd : LibC::Char*, eps : LibC::Float*, emin : Int32*, rmin : LibC::Float*, emax : Int32*, rmax : LibC::Float*) : LibC::Int
+    fun slamc3(a : LibC::Float*, b : LibC::Float*) : LibC::Double
+    fun slamc4(emin : Int32*, start : LibC::Float*, base : Int32*) : LibC::Int
+    fun slamc5(beta : Int32*, p : Int32*, emin : Int32*, ieee : LibC::Char*, emax : Int32*, rmax : LibC::Float*) : LibC::Int
+    fun slamch(cmach : LibC::Char*) : LapackFloatReturn
     fun slamrg(n1 : Int32*, n2 : Int32*, a : LibC::Float*, strd1 : Int32*, strd2 : Int32*, index : Int32*) : LibC::Int
     fun slaneg(n : Int32*, d__ : LibC::Float*, lld : LibC::Float*, sigma : LibC::Float*, pivmin : LibC::Float*, r__ : Int32*) : Int32
     fun slangb(norm : LibC::Char*, n : Int32*, kl : Int32*, ku : Int32*, ab : LibC::Float*, ldab : Int32*, work : LibC::Float*) : LapackFloatReturn
@@ -1056,6 +1070,7 @@ require "./libCBLAS"
     fun slatzm(side : LibC::Char*, m : Int32*, n : Int32*, v : LibC::Float*, incv : Int32*, tau : LibC::Float*, c1 : LibC::Float*, c2 : LibC::Float*, ldc : Int32*, work : LibC::Float*) : LibC::Int
     fun slauu2(uplo : LibC::Char*, n : Int32*, a : LibC::Float*, lda : Int32*, info : Int32*) : LibC::Int
     fun slauum(uplo : LibC::Char*, n : Int32*, a : LibC::Float*, lda : Int32*, info : Int32*) : LibC::Int
+    fun smaxloc(a : LibC::Float*, dimm : Int32*) : Int32
     fun sopgtr(uplo : LibC::Char*, n : Int32*, ap : LibC::Float*, tau : LibC::Float*, q : LibC::Float*, ldq : Int32*, work : LibC::Float*, info : Int32*) : LibC::Int
     fun sopmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Int32*, n : Int32*, ap : LibC::Float*, tau : LibC::Float*, c__ : LibC::Float*, ldc : Int32*, work : LibC::Float*, info : Int32*) : LibC::Int
     fun sorg2l(m : Int32*, n : Int32*, k : Int32*, a : LibC::Float*, lda : Int32*, tau : LibC::Float*, work : LibC::Float*, info : Int32*) : LibC::Int
@@ -1598,20 +1613,5 @@ require "./libCBLAS"
     fun zunmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Int32*, n : Int32*, a : ComplexDouble*, lda : Int32*, tau : ComplexDouble*, c__ : ComplexDouble*, ldc : Int32*, work : ComplexDouble*, lwork : Int32*, info : Int32*) : LibC::Int
     fun zupgtr(uplo : LibC::Char*, n : Int32*, ap : ComplexDouble*, tau : ComplexDouble*, q : ComplexDouble*, ldq : Int32*, work : ComplexDouble*, info : Int32*) : LibC::Int
     fun zupmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Int32*, n : Int32*, ap : ComplexDouble*, tau : ComplexDouble*, c__ : ComplexDouble*, ldc : Int32*, work : ComplexDouble*, info : Int32*) : LibC::Int
-    fun dsecnd = dsecnd_ : LibC::Double
-    fun lsame(ca : LibC::Char*, cb : LibC::Char*) : LibC::Char
-    fun second = second_ : LibC::Double
-    fun slamch(cmach : LibC::Char*) : LapackFloatReturn
-    fun slamc1(beta : Int32*, t : Int32*, rnd : LibC::Char*, ieee1 : LibC::Char*) : LibC::Int
-    fun slamc2(beta : Int32*, t : Int32*, rnd : LibC::Char*, eps : LibC::Float*, emin : Int32*, rmin : LibC::Float*, emax : Int32*, rmax : LibC::Float*) : LibC::Int
-    fun slamc3(a : LibC::Float*, b : LibC::Float*) : LibC::Double
-    fun slamc4(emin : Int32*, start : LibC::Float*, base : Int32*) : LibC::Int
-    fun slamc5(beta : Int32*, p : Int32*, emin : Int32*, ieee : LibC::Char*, emax : Int32*, rmax : LibC::Float*) : LibC::Int
-    fun dlamch(cmach : LibC::Char*) : LibC::Double
-    fun dlamc1(beta : Int32*, t : Int32*, rnd : LibC::Char*, ieee1 : LibC::Char*) : LibC::Int
-    fun dlamc2(beta : Int32*, t : Int32*, rnd : LibC::Char*, eps : LibC::Double*, emin : Int32*, rmin : LibC::Double*, emax : Int32*, rmax : LibC::Double*) : LibC::Int
-    fun dlamc3(a : LibC::Double*, b : LibC::Double*) : LibC::Double
-    fun dlamc4(emin : Int32*, start : LibC::Double*, base : Int32*) : LibC::Int
-    fun dlamc5(beta : Int32*, p : Int32*, emin : Int32*, ieee : LibC::Char*, emax : Int32*, rmax : LibC::Double*) : LibC::Int
   end
 {% end %}
