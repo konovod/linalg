@@ -70,5 +70,19 @@ module LA::Sparse
     def add!(k : Number | Complex, m : LA::Matrix)
       raise ArgumentError.new "can't `add!` dense matrix to sparse"
     end
+
+    def triu!(k = 0)
+      flags = self.flags
+      select_index! { |i, j| i <= j - k }
+      self.flags = self.flags.triu(k >= 0, square?)
+      self
+    end
+
+    def tril!(k = 0)
+      flags = self.flags
+      select_index! { |i, j| i >= j - k }
+      self.flags = self.flags.tril(k <= 0, square?)
+      self
+    end
   end
 end

@@ -92,4 +92,48 @@ describe CSRMatrix do
     ms.nonzeros.should eq 3
     expect_raises(Exception) { CSRMatrix(Float64).diag(4, 5, [1, 2, 3, 4, 5]) }
   end
+
+  it "support select_with_index!" do
+    m1 = COOMatrix(Float64).new(10, 10)
+    m1[0, 0] = 10
+    m1[1, 1] = -15
+    m1[5, 2] = 11
+    m1[3, 6] = 12
+    m1 = CSRMatrix(Float64).new(m1)
+
+    m2 = m1.to_dense
+    m2[1, 1] = 0
+    m2[0, 0] = 0
+    m1.should_not eq m2
+    m1.select_with_index! { |v, i, j| i != j }
+    m1.should eq m2
+  end
+
+  it "support select!" do
+    m1 = GeneralMatrix(Float64).new(10, 10)
+    m1[0, 0] = 10
+    m1[1, 1] = -15
+    m1[5, 2] = 11
+    m1[3, 6] = 12
+    m1 = CSRMatrix(Float64).new(m1)
+
+    m2 = m1.clone
+    m2[1, 1] = 0
+    m1.should_not eq m2
+    m1.select! { |v| v >= 0 }
+    m1.should eq m2
+  end
+
+  it "support #tril! and #triu!" do
+    m = COOMatrix(Float64).new(10, 10)
+    m[0, 0] = 10
+    m[1, 1] = 15
+    m[5, 2] = 11
+    m[3, 6] = 12
+    m2 = CSRMatrix(Float64).new(m)
+    m.triu!(1)
+    m2.should_not eq m
+    m2.triu!(1)
+    m2.should eq m
+  end
 end
