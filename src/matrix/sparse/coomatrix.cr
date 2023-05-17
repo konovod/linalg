@@ -243,14 +243,6 @@ module LA::Sparse
       @flags = MatrixFlags.for_diag(square?)
     end
 
-    def select(& : T -> Bool)
-      select_with_index { |v, i, j| yield(v) }
-    end
-
-    def select_index(& : (Int32, Int32) -> Bool)
-      select_with_index { |v, i, j| yield(i, j) }
-    end
-
     def select_with_index(& : (T, Int32, Int32) -> Bool)
       result = COOMatrix(T).new(@nrows, @ncolumns, nonzeros)
       each_with_index do |v, i, j|

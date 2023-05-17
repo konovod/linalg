@@ -100,5 +100,13 @@ module LA::Sparse
       result.flags = self.flags.triu(k >= 0, square?)
       result
     end
+
+    def select(& : T -> Bool)
+      select_with_index { |v, i, j| yield(v) }
+    end
+
+    def select_index(& : (Int32, Int32) -> Bool)
+      select_with_index { |v, i, j| yield(i, j) }
+    end
   end
 end
