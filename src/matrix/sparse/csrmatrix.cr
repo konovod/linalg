@@ -191,6 +191,14 @@ module LA::Sparse
       select_with_index! { |v, i, j| yield(i, j) }
     end
 
+    def select(& : T -> Bool)
+      select_with_index { |v, i, j| yield(v) }
+    end
+
+    def select_index(& : (Int32, Int32) -> Bool)
+      select_with_index { |v, i, j| yield(i, j) }
+    end
+
     def select_with_index!(& : (T, Int32, Int32) -> Bool)
       new_index = 0
       delta = 0
@@ -243,6 +251,23 @@ module LA::Sparse
       result
     end
 
-    # def resize!(anrows, ancolumns)
+    def resize!(anrows, ancolumns)
+      return if anrows == self.nrows && ancolumns == self.ncolumns
+      if anrows < self.nrows || ancolumns < self.ncolumns
+        select_index! do |i, j|
+          i < anrows && j < ancolumns
+        end
+      end
+      if anrows < @nrows
+        @raw_rows.truncate(0, anrows + 1)
+      else
+        n = nonzeros
+        (anrows - @nrows).times { @raw_rows << n }
+      end
+      @nrows = anrows
+      @ncolumns = ancolumns
+      clear_flags
+      self
+    end
   end
 end

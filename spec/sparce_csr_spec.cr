@@ -155,4 +155,20 @@ describe CSRMatrix do
     m.triu!(1)
     m.should eq ma
   end
+
+  it "support resize!" do
+    ma = GMat[
+      [1, 2, 0],
+      [0, 0, 5],
+      [0, 1, 0],
+      [-2, -1, -3],
+    ]
+    mas = CSRMatrix(Float64).new ma
+    ma.resize!(3, 2)
+    mas.resize!(3, 2)
+    mas.should eq ma
+    ma.resize!(10, 10)
+    mas.resize!(10, 10)
+    mas.should eq ma
+  end
 end
