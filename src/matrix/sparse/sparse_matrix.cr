@@ -84,5 +84,21 @@ module LA::Sparse
       self.flags = self.flags.tril(k <= 0, square?)
       self
     end
+
+    def tril(k = 0)
+      result = select_with_index do |v, i, j|
+        i >= j - k
+      end
+      result.flags = self.flags.tril(k <= 0, square?)
+      result
+    end
+
+    def triu(k = 0)
+      result = select_with_index do |v, i, j|
+        i <= j - k
+      end
+      result.flags = self.flags.triu(k >= 0, square?)
+      result
+    end
   end
 end

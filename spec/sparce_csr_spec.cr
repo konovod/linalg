@@ -136,4 +136,23 @@ describe CSRMatrix do
     m2.triu!(1)
     m2.should eq m
   end
+
+  it "support #tril and #triu" do
+    m = COOMatrix(Float64).new(10, 10)
+    m[0, 0] = 10
+    m[1, 1] = 15
+    m[5, 2] = 11
+    m[3, 6] = 12
+    m = CSRMatrix(Float64).new(m)
+
+    m.tril(2).should eq m.to_dense.tril(2)
+    m.tril.should eq m.to_dense.tril
+    m.triu(2).should eq m.to_dense.triu(2)
+    m.triu.should eq m.to_dense.triu
+
+    ma = m.triu(1)
+    m.should_not eq ma
+    m.triu!(1)
+    m.should eq ma
+  end
 end

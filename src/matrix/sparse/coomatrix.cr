@@ -243,21 +243,11 @@ module LA::Sparse
       @flags = MatrixFlags.for_diag(square?)
     end
 
-    def tril(k = 0)
-      result = COOMatrix(T).new(@nrows, @ncolumns)
+    def select_with_index(& : (T, Int32, Int32) -> Bool)
+      result = COOMatrix(T).new(@nrows, @ncolumns, nonzeros)
       each_with_index do |v, i, j|
-        result.push_element(i, j, v) if i >= j - k
+        result.push_element(i, j, v) if yield(v, i, j)
       end
-      result.flags = self.flags.tril(k <= 0, square?)
-      result
-    end
-
-    def triu(k = 0)
-      result = COOMatrix(T).new(@nrows, @ncolumns)
-      each_with_index do |v, i, j|
-        result.push_element(i, j, v) if i <= j - k
-      end
-      result.flags = self.flags.triu(k >= 0, square?)
       result
     end
 

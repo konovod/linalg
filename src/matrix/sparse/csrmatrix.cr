@@ -181,10 +181,6 @@ module LA::Sparse
       @raw_columns.clear
     end
 
-    # def triu!(k = 0) TODO
-    # def tril!(k = 0) TODO
-    # def tril(k = 0) TODO
-    # def triu(k = 0) TODO
     # def self.rand(nrows, ncolumns, *, nonzero_elements, rng : Random = Random::DEFAULT)
     # def self.rand(nrows, ncolumns, *, fill_factor, rng : Random = Random::DEFAULT)
     def select!(& : T -> Bool)
@@ -221,6 +217,30 @@ module LA::Sparse
       end
       @raw_columns.truncate(0, new_index)
       @raw_values.truncate(0, new_index)
+    end
+
+    def select_with_index(& : (T, Int32, Int32) -> Bool)
+      result = self.class.new(nrows, ncolumns, nonzeros)
+      row = 0
+      n = @raw_values.size
+      n.times do |index|
+        while index >= @raw_rows[row + 1]
+          result.raw_rows[row + 1] = result.raw_values.size
+          row += 1
+        end
+        col = @raw_columns[index]
+        v = @raw_values[index]
+        stay = yield(v, row, col)
+        if stay
+          result.raw_columns << col
+          result.raw_values << v
+        end
+      end
+      total = result.raw_values.size
+      (row + 1..@raw_rows.size - 1).each do |r|
+        result.raw_rows[r] = total
+      end
+      result
     end
 
     # def resize!(anrows, ancolumns)
