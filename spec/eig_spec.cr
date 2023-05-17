@@ -23,21 +23,12 @@ describe LA do
     vals[1].should be_close 1 - 2.i, 1e-3
   end
 
-  {% if flag?(:darwin) %}
-    pending "high-level: calculate nonsymmetric eigenvectors for single precision" do
-      a = GMat32[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
-      vals, vectors = a.eigs
-      raise "" if vals.is_a? Array(Complex)
-      vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
-    end
-  {% else %}
-    it "high-level: calculate nonsymmetric eigenvectors for single precision" do
-      a = GMat32[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
-      vals, vectors = a.eigs
-      raise "" if vals.is_a? Array(Complex)
-      vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
-    end
-  {% end %}
+  it "high-level: calculate nonsymmetric eigenvectors for single precision" do
+    a = GMat32[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]
+    vals, vectors = a.eigs
+    raise "" if vals.is_a? Array(Complex)
+    vals.each { |e| (a*vectors - vectors*e).det.should be_close 0, 1e-4 }
+  end
 
   it "high-level: calculate nonsymmetric eigenvectors" do
     a = GMat[[-2, 4, 1], [2, -4, 1], [1, 1, 1]]

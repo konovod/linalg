@@ -3,1766 +3,2218 @@ require "./libCBLAS"
 {% if flag?(:darwin) %}
   @[Link(framework: "Accelerate")]
   lib LibLAPACK
-    alias Integer = LibC::Int
-    alias Complex = LibCBLAS::ComplexFloat
-    alias Real = LibC::Float
-    alias Doublereal = LibC::Double
-    alias Doublecomplex = LibCBLAS::ComplexDouble
-    alias Logical = LibC::Char
-    alias Ftnlen = LibC::Int
-    alias LFp = Pointer(Void)
+    alias Char = LibC::Char
+    alias Bool = LibC::Int
+    alias Int = LibC::Int
+    alias Float = LibC::Float
+    alias Double = LibC::Double
+    alias ComplexFloat = LibCBLAS::ComplexFloat
+    alias FloatReturn = Double
+    alias ComplexDouble = LibCBLAS::ComplexDouble
+    alias CSelect1 = (ComplexFloat* -> Int)
+    alias CSelect2 = (ComplexFloat*, ComplexFloat* -> Int)
+    alias DSelect2 = (Double*, Double* -> Int)
+    alias DSelect3 = (Double*, Double*, Double* -> Int)
+    alias SSelect2 = (Float*, Float* -> Int)
+    alias SSelect3 = (Float*, Float*, Float* -> Int)
+    alias ZSelect1 = (ComplexDouble* -> Int)
+    alias ZSelect2 = (ComplexDouble*, ComplexDouble* -> Int)
 
-    fun caxpy(n : Integer*, ca : Complex*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*) : LibC::Int
-    fun ccopy(n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*) : LibC::Int
-    fun cdotc(ret_val : Complex*, n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*)
-    fun cdotu(ret_val : Complex*, n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*)
-    fun cgbmv(trans : LibC::Char*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Complex*, y : Complex*, incy : Integer*) : LibC::Int
-    fun cgemm(transa : LibC::Char*, transb : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, beta : Complex*, c__ : Complex*, ldc : Integer*) : LibC::Int
-    fun cgemv(trans : LibC::Char*, m : Integer*, n : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Complex*, y : Complex*, incy : Integer*) : LibC::Int
-    fun cgerc(m : Integer*, n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, y : Complex*, incy : Integer*, a : Complex*, lda : Integer*) : LibC::Int
-    fun cgeru(m : Integer*, n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, y : Complex*, incy : Integer*, a : Complex*, lda : Integer*) : LibC::Int
-    fun chbmv(uplo : LibC::Char*, n : Integer*, k : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Complex*, y : Complex*, incy : Integer*) : LibC::Int
-    fun chemm(side : LibC::Char*, uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, beta : Complex*, c__ : Complex*, ldc : Integer*) : LibC::Int
-    fun chemv(uplo : LibC::Char*, n : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Complex*, y : Complex*, incy : Integer*) : LibC::Int
-    fun cher(uplo : LibC::Char*, n : Integer*, alpha : Real*, x : Complex*, incx : Integer*, a : Complex*, lda : Integer*) : LibC::Int
-    fun cher2(uplo : LibC::Char*, n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, y : Complex*, incy : Integer*, a : Complex*, lda : Integer*) : LibC::Int
-    fun cher2k(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, beta : Real*, c__ : Complex*, ldc : Integer*) : LibC::Int
-    fun cherk(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Real*, a : Complex*, lda : Integer*, beta : Real*, c__ : Complex*, ldc : Integer*) : LibC::Int
-    fun chpmv(uplo : LibC::Char*, n : Integer*, alpha : Complex*, ap : Complex*, x : Complex*, incx : Integer*, beta : Complex*, y : Complex*, incy : Integer*) : LibC::Int
-    fun chpr(uplo : LibC::Char*, n : Integer*, alpha : Real*, x : Complex*, incx : Integer*, ap : Complex*) : LibC::Int
-    fun chpr2(uplo : LibC::Char*, n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, y : Complex*, incy : Integer*, ap : Complex*) : LibC::Int
-    fun crotg(ca : Complex*, cb : Complex*, c__ : Real*, s : Complex*) : LibC::Int
-    fun cscal(n : Integer*, ca : Complex*, cx : Complex*, incx : Integer*) : LibC::Int
-    fun csrot(n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*, c__ : Real*, s : Real*) : LibC::Int
-    fun csscal(n : Integer*, sa : Real*, cx : Complex*, incx : Integer*) : LibC::Int
-    fun cswap(n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*) : LibC::Int
-    fun csymm(side : LibC::Char*, uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, beta : Complex*, c__ : Complex*, ldc : Integer*) : LibC::Int
-    fun csyr2k(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, beta : Complex*, c__ : Complex*, ldc : Integer*) : LibC::Int
-    fun csyrk(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, beta : Complex*, c__ : Complex*, ldc : Integer*) : LibC::Int
-    fun ctbmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*) : LibC::Int
-    fun ctbsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*) : LibC::Int
-    fun ctpmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Complex*, x : Complex*, incx : Integer*) : LibC::Int
-    fun ctpsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Complex*, x : Complex*, incx : Integer*) : LibC::Int
-    fun ctrmm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun ctrmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*) : LibC::Int
-    fun ctrsm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun ctrsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*) : LibC::Int
-    fun dasum(n : Integer*, dx : Doublereal*, incx : Integer*) : Doublereal
-    fun daxpy(n : Integer*, da : Doublereal*, dx : Doublereal*, incx : Integer*, dy : Doublereal*, incy : Integer*) : LibC::Int
-    fun dcabs1(z__ : Doublecomplex*) : Doublereal
-    fun dcopy(n : Integer*, dx : Doublereal*, incx : Integer*, dy : Doublereal*, incy : Integer*) : LibC::Int
-    fun ddot(n : Integer*, dx : Doublereal*, incx : Integer*, dy : Doublereal*, incy : Integer*) : Doublereal
-    fun dgbmv(trans : LibC::Char*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dgemm(transa : LibC::Char*, transb : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, beta : Doublereal*, c__ : Doublereal*, ldc : Integer*) : LibC::Int
-    fun dgemv(trans : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dger(m : Integer*, n : Integer*, alpha : Doublereal*, x : Doublereal*, incx : Integer*, y : Doublereal*, incy : Integer*, a : Doublereal*, lda : Integer*) : LibC::Int
-    fun dnrm2(n : Integer*, x : Doublereal*, incx : Integer*) : Doublereal
-    fun drot(n : Integer*, dx : Doublereal*, incx : Integer*, dy : Doublereal*, incy : Integer*, c__ : Doublereal*, s : Doublereal*) : LibC::Int
-    fun drotg(da : Doublereal*, db : Doublereal*, c__ : Doublereal*, s : Doublereal*) : LibC::Int
-    fun drotm(n : Integer*, dx : Doublereal*, incx : Integer*, dy : Doublereal*, incy : Integer*, dparam : Doublereal*) : LibC::Int
-    fun drotmg(dd1 : Doublereal*, dd2 : Doublereal*, dx1 : Doublereal*, dy1 : Doublereal*, dparam : Doublereal*) : LibC::Int
-    fun dsbmv(uplo : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dscal(n : Integer*, da : Doublereal*, dx : Doublereal*, incx : Integer*) : LibC::Int
-    fun dsdot(n : Integer*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*) : Doublereal
-    fun dspmv(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, ap : Doublereal*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dspr(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, x : Doublereal*, incx : Integer*, ap : Doublereal*) : LibC::Int
-    fun dspr2(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, x : Doublereal*, incx : Integer*, y : Doublereal*, incy : Integer*, ap : Doublereal*) : LibC::Int
-    fun dswap(n : Integer*, dx : Doublereal*, incx : Integer*, dy : Doublereal*, incy : Integer*) : LibC::Int
-    fun dsymm(side : LibC::Char*, uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, beta : Doublereal*, c__ : Doublereal*, ldc : Integer*) : LibC::Int
-    fun dsymv(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dsyr(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, x : Doublereal*, incx : Integer*, a : Doublereal*, lda : Integer*) : LibC::Int
-    fun dsyr2(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, x : Doublereal*, incx : Integer*, y : Doublereal*, incy : Integer*, a : Doublereal*, lda : Integer*) : LibC::Int
-    fun dsyr2k(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, beta : Doublereal*, c__ : Doublereal*, ldc : Integer*) : LibC::Int
-    fun dsyrk(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, beta : Doublereal*, c__ : Doublereal*, ldc : Integer*) : LibC::Int
-    fun dtbmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*) : LibC::Int
-    fun dtbsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*) : LibC::Int
-    fun dtpmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublereal*, x : Doublereal*, incx : Integer*) : LibC::Int
-    fun dtpsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublereal*, x : Doublereal*, incx : Integer*) : LibC::Int
-    fun dtrmm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*) : LibC::Int
-    fun dtrmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*) : LibC::Int
-    fun dtrsm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*) : LibC::Int
-    fun dtrsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*) : LibC::Int
-    fun dzasum(n : Integer*, zx : Doublecomplex*, incx : Integer*) : Doublereal
-    fun dznrm2(n : Integer*, x : Doublecomplex*, incx : Integer*) : Doublereal
-    fun icamax(n : Integer*, cx : Complex*, incx : Integer*) : Integer
-    fun idamax(n : Integer*, dx : Doublereal*, incx : Integer*) : Integer
-    fun isamax(n : Integer*, sx : Real*, incx : Integer*) : Integer
-    fun izamax(n : Integer*, zx : Doublecomplex*, incx : Integer*) : Integer
-    fun lsame(ca : LibC::Char*, cb : LibC::Char*) : Logical
-    fun sasum(n : Integer*, sx : Real*, incx : Integer*) : Doublereal
-    fun saxpy(n : Integer*, sa : Real*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*) : LibC::Int
-    fun scabs1(z__ : Complex*) : Doublereal
-    fun scasum(n : Integer*, cx : Complex*, incx : Integer*) : Doublereal
-    fun scnrm2(n : Integer*, x : Complex*, incx : Integer*) : Doublereal
-    fun scopy(n : Integer*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*) : LibC::Int
-    fun sdot(n : Integer*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*) : Doublereal
-    fun sdsdot(n : Integer*, sb : Real*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*) : Doublereal
-    fun sgbmv(trans : LibC::Char*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Real*, a : Real*, lda : Integer*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun sgemm(transa : LibC::Char*, transb : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, alpha : Real*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, beta : Real*, c__ : Real*, ldc : Integer*) : LibC::Int
-    fun sgemv(trans : LibC::Char*, m : Integer*, n : Integer*, alpha : Real*, a : Real*, lda : Integer*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun sger(m : Integer*, n : Integer*, alpha : Real*, x : Real*, incx : Integer*, y : Real*, incy : Integer*, a : Real*, lda : Integer*) : LibC::Int
-    fun snrm2(n : Integer*, x : Real*, incx : Integer*) : Doublereal
-    fun srot(n : Integer*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*, c__ : Real*, s : Real*) : LibC::Int
-    fun srotg(sa : Real*, sb : Real*, c__ : Real*, s : Real*) : LibC::Int
-    fun srotm(n : Integer*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*, sparam : Real*) : LibC::Int
-    fun srotmg(sd1 : Real*, sd2 : Real*, sx1 : Real*, sy1 : Real*, sparam : Real*) : LibC::Int
-    fun ssbmv(uplo : LibC::Char*, n : Integer*, k : Integer*, alpha : Real*, a : Real*, lda : Integer*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun sscal(n : Integer*, sa : Real*, sx : Real*, incx : Integer*) : LibC::Int
-    fun sspmv(uplo : LibC::Char*, n : Integer*, alpha : Real*, ap : Real*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun sspr(uplo : LibC::Char*, n : Integer*, alpha : Real*, x : Real*, incx : Integer*, ap : Real*) : LibC::Int
-    fun sspr2(uplo : LibC::Char*, n : Integer*, alpha : Real*, x : Real*, incx : Integer*, y : Real*, incy : Integer*, ap : Real*) : LibC::Int
-    fun sswap(n : Integer*, sx : Real*, incx : Integer*, sy : Real*, incy : Integer*) : LibC::Int
-    fun ssymm(side : LibC::Char*, uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Real*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, beta : Real*, c__ : Real*, ldc : Integer*) : LibC::Int
-    fun ssymv(uplo : LibC::Char*, n : Integer*, alpha : Real*, a : Real*, lda : Integer*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun ssyr(uplo : LibC::Char*, n : Integer*, alpha : Real*, x : Real*, incx : Integer*, a : Real*, lda : Integer*) : LibC::Int
-    fun ssyr2(uplo : LibC::Char*, n : Integer*, alpha : Real*, x : Real*, incx : Integer*, y : Real*, incy : Integer*, a : Real*, lda : Integer*) : LibC::Int
-    fun ssyr2k(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Real*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, beta : Real*, c__ : Real*, ldc : Integer*) : LibC::Int
-    fun ssyrk(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Real*, a : Real*, lda : Integer*, beta : Real*, c__ : Real*, ldc : Integer*) : LibC::Int
-    fun stbmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, x : Real*, incx : Integer*) : LibC::Int
-    fun stbsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, x : Real*, incx : Integer*) : LibC::Int
-    fun stpmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Real*, x : Real*, incx : Integer*) : LibC::Int
-    fun stpsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Real*, x : Real*, incx : Integer*) : LibC::Int
-    fun strmm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Real*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*) : LibC::Int
-    fun strmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, x : Real*, incx : Integer*) : LibC::Int
-    fun strsm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Real*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*) : LibC::Int
-    fun strsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, x : Real*, incx : Integer*) : LibC::Int
-    fun xerbla(srname : LibC::Char*, info : Integer*) : LibC::Int
-    fun xerbla_array_(srname_array__ : LibC::Char*, srname_len__ : Integer*, info : Integer*, srname_array_len : Ftnlen) : LibC::Int
-    fun zaxpy(n : Integer*, za : Doublecomplex*, zx : Doublecomplex*, incx : Integer*, zy : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zcopy(n : Integer*, zx : Doublecomplex*, incx : Integer*, zy : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zdotc(ret_val : Doublecomplex*, n : Integer*, zx : Doublecomplex*, incx : Integer*, zy : Doublecomplex*, incy : Integer*)
-    fun zdotu(ret_val : Doublecomplex*, n : Integer*, zx : Doublecomplex*, incx : Integer*, zy : Doublecomplex*, incy : Integer*)
-    fun zdrot(n : Integer*, cx : Doublecomplex*, incx : Integer*, cy : Doublecomplex*, incy : Integer*, c__ : Doublereal*, s : Doublereal*) : LibC::Int
-    fun zdscal(n : Integer*, da : Doublereal*, zx : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun zgbmv(trans : LibC::Char*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublecomplex*, y : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zgemm(transa : LibC::Char*, transb : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, beta : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*) : LibC::Int
-    fun zgemv(trans : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublecomplex*, y : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zgerc(m : Integer*, n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, y : Doublecomplex*, incy : Integer*, a : Doublecomplex*, lda : Integer*) : LibC::Int
-    fun zgeru(m : Integer*, n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, y : Doublecomplex*, incy : Integer*, a : Doublecomplex*, lda : Integer*) : LibC::Int
-    fun zhbmv(uplo : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublecomplex*, y : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zhemm(side : LibC::Char*, uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, beta : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*) : LibC::Int
-    fun zhemv(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublecomplex*, y : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zher(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, x : Doublecomplex*, incx : Integer*, a : Doublecomplex*, lda : Integer*) : LibC::Int
-    fun zher2(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, y : Doublecomplex*, incy : Integer*, a : Doublecomplex*, lda : Integer*) : LibC::Int
-    fun zher2k(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, beta : Doublereal*, c__ : Doublecomplex*, ldc : Integer*) : LibC::Int
-    fun zherk(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublereal*, a : Doublecomplex*, lda : Integer*, beta : Doublereal*, c__ : Doublecomplex*, ldc : Integer*) : LibC::Int
-    fun zhpmv(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, ap : Doublecomplex*, x : Doublecomplex*, incx : Integer*, beta : Doublecomplex*, y : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zhpr(uplo : LibC::Char*, n : Integer*, alpha : Doublereal*, x : Doublecomplex*, incx : Integer*, ap : Doublecomplex*) : LibC::Int
-    fun zhpr2(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, y : Doublecomplex*, incy : Integer*, ap : Doublecomplex*) : LibC::Int
-    fun zrotg(ca : Doublecomplex*, cb : Doublecomplex*, c__ : Doublereal*, s : Doublecomplex*) : LibC::Int
-    fun zscal(n : Integer*, za : Doublecomplex*, zx : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun zswap(n : Integer*, zx : Doublecomplex*, incx : Integer*, zy : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zsymm(side : LibC::Char*, uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, beta : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*) : LibC::Int
-    fun zsyr2k(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, beta : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*) : LibC::Int
-    fun zsyrk(uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, beta : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*) : LibC::Int
-    fun ztbmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun ztbsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun ztpmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublecomplex*, x : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun ztpsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublecomplex*, x : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun ztrmm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun ztrmv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun ztrsm(side : LibC::Char*, uplo : LibC::Char*, transa : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun ztrsv(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun cbdsqr(uplo : LibC::Char*, n : Integer*, ncvt : Integer*, nru : Integer*, ncc : Integer*, d__ : Real*, e : Real*, vt : Complex*, ldvt : Integer*, u : Complex*, ldu : Integer*, c__ : Complex*, ldc : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgbbrd(vect : LibC::Char*, m : Integer*, n : Integer*, ncc : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, d__ : Real*, e : Real*, q : Complex*, ldq : Integer*, pt : Complex*, ldpt : Integer*, c__ : Complex*, ldc : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgbcon(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgbequ(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cgbequb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cgbrfs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgbrfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, ipiv : Integer*, r__ : Real*, c__ : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgbsv(n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cgbsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgbsvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgbtf2(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun cgbtrf(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun cgbtrs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cgebak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, scale : Real*, m : Integer*, v : Complex*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun cgebal(job : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ilo : Integer*, ihi : Integer*, scale : Real*, info : Integer*) : LibC::Int
-    fun cgebd2(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, d__ : Real*, e : Real*, tauq : Complex*, taup : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgebrd(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, d__ : Real*, e : Real*, tauq : Complex*, taup : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgecon(norm : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, anorm : Real*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgeequ(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cgeequb(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cgees(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, n : Integer*, a : Complex*, lda : Integer*, sdim : Integer*, w : Complex*, vs : Complex*, ldvs : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun cgeesx(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, sense : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, sdim : Integer*, w : Complex*, vs : Complex*, ldvs : Integer*, rconde : Real*, rcondv : Real*, work : Complex*, lwork : Integer*, rwork : Real*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun cgeev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, w : Complex*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgeevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, w : Complex*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, scale : Real*, abnrm : Real*, rconde : Real*, rcondv : Real*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgegs(jobvsl : LibC::Char*, jobvsr : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, alpha : Complex*, beta : Complex*, vsl : Complex*, ldvsl : Integer*, vsr : Complex*, ldvsr : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgegv(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, alpha : Complex*, beta : Complex*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgehd2(n : Integer*, ilo : Integer*, ihi : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgehrd(n : Integer*, ilo : Integer*, ihi : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgelq2(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgelqf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgels(trans : LibC::Char*, m : Integer*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgelsd(m : Integer*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, s : Real*, rcond : Real*, rank : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun cgelss(m : Integer*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, s : Real*, rcond : Real*, rank : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgelsx(m : Integer*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, jpvt : Integer*, rcond : Real*, rank : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgelsy(m : Integer*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, jpvt : Integer*, rcond : Real*, rank : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgeql2(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgeqlf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgeqp3(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, jpvt : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgeqpf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, jpvt : Integer*, tau : Complex*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgeqr2(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgeqrf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgerfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgerfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, r__ : Real*, c__ : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgerq2(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgerqf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgesc2(n : Integer*, a : Complex*, lda : Integer*, rhs : Complex*, ipiv : Integer*, jpiv : Integer*, scale : Real*) : LibC::Int
-    fun cgesdd(jobz : LibC::Char*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, s : Real*, u : Complex*, ldu : Integer*, vt : Complex*, ldvt : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun cgesv(n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cgesvd(jobu : LibC::Char*, jobvt : LibC::Char*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, s : Real*, u : Complex*, ldu : Integer*, vt : Complex*, ldvt : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgesvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgesvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgetc2(n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, jpiv : Integer*, info : Integer*) : LibC::Int
-    fun cgetf2(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun cgetrf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun cgetri(n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgetrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cggbak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, lscale : Real*, rscale : Real*, m : Integer*, v : Complex*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun cggbal(job : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, ilo : Integer*, ihi : Integer*, lscale : Real*, rscale : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun cgges(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, sdim : Integer*, alpha : Complex*, beta : Complex*, vsl : Complex*, ldvsl : Integer*, vsr : Complex*, ldvsr : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun cggesx(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, sense : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, sdim : Integer*, alpha : Complex*, beta : Complex*, vsl : Complex*, ldvsl : Integer*, vsr : Complex*, ldvsr : Integer*, rconde : Real*, rcondv : Real*, work : Complex*, lwork : Integer*, rwork : Real*, iwork : Integer*, liwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun cggev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, alpha : Complex*, beta : Complex*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cggevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, alpha : Complex*, beta : Complex*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, lscale : Real*, rscale : Real*, abnrm : Real*, bbnrm : Real*, rconde : Real*, rcondv : Real*, work : Complex*, lwork : Integer*, rwork : Real*, iwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun cggglm(n : Integer*, m : Integer*, p : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, d__ : Complex*, x : Complex*, y : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cgghrd(compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, q : Complex*, ldq : Integer*, z__ : Complex*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun cgglse(m : Integer*, n : Integer*, p : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, c__ : Complex*, d__ : Complex*, x : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cggqrf(n : Integer*, m : Integer*, p : Integer*, a : Complex*, lda : Integer*, taua : Complex*, b : Complex*, ldb : Integer*, taub : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cggrqf(m : Integer*, p : Integer*, n : Integer*, a : Complex*, lda : Integer*, taua : Complex*, b : Complex*, ldb : Integer*, taub : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cggsvd(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, n : Integer*, p : Integer*, k : Integer*, l : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, alpha : Real*, beta : Real*, u : Complex*, ldu : Integer*, v : Complex*, ldv : Integer*, q : Complex*, ldq : Integer*, work : Complex*, rwork : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun cggsvp(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, tola : Real*, tolb : Real*, k : Integer*, l : Integer*, u : Complex*, ldu : Integer*, v : Complex*, ldv : Integer*, q : Complex*, ldq : Integer*, iwork : Integer*, rwork : Real*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgtcon(norm : LibC::Char*, n : Integer*, dl : Complex*, d__ : Complex*, du : Complex*, du2 : Complex*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Complex*, info : Integer*) : LibC::Int
-    fun cgtrfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Complex*, d__ : Complex*, du : Complex*, dlf : Complex*, df : Complex*, duf : Complex*, du2 : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgtsv(n : Integer*, nrhs : Integer*, dl : Complex*, d__ : Complex*, du : Complex*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cgtsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Complex*, d__ : Complex*, du : Complex*, dlf : Complex*, df : Complex*, duf : Complex*, du2 : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cgttrf(n : Integer*, dl : Complex*, d__ : Complex*, du : Complex*, du2 : Complex*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun cgttrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Complex*, d__ : Complex*, du : Complex*, du2 : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cgtts2(itrans : Integer*, n : Integer*, nrhs : Integer*, dl : Complex*, d__ : Complex*, du : Complex*, du2 : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun chbev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chbevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun chbevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, q : Complex*, ldq : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun chbgst(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Complex*, ldab : Integer*, bb : Complex*, ldbb : Integer*, x : Complex*, ldx : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chbgv(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Complex*, ldab : Integer*, bb : Complex*, ldbb : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chbgvd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Complex*, ldab : Integer*, bb : Complex*, ldbb : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun chbgvx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Complex*, ldab : Integer*, bb : Complex*, ldbb : Integer*, q : Complex*, ldq : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun chbtrd(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, d__ : Real*, e : Real*, q : Complex*, ldq : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun checon(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Complex*, info : Integer*) : LibC::Int
-    fun cheequb(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, work : Complex*, info : Integer*) : LibC::Int
-    fun cheev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, w : Real*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cheevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, w : Real*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun cheevr(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, isuppz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun cheevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun chegs2(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun chegst(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun chegv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, w : Real*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chegvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, w : Real*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun chegvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun cherfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cherfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chesv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun chesvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chesvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chetd2(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, d__ : Real*, e : Real*, tau : Complex*, info : Integer*) : LibC::Int
-    fun chetf2(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun chetrd(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, d__ : Real*, e : Real*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun chetrf(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun chetri(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun chetrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun chfrk(transr : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Real*, a : Complex*, lda : Integer*, beta : Real*, c__ : Complex*) : LibC::Int
-    fun chgeqz(job : LibC::Char*, compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Complex*, ldh : Integer*, t : Complex*, ldt : Integer*, alpha : Complex*, beta : Complex*, q : Complex*, ldq : Integer*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chla_transtype_(ret_val : LibC::Char*, ret_val_len : Ftnlen, trans : Integer*)
-    fun chpcon(uplo : LibC::Char*, n : Integer*, ap : Complex*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Complex*, info : Integer*) : LibC::Int
-    fun chpev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chpevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun chpevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun chpgst(itype : Integer*, uplo : LibC::Char*, n : Integer*, ap : Complex*, bp : Complex*, info : Integer*) : LibC::Int
-    fun chpgv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, bp : Complex*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chpgvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, bp : Complex*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun chpgvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, bp : Complex*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, rwork : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun chprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, afp : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chpsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun chpsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, afp : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun chptrd(uplo : LibC::Char*, n : Integer*, ap : Complex*, d__ : Real*, e : Real*, tau : Complex*, info : Integer*) : LibC::Int
-    fun chptrf(uplo : LibC::Char*, n : Integer*, ap : Complex*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun chptri(uplo : LibC::Char*, n : Integer*, ap : Complex*, ipiv : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun chptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun chsein(side : LibC::Char*, eigsrc : LibC::Char*, initv : LibC::Char*, select : Logical*, n : Integer*, h__ : Complex*, ldh : Integer*, w : Complex*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Complex*, rwork : Real*, ifaill : Integer*, ifailr : Integer*, info : Integer*) : LibC::Int
-    fun chseqr(job : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Complex*, ldh : Integer*, w : Complex*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cla_gbamv_(trans : Integer*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Real*, ab : Complex*, ldab : Integer*, x : Complex*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun cla_gbrcond_c_(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, ipiv : Integer*, c__ : Real*, capply : Logical*, info : Integer*, work : Complex*, rwork : Real*, trans_len : Ftnlen) : Doublereal
-    fun cla_gbrcond_x_(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, ipiv : Integer*, x : Complex*, info : Integer*, work : Complex*, rwork : Real*, trans_len : Ftnlen) : Doublereal
-    fun cla_gbrfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Real*, b : Complex*, ldb : Integer*, y : Complex*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Complex*, ayb : Real*, dy : Complex*, y_tail__ : Complex*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun cla_gbrpvgrw_(n : Integer*, kl : Integer*, ku : Integer*, ncols : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*) : Doublereal
-    fun cla_geamv_(trans : Integer*, m : Integer*, n : Integer*, alpha : Real*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun cla_gercond_c_(trans : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, c__ : Real*, capply : Logical*, info : Integer*, work : Complex*, rwork : Real*, trans_len : Ftnlen) : Doublereal
-    fun cla_gercond_x_(trans : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, x : Complex*, info : Integer*, work : Complex*, rwork : Real*, trans_len : Ftnlen) : Doublereal
-    fun cla_gerfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Real*, b : Complex*, ldb : Integer*, y : Complex*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Complex*, ayb : Real*, dy : Complex*, y_tail__ : Complex*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun cla_heamv_(uplo : Integer*, n : Integer*, alpha : Real*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun cla_hercond_c_(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, c__ : Real*, capply : Logical*, info : Integer*, work : Complex*, rwork : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_hercond_x_(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, x : Complex*, info : Integer*, work : Complex*, rwork : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_herfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Real*, b : Complex*, ldb : Integer*, y : Complex*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Complex*, ayb : Real*, dy : Complex*, y_tail__ : Complex*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun cla_herpvgrw_(uplo : LibC::Char*, n : Integer*, info : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, work : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_lin_berr_(n : Integer*, nz : Integer*, nrhs : Integer*, res : Complex*, ayb : Real*, berr : Real*) : LibC::Int
-    fun cla_porcond_c_(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, c__ : Real*, capply : Logical*, info : Integer*, work : Complex*, rwork : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_porcond_x_(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, x : Complex*, info : Integer*, work : Complex*, rwork : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_porfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, colequ : Logical*, c__ : Real*, b : Complex*, ldb : Integer*, y : Complex*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Complex*, ayb : Real*, dy : Complex*, y_tail__ : Complex*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun cla_porpvgrw_(uplo : LibC::Char*, ncols : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, work : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_rpvgrw_(n : Integer*, ncols : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*) : Doublereal
-    fun cla_syamv_(uplo : Integer*, n : Integer*, alpha : Real*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun cla_syrcond_c_(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, c__ : Real*, capply : Logical*, info : Integer*, work : Complex*, rwork : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_syrcond_x_(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, x : Complex*, info : Integer*, work : Complex*, rwork : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_syrfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Real*, b : Complex*, ldb : Integer*, y : Complex*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Complex*, ayb : Real*, dy : Complex*, y_tail__ : Complex*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun cla_syrpvgrw_(uplo : LibC::Char*, n : Integer*, info : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, work : Real*, uplo_len : Ftnlen) : Doublereal
-    fun cla_wwaddw_(n : Integer*, x : Complex*, y : Complex*, w : Complex*) : LibC::Int
-    fun clabrd(m : Integer*, n : Integer*, nb : Integer*, a : Complex*, lda : Integer*, d__ : Real*, e : Real*, tauq : Complex*, taup : Complex*, x : Complex*, ldx : Integer*, y : Complex*, ldy : Integer*) : LibC::Int
-    fun clacgv(n : Integer*, x : Complex*, incx : Integer*) : LibC::Int
-    fun clacn2(n : Integer*, v : Complex*, x : Complex*, est : Real*, kase : Integer*, isave : Integer*) : LibC::Int
-    fun clacon(n : Integer*, v : Complex*, x : Complex*, est : Real*, kase : Integer*) : LibC::Int
-    fun clacp2(uplo : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun clacpy(uplo : LibC::Char*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun clacrm(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, b : Real*, ldb : Integer*, c__ : Complex*, ldc : Integer*, rwork : Real*) : LibC::Int
-    fun clacrt(n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*, c__ : Complex*, s : Complex*) : LibC::Int
-    fun cladiv(ret_val : Complex*, x : Complex*, y : Complex*)
-    fun claed0(qsiz : Integer*, n : Integer*, d__ : Real*, e : Real*, q : Complex*, ldq : Integer*, qstore : Complex*, ldqs : Integer*, rwork : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun claed7(n : Integer*, cutpnt : Integer*, qsiz : Integer*, tlvls : Integer*, curlvl : Integer*, curpbm : Integer*, d__ : Real*, q : Complex*, ldq : Integer*, rho : Real*, indxq : Integer*, qstore : Real*, qptr : Integer*, prmptr : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Real*, work : Complex*, rwork : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun claed8(k : Integer*, n : Integer*, qsiz : Integer*, q : Complex*, ldq : Integer*, d__ : Real*, rho : Real*, cutpnt : Integer*, z__ : Real*, dlamda : Real*, q2 : Complex*, ldq2 : Integer*, w : Real*, indxp : Integer*, indx : Integer*, indxq : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Real*, info : Integer*) : LibC::Int
-    fun claein(rightv : Logical*, noinit : Logical*, n : Integer*, h__ : Complex*, ldh : Integer*, w : Complex*, v : Complex*, b : Complex*, ldb : Integer*, rwork : Real*, eps3 : Real*, smlnum : Real*, info : Integer*) : LibC::Int
-    fun claesy(a : Complex*, b : Complex*, c__ : Complex*, rt1 : Complex*, rt2 : Complex*, evscal : Complex*, cs1 : Complex*, sn1 : Complex*) : LibC::Int
-    fun claev2(a : Complex*, b : Complex*, c__ : Complex*, rt1 : Real*, rt2 : Real*, cs1 : Real*, sn1 : Complex*) : LibC::Int
-    fun clag2z(m : Integer*, n : Integer*, sa : Complex*, ldsa : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun clags2(upper : Logical*, a1 : Real*, a2 : Complex*, a3 : Real*, b1 : Real*, b2 : Complex*, b3 : Real*, csu : Real*, snu : Complex*, csv : Real*, snv : Complex*, csq : Real*, snq : Complex*) : LibC::Int
-    fun clagtm(trans : LibC::Char*, n : Integer*, nrhs : Integer*, alpha : Real*, dl : Complex*, d__ : Complex*, du : Complex*, x : Complex*, ldx : Integer*, beta : Real*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun clahef(uplo : LibC::Char*, n : Integer*, nb : Integer*, kb : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, w : Complex*, ldw : Integer*, info : Integer*) : LibC::Int
-    fun clahqr(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Complex*, ldh : Integer*, w : Complex*, iloz : Integer*, ihiz : Integer*, z__ : Complex*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun clahr2(n : Integer*, k : Integer*, nb : Integer*, a : Complex*, lda : Integer*, tau : Complex*, t : Complex*, ldt : Integer*, y : Complex*, ldy : Integer*) : LibC::Int
-    fun clahrd(n : Integer*, k : Integer*, nb : Integer*, a : Complex*, lda : Integer*, tau : Complex*, t : Complex*, ldt : Integer*, y : Complex*, ldy : Integer*) : LibC::Int
-    fun claic1(job : Integer*, j : Integer*, x : Complex*, sest : Real*, w : Complex*, gamma : Complex*, sestpr : Real*, s : Complex*, c__ : Complex*) : LibC::Int
-    fun clals0(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, nrhs : Integer*, b : Complex*, ldb : Integer*, bx : Complex*, ldbx : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Real*, ldgnum : Integer*, poles : Real*, difl : Real*, difr : Real*, z__ : Real*, k : Integer*, c__ : Real*, s : Real*, rwork : Real*, info : Integer*) : LibC::Int
-    fun clalsa(icompq : Integer*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, b : Complex*, ldb : Integer*, bx : Complex*, ldbx : Integer*, u : Real*, ldu : Integer*, vt : Real*, k : Integer*, difl : Real*, difr : Real*, z__ : Real*, poles : Real*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, perm : Integer*, givnum : Real*, c__ : Real*, s : Real*, rwork : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun clalsd(uplo : LibC::Char*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, b : Complex*, ldb : Integer*, rcond : Real*, rank : Integer*, work : Complex*, rwork : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun clangb(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, work : Real*) : Doublereal
-    fun clange(norm : LibC::Char*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, work : Real*) : Doublereal
-    fun clangt(norm : LibC::Char*, n : Integer*, dl : Complex*, d__ : Complex*, du : Complex*) : Doublereal
-    fun clanhb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Complex*, ldab : Integer*, work : Real*) : Doublereal
-    fun clanhe(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, work : Real*) : Doublereal
-    fun clanhf(norm : LibC::Char*, transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, work : Real*) : Doublereal
-    fun clanhp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, work : Real*) : Doublereal
-    fun clanhs(norm : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, work : Real*) : Doublereal
-    fun clanht(norm : LibC::Char*, n : Integer*, d__ : Real*, e : Complex*) : Doublereal
-    fun clansb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Complex*, ldab : Integer*, work : Real*) : Doublereal
-    fun clansp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, work : Real*) : Doublereal
-    fun clansy(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, work : Real*) : Doublereal
-    fun clantb(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, ab : Complex*, ldab : Integer*, work : Real*) : Doublereal
-    fun clantp(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Complex*, work : Real*) : Doublereal
-    fun clantr(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, work : Real*) : Doublereal
-    fun clapll(n : Integer*, x : Complex*, incx : Integer*, y : Complex*, incy : Integer*, ssmin : Real*) : LibC::Int
-    fun clapmt(forwrd : Logical*, m : Integer*, n : Integer*, x : Complex*, ldx : Integer*, k : Integer*) : LibC::Int
-    fun claqgb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Complex*, ldab : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun claqge(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun claqhb(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun claqhe(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun claqhp(uplo : LibC::Char*, n : Integer*, ap : Complex*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun claqp2(m : Integer*, n : Integer*, offset : Integer*, a : Complex*, lda : Integer*, jpvt : Integer*, tau : Complex*, vn1 : Real*, vn2 : Real*, work : Complex*) : LibC::Int
-    fun claqps(m : Integer*, n : Integer*, offset : Integer*, nb : Integer*, kb : Integer*, a : Complex*, lda : Integer*, jpvt : Integer*, tau : Complex*, vn1 : Real*, vn2 : Real*, auxv : Complex*, f : Complex*, ldf : Integer*) : LibC::Int
-    fun claqr0(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Complex*, ldh : Integer*, w : Complex*, iloz : Integer*, ihiz : Integer*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun claqr1(n : Integer*, h__ : Complex*, ldh : Integer*, s1 : Complex*, s2 : Complex*, v : Complex*) : LibC::Int
-    fun claqr2(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Complex*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Complex*, ldz : Integer*, ns : Integer*, nd : Integer*, sh : Complex*, v : Complex*, ldv : Integer*, nh : Integer*, t : Complex*, ldt : Integer*, nv : Integer*, wv : Complex*, ldwv : Integer*, work : Complex*, lwork : Integer*) : LibC::Int
-    fun claqr3(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Complex*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Complex*, ldz : Integer*, ns : Integer*, nd : Integer*, sh : Complex*, v : Complex*, ldv : Integer*, nh : Integer*, t : Complex*, ldt : Integer*, nv : Integer*, wv : Complex*, ldwv : Integer*, work : Complex*, lwork : Integer*) : LibC::Int
-    fun claqr4(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Complex*, ldh : Integer*, w : Complex*, iloz : Integer*, ihiz : Integer*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun claqr5(wantt : Logical*, wantz : Logical*, kacc22 : Integer*, n : Integer*, ktop : Integer*, kbot : Integer*, nshfts : Integer*, s : Complex*, h__ : Complex*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Complex*, ldz : Integer*, v : Complex*, ldv : Integer*, u : Complex*, ldu : Integer*, nv : Integer*, wv : Complex*, ldwv : Integer*, nh : Integer*, wh : Complex*, ldwh : Integer*) : LibC::Int
-    fun claqsb(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun claqsp(uplo : LibC::Char*, n : Integer*, ap : Complex*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun claqsy(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun clar1v(n : Integer*, b1 : Integer*, bn : Integer*, lambda : Real*, d__ : Real*, l : Real*, ld : Real*, lld : Real*, pivmin : Real*, gaptol : Real*, z__ : Complex*, wantnc : Logical*, negcnt : Integer*, ztz : Real*, mingma : Real*, r__ : Integer*, isuppz : Integer*, nrminv : Real*, resid : Real*, rqcorr : Real*, work : Real*) : LibC::Int
-    fun clar2v(n : Integer*, x : Complex*, y : Complex*, z__ : Complex*, incx : Integer*, c__ : Real*, s : Complex*, incc : Integer*) : LibC::Int
-    fun clarcm(m : Integer*, n : Integer*, a : Real*, lda : Integer*, b : Complex*, ldb : Integer*, c__ : Complex*, ldc : Integer*, rwork : Real*) : LibC::Int
-    fun clarf(side : LibC::Char*, m : Integer*, n : Integer*, v : Complex*, incv : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*) : LibC::Int
-    fun clarfb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, v : Complex*, ldv : Integer*, t : Complex*, ldt : Integer*, c__ : Complex*, ldc : Integer*, work : Complex*, ldwork : Integer*) : LibC::Int
-    fun clarfg(n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, tau : Complex*) : LibC::Int
-    fun clarfp(n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, tau : Complex*) : LibC::Int
-    fun clarft(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Complex*, ldv : Integer*, tau : Complex*, t : Complex*, ldt : Integer*) : LibC::Int
-    fun clarfx(side : LibC::Char*, m : Integer*, n : Integer*, v : Complex*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*) : LibC::Int
-    fun clargv(n : Integer*, x : Complex*, incx : Integer*, y : Complex*, incy : Integer*, c__ : Real*, incc : Integer*) : LibC::Int
-    fun clarnv(idist : Integer*, iseed : Integer*, n : Integer*, x : Complex*) : LibC::Int
-    fun clarrv(n : Integer*, vl : Real*, vu : Real*, d__ : Real*, l : Real*, pivmin : Real*, isplit : Integer*, m : Integer*, dol : Integer*, dou : Integer*, minrgp : Real*, rtol1 : Real*, rtol2 : Real*, w : Real*, werr : Real*, wgap : Real*, iblock : Integer*, indexw : Integer*, gers : Real*, z__ : Complex*, ldz : Integer*, isuppz : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun clarscl2(m : Integer*, n : Integer*, d__ : Real*, x : Complex*, ldx : Integer*) : LibC::Int
-    fun clartg(f : Complex*, g : Complex*, cs : Real*, sn : Complex*, r__ : Complex*) : LibC::Int
-    fun clartv(n : Integer*, x : Complex*, incx : Integer*, y : Complex*, incy : Integer*, c__ : Real*, s : Complex*, incc : Integer*) : LibC::Int
-    fun clarz(side : LibC::Char*, m : Integer*, n : Integer*, l : Integer*, v : Complex*, incv : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*) : LibC::Int
-    fun clarzb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, v : Complex*, ldv : Integer*, t : Complex*, ldt : Integer*, c__ : Complex*, ldc : Integer*, work : Complex*, ldwork : Integer*) : LibC::Int
-    fun clarzt(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Complex*, ldv : Integer*, tau : Complex*, t : Complex*, ldt : Integer*) : LibC::Int
-    fun clascl(type__ : LibC::Char*, kl : Integer*, ku : Integer*, cfrom : Real*, cto : Real*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun clascl2(m : Integer*, n : Integer*, d__ : Real*, x : Complex*, ldx : Integer*) : LibC::Int
-    fun claset(uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Complex*, beta : Complex*, a : Complex*, lda : Integer*) : LibC::Int
-    fun clasr(side : LibC::Char*, pivot : LibC::Char*, direct : LibC::Char*, m : Integer*, n : Integer*, c__ : Real*, s : Real*, a : Complex*, lda : Integer*) : LibC::Int
-    fun classq(n : Integer*, x : Complex*, incx : Integer*, scale : Real*, sumsq : Real*) : LibC::Int
-    fun claswp(n : Integer*, a : Complex*, lda : Integer*, k1 : Integer*, k2 : Integer*, ipiv : Integer*, incx : Integer*) : LibC::Int
-    fun clasyf(uplo : LibC::Char*, n : Integer*, nb : Integer*, kb : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, w : Complex*, ldw : Integer*, info : Integer*) : LibC::Int
-    fun clatbs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, x : Complex*, scale : Real*, cnorm : Real*, info : Integer*) : LibC::Int
-    fun clatdf(ijob : Integer*, n : Integer*, z__ : Complex*, ldz : Integer*, rhs : Complex*, rdsum : Real*, rdscal : Real*, ipiv : Integer*, jpiv : Integer*) : LibC::Int
-    fun clatps(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, ap : Complex*, x : Complex*, scale : Real*, cnorm : Real*, info : Integer*) : LibC::Int
-    fun clatrd(uplo : LibC::Char*, n : Integer*, nb : Integer*, a : Complex*, lda : Integer*, e : Real*, tau : Complex*, w : Complex*, ldw : Integer*) : LibC::Int
-    fun clatrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, x : Complex*, scale : Real*, cnorm : Real*, info : Integer*) : LibC::Int
-    fun clatrz(m : Integer*, n : Integer*, l : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*) : LibC::Int
-    fun clatzm(side : LibC::Char*, m : Integer*, n : Integer*, v : Complex*, incv : Integer*, tau : Complex*, c1 : Complex*, c2 : Complex*, ldc : Integer*, work : Complex*) : LibC::Int
-    fun clauu2(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun clauum(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun cpbcon(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, anorm : Real*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpbequ(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cpbrfs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpbstf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun cpbsv(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cpbsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, afb : Complex*, ldafb : Integer*, equed : LibC::Char*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpbtf2(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun cpbtrf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun cpbtrs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cpftrf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, info : Integer*) : LibC::Int
-    fun cpftri(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, info : Integer*) : LibC::Int
-    fun cpftrs(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cpocon(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, anorm : Real*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpoequ(n : Integer*, a : Complex*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cpoequb(n : Integer*, a : Complex*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cporfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cporfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cposv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cposvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, equed : LibC::Char*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cposvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, equed : LibC::Char*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpotf2(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun cpotrf(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun cpotri(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun cpotrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cppcon(uplo : LibC::Char*, n : Integer*, ap : Complex*, anorm : Real*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cppequ(uplo : LibC::Char*, n : Integer*, ap : Complex*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun cpprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, afp : Complex*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cppsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cppsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, afp : Complex*, equed : LibC::Char*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpptrf(uplo : LibC::Char*, n : Integer*, ap : Complex*, info : Integer*) : LibC::Int
-    fun cpptri(uplo : LibC::Char*, n : Integer*, ap : Complex*, info : Integer*) : LibC::Int
-    fun cpptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cpstf2(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun cpstrf(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun cptcon(n : Integer*, d__ : Real*, e : Complex*, anorm : Real*, rcond : Real*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpteqr(compz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Complex*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun cptrfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Complex*, df : Real*, ef : Complex*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cptsv(n : Integer*, nrhs : Integer*, d__ : Real*, e : Complex*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cptsvx(fact : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Complex*, df : Real*, ef : Complex*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cpttrf(n : Integer*, d__ : Real*, e : Complex*, info : Integer*) : LibC::Int
-    fun cpttrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Complex*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cptts2(iuplo : Integer*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Complex*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun crot(n : Integer*, cx : Complex*, incx : Integer*, cy : Complex*, incy : Integer*, c__ : Real*, s : Complex*) : LibC::Int
-    fun cspcon(uplo : LibC::Char*, n : Integer*, ap : Complex*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Complex*, info : Integer*) : LibC::Int
-    fun cspmv(uplo : LibC::Char*, n : Integer*, alpha : Complex*, ap : Complex*, x : Complex*, incx : Integer*, beta : Complex*, y : Complex*, incy : Integer*) : LibC::Int
-    fun cspr(uplo : LibC::Char*, n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, ap : Complex*) : LibC::Int
-    fun csprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, afp : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun cspsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun cspsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, afp : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun csptrf(uplo : LibC::Char*, n : Integer*, ap : Complex*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun csptri(uplo : LibC::Char*, n : Integer*, ap : Complex*, ipiv : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun csptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun csrscl(n : Integer*, sa : Real*, sx : Complex*, incx : Integer*) : LibC::Int
-    fun cstedc(compz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Complex*, ldz : Integer*, work : Complex*, lwork : Integer*, rwork : Real*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun cstegr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, isuppz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun cstein(n : Integer*, d__ : Real*, e : Real*, m : Integer*, w : Real*, iblock : Integer*, isplit : Integer*, z__ : Complex*, ldz : Integer*, work : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun cstemr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, m : Integer*, w : Real*, z__ : Complex*, ldz : Integer*, nzc : Integer*, isuppz : Integer*, tryrac : Logical*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun csteqr(compz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Complex*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun csycon(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Complex*, info : Integer*) : LibC::Int
-    fun csyequb(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, work : Complex*, info : Integer*) : LibC::Int
-    fun csymv(uplo : LibC::Char*, n : Integer*, alpha : Complex*, a : Complex*, lda : Integer*, x : Complex*, incx : Integer*, beta : Complex*, y : Complex*, incy : Integer*) : LibC::Int
-    fun csyr(uplo : LibC::Char*, n : Integer*, alpha : Complex*, x : Complex*, incx : Integer*, a : Complex*, lda : Integer*) : LibC::Int
-    fun csyrfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun csyrfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun csysv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun csysvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Complex*, lwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun csysvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, af : Complex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, s : Real*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun csytf2(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun csytrf(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun csytri(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun csytrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, ipiv : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ctbcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, ab : Complex*, ldab : Integer*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctbrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctbtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Complex*, ldab : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ctfsm(transr : LibC::Char*, side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Complex*, a : Complex*, b : Complex*, ldb : Integer*) : LibC::Int
-    fun ctftri(transr : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Complex*, info : Integer*) : LibC::Int
-    fun ctfttp(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Complex*, ap : Complex*, info : Integer*) : LibC::Int
-    fun ctfttr(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Complex*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ctgevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, s : Complex*, lds : Integer*, p : Complex*, ldp : Integer*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctgex2(wantq : Logical*, wantz : Logical*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, q : Complex*, ldq : Integer*, z__ : Complex*, ldz : Integer*, j1 : Integer*, info : Integer*) : LibC::Int
-    fun ctgexc(wantq : Logical*, wantz : Logical*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, q : Complex*, ldq : Integer*, z__ : Complex*, ldz : Integer*, ifst : Integer*, ilst : Integer*, info : Integer*) : LibC::Int
-    fun ctgsen(ijob : Integer*, wantq : Logical*, wantz : Logical*, select : Logical*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, alpha : Complex*, beta : Complex*, q : Complex*, ldq : Integer*, z__ : Complex*, ldz : Integer*, m : Integer*, pl : Real*, pr : Real*, dif : Real*, work : Complex*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ctgsja(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, tola : Real*, tolb : Real*, alpha : Real*, beta : Real*, u : Complex*, ldu : Integer*, v : Complex*, ldv : Integer*, q : Complex*, ldq : Integer*, work : Complex*, ncycle : Integer*, info : Integer*) : LibC::Int
-    fun ctgsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, s : Real*, dif : Real*, mm : Integer*, m : Integer*, work : Complex*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ctgsy2(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, c__ : Complex*, ldc : Integer*, d__ : Complex*, ldd : Integer*, e : Complex*, lde : Integer*, f : Complex*, ldf : Integer*, scale : Real*, rdsum : Real*, rdscal : Real*, info : Integer*) : LibC::Int
-    fun ctgsyl(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, c__ : Complex*, ldc : Integer*, d__ : Complex*, ldd : Integer*, e : Complex*, lde : Integer*, f : Complex*, ldf : Integer*, scale : Real*, dif : Real*, work : Complex*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ctpcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Complex*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctprfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctptri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Complex*, info : Integer*) : LibC::Int
-    fun ctptrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Complex*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ctpttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Complex*, arf : Complex*, info : Integer*) : LibC::Int
-    fun ctpttr(uplo : LibC::Char*, n : Integer*, ap : Complex*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ctrcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, rcond : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctrevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Complex*, ldt : Integer*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctrexc(compq : LibC::Char*, n : Integer*, t : Complex*, ldt : Integer*, q : Complex*, ldq : Integer*, ifst : Integer*, ilst : Integer*, info : Integer*) : LibC::Int
-    fun ctrrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, x : Complex*, ldx : Integer*, ferr : Real*, berr : Real*, work : Complex*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctrsen(job : LibC::Char*, compq : LibC::Char*, select : Logical*, n : Integer*, t : Complex*, ldt : Integer*, q : Complex*, ldq : Integer*, w : Complex*, m : Integer*, s : Real*, sep : Real*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun ctrsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Complex*, ldt : Integer*, vl : Complex*, ldvl : Integer*, vr : Complex*, ldvr : Integer*, s : Real*, sep : Real*, mm : Integer*, m : Integer*, work : Complex*, ldwork : Integer*, rwork : Real*, info : Integer*) : LibC::Int
-    fun ctrsyl(trana : LibC::Char*, tranb : LibC::Char*, isgn : Integer*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, c__ : Complex*, ldc : Integer*, scale : Real*, info : Integer*) : LibC::Int
-    fun ctrti2(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ctrtri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ctrtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Complex*, lda : Integer*, b : Complex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ctrttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, arf : Complex*, info : Integer*) : LibC::Int
-    fun ctrttp(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, ap : Complex*, info : Integer*) : LibC::Int
-    fun ctzrqf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, info : Integer*) : LibC::Int
-    fun ctzrzf(m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cung2l(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cung2r(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cungbr(vect : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunghr(n : Integer*, ilo : Integer*, ihi : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cungl2(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cunglq(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cungql(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cungqr(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cungr2(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, info : Integer*) : LibC::Int
-    fun cungrq(m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cungtr(uplo : LibC::Char*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunm2l(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun cunm2r(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun cunmbr(vect : LibC::Char*, side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunmhr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunml2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun cunmlq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunmql(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunmqr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunmr2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun cunmr3(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun cunmrq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunmrz(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cunmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, a : Complex*, lda : Integer*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun cupgtr(uplo : LibC::Char*, n : Integer*, ap : Complex*, tau : Complex*, q : Complex*, ldq : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun cupmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ap : Complex*, tau : Complex*, c__ : Complex*, ldc : Integer*, work : Complex*, info : Integer*) : LibC::Int
-    fun dbdsdc(uplo : LibC::Char*, compq : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, ldvt : Integer*, q : Doublereal*, iq : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dbdsqr(uplo : LibC::Char*, n : Integer*, ncvt : Integer*, nru : Integer*, ncc : Integer*, d__ : Doublereal*, e : Doublereal*, vt : Doublereal*, ldvt : Integer*, u : Doublereal*, ldu : Integer*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun ddisna(job : LibC::Char*, m : Integer*, n : Integer*, d__ : Doublereal*, sep : Doublereal*, info : Integer*) : LibC::Int
-    fun dgbbrd(vect : LibC::Char*, m : Integer*, n : Integer*, ncc : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, d__ : Doublereal*, e : Doublereal*, q : Doublereal*, ldq : Integer*, pt : Doublereal*, ldpt : Integer*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgbcon(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgbequ(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dgbequb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dgbrfs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgbrfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, ipiv : Integer*, r__ : Doublereal*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgbsv(n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dgbsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgbsvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgbtf2(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun dgbtrf(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun dgbtrs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dgebak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, scale : Doublereal*, m : Integer*, v : Doublereal*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun dgebal(job : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, ilo : Integer*, ihi : Integer*, scale : Doublereal*, info : Integer*) : LibC::Int
-    fun dgebd2(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tauq : Doublereal*, taup : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgebrd(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tauq : Doublereal*, taup : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgecon(norm : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgeequ(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dgeequb(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dgees(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, n : Integer*, a : Doublereal*, lda : Integer*, sdim : Integer*, wr : Doublereal*, wi : Doublereal*, vs : Doublereal*, ldvs : Integer*, work : Doublereal*, lwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun dgeesx(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, sense : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, sdim : Integer*, wr : Doublereal*, wi : Doublereal*, vs : Doublereal*, ldvs : Integer*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun dgeev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, wr : Doublereal*, wi : Doublereal*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgeevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, wr : Doublereal*, wi : Doublereal*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, scale : Doublereal*, abnrm : Doublereal*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgegs(jobvsl : LibC::Char*, jobvsr : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, vsl : Doublereal*, ldvsl : Integer*, vsr : Doublereal*, ldvsr : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgegv(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgehd2(n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgehrd(n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgejsv(joba : LibC::Char*, jobu : LibC::Char*, jobv : LibC::Char*, jobr : LibC::Char*, jobt : LibC::Char*, jobp : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, sva : Doublereal*, u : Doublereal*, ldu : Integer*, v : Doublereal*, ldv : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgelq2(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgelqf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgels(trans : LibC::Char*, m : Integer*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgelsd(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, s : Doublereal*, rcond : Doublereal*, rank : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgelss(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, s : Doublereal*, rcond : Doublereal*, rank : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgelsx(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, jpvt : Integer*, rcond : Doublereal*, rank : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgelsy(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, jpvt : Integer*, rcond : Doublereal*, rank : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgeql2(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgeqlf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgeqp3(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, jpvt : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgeqpf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, jpvt : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgeqr2(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgeqrf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgerfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgerfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, r__ : Doublereal*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgerq2(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgerqf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgesc2(n : Integer*, a : Doublereal*, lda : Integer*, rhs : Doublereal*, ipiv : Integer*, jpiv : Integer*, scale : Doublereal*) : LibC::Int
-    fun dgesdd(jobz : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, s : Doublereal*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, ldvt : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgesv(n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dgesvd(jobu : LibC::Char*, jobvt : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, s : Doublereal*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, ldvt : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgesvj(joba : LibC::Char*, jobu : LibC::Char*, jobv : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, sva : Doublereal*, mv : Integer*, v : Doublereal*, ldv : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgesvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgesvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgetc2(n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, jpiv : Integer*, info : Integer*) : LibC::Int
-    fun dgetf2(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun dgetrf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun dgetri(n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgetrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dggbak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, lscale : Doublereal*, rscale : Doublereal*, m : Integer*, v : Doublereal*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun dggbal(job : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, ilo : Integer*, ihi : Integer*, lscale : Doublereal*, rscale : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgges(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, sdim : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, vsl : Doublereal*, ldvsl : Integer*, vsr : Doublereal*, ldvsr : Integer*, work : Doublereal*, lwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun dggesx(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, sense : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, sdim : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, vsl : Doublereal*, ldvsl : Integer*, vsr : Doublereal*, ldvsr : Integer*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun dggev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dggevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, lscale : Doublereal*, rscale : Doublereal*, abnrm : Doublereal*, bbnrm : Doublereal*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun dggglm(n : Integer*, m : Integer*, p : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, d__ : Doublereal*, x : Doublereal*, y : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgghrd(compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, q : Doublereal*, ldq : Integer*, z__ : Doublereal*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun dgglse(m : Integer*, n : Integer*, p : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, c__ : Doublereal*, d__ : Doublereal*, x : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dggqrf(n : Integer*, m : Integer*, p : Integer*, a : Doublereal*, lda : Integer*, taua : Doublereal*, b : Doublereal*, ldb : Integer*, taub : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dggrqf(m : Integer*, p : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, taua : Doublereal*, b : Doublereal*, ldb : Integer*, taub : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dggsvd(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, n : Integer*, p : Integer*, k : Integer*, l : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, alpha : Doublereal*, beta : Doublereal*, u : Doublereal*, ldu : Integer*, v : Doublereal*, ldv : Integer*, q : Doublereal*, ldq : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dggsvp(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, tola : Doublereal*, tolb : Doublereal*, k : Integer*, l : Integer*, u : Doublereal*, ldu : Integer*, v : Doublereal*, ldv : Integer*, q : Doublereal*, ldq : Integer*, iwork : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dgsvj0(jobv : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, d__ : Doublereal*, sva : Doublereal*, mv : Integer*, v : Doublereal*, ldv : Integer*, eps : Doublereal*, sfmin : Doublereal*, tol : Doublereal*, nsweep : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgsvj1(jobv : LibC::Char*, m : Integer*, n : Integer*, n1 : Integer*, a : Doublereal*, lda : Integer*, d__ : Doublereal*, sva : Doublereal*, mv : Integer*, v : Doublereal*, ldv : Integer*, eps : Doublereal*, sfmin : Doublereal*, tol : Doublereal*, nsweep : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dgtcon(norm : LibC::Char*, n : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, du2 : Doublereal*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgtrfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, dlf : Doublereal*, df : Doublereal*, duf : Doublereal*, du2 : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgtsv(n : Integer*, nrhs : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dgtsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, dlf : Doublereal*, df : Doublereal*, duf : Doublereal*, du2 : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dgttrf(n : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, du2 : Doublereal*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun dgttrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, du2 : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dgtts2(itrans : Integer*, n : Integer*, nrhs : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, du2 : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*) : LibC::Int
-    fun dhgeqz(job : LibC::Char*, compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublereal*, ldh : Integer*, t : Doublereal*, ldt : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, q : Doublereal*, ldq : Integer*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dhsein(side : LibC::Char*, eigsrc : LibC::Char*, initv : LibC::Char*, select : Logical*, n : Integer*, h__ : Doublereal*, ldh : Integer*, wr : Doublereal*, wi : Doublereal*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Doublereal*, ifaill : Integer*, ifailr : Integer*, info : Integer*) : LibC::Int
-    fun dhseqr(job : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublereal*, ldh : Integer*, wr : Doublereal*, wi : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun disnan(din : Doublereal*) : Logical
-    fun dla_gbamv_(trans : Integer*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Doublereal*, ab : Doublereal*, ldab : Integer*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dla_gbrcond_(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, ipiv : Integer*, cmode : Integer*, c__ : Doublereal*, info : Integer*, work : Doublereal*, iwork : Integer*, trans_len : Ftnlen) : Doublereal
-    fun dla_gbrfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, y : Doublereal*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublereal*, ayb : Doublereal*, dy : Doublereal*, y_tail__ : Doublereal*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun dla_gbrpvgrw_(n : Integer*, kl : Integer*, ku : Integer*, ncols : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*) : Doublereal
-    fun dla_geamv_(trans : Integer*, m : Integer*, n : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dla_gercond_(trans : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, cmode : Integer*, c__ : Doublereal*, info : Integer*, work : Doublereal*, iwork : Integer*, trans_len : Ftnlen) : Doublereal
-    fun dla_gerfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, y : Doublereal*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublereal*, ayb : Doublereal*, dy : Doublereal*, y_tail__ : Doublereal*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun dla_lin_berr_(n : Integer*, nz : Integer*, nrhs : Integer*, res : Doublereal*, ayb : Doublereal*, berr : Doublereal*) : LibC::Int
-    fun dla_porcond_(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, cmode : Integer*, c__ : Doublereal*, info : Integer*, work : Doublereal*, iwork : Integer*, uplo_len : Ftnlen) : Doublereal
-    fun dla_porfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, y : Doublereal*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublereal*, ayb : Doublereal*, dy : Doublereal*, y_tail__ : Doublereal*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun dla_porpvgrw_(uplo : LibC::Char*, ncols : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, work : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun dla_rpvgrw_(n : Integer*, ncols : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*) : Doublereal
-    fun dla_syamv_(uplo : Integer*, n : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, x : Doublereal*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun dla_syrcond_(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, cmode : Integer*, c__ : Doublereal*, info : Integer*, work : Doublereal*, iwork : Integer*, uplo_len : Ftnlen) : Doublereal
-    fun dla_syrfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublereal*, ldb : Integer*, y : Doublereal*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublereal*, ayb : Doublereal*, dy : Doublereal*, y_tail__ : Doublereal*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun dla_syrpvgrw_(uplo : LibC::Char*, n : Integer*, info : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, work : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun dla_wwaddw_(n : Integer*, x : Doublereal*, y : Doublereal*, w : Doublereal*) : LibC::Int
-    fun dlabad(small : Doublereal*, large : Doublereal*) : LibC::Int
-    fun dlabrd(m : Integer*, n : Integer*, nb : Integer*, a : Doublereal*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tauq : Doublereal*, taup : Doublereal*, x : Doublereal*, ldx : Integer*, y : Doublereal*, ldy : Integer*) : LibC::Int
-    fun dlacn2(n : Integer*, v : Doublereal*, x : Doublereal*, isgn : Integer*, est : Doublereal*, kase : Integer*, isave : Integer*) : LibC::Int
-    fun dlacon(n : Integer*, v : Doublereal*, x : Doublereal*, isgn : Integer*, est : Doublereal*, kase : Integer*) : LibC::Int
-    fun dlacpy(uplo : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*) : LibC::Int
-    fun dladiv(a : Doublereal*, b : Doublereal*, c__ : Doublereal*, d__ : Doublereal*, p : Doublereal*, q : Doublereal*) : LibC::Int
-    fun dlae2(a : Doublereal*, b : Doublereal*, c__ : Doublereal*, rt1 : Doublereal*, rt2 : Doublereal*) : LibC::Int
-    fun dlaebz(ijob : Integer*, nitmax : Integer*, n : Integer*, mmax : Integer*, minp : Integer*, nbmin : Integer*, abstol : Doublereal*, reltol : Doublereal*, pivmin : Doublereal*, d__ : Doublereal*, e : Doublereal*, e2 : Doublereal*, nval : Integer*, ab : Doublereal*, c__ : Doublereal*, mout : Integer*, nab : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlaed0(icompq : Integer*, qsiz : Integer*, n : Integer*, d__ : Doublereal*, e : Doublereal*, q : Doublereal*, ldq : Integer*, qstore : Doublereal*, ldqs : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlaed1(n : Integer*, d__ : Doublereal*, q : Doublereal*, ldq : Integer*, indxq : Integer*, rho : Doublereal*, cutpnt : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlaed2(k : Integer*, n : Integer*, n1 : Integer*, d__ : Doublereal*, q : Doublereal*, ldq : Integer*, indxq : Integer*, rho : Doublereal*, z__ : Doublereal*, dlamda : Doublereal*, w : Doublereal*, q2 : Doublereal*, indx : Integer*, indxc : Integer*, indxp : Integer*, coltyp : Integer*, info : Integer*) : LibC::Int
-    fun dlaed3(k : Integer*, n : Integer*, n1 : Integer*, d__ : Doublereal*, q : Doublereal*, ldq : Integer*, rho : Doublereal*, dlamda : Doublereal*, q2 : Doublereal*, indx : Integer*, ctot : Integer*, w : Doublereal*, s : Doublereal*, info : Integer*) : LibC::Int
-    fun dlaed4(n : Integer*, i__ : Integer*, d__ : Doublereal*, z__ : Doublereal*, delta : Doublereal*, rho : Doublereal*, dlam : Doublereal*, info : Integer*) : LibC::Int
-    fun dlaed5(i__ : Integer*, d__ : Doublereal*, z__ : Doublereal*, delta : Doublereal*, rho : Doublereal*, dlam : Doublereal*) : LibC::Int
-    fun dlaed6(kniter : Integer*, orgati : Logical*, rho : Doublereal*, d__ : Doublereal*, z__ : Doublereal*, finit : Doublereal*, tau : Doublereal*, info : Integer*) : LibC::Int
-    fun dlaed7(icompq : Integer*, n : Integer*, qsiz : Integer*, tlvls : Integer*, curlvl : Integer*, curpbm : Integer*, d__ : Doublereal*, q : Doublereal*, ldq : Integer*, indxq : Integer*, rho : Doublereal*, cutpnt : Integer*, qstore : Doublereal*, qptr : Integer*, prmptr : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlaed8(icompq : Integer*, k : Integer*, n : Integer*, qsiz : Integer*, d__ : Doublereal*, q : Doublereal*, ldq : Integer*, indxq : Integer*, rho : Doublereal*, cutpnt : Integer*, z__ : Doublereal*, dlamda : Doublereal*, q2 : Doublereal*, ldq2 : Integer*, w : Doublereal*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Doublereal*, indxp : Integer*, indx : Integer*, info : Integer*) : LibC::Int
-    fun dlaed9(k : Integer*, kstart : Integer*, kstop : Integer*, n : Integer*, d__ : Doublereal*, q : Doublereal*, ldq : Integer*, rho : Doublereal*, dlamda : Doublereal*, w : Doublereal*, s : Doublereal*, lds : Integer*, info : Integer*) : LibC::Int
-    fun dlaeda(n : Integer*, tlvls : Integer*, curlvl : Integer*, curpbm : Integer*, prmptr : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Doublereal*, q : Doublereal*, qptr : Integer*, z__ : Doublereal*, ztemp : Doublereal*, info : Integer*) : LibC::Int
-    fun dlaein(rightv : Logical*, noinit : Logical*, n : Integer*, h__ : Doublereal*, ldh : Integer*, wr : Doublereal*, wi : Doublereal*, vr : Doublereal*, vi : Doublereal*, b : Doublereal*, ldb : Integer*, work : Doublereal*, eps3 : Doublereal*, smlnum : Doublereal*, bignum : Doublereal*, info : Integer*) : LibC::Int
-    fun dlaev2(a : Doublereal*, b : Doublereal*, c__ : Doublereal*, rt1 : Doublereal*, rt2 : Doublereal*, cs1 : Doublereal*, sn1 : Doublereal*) : LibC::Int
-    fun dlaexc(wantq : Logical*, n : Integer*, t : Doublereal*, ldt : Integer*, q : Doublereal*, ldq : Integer*, j1 : Integer*, n1 : Integer*, n2 : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlag2(a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, safmin : Doublereal*, scale1 : Doublereal*, scale2 : Doublereal*, wr1 : Doublereal*, wr2 : Doublereal*, wi : Doublereal*) : LibC::Int
-    fun dlag2s(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, sa : Real*, ldsa : Integer*, info : Integer*) : LibC::Int
-    fun dlags2(upper : Logical*, a1 : Doublereal*, a2 : Doublereal*, a3 : Doublereal*, b1 : Doublereal*, b2 : Doublereal*, b3 : Doublereal*, csu : Doublereal*, snu : Doublereal*, csv : Doublereal*, snv : Doublereal*, csq : Doublereal*, snq : Doublereal*) : LibC::Int
-    fun dlagtf(n : Integer*, a : Doublereal*, lambda : Doublereal*, b : Doublereal*, c__ : Doublereal*, tol : Doublereal*, d__ : Doublereal*, in : Integer*, info : Integer*) : LibC::Int
-    fun dlagtm(trans : LibC::Char*, n : Integer*, nrhs : Integer*, alpha : Doublereal*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*, x : Doublereal*, ldx : Integer*, beta : Doublereal*, b : Doublereal*, ldb : Integer*) : LibC::Int
-    fun dlagts(job : Integer*, n : Integer*, a : Doublereal*, b : Doublereal*, c__ : Doublereal*, d__ : Doublereal*, in : Integer*, y : Doublereal*, tol : Doublereal*, info : Integer*) : LibC::Int
-    fun dlagv2(a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, csl : Doublereal*, snl : Doublereal*, csr : Doublereal*, snr : Doublereal*) : LibC::Int
-    fun dlahqr(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublereal*, ldh : Integer*, wr : Doublereal*, wi : Doublereal*, iloz : Integer*, ihiz : Integer*, z__ : Doublereal*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun dlahr2(n : Integer*, k : Integer*, nb : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, t : Doublereal*, ldt : Integer*, y : Doublereal*, ldy : Integer*) : LibC::Int
-    fun dlahrd(n : Integer*, k : Integer*, nb : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, t : Doublereal*, ldt : Integer*, y : Doublereal*, ldy : Integer*) : LibC::Int
-    fun dlaic1(job : Integer*, j : Integer*, x : Doublereal*, sest : Doublereal*, w : Doublereal*, gamma : Doublereal*, sestpr : Doublereal*, s : Doublereal*, c__ : Doublereal*) : LibC::Int
-    fun dlaisnan(din1 : Doublereal*, din2 : Doublereal*) : Logical
-    fun dlaln2(ltrans : Logical*, na : Integer*, nw : Integer*, smin : Doublereal*, ca : Doublereal*, a : Doublereal*, lda : Integer*, d1 : Doublereal*, d2 : Doublereal*, b : Doublereal*, ldb : Integer*, wr : Doublereal*, wi : Doublereal*, x : Doublereal*, ldx : Integer*, scale : Doublereal*, xnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun dlals0(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, nrhs : Integer*, b : Doublereal*, ldb : Integer*, bx : Doublereal*, ldbx : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Doublereal*, ldgnum : Integer*, poles : Doublereal*, difl : Doublereal*, difr : Doublereal*, z__ : Doublereal*, k : Integer*, c__ : Doublereal*, s : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlalsa(icompq : Integer*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, b : Doublereal*, ldb : Integer*, bx : Doublereal*, ldbx : Integer*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, k : Integer*, difl : Doublereal*, difr : Doublereal*, z__ : Doublereal*, poles : Doublereal*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, perm : Integer*, givnum : Doublereal*, c__ : Doublereal*, s : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlalsd(uplo : LibC::Char*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublereal*, b : Doublereal*, ldb : Integer*, rcond : Doublereal*, rank : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlamrg(n1 : Integer*, n2 : Integer*, a : Doublereal*, dtrd1 : Integer*, dtrd2 : Integer*, index : Integer*) : LibC::Int
-    fun dlaneg(n : Integer*, d__ : Doublereal*, lld : Doublereal*, sigma : Doublereal*, pivmin : Doublereal*, r__ : Integer*) : Integer
-    fun dlangb(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, work : Doublereal*) : Doublereal
-    fun dlange(norm : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun dlangt(norm : LibC::Char*, n : Integer*, dl : Doublereal*, d__ : Doublereal*, du : Doublereal*) : Doublereal
-    fun dlanhs(norm : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun dlansb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Doublereal*, ldab : Integer*, work : Doublereal*) : Doublereal
-    fun dlansf(norm : LibC::Char*, transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, work : Doublereal*) : Doublereal
-    fun dlansp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, work : Doublereal*) : Doublereal
-    fun dlanst(norm : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*) : Doublereal
-    fun dlansy(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun dlantb(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, ab : Doublereal*, ldab : Integer*, work : Doublereal*) : Doublereal
-    fun dlantp(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublereal*, work : Doublereal*) : Doublereal
-    fun dlantr(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun dlanv2(a : Doublereal*, b : Doublereal*, c__ : Doublereal*, d__ : Doublereal*, rt1r : Doublereal*, rt1i : Doublereal*, rt2r : Doublereal*, rt2i : Doublereal*, cs : Doublereal*, sn : Doublereal*) : LibC::Int
-    fun dlapll(n : Integer*, x : Doublereal*, incx : Integer*, y : Doublereal*, incy : Integer*, ssmin : Doublereal*) : LibC::Int
-    fun dlapmt(forwrd : Logical*, m : Integer*, n : Integer*, x : Doublereal*, ldx : Integer*, k : Integer*) : LibC::Int
-    fun dlapy2(x : Doublereal*, y : Doublereal*) : Doublereal
-    fun dlapy3(x : Doublereal*, y : Doublereal*, z__ : Doublereal*) : Doublereal
-    fun dlaqgb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublereal*, ldab : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun dlaqge(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun dlaqp2(m : Integer*, n : Integer*, offset : Integer*, a : Doublereal*, lda : Integer*, jpvt : Integer*, tau : Doublereal*, vn1 : Doublereal*, vn2 : Doublereal*, work : Doublereal*) : LibC::Int
-    fun dlaqps(m : Integer*, n : Integer*, offset : Integer*, nb : Integer*, kb : Integer*, a : Doublereal*, lda : Integer*, jpvt : Integer*, tau : Doublereal*, vn1 : Doublereal*, vn2 : Doublereal*, auxv : Doublereal*, f : Doublereal*, ldf : Integer*) : LibC::Int
-    fun dlaqr0(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublereal*, ldh : Integer*, wr : Doublereal*, wi : Doublereal*, iloz : Integer*, ihiz : Integer*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dlaqr1(n : Integer*, h__ : Doublereal*, ldh : Integer*, sr1 : Doublereal*, si1 : Doublereal*, sr2 : Doublereal*, si2 : Doublereal*, v : Doublereal*) : LibC::Int
-    fun dlaqr2(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Doublereal*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Doublereal*, ldz : Integer*, ns : Integer*, nd : Integer*, sr : Doublereal*, si : Doublereal*, v : Doublereal*, ldv : Integer*, nh : Integer*, t : Doublereal*, ldt : Integer*, nv : Integer*, wv : Doublereal*, ldwv : Integer*, work : Doublereal*, lwork : Integer*) : LibC::Int
-    fun dlaqr3(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Doublereal*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Doublereal*, ldz : Integer*, ns : Integer*, nd : Integer*, sr : Doublereal*, si : Doublereal*, v : Doublereal*, ldv : Integer*, nh : Integer*, t : Doublereal*, ldt : Integer*, nv : Integer*, wv : Doublereal*, ldwv : Integer*, work : Doublereal*, lwork : Integer*) : LibC::Int
-    fun dlaqr4(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublereal*, ldh : Integer*, wr : Doublereal*, wi : Doublereal*, iloz : Integer*, ihiz : Integer*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dlaqr5(wantt : Logical*, wantz : Logical*, kacc22 : Integer*, n : Integer*, ktop : Integer*, kbot : Integer*, nshfts : Integer*, sr : Doublereal*, si : Doublereal*, h__ : Doublereal*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Doublereal*, ldz : Integer*, v : Doublereal*, ldv : Integer*, u : Doublereal*, ldu : Integer*, nv : Integer*, wv : Doublereal*, ldwv : Integer*, nh : Integer*, wh : Doublereal*, ldwh : Integer*) : LibC::Int
-    fun dlaqsb(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun dlaqsp(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun dlaqsy(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun dlaqtr(ltran : Logical*, lreal : Logical*, n : Integer*, t : Doublereal*, ldt : Integer*, b : Doublereal*, w : Doublereal*, scale : Doublereal*, x : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlar1v(n : Integer*, b1 : Integer*, bn : Integer*, lambda : Doublereal*, d__ : Doublereal*, l : Doublereal*, ld : Doublereal*, lld : Doublereal*, pivmin : Doublereal*, gaptol : Doublereal*, z__ : Doublereal*, wantnc : Logical*, negcnt : Integer*, ztz : Doublereal*, mingma : Doublereal*, r__ : Integer*, isuppz : Integer*, nrminv : Doublereal*, resid : Doublereal*, rqcorr : Doublereal*, work : Doublereal*) : LibC::Int
-    fun dlar2v(n : Integer*, x : Doublereal*, y : Doublereal*, z__ : Doublereal*, incx : Integer*, c__ : Doublereal*, s : Doublereal*, incc : Integer*) : LibC::Int
-    fun dlarf(side : LibC::Char*, m : Integer*, n : Integer*, v : Doublereal*, incv : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*) : LibC::Int
-    fun dlarfb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, v : Doublereal*, ldv : Integer*, t : Doublereal*, ldt : Integer*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, ldwork : Integer*) : LibC::Int
-    fun dlarfg(n : Integer*, alpha : Doublereal*, x : Doublereal*, incx : Integer*, tau : Doublereal*) : LibC::Int
-    fun dlarfp(n : Integer*, alpha : Doublereal*, x : Doublereal*, incx : Integer*, tau : Doublereal*) : LibC::Int
-    fun dlarft(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Doublereal*, ldv : Integer*, tau : Doublereal*, t : Doublereal*, ldt : Integer*) : LibC::Int
-    fun dlarfx(side : LibC::Char*, m : Integer*, n : Integer*, v : Doublereal*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*) : LibC::Int
-    fun dlargv(n : Integer*, x : Doublereal*, incx : Integer*, y : Doublereal*, incy : Integer*, c__ : Doublereal*, incc : Integer*) : LibC::Int
-    fun dlarnv(idist : Integer*, iseed : Integer*, n : Integer*, x : Doublereal*) : LibC::Int
-    fun dlarra(n : Integer*, d__ : Doublereal*, e : Doublereal*, e2 : Doublereal*, spltol : Doublereal*, tnrm : Doublereal*, nsplit : Integer*, isplit : Integer*, info : Integer*) : LibC::Int
-    fun dlarrb(n : Integer*, d__ : Doublereal*, lld : Doublereal*, ifirst : Integer*, ilast : Integer*, rtol1 : Doublereal*, rtol2 : Doublereal*, offset : Integer*, w : Doublereal*, wgap : Doublereal*, werr : Doublereal*, work : Doublereal*, iwork : Integer*, pivmin : Doublereal*, spdiam : Doublereal*, twist : Integer*, info : Integer*) : LibC::Int
-    fun dlarrc(jobt : LibC::Char*, n : Integer*, vl : Doublereal*, vu : Doublereal*, d__ : Doublereal*, e : Doublereal*, pivmin : Doublereal*, eigcnt : Integer*, lcnt : Integer*, rcnt : Integer*, info : Integer*) : LibC::Int
-    fun dlarrd(range : LibC::Char*, order : LibC::Char*, n : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, gers : Doublereal*, reltol : Doublereal*, d__ : Doublereal*, e : Doublereal*, e2 : Doublereal*, pivmin : Doublereal*, nsplit : Integer*, isplit : Integer*, m : Integer*, w : Doublereal*, werr : Doublereal*, wl : Doublereal*, wu : Doublereal*, iblock : Integer*, indexw : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlarre(range : LibC::Char*, n : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, d__ : Doublereal*, e : Doublereal*, e2 : Doublereal*, rtol1 : Doublereal*, rtol2 : Doublereal*, spltol : Doublereal*, nsplit : Integer*, isplit : Integer*, m : Integer*, w : Doublereal*, werr : Doublereal*, wgap : Doublereal*, iblock : Integer*, indexw : Integer*, gers : Doublereal*, pivmin : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlarrf(n : Integer*, d__ : Doublereal*, l : Doublereal*, ld : Doublereal*, clstrt : Integer*, clend : Integer*, w : Doublereal*, wgap : Doublereal*, werr : Doublereal*, spdiam : Doublereal*, clgapl : Doublereal*, clgapr : Doublereal*, pivmin : Doublereal*, sigma : Doublereal*, dplus : Doublereal*, lplus : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlarrj(n : Integer*, d__ : Doublereal*, e2 : Doublereal*, ifirst : Integer*, ilast : Integer*, rtol : Doublereal*, offset : Integer*, w : Doublereal*, werr : Doublereal*, work : Doublereal*, iwork : Integer*, pivmin : Doublereal*, spdiam : Doublereal*, info : Integer*) : LibC::Int
-    fun dlarrk(n : Integer*, iw : Integer*, gl : Doublereal*, gu : Doublereal*, d__ : Doublereal*, e2 : Doublereal*, pivmin : Doublereal*, reltol : Doublereal*, w : Doublereal*, werr : Doublereal*, info : Integer*) : LibC::Int
-    fun dlarrr(n : Integer*, d__ : Doublereal*, e : Doublereal*, info : Integer*) : LibC::Int
-    fun dlarrv(n : Integer*, vl : Doublereal*, vu : Doublereal*, d__ : Doublereal*, l : Doublereal*, pivmin : Doublereal*, isplit : Integer*, m : Integer*, dol : Integer*, dou : Integer*, minrgp : Doublereal*, rtol1 : Doublereal*, rtol2 : Doublereal*, w : Doublereal*, werr : Doublereal*, wgap : Doublereal*, iblock : Integer*, indexw : Integer*, gers : Doublereal*, z__ : Doublereal*, ldz : Integer*, isuppz : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlarscl2(m : Integer*, n : Integer*, d__ : Doublereal*, x : Doublereal*, ldx : Integer*) : LibC::Int
-    fun dlartg(f : Doublereal*, g : Doublereal*, cs : Doublereal*, sn : Doublereal*, r__ : Doublereal*) : LibC::Int
-    fun dlartv(n : Integer*, x : Doublereal*, incx : Integer*, y : Doublereal*, incy : Integer*, c__ : Doublereal*, s : Doublereal*, incc : Integer*) : LibC::Int
-    fun dlaruv(iseed : Integer*, n : Integer*, x : Doublereal*) : LibC::Int
-    fun dlarz(side : LibC::Char*, m : Integer*, n : Integer*, l : Integer*, v : Doublereal*, incv : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*) : LibC::Int
-    fun dlarzb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, v : Doublereal*, ldv : Integer*, t : Doublereal*, ldt : Integer*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, ldwork : Integer*) : LibC::Int
-    fun dlarzt(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Doublereal*, ldv : Integer*, tau : Doublereal*, t : Doublereal*, ldt : Integer*) : LibC::Int
-    fun dlas2(f : Doublereal*, g : Doublereal*, h__ : Doublereal*, ssmin : Doublereal*, ssmax : Doublereal*) : LibC::Int
-    fun dlascl(type__ : LibC::Char*, kl : Integer*, ku : Integer*, cfrom : Doublereal*, cto : Doublereal*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dlascl2(m : Integer*, n : Integer*, d__ : Doublereal*, x : Doublereal*, ldx : Integer*) : LibC::Int
-    fun dlasd0(n : Integer*, sqre : Integer*, d__ : Doublereal*, e : Doublereal*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, ldvt : Integer*, smlsiz : Integer*, iwork : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasd1(nl : Integer*, nr : Integer*, sqre : Integer*, d__ : Doublereal*, alpha : Doublereal*, beta : Doublereal*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, ldvt : Integer*, idxq : Integer*, iwork : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasd2(nl : Integer*, nr : Integer*, sqre : Integer*, k : Integer*, d__ : Doublereal*, z__ : Doublereal*, alpha : Doublereal*, beta : Doublereal*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, ldvt : Integer*, dsigma : Doublereal*, u2 : Doublereal*, ldu2 : Integer*, vt2 : Doublereal*, ldvt2 : Integer*, idxp : Integer*, idx : Integer*, idxc : Integer*, idxq : Integer*, coltyp : Integer*, info : Integer*) : LibC::Int
-    fun dlasd3(nl : Integer*, nr : Integer*, sqre : Integer*, k : Integer*, d__ : Doublereal*, q : Doublereal*, ldq : Integer*, dsigma : Doublereal*, u : Doublereal*, ldu : Integer*, u2 : Doublereal*, ldu2 : Integer*, vt : Doublereal*, ldvt : Integer*, vt2 : Doublereal*, ldvt2 : Integer*, idxc : Integer*, ctot : Integer*, z__ : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasd4(n : Integer*, i__ : Integer*, d__ : Doublereal*, z__ : Doublereal*, delta : Doublereal*, rho : Doublereal*, sigma : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasd5(i__ : Integer*, d__ : Doublereal*, z__ : Doublereal*, delta : Doublereal*, rho : Doublereal*, dsigma : Doublereal*, work : Doublereal*) : LibC::Int
-    fun dlasd6(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, d__ : Doublereal*, vf : Doublereal*, vl : Doublereal*, alpha : Doublereal*, beta : Doublereal*, idxq : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Doublereal*, ldgnum : Integer*, poles : Doublereal*, difl : Doublereal*, difr : Doublereal*, z__ : Doublereal*, k : Integer*, c__ : Doublereal*, s : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlasd7(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, k : Integer*, d__ : Doublereal*, z__ : Doublereal*, zw : Doublereal*, vf : Doublereal*, vfw : Doublereal*, vl : Doublereal*, vlw : Doublereal*, alpha : Doublereal*, beta : Doublereal*, dsigma : Doublereal*, idx : Integer*, idxp : Integer*, idxq : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Doublereal*, ldgnum : Integer*, c__ : Doublereal*, s : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasd8(icompq : Integer*, k : Integer*, d__ : Doublereal*, z__ : Doublereal*, vf : Doublereal*, vl : Doublereal*, difl : Doublereal*, difr : Doublereal*, lddifr : Integer*, dsigma : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasda(icompq : Integer*, smlsiz : Integer*, n : Integer*, sqre : Integer*, d__ : Doublereal*, e : Doublereal*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, k : Integer*, difl : Doublereal*, difr : Doublereal*, z__ : Doublereal*, poles : Doublereal*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, perm : Integer*, givnum : Doublereal*, c__ : Doublereal*, s : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dlasdq(uplo : LibC::Char*, sqre : Integer*, n : Integer*, ncvt : Integer*, nru : Integer*, ncc : Integer*, d__ : Doublereal*, e : Doublereal*, vt : Doublereal*, ldvt : Integer*, u : Doublereal*, ldu : Integer*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasdt(n : Integer*, lvl : Integer*, nd : Integer*, inode : Integer*, ndiml : Integer*, ndimr : Integer*, msub : Integer*) : LibC::Int
-    fun dlaset(uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublereal*, beta : Doublereal*, a : Doublereal*, lda : Integer*) : LibC::Int
-    fun dlasq1(n : Integer*, d__ : Doublereal*, e : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasq2(n : Integer*, z__ : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasq3(i0 : Integer*, n0 : Integer*, z__ : Doublereal*, pp : Integer*, dmin__ : Doublereal*, sigma : Doublereal*, desig : Doublereal*, qmax : Doublereal*, nfail : Integer*, iter : Integer*, ndiv : Integer*, ieee : Logical*, ttype : Integer*, dmin1 : Doublereal*, dmin2 : Doublereal*, dn : Doublereal*, dn1 : Doublereal*, dn2 : Doublereal*, g : Doublereal*, tau : Doublereal*) : LibC::Int
-    fun dlasq4(i0 : Integer*, n0 : Integer*, z__ : Doublereal*, pp : Integer*, n0in : Integer*, dmin__ : Doublereal*, dmin1 : Doublereal*, dmin2 : Doublereal*, dn : Doublereal*, dn1 : Doublereal*, dn2 : Doublereal*, tau : Doublereal*, ttype : Integer*, g : Doublereal*) : LibC::Int
-    fun dlasq5(i0 : Integer*, n0 : Integer*, z__ : Doublereal*, pp : Integer*, tau : Doublereal*, dmin__ : Doublereal*, dmin1 : Doublereal*, dmin2 : Doublereal*, dn : Doublereal*, dnm1 : Doublereal*, dnm2 : Doublereal*, ieee : Logical*) : LibC::Int
-    fun dlasq6(i0 : Integer*, n0 : Integer*, z__ : Doublereal*, pp : Integer*, dmin__ : Doublereal*, dmin1 : Doublereal*, dmin2 : Doublereal*, dn : Doublereal*, dnm1 : Doublereal*, dnm2 : Doublereal*) : LibC::Int
-    fun dlasr(side : LibC::Char*, pivot : LibC::Char*, direct : LibC::Char*, m : Integer*, n : Integer*, c__ : Doublereal*, s : Doublereal*, a : Doublereal*, lda : Integer*) : LibC::Int
-    fun dlasrt(id : LibC::Char*, n : Integer*, d__ : Doublereal*, info : Integer*) : LibC::Int
-    fun dlassq(n : Integer*, x : Doublereal*, incx : Integer*, scale : Doublereal*, sumsq : Doublereal*) : LibC::Int
-    fun dlasv2(f : Doublereal*, g : Doublereal*, h__ : Doublereal*, ssmin : Doublereal*, ssmax : Doublereal*, snr : Doublereal*, csr : Doublereal*, snl : Doublereal*, csl : Doublereal*) : LibC::Int
-    fun dlaswp(n : Integer*, a : Doublereal*, lda : Integer*, k1 : Integer*, k2 : Integer*, ipiv : Integer*, incx : Integer*) : LibC::Int
-    fun dlasy2(ltranl : Logical*, ltranr : Logical*, isgn : Integer*, n1 : Integer*, n2 : Integer*, tl : Doublereal*, ldtl : Integer*, tr : Doublereal*, ldtr : Integer*, b : Doublereal*, ldb : Integer*, scale : Doublereal*, x : Doublereal*, ldx : Integer*, xnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun dlasyf(uplo : LibC::Char*, n : Integer*, nb : Integer*, kb : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, w : Doublereal*, ldw : Integer*, info : Integer*) : LibC::Int
-    fun dlat2s(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, sa : Real*, ldsa : Integer*, info : Integer*) : LibC::Int
-    fun dlatbs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, x : Doublereal*, scale : Doublereal*, cnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun dlatdf(ijob : Integer*, n : Integer*, z__ : Doublereal*, ldz : Integer*, rhs : Doublereal*, rdsum : Doublereal*, rdscal : Doublereal*, ipiv : Integer*, jpiv : Integer*) : LibC::Int
-    fun dlatps(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, ap : Doublereal*, x : Doublereal*, scale : Doublereal*, cnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun dlatrd(uplo : LibC::Char*, n : Integer*, nb : Integer*, a : Doublereal*, lda : Integer*, e : Doublereal*, tau : Doublereal*, w : Doublereal*, ldw : Integer*) : LibC::Int
-    fun dlatrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, x : Doublereal*, scale : Doublereal*, cnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun dlatrz(m : Integer*, n : Integer*, l : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*) : LibC::Int
-    fun dlatzm(side : LibC::Char*, m : Integer*, n : Integer*, v : Doublereal*, incv : Integer*, tau : Doublereal*, c1 : Doublereal*, c2 : Doublereal*, ldc : Integer*, work : Doublereal*) : LibC::Int
-    fun dlauu2(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dlauum(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dopgtr(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, tau : Doublereal*, q : Doublereal*, ldq : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dopmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ap : Doublereal*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dorg2l(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dorg2r(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dorgbr(vect : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorghr(n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorgl2(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dorglq(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorgql(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorgqr(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorgr2(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dorgrq(m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorgtr(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorm2l(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dorm2r(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dormbr(vect : LibC::Char*, side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dormhr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dorml2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dormlq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dormql(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dormqr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dormr2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dormr3(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dormrq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dormrz(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dormtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, c__ : Doublereal*, ldc : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dpbcon(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dpbequ(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dpbrfs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dpbstf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun dpbsv(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dpbsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, afb : Doublereal*, ldafb : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dpbtf2(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun dpbtrf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun dpbtrs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dpftrf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, info : Integer*) : LibC::Int
-    fun dpftri(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, info : Integer*) : LibC::Int
-    fun dpftrs(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dpocon(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dpoequ(n : Integer*, a : Doublereal*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dpoequb(n : Integer*, a : Doublereal*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dporfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dporfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, s : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dposv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dposvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dposvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dpotf2(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dpotrf(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dpotri(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dpotrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dppcon(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dppequ(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun dpprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, afp : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dppsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dppsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, afp : Doublereal*, equed : LibC::Char*, s : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dpptrf(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, info : Integer*) : LibC::Int
-    fun dpptri(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, info : Integer*) : LibC::Int
-    fun dpptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dpstf2(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dpstrf(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dptcon(n : Integer*, d__ : Doublereal*, e : Doublereal*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dpteqr(compz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dptrfs(n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublereal*, df : Doublereal*, ef : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dptsv(n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublereal*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dptsvx(fact : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublereal*, df : Doublereal*, ef : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dpttrf(n : Integer*, d__ : Doublereal*, e : Doublereal*, info : Integer*) : LibC::Int
-    fun dpttrs(n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublereal*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dptts2(n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublereal*, b : Doublereal*, ldb : Integer*) : LibC::Int
-    fun drscl(n : Integer*, sa : Doublereal*, sx : Doublereal*, incx : Integer*) : LibC::Int
-    fun dsbev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsbevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dsbevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, q : Doublereal*, ldq : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dsbgst(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublereal*, ldab : Integer*, bb : Doublereal*, ldbb : Integer*, x : Doublereal*, ldx : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsbgv(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublereal*, ldab : Integer*, bb : Doublereal*, ldbb : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsbgvd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublereal*, ldab : Integer*, bb : Doublereal*, ldbb : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dsbgvx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublereal*, ldab : Integer*, bb : Doublereal*, ldbb : Integer*, q : Doublereal*, ldq : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dsbtrd(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, d__ : Doublereal*, e : Doublereal*, q : Doublereal*, ldq : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsfrk(transr : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublereal*, a : Doublereal*, lda : Integer*, beta : Doublereal*, c__ : Doublereal*) : LibC::Int
-    fun dsgesv(n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, work : Doublereal*, swork : Real*, iter : Integer*, info : Integer*) : LibC::Int
-    fun dspcon(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dspev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dspevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dspevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dspgst(itype : Integer*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, bp : Doublereal*, info : Integer*) : LibC::Int
-    fun dspgv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, bp : Doublereal*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dspgvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, bp : Doublereal*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dspgvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, bp : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dsposv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, work : Doublereal*, swork : Real*, iter : Integer*, info : Integer*) : LibC::Int
-    fun dsprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, afp : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dspsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dspsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, afp : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dsptrd(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, d__ : Doublereal*, e : Doublereal*, tau : Doublereal*, info : Integer*) : LibC::Int
-    fun dsptrf(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun dsptri(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, ipiv : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dstebz(range : LibC::Char*, order : LibC::Char*, n : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, d__ : Doublereal*, e : Doublereal*, m : Integer*, nsplit : Integer*, w : Doublereal*, iblock : Integer*, isplit : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dstedc(compz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dstegr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, isuppz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dstein(n : Integer*, d__ : Doublereal*, e : Doublereal*, m : Integer*, w : Doublereal*, iblock : Integer*, isplit : Integer*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dstemr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, nzc : Integer*, isuppz : Integer*, tryrac : Logical*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dsteqr(compz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsterf(n : Integer*, d__ : Doublereal*, e : Doublereal*, info : Integer*) : LibC::Int
-    fun dstev(jobz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dstevd(jobz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dstevr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, isuppz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dstevx(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dsycon(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dsyequb(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsyev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, w : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dsyevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, w : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dsyevr(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, isuppz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dsyevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dsygs2(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dsygst(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dsygv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, w : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dsygvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, w : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dsygvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublereal*, ldz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun dsyrfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dsyrfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, s : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dsysv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dsysvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dsysvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, af : Doublereal*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dsytd2(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tau : Doublereal*, info : Integer*) : LibC::Int
-    fun dsytf2(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun dsytrd(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dsytrf(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dsytri(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dsytrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, ipiv : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dtbcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublereal*, ldab : Integer*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtbrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtbtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublereal*, ldab : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dtfsm(transr : LibC::Char*, side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublereal*, a : Doublereal*, b : Doublereal*, ldb : Integer*) : LibC::Int
-    fun dtftri(transr : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublereal*, info : Integer*) : LibC::Int
-    fun dtfttp(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Doublereal*, ap : Doublereal*, info : Integer*) : LibC::Int
-    fun dtfttr(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Doublereal*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dtgevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, s : Doublereal*, lds : Integer*, p : Doublereal*, ldp : Integer*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dtgex2(wantq : Logical*, wantz : Logical*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, q : Doublereal*, ldq : Integer*, z__ : Doublereal*, ldz : Integer*, j1 : Integer*, n1 : Integer*, n2 : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dtgexc(wantq : Logical*, wantz : Logical*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, q : Doublereal*, ldq : Integer*, z__ : Doublereal*, ldz : Integer*, ifst : Integer*, ilst : Integer*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dtgsen(ijob : Integer*, wantq : Logical*, wantz : Logical*, select : Logical*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, alphar : Doublereal*, alphai : Doublereal*, beta : Doublereal*, q : Doublereal*, ldq : Integer*, z__ : Doublereal*, ldz : Integer*, m : Integer*, pl : Doublereal*, pr : Doublereal*, dif : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dtgsja(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, tola : Doublereal*, tolb : Doublereal*, alpha : Doublereal*, beta : Doublereal*, u : Doublereal*, ldu : Integer*, v : Doublereal*, ldv : Integer*, q : Doublereal*, ldq : Integer*, work : Doublereal*, ncycle : Integer*, info : Integer*) : LibC::Int
-    fun dtgsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, s : Doublereal*, dif : Doublereal*, mm : Integer*, m : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtgsy2(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, c__ : Doublereal*, ldc : Integer*, d__ : Doublereal*, ldd : Integer*, e : Doublereal*, lde : Integer*, f : Doublereal*, ldf : Integer*, scale : Doublereal*, rdsum : Doublereal*, rdscal : Doublereal*, iwork : Integer*, pq : Integer*, info : Integer*) : LibC::Int
-    fun dtgsyl(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, c__ : Doublereal*, ldc : Integer*, d__ : Doublereal*, ldd : Integer*, e : Doublereal*, lde : Integer*, f : Doublereal*, ldf : Integer*, scale : Doublereal*, dif : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtpcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublereal*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtprfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtptri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublereal*, info : Integer*) : LibC::Int
-    fun dtptrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublereal*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dtpttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublereal*, arf : Doublereal*, info : Integer*) : LibC::Int
-    fun dtpttr(uplo : LibC::Char*, n : Integer*, ap : Doublereal*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dtrcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, rcond : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtrevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Doublereal*, ldt : Integer*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dtrexc(compq : LibC::Char*, n : Integer*, t : Doublereal*, ldt : Integer*, q : Doublereal*, ldq : Integer*, ifst : Integer*, ilst : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun dtrrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, x : Doublereal*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtrsen(job : LibC::Char*, compq : LibC::Char*, select : Logical*, n : Integer*, t : Doublereal*, ldt : Integer*, q : Doublereal*, ldq : Integer*, wr : Doublereal*, wi : Doublereal*, m : Integer*, s : Doublereal*, sep : Doublereal*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun dtrsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Doublereal*, ldt : Integer*, vl : Doublereal*, ldvl : Integer*, vr : Doublereal*, ldvr : Integer*, s : Doublereal*, sep : Doublereal*, mm : Integer*, m : Integer*, work : Doublereal*, ldwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun dtrsyl(trana : LibC::Char*, tranb : LibC::Char*, isgn : Integer*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, c__ : Doublereal*, ldc : Integer*, scale : Doublereal*, info : Integer*) : LibC::Int
-    fun dtrti2(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dtrtri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun dtrtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublereal*, lda : Integer*, b : Doublereal*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun dtrttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, arf : Doublereal*, info : Integer*) : LibC::Int
-    fun dtrttp(uplo : LibC::Char*, n : Integer*, a : Doublereal*, lda : Integer*, ap : Doublereal*, info : Integer*) : LibC::Int
-    fun dtzrqf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, info : Integer*) : LibC::Int
-    fun dtzrzf(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, tau : Doublereal*, work : Doublereal*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun dzsum1(n : Integer*, cx : Doublecomplex*, incx : Integer*) : Doublereal
-    fun icmax1(n : Integer*, cx : Complex*, incx : Integer*) : Integer
-    fun ieeeck(ispec : Integer*, zero : Real*, one : Real*) : Integer
-    fun ilaclc(m : Integer*, n : Integer*, a : Complex*, lda : Integer*) : Integer
-    fun ilaclr(m : Integer*, n : Integer*, a : Complex*, lda : Integer*) : Integer
-    fun iladiag(diag : LibC::Char*) : Integer
-    fun iladlc(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*) : Integer
-    fun iladlr(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*) : Integer
-    fun ilaenv(ispec : Integer*, name__ : LibC::Char*, opts : LibC::Char*, n1 : Integer*, n2 : Integer*, n3 : Integer*, n4 : Integer*) : Integer
-    fun ilaprec(prec : LibC::Char*) : Integer
-    fun ilaslc(m : Integer*, n : Integer*, a : Real*, lda : Integer*) : Integer
-    fun ilaslr(m : Integer*, n : Integer*, a : Real*, lda : Integer*) : Integer
-    fun ilatrans(trans : LibC::Char*) : Integer
-    fun ilauplo(uplo : LibC::Char*) : Integer
-    fun ilaver(vers_major__ : Integer*, vers_minor__ : Integer*, vers_patch__ : Integer*) : LibC::Int
-    fun ilazlc(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*) : Integer
-    fun ilazlr(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*) : Integer
-    fun iparmq(ispec : Integer*, name__ : LibC::Char*, opts : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, lwork : Integer*) : Integer
-    fun izmax1(n : Integer*, cx : Doublecomplex*, incx : Integer*) : Integer
-    fun lsamen(n : Integer*, ca : LibC::Char*, cb : LibC::Char*) : Logical
-    fun smaxloc(a : Real*, dimm : Integer*) : Integer
-    fun sbdsdc(uplo : LibC::Char*, compq : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, u : Real*, ldu : Integer*, vt : Real*, ldvt : Integer*, q : Real*, iq : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sbdsqr(uplo : LibC::Char*, n : Integer*, ncvt : Integer*, nru : Integer*, ncc : Integer*, d__ : Real*, e : Real*, vt : Real*, ldvt : Integer*, u : Real*, ldu : Integer*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun scsum1(n : Integer*, cx : Complex*, incx : Integer*) : Doublereal
-    fun sdisna(job : LibC::Char*, m : Integer*, n : Integer*, d__ : Real*, sep : Real*, info : Integer*) : LibC::Int
-    fun sgbbrd(vect : LibC::Char*, m : Integer*, n : Integer*, ncc : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, d__ : Real*, e : Real*, q : Real*, ldq : Integer*, pt : Real*, ldpt : Integer*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sgbcon(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgbequ(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun sgbequb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun sgbrfs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgbrfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, ipiv : Integer*, r__ : Real*, c__ : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgbsv(n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sgbsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgbsvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgbtf2(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun sgbtrf(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun sgbtrs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sgebak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, scale : Real*, m : Integer*, v : Real*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun sgebal(job : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, ilo : Integer*, ihi : Integer*, scale : Real*, info : Integer*) : LibC::Int
-    fun sgebd2(m : Integer*, n : Integer*, a : Real*, lda : Integer*, d__ : Real*, e : Real*, tauq : Real*, taup : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgebrd(m : Integer*, n : Integer*, a : Real*, lda : Integer*, d__ : Real*, e : Real*, tauq : Real*, taup : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgecon(norm : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgeequ(m : Integer*, n : Integer*, a : Real*, lda : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun sgeequb(m : Integer*, n : Integer*, a : Real*, lda : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun sgees(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, n : Integer*, a : Real*, lda : Integer*, sdim : Integer*, wr : Real*, wi : Real*, vs : Real*, ldvs : Integer*, work : Real*, lwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun sgeesx(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, sense : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, sdim : Integer*, wr : Real*, wi : Real*, vs : Real*, ldvs : Integer*, rconde : Real*, rcondv : Real*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun sgeev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, wr : Real*, wi : Real*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgeevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, wr : Real*, wi : Real*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, scale : Real*, abnrm : Real*, rconde : Real*, rcondv : Real*, work : Real*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgegs(jobvsl : LibC::Char*, jobvsr : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, alphar : Real*, alphai : Real*, beta : Real*, vsl : Real*, ldvsl : Integer*, vsr : Real*, ldvsr : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgegv(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, alphar : Real*, alphai : Real*, beta : Real*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgehd2(n : Integer*, ilo : Integer*, ihi : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgehrd(n : Integer*, ilo : Integer*, ihi : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgejsv(joba : LibC::Char*, jobu : LibC::Char*, jobv : LibC::Char*, jobr : LibC::Char*, jobt : LibC::Char*, jobp : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, sva : Real*, u : Real*, ldu : Integer*, v : Real*, ldv : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgelq2(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgelqf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgels(trans : LibC::Char*, m : Integer*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgelsd(m : Integer*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, s : Real*, rcond : Real*, rank : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgelss(m : Integer*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, s : Real*, rcond : Real*, rank : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgelsx(m : Integer*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, jpvt : Integer*, rcond : Real*, rank : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sgelsy(m : Integer*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, jpvt : Integer*, rcond : Real*, rank : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgeql2(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgeqlf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgeqp3(m : Integer*, n : Integer*, a : Real*, lda : Integer*, jpvt : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgeqpf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, jpvt : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgeqr2(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgeqrf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgerfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgerfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, r__ : Real*, c__ : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgerq2(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgerqf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgesc2(n : Integer*, a : Real*, lda : Integer*, rhs : Real*, ipiv : Integer*, jpiv : Integer*, scale : Real*) : LibC::Int
-    fun sgesdd(jobz : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, s : Real*, u : Real*, ldu : Integer*, vt : Real*, ldvt : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgesv(n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sgesvd(jobu : LibC::Char*, jobvt : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, s : Real*, u : Real*, ldu : Integer*, vt : Real*, ldvt : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgesvj(joba : LibC::Char*, jobu : LibC::Char*, jobv : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, sva : Real*, mv : Integer*, v : Real*, ldv : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgesvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgesvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Real*, c__ : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgetc2(n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, jpiv : Integer*, info : Integer*) : LibC::Int
-    fun sgetf2(m : Integer*, n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun sgetrf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun sgetri(n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgetrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sggbak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, lscale : Real*, rscale : Real*, m : Integer*, v : Real*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun sggbal(job : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, ilo : Integer*, ihi : Integer*, lscale : Real*, rscale : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgges(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, sdim : Integer*, alphar : Real*, alphai : Real*, beta : Real*, vsl : Real*, ldvsl : Integer*, vsr : Real*, ldvsr : Integer*, work : Real*, lwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun sggesx(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, sense : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, sdim : Integer*, alphar : Real*, alphai : Real*, beta : Real*, vsl : Real*, ldvsl : Integer*, vsr : Real*, ldvsr : Integer*, rconde : Real*, rcondv : Real*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun sggev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, alphar : Real*, alphai : Real*, beta : Real*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sggevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, alphar : Real*, alphai : Real*, beta : Real*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, lscale : Real*, rscale : Real*, abnrm : Real*, bbnrm : Real*, rconde : Real*, rcondv : Real*, work : Real*, lwork : Integer*, iwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun sggglm(n : Integer*, m : Integer*, p : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, d__ : Real*, x : Real*, y : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgghrd(compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, q : Real*, ldq : Integer*, z__ : Real*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun sgglse(m : Integer*, n : Integer*, p : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, c__ : Real*, d__ : Real*, x : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sggqrf(n : Integer*, m : Integer*, p : Integer*, a : Real*, lda : Integer*, taua : Real*, b : Real*, ldb : Integer*, taub : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sggrqf(m : Integer*, p : Integer*, n : Integer*, a : Real*, lda : Integer*, taua : Real*, b : Real*, ldb : Integer*, taub : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sggsvd(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, n : Integer*, p : Integer*, k : Integer*, l : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, alpha : Real*, beta : Real*, u : Real*, ldu : Integer*, v : Real*, ldv : Integer*, q : Real*, ldq : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sggsvp(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, tola : Real*, tolb : Real*, k : Integer*, l : Integer*, u : Real*, ldu : Integer*, v : Real*, ldv : Integer*, q : Real*, ldq : Integer*, iwork : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sgsvj0(jobv : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, d__ : Real*, sva : Real*, mv : Integer*, v : Real*, ldv : Integer*, eps : Real*, sfmin : Real*, tol : Real*, nsweep : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgsvj1(jobv : LibC::Char*, m : Integer*, n : Integer*, n1 : Integer*, a : Real*, lda : Integer*, d__ : Real*, sva : Real*, mv : Integer*, v : Real*, ldv : Integer*, eps : Real*, sfmin : Real*, tol : Real*, nsweep : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sgtcon(norm : LibC::Char*, n : Integer*, dl : Real*, d__ : Real*, du : Real*, du2 : Real*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgtrfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Real*, d__ : Real*, du : Real*, dlf : Real*, df : Real*, duf : Real*, du2 : Real*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgtsv(n : Integer*, nrhs : Integer*, dl : Real*, d__ : Real*, du : Real*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sgtsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Real*, d__ : Real*, du : Real*, dlf : Real*, df : Real*, duf : Real*, du2 : Real*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sgttrf(n : Integer*, dl : Real*, d__ : Real*, du : Real*, du2 : Real*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun sgttrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Real*, d__ : Real*, du : Real*, du2 : Real*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sgtts2(itrans : Integer*, n : Integer*, nrhs : Integer*, dl : Real*, d__ : Real*, du : Real*, du2 : Real*, ipiv : Integer*, b : Real*, ldb : Integer*) : LibC::Int
-    fun shgeqz(job : LibC::Char*, compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Real*, ldh : Integer*, t : Real*, ldt : Integer*, alphar : Real*, alphai : Real*, beta : Real*, q : Real*, ldq : Integer*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun shsein(side : LibC::Char*, eigsrc : LibC::Char*, initv : LibC::Char*, select : Logical*, n : Integer*, h__ : Real*, ldh : Integer*, wr : Real*, wi : Real*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Real*, ifaill : Integer*, ifailr : Integer*, info : Integer*) : LibC::Int
-    fun shseqr(job : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Real*, ldh : Integer*, wr : Real*, wi : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sisnan(sin__ : Real*) : Logical
-    fun sla_gbamv_(trans : Integer*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Real*, ab : Real*, ldab : Integer*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun sla_gbrcond_(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, ipiv : Integer*, cmode : Integer*, c__ : Real*, info : Integer*, work : Real*, iwork : Integer*, trans_len : Ftnlen) : Doublereal
-    fun sla_gbrfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Real*, b : Real*, ldb : Integer*, y : Real*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Real*, ayb : Real*, dy : Real*, y_tail__ : Real*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun sla_gbrpvgrw_(n : Integer*, kl : Integer*, ku : Integer*, ncols : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*) : Doublereal
-    fun sla_geamv_(trans : Integer*, m : Integer*, n : Integer*, alpha : Real*, a : Real*, lda : Integer*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun sla_gercond_(trans : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, cmode : Integer*, c__ : Real*, info : Integer*, work : Real*, iwork : Integer*, trans_len : Ftnlen) : Doublereal
-    fun sla_gerfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Real*, b : Real*, ldb : Integer*, y : Real*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Real*, ayb : Real*, dy : Real*, y_tail__ : Real*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun sla_lin_berr_(n : Integer*, nz : Integer*, nrhs : Integer*, res : Real*, ayb : Real*, berr : Real*) : LibC::Int
-    fun sla_porcond_(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, cmode : Integer*, c__ : Real*, info : Integer*, work : Real*, iwork : Integer*, uplo_len : Ftnlen) : Doublereal
-    fun sla_porfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, colequ : Logical*, c__ : Real*, b : Real*, ldb : Integer*, y : Real*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Real*, ayb : Real*, dy : Real*, y_tail__ : Real*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun sla_porpvgrw_(uplo : LibC::Char*, ncols : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, work : Real*, uplo_len : Ftnlen) : Doublereal
-    fun sla_rpvgrw_(n : Integer*, ncols : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*) : Doublereal
-    fun sla_syamv_(uplo : Integer*, n : Integer*, alpha : Real*, a : Real*, lda : Integer*, x : Real*, incx : Integer*, beta : Real*, y : Real*, incy : Integer*) : LibC::Int
-    fun sla_syrcond_(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, cmode : Integer*, c__ : Real*, info : Integer*, work : Real*, iwork : Integer*, uplo_len : Ftnlen) : Doublereal
-    fun sla_syrfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Real*, b : Real*, ldb : Integer*, y : Real*, ldy : Integer*, berr_out__ : Real*, n_norms__ : Integer*, errs_n__ : Real*, errs_c__ : Real*, res : Real*, ayb : Real*, dy : Real*, y_tail__ : Real*, rcond : Real*, ithresh : Integer*, rthresh : Real*, dz_ub__ : Real*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun sla_syrpvgrw_(uplo : LibC::Char*, n : Integer*, info : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, work : Real*, uplo_len : Ftnlen) : Doublereal
-    fun sla_wwaddw_(n : Integer*, x : Real*, y : Real*, w : Real*) : LibC::Int
-    fun slabad(small : Real*, large : Real*) : LibC::Int
-    fun slabrd(m : Integer*, n : Integer*, nb : Integer*, a : Real*, lda : Integer*, d__ : Real*, e : Real*, tauq : Real*, taup : Real*, x : Real*, ldx : Integer*, y : Real*, ldy : Integer*) : LibC::Int
-    fun slacn2(n : Integer*, v : Real*, x : Real*, isgn : Integer*, est : Real*, kase : Integer*, isave : Integer*) : LibC::Int
-    fun slacon(n : Integer*, v : Real*, x : Real*, isgn : Integer*, est : Real*, kase : Integer*) : LibC::Int
-    fun slacpy(uplo : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*) : LibC::Int
-    fun sladiv(a : Real*, b : Real*, c__ : Real*, d__ : Real*, p : Real*, q : Real*) : LibC::Int
-    fun slae2(a : Real*, b : Real*, c__ : Real*, rt1 : Real*, rt2 : Real*) : LibC::Int
-    fun slaebz(ijob : Integer*, nitmax : Integer*, n : Integer*, mmax : Integer*, minp : Integer*, nbmin : Integer*, abstol : Real*, reltol : Real*, pivmin : Real*, d__ : Real*, e : Real*, e2 : Real*, nval : Integer*, ab : Real*, c__ : Real*, mout : Integer*, nab : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slaed0(icompq : Integer*, qsiz : Integer*, n : Integer*, d__ : Real*, e : Real*, q : Real*, ldq : Integer*, qstore : Real*, ldqs : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slaed1(n : Integer*, d__ : Real*, q : Real*, ldq : Integer*, indxq : Integer*, rho : Real*, cutpnt : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slaed2(k : Integer*, n : Integer*, n1 : Integer*, d__ : Real*, q : Real*, ldq : Integer*, indxq : Integer*, rho : Real*, z__ : Real*, dlamda : Real*, w : Real*, q2 : Real*, indx : Integer*, indxc : Integer*, indxp : Integer*, coltyp : Integer*, info : Integer*) : LibC::Int
-    fun slaed3(k : Integer*, n : Integer*, n1 : Integer*, d__ : Real*, q : Real*, ldq : Integer*, rho : Real*, dlamda : Real*, q2 : Real*, indx : Integer*, ctot : Integer*, w : Real*, s : Real*, info : Integer*) : LibC::Int
-    fun slaed4(n : Integer*, i__ : Integer*, d__ : Real*, z__ : Real*, delta : Real*, rho : Real*, dlam : Real*, info : Integer*) : LibC::Int
-    fun slaed5(i__ : Integer*, d__ : Real*, z__ : Real*, delta : Real*, rho : Real*, dlam : Real*) : LibC::Int
-    fun slaed6(kniter : Integer*, orgati : Logical*, rho : Real*, d__ : Real*, z__ : Real*, finit : Real*, tau : Real*, info : Integer*) : LibC::Int
-    fun slaed7(icompq : Integer*, n : Integer*, qsiz : Integer*, tlvls : Integer*, curlvl : Integer*, curpbm : Integer*, d__ : Real*, q : Real*, ldq : Integer*, indxq : Integer*, rho : Real*, cutpnt : Integer*, qstore : Real*, qptr : Integer*, prmptr : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slaed8(icompq : Integer*, k : Integer*, n : Integer*, qsiz : Integer*, d__ : Real*, q : Real*, ldq : Integer*, indxq : Integer*, rho : Real*, cutpnt : Integer*, z__ : Real*, dlamda : Real*, q2 : Real*, ldq2 : Integer*, w : Real*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Real*, indxp : Integer*, indx : Integer*, info : Integer*) : LibC::Int
-    fun slaed9(k : Integer*, kstart : Integer*, kstop : Integer*, n : Integer*, d__ : Real*, q : Real*, ldq : Integer*, rho : Real*, dlamda : Real*, w : Real*, s : Real*, lds : Integer*, info : Integer*) : LibC::Int
-    fun slaeda(n : Integer*, tlvls : Integer*, curlvl : Integer*, curpbm : Integer*, prmptr : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Real*, q : Real*, qptr : Integer*, z__ : Real*, ztemp : Real*, info : Integer*) : LibC::Int
-    fun slaein(rightv : Logical*, noinit : Logical*, n : Integer*, h__ : Real*, ldh : Integer*, wr : Real*, wi : Real*, vr : Real*, vi : Real*, b : Real*, ldb : Integer*, work : Real*, eps3 : Real*, smlnum : Real*, bignum : Real*, info : Integer*) : LibC::Int
-    fun slaev2(a : Real*, b : Real*, c__ : Real*, rt1 : Real*, rt2 : Real*, cs1 : Real*, sn1 : Real*) : LibC::Int
-    fun slaexc(wantq : Logical*, n : Integer*, t : Real*, ldt : Integer*, q : Real*, ldq : Integer*, j1 : Integer*, n1 : Integer*, n2 : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun slag2(a : Real*, lda : Integer*, b : Real*, ldb : Integer*, safmin : Real*, scale1 : Real*, scale2 : Real*, wr1 : Real*, wr2 : Real*, wi : Real*) : LibC::Int
-    fun slag2d(m : Integer*, n : Integer*, sa : Real*, ldsa : Integer*, a : Doublereal*, lda : Integer*, info : Integer*) : LibC::Int
-    fun slags2(upper : Logical*, a1 : Real*, a2 : Real*, a3 : Real*, b1 : Real*, b2 : Real*, b3 : Real*, csu : Real*, snu : Real*, csv : Real*, snv : Real*, csq : Real*, snq : Real*) : LibC::Int
-    fun slagtf(n : Integer*, a : Real*, lambda : Real*, b : Real*, c__ : Real*, tol : Real*, d__ : Real*, in : Integer*, info : Integer*) : LibC::Int
-    fun slagtm(trans : LibC::Char*, n : Integer*, nrhs : Integer*, alpha : Real*, dl : Real*, d__ : Real*, du : Real*, x : Real*, ldx : Integer*, beta : Real*, b : Real*, ldb : Integer*) : LibC::Int
-    fun slagts(job : Integer*, n : Integer*, a : Real*, b : Real*, c__ : Real*, d__ : Real*, in : Integer*, y : Real*, tol : Real*, info : Integer*) : LibC::Int
-    fun slagv2(a : Real*, lda : Integer*, b : Real*, ldb : Integer*, alphar : Real*, alphai : Real*, beta : Real*, csl : Real*, snl : Real*, csr : Real*, snr : Real*) : LibC::Int
-    fun slahqr(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Real*, ldh : Integer*, wr : Real*, wi : Real*, iloz : Integer*, ihiz : Integer*, z__ : Real*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun slahr2(n : Integer*, k : Integer*, nb : Integer*, a : Real*, lda : Integer*, tau : Real*, t : Real*, ldt : Integer*, y : Real*, ldy : Integer*) : LibC::Int
-    fun slahrd(n : Integer*, k : Integer*, nb : Integer*, a : Real*, lda : Integer*, tau : Real*, t : Real*, ldt : Integer*, y : Real*, ldy : Integer*) : LibC::Int
-    fun slaic1(job : Integer*, j : Integer*, x : Real*, sest : Real*, w : Real*, gamma : Real*, sestpr : Real*, s : Real*, c__ : Real*) : LibC::Int
-    fun slaisnan(sin1 : Real*, sin2 : Real*) : Logical
-    fun slaln2(ltrans : Logical*, na : Integer*, nw : Integer*, smin : Real*, ca : Real*, a : Real*, lda : Integer*, d1 : Real*, d2 : Real*, b : Real*, ldb : Integer*, wr : Real*, wi : Real*, x : Real*, ldx : Integer*, scale : Real*, xnorm : Real*, info : Integer*) : LibC::Int
-    fun slals0(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, nrhs : Integer*, b : Real*, ldb : Integer*, bx : Real*, ldbx : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Real*, ldgnum : Integer*, poles : Real*, difl : Real*, difr : Real*, z__ : Real*, k : Integer*, c__ : Real*, s : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun slalsa(icompq : Integer*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, b : Real*, ldb : Integer*, bx : Real*, ldbx : Integer*, u : Real*, ldu : Integer*, vt : Real*, k : Integer*, difl : Real*, difr : Real*, z__ : Real*, poles : Real*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, perm : Integer*, givnum : Real*, c__ : Real*, s : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slalsd(uplo : LibC::Char*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, b : Real*, ldb : Integer*, rcond : Real*, rank : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slamrg(n1 : Integer*, n2 : Integer*, a : Real*, strd1 : Integer*, strd2 : Integer*, index : Integer*) : LibC::Int
-    fun slaneg(n : Integer*, d__ : Real*, lld : Real*, sigma : Real*, pivmin : Real*, r__ : Integer*) : Integer
-    fun slangb(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Real
-    fun slange(norm : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
-    fun slangt(norm : LibC::Char*, n : Integer*, dl : Real*, d__ : Real*, du : Real*) : Real
-    fun slanhs(norm : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
-    fun slansb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Real
-    fun slansf(norm : LibC::Char*, transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, work : Real*) : Real
-    fun slansp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, work : Real*) : Real
-    fun slanst(norm : LibC::Char*, n : Integer*, d__ : Real*, e : Real*) : Real
-    fun slansy(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
-    fun slantb(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, ab : Real*, ldab : Integer*, work : Real*) : Real
-    fun slantp(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Real*, work : Real*) : Real
-    fun slantr(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, work : Real*) : Real
-    fun slanv2(a : Real*, b : Real*, c__ : Real*, d__ : Real*, rt1r : Real*, rt1i : Real*, rt2r : Real*, rt2i : Real*, cs : Real*, sn : Real*) : LibC::Int
-    fun slapll(n : Integer*, x : Real*, incx : Integer*, y : Real*, incy : Integer*, ssmin : Real*) : LibC::Int
-    fun slapmt(forwrd : Logical*, m : Integer*, n : Integer*, x : Real*, ldx : Integer*, k : Integer*) : LibC::Int
-    fun slapy2(x : Real*, y : Real*) : Doublereal
-    fun slapy3(x : Real*, y : Real*, z__ : Real*) : Doublereal
-    fun slaqgb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Real*, ldab : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun slaqge(m : Integer*, n : Integer*, a : Real*, lda : Integer*, r__ : Real*, c__ : Real*, rowcnd : Real*, colcnd : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun slaqp2(m : Integer*, n : Integer*, offset : Integer*, a : Real*, lda : Integer*, jpvt : Integer*, tau : Real*, vn1 : Real*, vn2 : Real*, work : Real*) : LibC::Int
-    fun slaqps(m : Integer*, n : Integer*, offset : Integer*, nb : Integer*, kb : Integer*, a : Real*, lda : Integer*, jpvt : Integer*, tau : Real*, vn1 : Real*, vn2 : Real*, auxv : Real*, f : Real*, ldf : Integer*) : LibC::Int
-    fun slaqr0(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Real*, ldh : Integer*, wr : Real*, wi : Real*, iloz : Integer*, ihiz : Integer*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun slaqr1(n : Integer*, h__ : Real*, ldh : Integer*, sr1 : Real*, si1 : Real*, sr2 : Real*, si2 : Real*, v : Real*) : LibC::Int
-    fun slaqr2(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Real*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Real*, ldz : Integer*, ns : Integer*, nd : Integer*, sr : Real*, si : Real*, v : Real*, ldv : Integer*, nh : Integer*, t : Real*, ldt : Integer*, nv : Integer*, wv : Real*, ldwv : Integer*, work : Real*, lwork : Integer*) : LibC::Int
-    fun slaqr3(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Real*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Real*, ldz : Integer*, ns : Integer*, nd : Integer*, sr : Real*, si : Real*, v : Real*, ldv : Integer*, nh : Integer*, t : Real*, ldt : Integer*, nv : Integer*, wv : Real*, ldwv : Integer*, work : Real*, lwork : Integer*) : LibC::Int
-    fun slaqr4(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Real*, ldh : Integer*, wr : Real*, wi : Real*, iloz : Integer*, ihiz : Integer*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun slaqr5(wantt : Logical*, wantz : Logical*, kacc22 : Integer*, n : Integer*, ktop : Integer*, kbot : Integer*, nshfts : Integer*, sr : Real*, si : Real*, h__ : Real*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Real*, ldz : Integer*, v : Real*, ldv : Integer*, u : Real*, ldu : Integer*, nv : Integer*, wv : Real*, ldwv : Integer*, nh : Integer*, wh : Real*, ldwh : Integer*) : LibC::Int
-    fun slaqsb(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun slaqsp(uplo : LibC::Char*, n : Integer*, ap : Real*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun slaqsy(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, equed : LibC::Char*) : LibC::Int
-    fun slaqtr(ltran : Logical*, lreal : Logical*, n : Integer*, t : Real*, ldt : Integer*, b : Real*, w : Real*, scale : Real*, x : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun slar1v(n : Integer*, b1 : Integer*, bn : Integer*, lambda : Real*, d__ : Real*, l : Real*, ld : Real*, lld : Real*, pivmin : Real*, gaptol : Real*, z__ : Real*, wantnc : Logical*, negcnt : Integer*, ztz : Real*, mingma : Real*, r__ : Integer*, isuppz : Integer*, nrminv : Real*, resid : Real*, rqcorr : Real*, work : Real*) : LibC::Int
-    fun slar2v(n : Integer*, x : Real*, y : Real*, z__ : Real*, incx : Integer*, c__ : Real*, s : Real*, incc : Integer*) : LibC::Int
-    fun slarf(side : LibC::Char*, m : Integer*, n : Integer*, v : Real*, incv : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*) : LibC::Int
-    fun slarfb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, v : Real*, ldv : Integer*, t : Real*, ldt : Integer*, c__ : Real*, ldc : Integer*, work : Real*, ldwork : Integer*) : LibC::Int
-    fun slarfg(n : Integer*, alpha : Real*, x : Real*, incx : Integer*, tau : Real*) : LibC::Int
-    fun slarfp(n : Integer*, alpha : Real*, x : Real*, incx : Integer*, tau : Real*) : LibC::Int
-    fun slarft(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Real*, ldv : Integer*, tau : Real*, t : Real*, ldt : Integer*) : LibC::Int
-    fun slarfx(side : LibC::Char*, m : Integer*, n : Integer*, v : Real*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*) : LibC::Int
-    fun slargv(n : Integer*, x : Real*, incx : Integer*, y : Real*, incy : Integer*, c__ : Real*, incc : Integer*) : LibC::Int
-    fun slarnv(idist : Integer*, iseed : Integer*, n : Integer*, x : Real*) : LibC::Int
-    fun slarra(n : Integer*, d__ : Real*, e : Real*, e2 : Real*, spltol : Real*, tnrm : Real*, nsplit : Integer*, isplit : Integer*, info : Integer*) : LibC::Int
-    fun slarrb(n : Integer*, d__ : Real*, lld : Real*, ifirst : Integer*, ilast : Integer*, rtol1 : Real*, rtol2 : Real*, offset : Integer*, w : Real*, wgap : Real*, werr : Real*, work : Real*, iwork : Integer*, pivmin : Real*, spdiam : Real*, twist : Integer*, info : Integer*) : LibC::Int
-    fun slarrc(jobt : LibC::Char*, n : Integer*, vl : Real*, vu : Real*, d__ : Real*, e : Real*, pivmin : Real*, eigcnt : Integer*, lcnt : Integer*, rcnt : Integer*, info : Integer*) : LibC::Int
-    fun slarrd(range : LibC::Char*, order : LibC::Char*, n : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, gers : Real*, reltol : Real*, d__ : Real*, e : Real*, e2 : Real*, pivmin : Real*, nsplit : Integer*, isplit : Integer*, m : Integer*, w : Real*, werr : Real*, wl : Real*, wu : Real*, iblock : Integer*, indexw : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slarre(range : LibC::Char*, n : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, d__ : Real*, e : Real*, e2 : Real*, rtol1 : Real*, rtol2 : Real*, spltol : Real*, nsplit : Integer*, isplit : Integer*, m : Integer*, w : Real*, werr : Real*, wgap : Real*, iblock : Integer*, indexw : Integer*, gers : Real*, pivmin : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slarrf(n : Integer*, d__ : Real*, l : Real*, ld : Real*, clstrt : Integer*, clend : Integer*, w : Real*, wgap : Real*, werr : Real*, spdiam : Real*, clgapl : Real*, clgapr : Real*, pivmin : Real*, sigma : Real*, dplus : Real*, lplus : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun slarrj(n : Integer*, d__ : Real*, e2 : Real*, ifirst : Integer*, ilast : Integer*, rtol : Real*, offset : Integer*, w : Real*, werr : Real*, work : Real*, iwork : Integer*, pivmin : Real*, spdiam : Real*, info : Integer*) : LibC::Int
-    fun slarrk(n : Integer*, iw : Integer*, gl : Real*, gu : Real*, d__ : Real*, e2 : Real*, pivmin : Real*, reltol : Real*, w : Real*, werr : Real*, info : Integer*) : LibC::Int
-    fun slarrr(n : Integer*, d__ : Real*, e : Real*, info : Integer*) : LibC::Int
-    fun slarrv(n : Integer*, vl : Real*, vu : Real*, d__ : Real*, l : Real*, pivmin : Real*, isplit : Integer*, m : Integer*, dol : Integer*, dou : Integer*, minrgp : Real*, rtol1 : Real*, rtol2 : Real*, w : Real*, werr : Real*, wgap : Real*, iblock : Integer*, indexw : Integer*, gers : Real*, z__ : Real*, ldz : Integer*, isuppz : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slarscl2(m : Integer*, n : Integer*, d__ : Real*, x : Real*, ldx : Integer*) : LibC::Int
-    fun slartg(f : Real*, g : Real*, cs : Real*, sn : Real*, r__ : Real*) : LibC::Int
-    fun slartv(n : Integer*, x : Real*, incx : Integer*, y : Real*, incy : Integer*, c__ : Real*, s : Real*, incc : Integer*) : LibC::Int
-    fun slaruv(iseed : Integer*, n : Integer*, x : Real*) : LibC::Int
-    fun slarz(side : LibC::Char*, m : Integer*, n : Integer*, l : Integer*, v : Real*, incv : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*) : LibC::Int
-    fun slarzb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, v : Real*, ldv : Integer*, t : Real*, ldt : Integer*, c__ : Real*, ldc : Integer*, work : Real*, ldwork : Integer*) : LibC::Int
-    fun slarzt(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Real*, ldv : Integer*, tau : Real*, t : Real*, ldt : Integer*) : LibC::Int
-    fun slas2(f : Real*, g : Real*, h__ : Real*, ssmin : Real*, ssmax : Real*) : LibC::Int
-    fun slascl(type__ : LibC::Char*, kl : Integer*, ku : Integer*, cfrom : Real*, cto : Real*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun slascl2(m : Integer*, n : Integer*, d__ : Real*, x : Real*, ldx : Integer*) : LibC::Int
-    fun slasd0(n : Integer*, sqre : Integer*, d__ : Real*, e : Real*, u : Real*, ldu : Integer*, vt : Real*, ldvt : Integer*, smlsiz : Integer*, iwork : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun slasd1(nl : Integer*, nr : Integer*, sqre : Integer*, d__ : Real*, alpha : Real*, beta : Real*, u : Real*, ldu : Integer*, vt : Real*, ldvt : Integer*, idxq : Integer*, iwork : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun slasd2(nl : Integer*, nr : Integer*, sqre : Integer*, k : Integer*, d__ : Real*, z__ : Real*, alpha : Real*, beta : Real*, u : Real*, ldu : Integer*, vt : Real*, ldvt : Integer*, dsigma : Real*, u2 : Real*, ldu2 : Integer*, vt2 : Real*, ldvt2 : Integer*, idxp : Integer*, idx : Integer*, idxc : Integer*, idxq : Integer*, coltyp : Integer*, info : Integer*) : LibC::Int
-    fun slasd3(nl : Integer*, nr : Integer*, sqre : Integer*, k : Integer*, d__ : Real*, q : Real*, ldq : Integer*, dsigma : Real*, u : Real*, ldu : Integer*, u2 : Real*, ldu2 : Integer*, vt : Real*, ldvt : Integer*, vt2 : Real*, ldvt2 : Integer*, idxc : Integer*, ctot : Integer*, z__ : Real*, info : Integer*) : LibC::Int
-    fun slasd4(n : Integer*, i__ : Integer*, d__ : Real*, z__ : Real*, delta : Real*, rho : Real*, sigma : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun slasd5(i__ : Integer*, d__ : Real*, z__ : Real*, delta : Real*, rho : Real*, dsigma : Real*, work : Real*) : LibC::Int
-    fun slasd6(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, d__ : Real*, vf : Real*, vl : Real*, alpha : Real*, beta : Real*, idxq : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Real*, ldgnum : Integer*, poles : Real*, difl : Real*, difr : Real*, z__ : Real*, k : Integer*, c__ : Real*, s : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slasd7(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, k : Integer*, d__ : Real*, z__ : Real*, zw : Real*, vf : Real*, vfw : Real*, vl : Real*, vlw : Real*, alpha : Real*, beta : Real*, dsigma : Real*, idx : Integer*, idxp : Integer*, idxq : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Real*, ldgnum : Integer*, c__ : Real*, s : Real*, info : Integer*) : LibC::Int
-    fun slasd8(icompq : Integer*, k : Integer*, d__ : Real*, z__ : Real*, vf : Real*, vl : Real*, difl : Real*, difr : Real*, lddifr : Integer*, dsigma : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun slasda(icompq : Integer*, smlsiz : Integer*, n : Integer*, sqre : Integer*, d__ : Real*, e : Real*, u : Real*, ldu : Integer*, vt : Real*, k : Integer*, difl : Real*, difr : Real*, z__ : Real*, poles : Real*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, perm : Integer*, givnum : Real*, c__ : Real*, s : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun slasdq(uplo : LibC::Char*, sqre : Integer*, n : Integer*, ncvt : Integer*, nru : Integer*, ncc : Integer*, d__ : Real*, e : Real*, vt : Real*, ldvt : Integer*, u : Real*, ldu : Integer*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun slasdt(n : Integer*, lvl : Integer*, nd : Integer*, inode : Integer*, ndiml : Integer*, ndimr : Integer*, msub : Integer*) : LibC::Int
-    fun slaset(uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Real*, beta : Real*, a : Real*, lda : Integer*) : LibC::Int
-    fun slasq1(n : Integer*, d__ : Real*, e : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun slasq2(n : Integer*, z__ : Real*, info : Integer*) : LibC::Int
-    fun slasq3(i0 : Integer*, n0 : Integer*, z__ : Real*, pp : Integer*, dmin__ : Real*, sigma : Real*, desig : Real*, qmax : Real*, nfail : Integer*, iter : Integer*, ndiv : Integer*, ieee : Logical*, ttype : Integer*, dmin1 : Real*, dmin2 : Real*, dn : Real*, dn1 : Real*, dn2 : Real*, g : Real*, tau : Real*) : LibC::Int
-    fun slasq4(i0 : Integer*, n0 : Integer*, z__ : Real*, pp : Integer*, n0in : Integer*, dmin__ : Real*, dmin1 : Real*, dmin2 : Real*, dn : Real*, dn1 : Real*, dn2 : Real*, tau : Real*, ttype : Integer*, g : Real*) : LibC::Int
-    fun slasq5(i0 : Integer*, n0 : Integer*, z__ : Real*, pp : Integer*, tau : Real*, dmin__ : Real*, dmin1 : Real*, dmin2 : Real*, dn : Real*, dnm1 : Real*, dnm2 : Real*, ieee : Logical*) : LibC::Int
-    fun slasq6(i0 : Integer*, n0 : Integer*, z__ : Real*, pp : Integer*, dmin__ : Real*, dmin1 : Real*, dmin2 : Real*, dn : Real*, dnm1 : Real*, dnm2 : Real*) : LibC::Int
-    fun slasr(side : LibC::Char*, pivot : LibC::Char*, direct : LibC::Char*, m : Integer*, n : Integer*, c__ : Real*, s : Real*, a : Real*, lda : Integer*) : LibC::Int
-    fun slasrt(id : LibC::Char*, n : Integer*, d__ : Real*, info : Integer*) : LibC::Int
-    fun slassq(n : Integer*, x : Real*, incx : Integer*, scale : Real*, sumsq : Real*) : LibC::Int
-    fun slasv2(f : Real*, g : Real*, h__ : Real*, ssmin : Real*, ssmax : Real*, snr : Real*, csr : Real*, snl : Real*, csl : Real*) : LibC::Int
-    fun slaswp(n : Integer*, a : Real*, lda : Integer*, k1 : Integer*, k2 : Integer*, ipiv : Integer*, incx : Integer*) : LibC::Int
-    fun slasy2(ltranl : Logical*, ltranr : Logical*, isgn : Integer*, n1 : Integer*, n2 : Integer*, tl : Real*, ldtl : Integer*, tr : Real*, ldtr : Integer*, b : Real*, ldb : Integer*, scale : Real*, x : Real*, ldx : Integer*, xnorm : Real*, info : Integer*) : LibC::Int
-    fun slasyf(uplo : LibC::Char*, n : Integer*, nb : Integer*, kb : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, w : Real*, ldw : Integer*, info : Integer*) : LibC::Int
-    fun slatbs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, x : Real*, scale : Real*, cnorm : Real*, info : Integer*) : LibC::Int
-    fun slatdf(ijob : Integer*, n : Integer*, z__ : Real*, ldz : Integer*, rhs : Real*, rdsum : Real*, rdscal : Real*, ipiv : Integer*, jpiv : Integer*) : LibC::Int
-    fun slatps(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, ap : Real*, x : Real*, scale : Real*, cnorm : Real*, info : Integer*) : LibC::Int
-    fun slatrd(uplo : LibC::Char*, n : Integer*, nb : Integer*, a : Real*, lda : Integer*, e : Real*, tau : Real*, w : Real*, ldw : Integer*) : LibC::Int
-    fun slatrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, x : Real*, scale : Real*, cnorm : Real*, info : Integer*) : LibC::Int
-    fun slatrz(m : Integer*, n : Integer*, l : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*) : LibC::Int
-    fun slatzm(side : LibC::Char*, m : Integer*, n : Integer*, v : Real*, incv : Integer*, tau : Real*, c1 : Real*, c2 : Real*, ldc : Integer*, work : Real*) : LibC::Int
-    fun slauu2(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun slauum(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun sopgtr(uplo : LibC::Char*, n : Integer*, ap : Real*, tau : Real*, q : Real*, ldq : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sopmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ap : Real*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sorg2l(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sorg2r(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sorgbr(vect : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorghr(n : Integer*, ilo : Integer*, ihi : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorgl2(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sorglq(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorgql(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorgqr(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorgr2(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sorgrq(m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorgtr(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorm2l(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sorm2r(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sormbr(vect : LibC::Char*, side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sormhr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sorml2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sormlq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sormql(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sormqr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sormr2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sormr3(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sormrq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sormrz(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun sormtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, c__ : Real*, ldc : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun spbcon(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun spbequ(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun spbrfs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun spbstf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun spbsv(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun spbsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, afb : Real*, ldafb : Integer*, equed : LibC::Char*, s : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun spbtf2(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun spbtrf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun spbtrs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun spftrf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, info : Integer*) : LibC::Int
-    fun spftri(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, info : Integer*) : LibC::Int
-    fun spftrs(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun spocon(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun spoequ(n : Integer*, a : Real*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun spoequb(n : Integer*, a : Real*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun sporfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sporfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, s : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sposv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sposvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, equed : LibC::Char*, s : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sposvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, equed : LibC::Char*, s : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun spotf2(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun spotrf(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun spotri(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun spotrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sppcon(uplo : LibC::Char*, n : Integer*, ap : Real*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sppequ(uplo : LibC::Char*, n : Integer*, ap : Real*, s : Real*, scond : Real*, amax : Real*, info : Integer*) : LibC::Int
-    fun spprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, afp : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sppsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sppsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, afp : Real*, equed : LibC::Char*, s : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun spptrf(uplo : LibC::Char*, n : Integer*, ap : Real*, info : Integer*) : LibC::Int
-    fun spptri(uplo : LibC::Char*, n : Integer*, ap : Real*, info : Integer*) : LibC::Int
-    fun spptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun spstf2(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun spstrf(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sptcon(n : Integer*, d__ : Real*, e : Real*, anorm : Real*, rcond : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun spteqr(compz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Real*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sptrfs(n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, df : Real*, ef : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun sptsv(n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sptsvx(fact : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, df : Real*, ef : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun spttrf(n : Integer*, d__ : Real*, e : Real*, info : Integer*) : LibC::Int
-    fun spttrs(n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sptts2(n : Integer*, nrhs : Integer*, d__ : Real*, e : Real*, b : Real*, ldb : Integer*) : LibC::Int
-    fun srscl(n : Integer*, sa : Real*, sx : Real*, incx : Integer*) : LibC::Int
-    fun ssbev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun ssbevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ssbevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, q : Real*, ldq : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun ssbgst(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Real*, ldab : Integer*, bb : Real*, ldbb : Integer*, x : Real*, ldx : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun ssbgv(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Real*, ldab : Integer*, bb : Real*, ldbb : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun ssbgvd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Real*, ldab : Integer*, bb : Real*, ldbb : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ssbgvx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Real*, ldab : Integer*, bb : Real*, ldbb : Integer*, q : Real*, ldq : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun ssbtrd(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, d__ : Real*, e : Real*, q : Real*, ldq : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun ssfrk(transr : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Real*, a : Real*, lda : Integer*, beta : Real*, c__ : Real*) : LibC::Int
-    fun sspcon(uplo : LibC::Char*, n : Integer*, ap : Real*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sspev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sspevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun sspevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun sspgst(itype : Integer*, uplo : LibC::Char*, n : Integer*, ap : Real*, bp : Real*, info : Integer*) : LibC::Int
-    fun sspgv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, bp : Real*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sspgvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, bp : Real*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun sspgvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, bp : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun ssprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, afp : Real*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sspsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sspsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, afp : Real*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ssptrd(uplo : LibC::Char*, n : Integer*, ap : Real*, d__ : Real*, e : Real*, tau : Real*, info : Integer*) : LibC::Int
-    fun ssptrf(uplo : LibC::Char*, n : Integer*, ap : Real*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun ssptri(uplo : LibC::Char*, n : Integer*, ap : Real*, ipiv : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun ssptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun sstebz(range : LibC::Char*, order : LibC::Char*, n : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, d__ : Real*, e : Real*, m : Integer*, nsplit : Integer*, w : Real*, iblock : Integer*, isplit : Integer*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun sstedc(compz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun sstegr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, isuppz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun sstein(n : Integer*, d__ : Real*, e : Real*, m : Integer*, w : Real*, iblock : Integer*, isplit : Integer*, z__ : Real*, ldz : Integer*, work : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun sstemr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, nzc : Integer*, isuppz : Integer*, tryrac : Logical*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ssteqr(compz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Real*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun ssterf(n : Integer*, d__ : Real*, e : Real*, info : Integer*) : LibC::Int
-    fun sstev(jobz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Real*, ldz : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun sstevd(jobz : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun sstevr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, isuppz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun sstevx(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Real*, e : Real*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun ssycon(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, anorm : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ssyequb(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, s : Real*, scond : Real*, amax : Real*, work : Real*, info : Integer*) : LibC::Int
-    fun ssyev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, w : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun ssyevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, w : Real*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ssyevr(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, isuppz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ssyevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun ssygs2(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ssygst(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ssygv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, w : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun ssygvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, w : Real*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ssygvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, vl : Real*, vu : Real*, il : Integer*, iu : Integer*, abstol : Real*, m : Integer*, w : Real*, z__ : Real*, ldz : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun ssyrfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ssyrfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, s : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ssysv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun ssysvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, ferr : Real*, berr : Real*, work : Real*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ssysvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, af : Real*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, s : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, rcond : Real*, rpvgrw : Real*, berr : Real*, n_err_bnds__ : Integer*, err_bnds_norm__ : Real*, err_bnds_comp__ : Real*, nparams : Integer*, params : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ssytd2(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, d__ : Real*, e : Real*, tau : Real*, info : Integer*) : LibC::Int
-    fun ssytf2(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun ssytrd(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, d__ : Real*, e : Real*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun ssytrf(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun ssytri(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun ssytrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, ipiv : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun stbcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, ab : Real*, ldab : Integer*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun stbrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun stbtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Real*, ldab : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun stfsm(transr : LibC::Char*, side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Real*, a : Real*, b : Real*, ldb : Integer*) : LibC::Int
-    fun stftri(transr : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Real*, info : Integer*) : LibC::Int
-    fun stfttp(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Real*, ap : Real*, info : Integer*) : LibC::Int
-    fun stfttr(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Real*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun stgevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, s : Real*, lds : Integer*, p : Real*, ldp : Integer*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun stgex2(wantq : Logical*, wantz : Logical*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, q : Real*, ldq : Integer*, z__ : Real*, ldz : Integer*, j1 : Integer*, n1 : Integer*, n2 : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun stgexc(wantq : Logical*, wantz : Logical*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, q : Real*, ldq : Integer*, z__ : Real*, ldz : Integer*, ifst : Integer*, ilst : Integer*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun stgsen(ijob : Integer*, wantq : Logical*, wantz : Logical*, select : Logical*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, alphar : Real*, alphai : Real*, beta : Real*, q : Real*, ldq : Integer*, z__ : Real*, ldz : Integer*, m : Integer*, pl : Real*, pr : Real*, dif : Real*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun stgsja(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, tola : Real*, tolb : Real*, alpha : Real*, beta : Real*, u : Real*, ldu : Integer*, v : Real*, ldv : Integer*, q : Real*, ldq : Integer*, work : Real*, ncycle : Integer*, info : Integer*) : LibC::Int
-    fun stgsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, s : Real*, dif : Real*, mm : Integer*, m : Integer*, work : Real*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun stgsy2(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, c__ : Real*, ldc : Integer*, d__ : Real*, ldd : Integer*, e : Real*, lde : Integer*, f : Real*, ldf : Integer*, scale : Real*, rdsum : Real*, rdscal : Real*, iwork : Integer*, pq : Integer*, info : Integer*) : LibC::Int
-    fun stgsyl(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, c__ : Real*, ldc : Integer*, d__ : Real*, ldd : Integer*, e : Real*, lde : Integer*, f : Real*, ldf : Integer*, scale : Real*, dif : Real*, work : Real*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun stpcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Real*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun stprfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun stptri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Real*, info : Integer*) : LibC::Int
-    fun stptrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Real*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun stpttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Real*, arf : Real*, info : Integer*) : LibC::Int
-    fun stpttr(uplo : LibC::Char*, n : Integer*, ap : Real*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun strcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, rcond : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun strevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Real*, ldt : Integer*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun strexc(compq : LibC::Char*, n : Integer*, t : Real*, ldt : Integer*, q : Real*, ldq : Integer*, ifst : Integer*, ilst : Integer*, work : Real*, info : Integer*) : LibC::Int
-    fun strrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, x : Real*, ldx : Integer*, ferr : Real*, berr : Real*, work : Real*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun strsen(job : LibC::Char*, compq : LibC::Char*, select : Logical*, n : Integer*, t : Real*, ldt : Integer*, q : Real*, ldq : Integer*, wr : Real*, wi : Real*, m : Integer*, s : Real*, sep : Real*, work : Real*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun strsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Real*, ldt : Integer*, vl : Real*, ldvl : Integer*, vr : Real*, ldvr : Integer*, s : Real*, sep : Real*, mm : Integer*, m : Integer*, work : Real*, ldwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun strsyl(trana : LibC::Char*, tranb : LibC::Char*, isgn : Integer*, m : Integer*, n : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, c__ : Real*, ldc : Integer*, scale : Real*, info : Integer*) : LibC::Int
-    fun strti2(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun strtri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, info : Integer*) : LibC::Int
-    fun strtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Real*, lda : Integer*, b : Real*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun strttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, arf : Real*, info : Integer*) : LibC::Int
-    fun strttp(uplo : LibC::Char*, n : Integer*, a : Real*, lda : Integer*, ap : Real*, info : Integer*) : LibC::Int
-    fun stzrqf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, info : Integer*) : LibC::Int
-    fun stzrzf(m : Integer*, n : Integer*, a : Real*, lda : Integer*, tau : Real*, work : Real*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun xerbla(srname : LibC::Char*, info : Integer*) : LibC::Int
-    fun xerbla_array_(srname_array__ : LibC::Char*, srname_len__ : Integer*, info : Integer*, srname_array_len : Ftnlen) : LibC::Int
-    fun zbdsqr(uplo : LibC::Char*, n : Integer*, ncvt : Integer*, nru : Integer*, ncc : Integer*, d__ : Doublereal*, e : Doublereal*, vt : Doublecomplex*, ldvt : Integer*, u : Doublecomplex*, ldu : Integer*, c__ : Doublecomplex*, ldc : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zcgesv(n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, work : Doublecomplex*, swork : Complex*, rwork : Doublereal*, iter : Integer*, info : Integer*) : LibC::Int
-    fun zcposv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, work : Doublecomplex*, swork : Complex*, rwork : Doublereal*, iter : Integer*, info : Integer*) : LibC::Int
-    fun zdrscl(n : Integer*, sa : Doublereal*, sx : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun zgbbrd(vect : LibC::Char*, m : Integer*, n : Integer*, ncc : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, d__ : Doublereal*, e : Doublereal*, q : Doublecomplex*, ldq : Integer*, pt : Doublecomplex*, ldpt : Integer*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbcon(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbequ(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbequb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbrfs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbrfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, ipiv : Integer*, r__ : Doublereal*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbsv(n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zgbsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbsvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgbtf2(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zgbtrf(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zgbtrs(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zgebak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, scale : Doublereal*, m : Integer*, v : Doublecomplex*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun zgebal(job : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ilo : Integer*, ihi : Integer*, scale : Doublereal*, info : Integer*) : LibC::Int
-    fun zgebd2(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tauq : Doublecomplex*, taup : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgebrd(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tauq : Doublecomplex*, taup : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgecon(norm : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgeequ(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zgeequb(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zgees(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, n : Integer*, a : Doublecomplex*, lda : Integer*, sdim : Integer*, w : Doublecomplex*, vs : Doublecomplex*, ldvs : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun zgeesx(jobvs : LibC::Char*, sort : LibC::Char*, select : LFp, sense : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, sdim : Integer*, w : Doublecomplex*, vs : Doublecomplex*, ldvs : Integer*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun zgeev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, w : Doublecomplex*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgeevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, w : Doublecomplex*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, scale : Doublereal*, abnrm : Doublereal*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgegs(jobvsl : LibC::Char*, jobvsr : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, vsl : Doublecomplex*, ldvsl : Integer*, vsr : Doublecomplex*, ldvsr : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgegv(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgehd2(n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgehrd(n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgelq2(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgelqf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgels(trans : LibC::Char*, m : Integer*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgelsd(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, s : Doublereal*, rcond : Doublereal*, rank : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zgelss(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, s : Doublereal*, rcond : Doublereal*, rank : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgelsx(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, jpvt : Integer*, rcond : Doublereal*, rank : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgelsy(m : Integer*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, jpvt : Integer*, rcond : Doublereal*, rank : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgeql2(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgeqlf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgeqp3(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, jpvt : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgeqpf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, jpvt : Integer*, tau : Doublecomplex*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgeqr2(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgeqrf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgerfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgerfsx(trans : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, r__ : Doublereal*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgerq2(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgerqf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgesc2(n : Integer*, a : Doublecomplex*, lda : Integer*, rhs : Doublecomplex*, ipiv : Integer*, jpiv : Integer*, scale : Doublereal*) : LibC::Int
-    fun zgesdd(jobz : LibC::Char*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, u : Doublecomplex*, ldu : Integer*, vt : Doublecomplex*, ldvt : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zgesv(n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zgesvd(jobu : LibC::Char*, jobvt : LibC::Char*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, u : Doublecomplex*, ldu : Integer*, vt : Doublecomplex*, ldvt : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgesvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgesvxx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, r__ : Doublereal*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgetc2(n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, jpiv : Integer*, info : Integer*) : LibC::Int
-    fun zgetf2(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zgetrf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zgetri(n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgetrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zggbak(job : LibC::Char*, side : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, lscale : Doublereal*, rscale : Doublereal*, m : Integer*, v : Doublecomplex*, ldv : Integer*, info : Integer*) : LibC::Int
-    fun zggbal(job : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, ilo : Integer*, ihi : Integer*, lscale : Doublereal*, rscale : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun zgges(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, sdim : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, vsl : Doublecomplex*, ldvsl : Integer*, vsr : Doublecomplex*, ldvsr : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun zggesx(jobvsl : LibC::Char*, jobvsr : LibC::Char*, sort : LibC::Char*, selctg : LFp, sense : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, sdim : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, vsl : Doublecomplex*, ldvsl : Integer*, vsr : Doublecomplex*, ldvsr : Integer*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, iwork : Integer*, liwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun zggev(jobvl : LibC::Char*, jobvr : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zggevx(balanc : LibC::Char*, jobvl : LibC::Char*, jobvr : LibC::Char*, sense : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, ilo : Integer*, ihi : Integer*, lscale : Doublereal*, rscale : Doublereal*, abnrm : Doublereal*, bbnrm : Doublereal*, rconde : Doublereal*, rcondv : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, iwork : Integer*, bwork : Logical*, info : Integer*) : LibC::Int
-    fun zggglm(n : Integer*, m : Integer*, p : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, d__ : Doublecomplex*, x : Doublecomplex*, y : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zgghrd(compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, q : Doublecomplex*, ldq : Integer*, z__ : Doublecomplex*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun zgglse(m : Integer*, n : Integer*, p : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, c__ : Doublecomplex*, d__ : Doublecomplex*, x : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zggqrf(n : Integer*, m : Integer*, p : Integer*, a : Doublecomplex*, lda : Integer*, taua : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, taub : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zggrqf(m : Integer*, p : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, taua : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, taub : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zggsvd(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, n : Integer*, p : Integer*, k : Integer*, l : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, alpha : Doublereal*, beta : Doublereal*, u : Doublecomplex*, ldu : Integer*, v : Doublecomplex*, ldv : Integer*, q : Doublecomplex*, ldq : Integer*, work : Doublecomplex*, rwork : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zggsvp(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, tola : Doublereal*, tolb : Doublereal*, k : Integer*, l : Integer*, u : Doublecomplex*, ldu : Integer*, v : Doublecomplex*, ldv : Integer*, q : Doublecomplex*, ldq : Integer*, iwork : Integer*, rwork : Doublereal*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgtcon(norm : LibC::Char*, n : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, du2 : Doublecomplex*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zgtrfs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, dlf : Doublecomplex*, df : Doublecomplex*, duf : Doublecomplex*, du2 : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgtsv(n : Integer*, nrhs : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zgtsvx(fact : LibC::Char*, trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, dlf : Doublecomplex*, df : Doublecomplex*, duf : Doublecomplex*, du2 : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zgttrf(n : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, du2 : Doublecomplex*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zgttrs(trans : LibC::Char*, n : Integer*, nrhs : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, du2 : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zgtts2(itrans : Integer*, n : Integer*, nrhs : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, du2 : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun zhbev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhbevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zhbevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, q : Doublecomplex*, ldq : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun zhbgst(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublecomplex*, ldab : Integer*, bb : Doublecomplex*, ldbb : Integer*, x : Doublecomplex*, ldx : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhbgv(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublecomplex*, ldab : Integer*, bb : Doublecomplex*, ldbb : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhbgvd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublecomplex*, ldab : Integer*, bb : Doublecomplex*, ldbb : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zhbgvx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ka : Integer*, kb : Integer*, ab : Doublecomplex*, ldab : Integer*, bb : Doublecomplex*, ldbb : Integer*, q : Doublecomplex*, ldq : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun zhbtrd(vect : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, d__ : Doublereal*, e : Doublereal*, q : Doublecomplex*, ldq : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zhecon(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zheequb(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zheev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, w : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zheevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, w : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zheevr(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, isuppz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zheevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun zhegs2(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zhegst(itype : Integer*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zhegv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, w : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhegvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, w : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zhegvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun zherfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zherfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhesv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zhesvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhesvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhetd2(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tau : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zhetf2(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zhetrd(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zhetrf(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zhetri(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zhetrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zhfrk(transr : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, n : Integer*, k : Integer*, alpha : Doublereal*, a : Doublecomplex*, lda : Integer*, beta : Doublereal*, c__ : Doublecomplex*) : LibC::Int
-    fun zhgeqz(job : LibC::Char*, compq : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublecomplex*, ldh : Integer*, t : Doublecomplex*, ldt : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, q : Doublecomplex*, ldq : Integer*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhpcon(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zhpev(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhpevd(jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zhpevx(jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun zhpgst(itype : Integer*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, bp : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zhpgv(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, bp : Doublecomplex*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhpgvd(itype : Integer*, jobz : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, bp : Doublecomplex*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zhpgvx(itype : Integer*, jobz : LibC::Char*, range : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, bp : Doublecomplex*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, rwork : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun zhprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, afp : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhpsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zhpsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, afp : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zhptrd(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, d__ : Doublereal*, e : Doublereal*, tau : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zhptrf(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zhptri(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, ipiv : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zhptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zhsein(side : LibC::Char*, eigsrc : LibC::Char*, initv : LibC::Char*, select : Logical*, n : Integer*, h__ : Doublecomplex*, ldh : Integer*, w : Doublecomplex*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Doublecomplex*, rwork : Doublereal*, ifaill : Integer*, ifailr : Integer*, info : Integer*) : LibC::Int
-    fun zhseqr(job : LibC::Char*, compz : LibC::Char*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublecomplex*, ldh : Integer*, w : Doublecomplex*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zla_gbamv_(trans : Integer*, m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, alpha : Doublereal*, ab : Doublecomplex*, ldab : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun zla_gbrcond_c_(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, ipiv : Integer*, c__ : Doublereal*, capply : Logical*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, trans_len : Ftnlen) : Doublereal
-    fun zla_gbrcond_x_(trans : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, ipiv : Integer*, x : Doublecomplex*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, trans_len : Ftnlen) : Doublereal
-    fun zla_gbrfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, kl : Integer*, ku : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, y : Doublecomplex*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublecomplex*, ayb : Doublereal*, dy : Doublecomplex*, y_tail__ : Doublecomplex*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun zla_gbrpvgrw_(n : Integer*, kl : Integer*, ku : Integer*, ncols : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*) : Doublereal
-    fun zla_geamv_(trans : Integer*, m : Integer*, n : Integer*, alpha : Doublereal*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun zla_gercond_c_(trans : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, c__ : Doublereal*, capply : Logical*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, trans_len : Ftnlen) : Doublereal
-    fun zla_gercond_x_(trans : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, x : Doublecomplex*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, trans_len : Ftnlen) : Doublereal
-    fun zla_gerfsx_extended_(prec_type__ : Integer*, trans_type__ : Integer*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, y : Doublecomplex*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublecomplex*, ayb : Doublereal*, dy : Doublecomplex*, y_tail__ : Doublecomplex*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*) : LibC::Int
-    fun zla_heamv_(uplo : Integer*, n : Integer*, alpha : Doublereal*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun zla_hercond_c_(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, c__ : Doublereal*, capply : Logical*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_hercond_x_(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, x : Doublecomplex*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_herfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, y : Doublecomplex*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublecomplex*, ayb : Doublereal*, dy : Doublecomplex*, y_tail__ : Doublecomplex*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun zla_herpvgrw_(uplo : LibC::Char*, n : Integer*, info : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, work : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_lin_berr_(n : Integer*, nz : Integer*, nrhs : Integer*, res : Doublecomplex*, ayb : Doublereal*, berr : Doublereal*) : LibC::Int
-    fun zla_porcond_c_(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, c__ : Doublereal*, capply : Logical*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_porcond_x_(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, x : Doublecomplex*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_porfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, y : Doublecomplex*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublecomplex*, ayb : Doublereal*, dy : Doublecomplex*, y_tail__ : Doublecomplex*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun zla_porpvgrw_(uplo : LibC::Char*, ncols : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, work : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_rpvgrw_(n : Integer*, ncols : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*) : Doublereal
-    fun zla_syamv_(uplo : Integer*, n : Integer*, alpha : Doublereal*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublereal*, y : Doublereal*, incy : Integer*) : LibC::Int
-    fun zla_syrcond_c_(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, c__ : Doublereal*, capply : Logical*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_syrcond_x_(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, x : Doublecomplex*, info : Integer*, work : Doublecomplex*, rwork : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_syrfsx_extended_(prec_type__ : Integer*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, colequ : Logical*, c__ : Doublereal*, b : Doublecomplex*, ldb : Integer*, y : Doublecomplex*, ldy : Integer*, berr_out__ : Doublereal*, n_norms__ : Integer*, errs_n__ : Doublereal*, errs_c__ : Doublereal*, res : Doublecomplex*, ayb : Doublereal*, dy : Doublecomplex*, y_tail__ : Doublecomplex*, rcond : Doublereal*, ithresh : Integer*, rthresh : Doublereal*, dz_ub__ : Doublereal*, ignore_cwise__ : Logical*, info : Integer*, uplo_len : Ftnlen) : LibC::Int
-    fun zla_syrpvgrw_(uplo : LibC::Char*, n : Integer*, info : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, work : Doublereal*, uplo_len : Ftnlen) : Doublereal
-    fun zla_wwaddw_(n : Integer*, x : Doublecomplex*, y : Doublecomplex*, w : Doublecomplex*) : LibC::Int
-    fun zlabrd(m : Integer*, n : Integer*, nb : Integer*, a : Doublecomplex*, lda : Integer*, d__ : Doublereal*, e : Doublereal*, tauq : Doublecomplex*, taup : Doublecomplex*, x : Doublecomplex*, ldx : Integer*, y : Doublecomplex*, ldy : Integer*) : LibC::Int
-    fun zlacgv(n : Integer*, x : Doublecomplex*, incx : Integer*) : LibC::Int
-    fun zlacn2(n : Integer*, v : Doublecomplex*, x : Doublecomplex*, est : Doublereal*, kase : Integer*, isave : Integer*) : LibC::Int
-    fun zlacon(n : Integer*, v : Doublecomplex*, x : Doublecomplex*, est : Doublereal*, kase : Integer*) : LibC::Int
-    fun zlacp2(uplo : LibC::Char*, m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun zlacpy(uplo : LibC::Char*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun zlacrm(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublereal*, ldb : Integer*, c__ : Doublecomplex*, ldc : Integer*, rwork : Doublereal*) : LibC::Int
-    fun zlacrt(n : Integer*, cx : Doublecomplex*, incx : Integer*, cy : Doublecomplex*, incy : Integer*, c__ : Doublecomplex*, s : Doublecomplex*) : LibC::Int
-    fun zladiv(ret_val : Doublecomplex*, x : Doublecomplex*, y : Doublecomplex*)
-    fun zlaed0(qsiz : Integer*, n : Integer*, d__ : Doublereal*, e : Doublereal*, q : Doublecomplex*, ldq : Integer*, qstore : Doublecomplex*, ldqs : Integer*, rwork : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zlaed7(n : Integer*, cutpnt : Integer*, qsiz : Integer*, tlvls : Integer*, curlvl : Integer*, curpbm : Integer*, d__ : Doublereal*, q : Doublecomplex*, ldq : Integer*, rho : Doublereal*, indxq : Integer*, qstore : Doublereal*, qptr : Integer*, prmptr : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zlaed8(k : Integer*, n : Integer*, qsiz : Integer*, q : Doublecomplex*, ldq : Integer*, d__ : Doublereal*, rho : Doublereal*, cutpnt : Integer*, z__ : Doublereal*, dlamda : Doublereal*, q2 : Doublecomplex*, ldq2 : Integer*, w : Doublereal*, indxp : Integer*, indx : Integer*, indxq : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, givnum : Doublereal*, info : Integer*) : LibC::Int
-    fun zlaein(rightv : Logical*, noinit : Logical*, n : Integer*, h__ : Doublecomplex*, ldh : Integer*, w : Doublecomplex*, v : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, rwork : Doublereal*, eps3 : Doublereal*, smlnum : Doublereal*, info : Integer*) : LibC::Int
-    fun zlaesy(a : Doublecomplex*, b : Doublecomplex*, c__ : Doublecomplex*, rt1 : Doublecomplex*, rt2 : Doublecomplex*, evscal : Doublecomplex*, cs1 : Doublecomplex*, sn1 : Doublecomplex*) : LibC::Int
-    fun zlaev2(a : Doublecomplex*, b : Doublecomplex*, c__ : Doublecomplex*, rt1 : Doublereal*, rt2 : Doublereal*, cs1 : Doublereal*, sn1 : Doublecomplex*) : LibC::Int
-    fun zlag2c(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, sa : Complex*, ldsa : Integer*, info : Integer*) : LibC::Int
-    fun zlags2(upper : Logical*, a1 : Doublereal*, a2 : Doublecomplex*, a3 : Doublereal*, b1 : Doublereal*, b2 : Doublecomplex*, b3 : Doublereal*, csu : Doublereal*, snu : Doublecomplex*, csv : Doublereal*, snv : Doublecomplex*, csq : Doublereal*, snq : Doublecomplex*) : LibC::Int
-    fun zlagtm(trans : LibC::Char*, n : Integer*, nrhs : Integer*, alpha : Doublereal*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*, x : Doublecomplex*, ldx : Integer*, beta : Doublereal*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun zlahef(uplo : LibC::Char*, n : Integer*, nb : Integer*, kb : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, w : Doublecomplex*, ldw : Integer*, info : Integer*) : LibC::Int
-    fun zlahqr(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublecomplex*, ldh : Integer*, w : Doublecomplex*, iloz : Integer*, ihiz : Integer*, z__ : Doublecomplex*, ldz : Integer*, info : Integer*) : LibC::Int
-    fun zlahr2(n : Integer*, k : Integer*, nb : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, t : Doublecomplex*, ldt : Integer*, y : Doublecomplex*, ldy : Integer*) : LibC::Int
-    fun zlahrd(n : Integer*, k : Integer*, nb : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, t : Doublecomplex*, ldt : Integer*, y : Doublecomplex*, ldy : Integer*) : LibC::Int
-    fun zlaic1(job : Integer*, j : Integer*, x : Doublecomplex*, sest : Doublereal*, w : Doublecomplex*, gamma : Doublecomplex*, sestpr : Doublereal*, s : Doublecomplex*, c__ : Doublecomplex*) : LibC::Int
-    fun zlals0(icompq : Integer*, nl : Integer*, nr : Integer*, sqre : Integer*, nrhs : Integer*, b : Doublecomplex*, ldb : Integer*, bx : Doublecomplex*, ldbx : Integer*, perm : Integer*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, givnum : Doublereal*, ldgnum : Integer*, poles : Doublereal*, difl : Doublereal*, difr : Doublereal*, z__ : Doublereal*, k : Integer*, c__ : Doublereal*, s : Doublereal*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zlalsa(icompq : Integer*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, b : Doublecomplex*, ldb : Integer*, bx : Doublecomplex*, ldbx : Integer*, u : Doublereal*, ldu : Integer*, vt : Doublereal*, k : Integer*, difl : Doublereal*, difr : Doublereal*, z__ : Doublereal*, poles : Doublereal*, givptr : Integer*, givcol : Integer*, ldgcol : Integer*, perm : Integer*, givnum : Doublereal*, c__ : Doublereal*, s : Doublereal*, rwork : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zlalsd(uplo : LibC::Char*, smlsiz : Integer*, n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublereal*, b : Doublecomplex*, ldb : Integer*, rcond : Doublereal*, rank : Integer*, work : Doublecomplex*, rwork : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zlangb(norm : LibC::Char*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, work : Doublereal*) : Doublereal
-    fun zlange(norm : LibC::Char*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun zlangt(norm : LibC::Char*, n : Integer*, dl : Doublecomplex*, d__ : Doublecomplex*, du : Doublecomplex*) : Doublereal
-    fun zlanhb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Doublecomplex*, ldab : Integer*, work : Doublereal*) : Doublereal
-    fun zlanhe(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun zlanhf(norm : LibC::Char*, transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, work : Doublereal*) : Doublereal
-    fun zlanhp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, work : Doublereal*) : Doublereal
-    fun zlanhs(norm : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun zlanht(norm : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublecomplex*) : Doublereal
-    fun zlansb(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, k : Integer*, ab : Doublecomplex*, ldab : Integer*, work : Doublereal*) : Doublereal
-    fun zlansp(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, work : Doublereal*) : Doublereal
-    fun zlansy(norm : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun zlantb(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, k : Integer*, ab : Doublecomplex*, ldab : Integer*, work : Doublereal*) : Doublereal
-    fun zlantp(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublecomplex*, work : Doublereal*) : Doublereal
-    fun zlantr(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, work : Doublereal*) : Doublereal
-    fun zlapll(n : Integer*, x : Doublecomplex*, incx : Integer*, y : Doublecomplex*, incy : Integer*, ssmin : Doublereal*) : LibC::Int
-    fun zlapmt(forwrd : Logical*, m : Integer*, n : Integer*, x : Doublecomplex*, ldx : Integer*, k : Integer*) : LibC::Int
-    fun zlaqgb(m : Integer*, n : Integer*, kl : Integer*, ku : Integer*, ab : Doublecomplex*, ldab : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlaqge(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, r__ : Doublereal*, c__ : Doublereal*, rowcnd : Doublereal*, colcnd : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlaqhb(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlaqhe(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlaqhp(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlaqp2(m : Integer*, n : Integer*, offset : Integer*, a : Doublecomplex*, lda : Integer*, jpvt : Integer*, tau : Doublecomplex*, vn1 : Doublereal*, vn2 : Doublereal*, work : Doublecomplex*) : LibC::Int
-    fun zlaqps(m : Integer*, n : Integer*, offset : Integer*, nb : Integer*, kb : Integer*, a : Doublecomplex*, lda : Integer*, jpvt : Integer*, tau : Doublecomplex*, vn1 : Doublereal*, vn2 : Doublereal*, auxv : Doublecomplex*, f : Doublecomplex*, ldf : Integer*) : LibC::Int
-    fun zlaqr0(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublecomplex*, ldh : Integer*, w : Doublecomplex*, iloz : Integer*, ihiz : Integer*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zlaqr1(n : Integer*, h__ : Doublecomplex*, ldh : Integer*, s1 : Doublecomplex*, s2 : Doublecomplex*, v : Doublecomplex*) : LibC::Int
-    fun zlaqr2(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Doublecomplex*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Doublecomplex*, ldz : Integer*, ns : Integer*, nd : Integer*, sh : Doublecomplex*, v : Doublecomplex*, ldv : Integer*, nh : Integer*, t : Doublecomplex*, ldt : Integer*, nv : Integer*, wv : Doublecomplex*, ldwv : Integer*, work : Doublecomplex*, lwork : Integer*) : LibC::Int
-    fun zlaqr3(wantt : Logical*, wantz : Logical*, n : Integer*, ktop : Integer*, kbot : Integer*, nw : Integer*, h__ : Doublecomplex*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Doublecomplex*, ldz : Integer*, ns : Integer*, nd : Integer*, sh : Doublecomplex*, v : Doublecomplex*, ldv : Integer*, nh : Integer*, t : Doublecomplex*, ldt : Integer*, nv : Integer*, wv : Doublecomplex*, ldwv : Integer*, work : Doublecomplex*, lwork : Integer*) : LibC::Int
-    fun zlaqr4(wantt : Logical*, wantz : Logical*, n : Integer*, ilo : Integer*, ihi : Integer*, h__ : Doublecomplex*, ldh : Integer*, w : Doublecomplex*, iloz : Integer*, ihiz : Integer*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zlaqr5(wantt : Logical*, wantz : Logical*, kacc22 : Integer*, n : Integer*, ktop : Integer*, kbot : Integer*, nshfts : Integer*, s : Doublecomplex*, h__ : Doublecomplex*, ldh : Integer*, iloz : Integer*, ihiz : Integer*, z__ : Doublecomplex*, ldz : Integer*, v : Doublecomplex*, ldv : Integer*, u : Doublecomplex*, ldu : Integer*, nv : Integer*, wv : Doublecomplex*, ldwv : Integer*, nh : Integer*, wh : Doublecomplex*, ldwh : Integer*) : LibC::Int
-    fun zlaqsb(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlaqsp(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlaqsy(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, equed : LibC::Char*) : LibC::Int
-    fun zlar1v(n : Integer*, b1 : Integer*, bn : Integer*, lambda : Doublereal*, d__ : Doublereal*, l : Doublereal*, ld : Doublereal*, lld : Doublereal*, pivmin : Doublereal*, gaptol : Doublereal*, z__ : Doublecomplex*, wantnc : Logical*, negcnt : Integer*, ztz : Doublereal*, mingma : Doublereal*, r__ : Integer*, isuppz : Integer*, nrminv : Doublereal*, resid : Doublereal*, rqcorr : Doublereal*, work : Doublereal*) : LibC::Int
-    fun zlar2v(n : Integer*, x : Doublecomplex*, y : Doublecomplex*, z__ : Doublecomplex*, incx : Integer*, c__ : Doublereal*, s : Doublecomplex*, incc : Integer*) : LibC::Int
-    fun zlarcm(m : Integer*, n : Integer*, a : Doublereal*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, c__ : Doublecomplex*, ldc : Integer*, rwork : Doublereal*) : LibC::Int
-    fun zlarf(side : LibC::Char*, m : Integer*, n : Integer*, v : Doublecomplex*, incv : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*) : LibC::Int
-    fun zlarfb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, v : Doublecomplex*, ldv : Integer*, t : Doublecomplex*, ldt : Integer*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, ldwork : Integer*) : LibC::Int
-    fun zlarfg(n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, tau : Doublecomplex*) : LibC::Int
-    fun zlarfp(n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, tau : Doublecomplex*) : LibC::Int
-    fun zlarft(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Doublecomplex*, ldv : Integer*, tau : Doublecomplex*, t : Doublecomplex*, ldt : Integer*) : LibC::Int
-    fun zlarfx(side : LibC::Char*, m : Integer*, n : Integer*, v : Doublecomplex*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*) : LibC::Int
-    fun zlargv(n : Integer*, x : Doublecomplex*, incx : Integer*, y : Doublecomplex*, incy : Integer*, c__ : Doublereal*, incc : Integer*) : LibC::Int
-    fun zlarnv(idist : Integer*, iseed : Integer*, n : Integer*, x : Doublecomplex*) : LibC::Int
-    fun zlarrv(n : Integer*, vl : Doublereal*, vu : Doublereal*, d__ : Doublereal*, l : Doublereal*, pivmin : Doublereal*, isplit : Integer*, m : Integer*, dol : Integer*, dou : Integer*, minrgp : Doublereal*, rtol1 : Doublereal*, rtol2 : Doublereal*, w : Doublereal*, werr : Doublereal*, wgap : Doublereal*, iblock : Integer*, indexw : Integer*, gers : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, isuppz : Integer*, work : Doublereal*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun zlarscl2(m : Integer*, n : Integer*, d__ : Doublereal*, x : Doublecomplex*, ldx : Integer*) : LibC::Int
-    fun zlartg(f : Doublecomplex*, g : Doublecomplex*, cs : Doublereal*, sn : Doublecomplex*, r__ : Doublecomplex*) : LibC::Int
-    fun zlartv(n : Integer*, x : Doublecomplex*, incx : Integer*, y : Doublecomplex*, incy : Integer*, c__ : Doublereal*, s : Doublecomplex*, incc : Integer*) : LibC::Int
-    fun zlarz(side : LibC::Char*, m : Integer*, n : Integer*, l : Integer*, v : Doublecomplex*, incv : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*) : LibC::Int
-    fun zlarzb(side : LibC::Char*, trans : LibC::Char*, direct : LibC::Char*, storev : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, v : Doublecomplex*, ldv : Integer*, t : Doublecomplex*, ldt : Integer*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, ldwork : Integer*) : LibC::Int
-    fun zlarzt(direct : LibC::Char*, storev : LibC::Char*, n : Integer*, k : Integer*, v : Doublecomplex*, ldv : Integer*, tau : Doublecomplex*, t : Doublecomplex*, ldt : Integer*) : LibC::Int
-    fun zlascl(type__ : LibC::Char*, kl : Integer*, ku : Integer*, cfrom : Doublereal*, cto : Doublereal*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun zlascl2(m : Integer*, n : Integer*, d__ : Doublereal*, x : Doublecomplex*, ldx : Integer*) : LibC::Int
-    fun zlaset(uplo : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, a : Doublecomplex*, lda : Integer*) : LibC::Int
-    fun zlasr(side : LibC::Char*, pivot : LibC::Char*, direct : LibC::Char*, m : Integer*, n : Integer*, c__ : Doublereal*, s : Doublereal*, a : Doublecomplex*, lda : Integer*) : LibC::Int
-    fun zlassq(n : Integer*, x : Doublecomplex*, incx : Integer*, scale : Doublereal*, sumsq : Doublereal*) : LibC::Int
-    fun zlaswp(n : Integer*, a : Doublecomplex*, lda : Integer*, k1 : Integer*, k2 : Integer*, ipiv : Integer*, incx : Integer*) : LibC::Int
-    fun zlasyf(uplo : LibC::Char*, n : Integer*, nb : Integer*, kb : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, w : Doublecomplex*, ldw : Integer*, info : Integer*) : LibC::Int
-    fun zlat2c(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, sa : Complex*, ldsa : Integer*, info : Integer*) : LibC::Int
-    fun zlatbs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, x : Doublecomplex*, scale : Doublereal*, cnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun zlatdf(ijob : Integer*, n : Integer*, z__ : Doublecomplex*, ldz : Integer*, rhs : Doublecomplex*, rdsum : Doublereal*, rdscal : Doublereal*, ipiv : Integer*, jpiv : Integer*) : LibC::Int
-    fun zlatps(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, ap : Doublecomplex*, x : Doublecomplex*, scale : Doublereal*, cnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun zlatrd(uplo : LibC::Char*, n : Integer*, nb : Integer*, a : Doublecomplex*, lda : Integer*, e : Doublereal*, tau : Doublecomplex*, w : Doublecomplex*, ldw : Integer*) : LibC::Int
-    fun zlatrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, normin : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, scale : Doublereal*, cnorm : Doublereal*, info : Integer*) : LibC::Int
-    fun zlatrz(m : Integer*, n : Integer*, l : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*) : LibC::Int
-    fun zlatzm(side : LibC::Char*, m : Integer*, n : Integer*, v : Doublecomplex*, incv : Integer*, tau : Doublecomplex*, c1 : Doublecomplex*, c2 : Doublecomplex*, ldc : Integer*, work : Doublecomplex*) : LibC::Int
-    fun zlauu2(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun zlauum(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun zpbcon(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpbequ(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zpbrfs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpbstf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun zpbsv(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zpbsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, afb : Doublecomplex*, ldafb : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpbtf2(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun zpbtrf(uplo : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, info : Integer*) : LibC::Int
-    fun zpbtrs(uplo : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zpftrf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zpftri(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zpftrs(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zpocon(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpoequ(n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zpoequb(n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zporfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zporfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zposv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zposvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zposvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpotf2(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun zpotrf(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun zpotri(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun zpotrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zppcon(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zppequ(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, info : Integer*) : LibC::Int
-    fun zpprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, afp : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zppsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zppsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, afp : Doublecomplex*, equed : LibC::Char*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpptrf(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zpptri(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zpptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zpstf2(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun zpstrf(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, piv : Integer*, rank : Integer*, tol : Doublereal*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun zptcon(n : Integer*, d__ : Doublereal*, e : Doublecomplex*, anorm : Doublereal*, rcond : Doublereal*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpteqr(compz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun zptrfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublecomplex*, df : Doublereal*, ef : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zptsv(n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zptsvx(fact : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublecomplex*, df : Doublereal*, ef : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zpttrf(n : Integer*, d__ : Doublereal*, e : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zpttrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zptts2(iuplo : Integer*, n : Integer*, nrhs : Integer*, d__ : Doublereal*, e : Doublecomplex*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun zrot(n : Integer*, cx : Doublecomplex*, incx : Integer*, cy : Doublecomplex*, incy : Integer*, c__ : Doublereal*, s : Doublecomplex*) : LibC::Int
-    fun zspcon(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zspmv(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, ap : Doublecomplex*, x : Doublecomplex*, incx : Integer*, beta : Doublecomplex*, y : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zspr(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, ap : Doublecomplex*) : LibC::Int
-    fun zsprfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, afp : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zspsv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zspsvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, afp : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zsptrf(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zsptri(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, ipiv : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zsptrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun zstedc(compz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, lrwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zstegr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, abstol : Doublereal*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, isuppz : Integer*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zstein(n : Integer*, d__ : Doublereal*, e : Doublereal*, m : Integer*, w : Doublereal*, iblock : Integer*, isplit : Integer*, z__ : Doublecomplex*, ldz : Integer*, work : Doublereal*, iwork : Integer*, ifail : Integer*, info : Integer*) : LibC::Int
-    fun zstemr(jobz : LibC::Char*, range : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, vl : Doublereal*, vu : Doublereal*, il : Integer*, iu : Integer*, m : Integer*, w : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, nzc : Integer*, isuppz : Integer*, tryrac : Logical*, work : Doublereal*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun zsteqr(compz : LibC::Char*, n : Integer*, d__ : Doublereal*, e : Doublereal*, z__ : Doublecomplex*, ldz : Integer*, work : Doublereal*, info : Integer*) : LibC::Int
-    fun zsycon(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, anorm : Doublereal*, rcond : Doublereal*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zsyequb(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, s : Doublereal*, scond : Doublereal*, amax : Doublereal*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zsymv(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, lda : Integer*, x : Doublecomplex*, incx : Integer*, beta : Doublecomplex*, y : Doublecomplex*, incy : Integer*) : LibC::Int
-    fun zsyr(uplo : LibC::Char*, n : Integer*, alpha : Doublecomplex*, x : Doublecomplex*, incx : Integer*, a : Doublecomplex*, lda : Integer*) : LibC::Int
-    fun zsyrfs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zsyrfsx(uplo : LibC::Char*, equed : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zsysv(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zsysvx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, lwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zsysvxx(fact : LibC::Char*, uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, af : Doublecomplex*, ldaf : Integer*, ipiv : Integer*, equed : LibC::Char*, s : Doublereal*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, rcond : Doublereal*, rpvgrw : Doublereal*, berr : Doublereal*, n_err_bnds__ : Integer*, err_bnds_norm__ : Doublereal*, err_bnds_comp__ : Doublereal*, nparams : Integer*, params : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun zsytf2(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, info : Integer*) : LibC::Int
-    fun zsytrf(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zsytri(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zsytrs(uplo : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, ipiv : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ztbcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, ab : Doublecomplex*, ldab : Integer*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztbrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztbtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, kd : Integer*, nrhs : Integer*, ab : Doublecomplex*, ldab : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ztfsm(transr : LibC::Char*, side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, m : Integer*, n : Integer*, alpha : Doublecomplex*, a : Doublecomplex*, b : Doublecomplex*, ldb : Integer*) : LibC::Int
-    fun ztftri(transr : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublecomplex*, info : Integer*) : LibC::Int
-    fun ztfttp(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Doublecomplex*, ap : Doublecomplex*, info : Integer*) : LibC::Int
-    fun ztfttr(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, arf : Doublecomplex*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ztgevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, s : Doublecomplex*, lds : Integer*, p : Doublecomplex*, ldp : Integer*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztgex2(wantq : Logical*, wantz : Logical*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, q : Doublecomplex*, ldq : Integer*, z__ : Doublecomplex*, ldz : Integer*, j1 : Integer*, info : Integer*) : LibC::Int
-    fun ztgexc(wantq : Logical*, wantz : Logical*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, q : Doublecomplex*, ldq : Integer*, z__ : Doublecomplex*, ldz : Integer*, ifst : Integer*, ilst : Integer*, info : Integer*) : LibC::Int
-    fun ztgsen(ijob : Integer*, wantq : Logical*, wantz : Logical*, select : Logical*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, alpha : Doublecomplex*, beta : Doublecomplex*, q : Doublecomplex*, ldq : Integer*, z__ : Doublecomplex*, ldz : Integer*, m : Integer*, pl : Doublereal*, pr : Doublereal*, dif : Doublereal*, work : Doublecomplex*, lwork : Integer*, iwork : Integer*, liwork : Integer*, info : Integer*) : LibC::Int
-    fun ztgsja(jobu : LibC::Char*, jobv : LibC::Char*, jobq : LibC::Char*, m : Integer*, p : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, tola : Doublereal*, tolb : Doublereal*, alpha : Doublereal*, beta : Doublereal*, u : Doublecomplex*, ldu : Integer*, v : Doublecomplex*, ldv : Integer*, q : Doublecomplex*, ldq : Integer*, work : Doublecomplex*, ncycle : Integer*, info : Integer*) : LibC::Int
-    fun ztgsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, s : Doublereal*, dif : Doublereal*, mm : Integer*, m : Integer*, work : Doublecomplex*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ztgsy2(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, c__ : Doublecomplex*, ldc : Integer*, d__ : Doublecomplex*, ldd : Integer*, e : Doublecomplex*, lde : Integer*, f : Doublecomplex*, ldf : Integer*, scale : Doublereal*, rdsum : Doublereal*, rdscal : Doublereal*, info : Integer*) : LibC::Int
-    fun ztgsyl(trans : LibC::Char*, ijob : Integer*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, c__ : Doublecomplex*, ldc : Integer*, d__ : Doublecomplex*, ldd : Integer*, e : Doublecomplex*, lde : Integer*, f : Doublecomplex*, ldf : Integer*, scale : Doublereal*, dif : Doublereal*, work : Doublecomplex*, lwork : Integer*, iwork : Integer*, info : Integer*) : LibC::Int
-    fun ztpcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublecomplex*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztprfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztptri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, ap : Doublecomplex*, info : Integer*) : LibC::Int
-    fun ztptrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, ap : Doublecomplex*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ztpttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, arf : Doublecomplex*, info : Integer*) : LibC::Int
-    fun ztpttr(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ztrcon(norm : LibC::Char*, uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, rcond : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztrevc(side : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Doublecomplex*, ldt : Integer*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, mm : Integer*, m : Integer*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztrexc(compq : LibC::Char*, n : Integer*, t : Doublecomplex*, ldt : Integer*, q : Doublecomplex*, ldq : Integer*, ifst : Integer*, ilst : Integer*, info : Integer*) : LibC::Int
-    fun ztrrfs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, x : Doublecomplex*, ldx : Integer*, ferr : Doublereal*, berr : Doublereal*, work : Doublecomplex*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztrsen(job : LibC::Char*, compq : LibC::Char*, select : Logical*, n : Integer*, t : Doublecomplex*, ldt : Integer*, q : Doublecomplex*, ldq : Integer*, w : Doublecomplex*, m : Integer*, s : Doublereal*, sep : Doublereal*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun ztrsna(job : LibC::Char*, howmny : LibC::Char*, select : Logical*, n : Integer*, t : Doublecomplex*, ldt : Integer*, vl : Doublecomplex*, ldvl : Integer*, vr : Doublecomplex*, ldvr : Integer*, s : Doublereal*, sep : Doublereal*, mm : Integer*, m : Integer*, work : Doublecomplex*, ldwork : Integer*, rwork : Doublereal*, info : Integer*) : LibC::Int
-    fun ztrsyl(trana : LibC::Char*, tranb : LibC::Char*, isgn : Integer*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, c__ : Doublecomplex*, ldc : Integer*, scale : Doublereal*, info : Integer*) : LibC::Int
-    fun ztrti2(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ztrtri(uplo : LibC::Char*, diag : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, info : Integer*) : LibC::Int
-    fun ztrtrs(uplo : LibC::Char*, trans : LibC::Char*, diag : LibC::Char*, n : Integer*, nrhs : Integer*, a : Doublecomplex*, lda : Integer*, b : Doublecomplex*, ldb : Integer*, info : Integer*) : LibC::Int
-    fun ztrttf(transr : LibC::Char*, uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, arf : Doublecomplex*, info : Integer*) : LibC::Int
-    fun ztrttp(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, ap : Doublecomplex*, info : Integer*) : LibC::Int
-    fun ztzrqf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, info : Integer*) : LibC::Int
-    fun ztzrzf(m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zung2l(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zung2r(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zungbr(vect : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunghr(n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zungl2(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zunglq(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zungql(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zungqr(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zungr2(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zungrq(m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zungtr(uplo : LibC::Char*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunm2l(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zunm2r(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zunmbr(vect : LibC::Char*, side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunmhr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ilo : Integer*, ihi : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunml2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zunmlq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunmql(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunmqr(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunmr2(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zunmr3(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zunmrq(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunmrz(side : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, k : Integer*, l : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zunmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, a : Doublecomplex*, lda : Integer*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, lwork : Integer*, info : Integer*) : LibC::Int
-    fun zupgtr(uplo : LibC::Char*, n : Integer*, ap : Doublecomplex*, tau : Doublecomplex*, q : Doublecomplex*, ldq : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun zupmtr(side : LibC::Char*, uplo : LibC::Char*, trans : LibC::Char*, m : Integer*, n : Integer*, ap : Doublecomplex*, tau : Doublecomplex*, c__ : Doublecomplex*, ldc : Integer*, work : Doublecomplex*, info : Integer*) : LibC::Int
-    fun dlamc1(beta : Integer*, t : Integer*, rnd : Logical*, ieee1 : Logical*) : LibC::Int
-    fun dsecnd : Doublereal
-    fun ilaver(vers_major__ : Integer*, vers_minor__ : Integer*, vers_patch__ : Integer*) : LibC::Int
-    fun lsame(ca : LibC::Char*, cb : LibC::Char*) : Logical
-    fun second : Doublereal
-    fun slamch(cmach : LibC::Char*) : Doublereal
-    fun slamc1(beta : Integer*, t : Integer*, rnd : Logical*, ieee1 : Logical*) : LibC::Int
-    fun slamc2(beta : Integer*, t : Integer*, rnd : Logical*, eps : Real*, emin : Integer*, rmin : Real*, emax : Integer*, rmax : Real*) : LibC::Int
-    fun slamc3(a : Real*, b : Real*) : Doublereal
-    fun slamc4(emin : Integer*, start : Real*, base : Integer*) : LibC::Int
-    fun slamc5(beta : Integer*, p : Integer*, emin : Integer*, ieee : Logical*, emax : Integer*, rmax : Real*) : LibC::Int
-    fun dlamch(cmach : LibC::Char*) : Doublereal
-    fun dlamc1(beta : Integer*, t : Integer*, rnd : Logical*, ieee1 : Logical*) : LibC::Int
-    fun dlamc2(beta : Integer*, t : Integer*, rnd : Logical*, eps : Doublereal*, emin : Integer*, rmin : Doublereal*, emax : Integer*, rmax : Doublereal*) : LibC::Int
-    fun dlamc3(a : Doublereal*, b : Doublereal*) : Doublereal
-    fun dlamc4(emin : Integer*, start : Doublereal*, base : Integer*) : LibC::Int
-    fun dlamc5(beta : Integer*, p : Integer*, emin : Integer*, ieee : Logical*, emax : Integer*, rmax : Doublereal*) : LibC::Int
-    fun ilaenv(ispec : Integer*, name__ : LibC::Char*, opts : LibC::Char*, n1 : Integer*, n2 : Integer*, n3 : Integer*, n4 : Integer*) : Integer
+    fun cbbcsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, m : Int*, p : Int*, q : Int*, theta : Float*, phi : Float*, u1 : ComplexFloat*, ldu1 : Int*, u2 : ComplexFloat*, ldu2 : Int*, v1t : ComplexFloat*, ldv1t : Int*, v2t : ComplexFloat*, ldv2t : Int*, b11d : Float*, b11e : Float*, b12d : Float*, b12e : Float*, b21d : Float*, b21e : Float*, b22d : Float*, b22e : Float*, rwork : Float*, lrwork : Int*, info : Int*)
+    fun cbdsqr(uplo : Char*, n : Int*, ncvt : Int*, nru : Int*, ncc : Int*, d : Float*, e : Float*, vt : ComplexFloat*, ldvt : Int*, u : ComplexFloat*, ldu : Int*, c : ComplexFloat*, ldc : Int*, rwork : Float*, info : Int*)
+    fun cgbbrd(vect : Char*, m : Int*, n : Int*, ncc : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, d : Float*, e : Float*, q : ComplexFloat*, ldq : Int*, pt : ComplexFloat*, ldpt : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgbcon(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgbequ(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun cgbequb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun cgbrfs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgbrfsx(trans : Char*, equed : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, r : Float*, c : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgbsv(n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cgbsvx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgbsvxx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgbtf2(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun cgbtrf(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun cgbtrs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cgebak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, scale : Float*, m : Int*, v : ComplexFloat*, ldv : Int*, info : Int*)
+    fun cgebal(job : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ilo : Int*, ihi : Int*, scale : Float*, info : Int*)
+    fun cgebd2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, d : Float*, e : Float*, tauq : ComplexFloat*, taup : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cgebrd(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, d : Float*, e : Float*, tauq : ComplexFloat*, taup : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgecon(norm : Char*, n : Int*, a : ComplexFloat*, lda : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgeequ(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun cgeequb(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun cgees(jobvs : Char*, sort : Char*, select : CSelect1, n : Int*, a : ComplexFloat*, lda : Int*, sdim : Int*, w : ComplexFloat*, vs : ComplexFloat*, ldvs : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, bwork : Int*, info : Int*)
+    fun cgeesx(jobvs : Char*, sort : Char*, select : CSelect1, sense : Char*, n : Int*, a : ComplexFloat*, lda : Int*, sdim : Int*, w : ComplexFloat*, vs : ComplexFloat*, ldvs : Int*, rconde : Float*, rcondv : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, bwork : Int*, info : Int*)
+    fun cgeev(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexFloat*, lda : Int*, w : ComplexFloat*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgeevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : ComplexFloat*, lda : Int*, w : ComplexFloat*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, ilo : Int*, ihi : Int*, scale : Float*, abnrm : Float*, rconde : Float*, rcondv : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgegs(jobvsl : Char*, jobvsr : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vsl : ComplexFloat*, ldvsl : Int*, vsr : ComplexFloat*, ldvsr : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgegv(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgehd2(n : Int*, ilo : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cgehrd(n : Int*, ilo : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgejsv(joba : Char*, jobu : Char*, jobv : Char*, jobr : Char*, jobt : Char*, jobp : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, sva : Float*, u : ComplexFloat*, ldu : Int*, v : ComplexFloat*, ldv : Int*, cwork : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, info : Int*)
+    fun cgelq(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, tsize : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgelq2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cgelqf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgelqt(m : Int*, n : Int*, mb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, info : Int*)
+    fun cgelqt3(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, info : Int*)
+    fun cgels(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgelsd(m : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, s : Float*, rcond : Float*, rank : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, info : Int*)
+    fun cgelss(m : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, s : Float*, rcond : Float*, rank : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgelst(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgelsx(m : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, jpvt : Int*, rcond : Float*, rank : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgelsy(m : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, jpvt : Int*, rcond : Float*, rank : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgemlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, tsize : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgemlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, v : ComplexFloat*, ldv : Int*, t : ComplexFloat*, ldt : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun cgemqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, tsize : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgemqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, nb : Int*, v : ComplexFloat*, ldv : Int*, t : ComplexFloat*, ldt : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun cgeql2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cgeqlf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgeqp3(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, jpvt : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgeqpf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, jpvt : Int*, tau : ComplexFloat*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgeqr(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, tsize : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgeqr2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cgeqr2p(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cgeqrf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgeqrfp(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgeqrt(m : Int*, n : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, info : Int*)
+    fun cgeqrt2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, info : Int*)
+    fun cgeqrt3(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, info : Int*)
+    fun cgerfs(trans : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgerfsx(trans : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, r : Float*, c : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgerq2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cgerqf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgesc2(n : Int*, a : ComplexFloat*, lda : Int*, rhs : ComplexFloat*, ipiv : Int*, jpiv : Int*, scale : Float*)
+    fun cgesdd(jobz : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, u : ComplexFloat*, ldu : Int*, vt : ComplexFloat*, ldvt : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, info : Int*)
+    fun cgesv(n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cgesvd(jobu : Char*, jobvt : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, u : ComplexFloat*, ldu : Int*, vt : ComplexFloat*, ldvt : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cgesvdq(joba : Char*, jobp : Char*, jobr : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, u : ComplexFloat*, ldu : Int*, v : ComplexFloat*, ldv : Int*, numrank : Int*, iwork : Int*, liwork : Int*, cwork : ComplexFloat*, lcwork : Int*, rwork : Float*, lrwork : Int*, info : Int*)
+    fun cgesvdx(jobu : Char*, jobvt : Char*, range : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, ns : Int*, s : Float*, u : ComplexFloat*, ldu : Int*, vt : ComplexFloat*, ldvt : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, info : Int*)
+    fun cgesvj(joba : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, sva : Float*, mv : Int*, v : ComplexFloat*, ldv : Int*, cwork : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, info : Int*)
+    fun cgesvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgesvxx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgetc2(n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, jpiv : Int*, info : Int*)
+    fun cgetf2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, info : Int*)
+    fun cgetrf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, info : Int*)
+    fun cgetrf2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, info : Int*)
+    fun cgetri(n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgetrs(trans : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cgetsls(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgetsqrhrt(m : Int*, n : Int*, mb1 : Int*, nb1 : Int*, nb2 : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cggbak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, lscale : Float*, rscale : Float*, m : Int*, v : ComplexFloat*, ldv : Int*, info : Int*)
+    fun cggbal(job : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, ilo : Int*, ihi : Int*, lscale : Float*, rscale : Float*, work : Float*, info : Int*)
+    fun cgges(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : CSelect2, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, sdim : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vsl : ComplexFloat*, ldvsl : Int*, vsr : ComplexFloat*, ldvsr : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, bwork : Int*, info : Int*)
+    fun cgges3(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : CSelect2, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, sdim : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vsl : ComplexFloat*, ldvsl : Int*, vsr : ComplexFloat*, ldvsr : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, bwork : Int*, info : Int*)
+    fun cggesx(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : CSelect2, sense : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, sdim : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vsl : ComplexFloat*, ldvsl : Int*, vsr : ComplexFloat*, ldvsr : Int*, rconde : Float*, rcondv : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, liwork : Int*, bwork : Int*, info : Int*)
+    fun cggev(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cggev3(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cggevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, ilo : Int*, ihi : Int*, lscale : Float*, rscale : Float*, abnrm : Float*, bbnrm : Float*, rconde : Float*, rcondv : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, bwork : Bool*, info : Int*)
+    fun cggglm(n : Int*, m : Int*, p : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, d : ComplexFloat*, x : ComplexFloat*, y : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgghd3(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgghrd(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, info : Int*)
+    fun cgglse(m : Int*, n : Int*, p : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, c : ComplexFloat*, d : ComplexFloat*, x : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cggqrf(n : Int*, m : Int*, p : Int*, a : ComplexFloat*, lda : Int*, taua : ComplexFloat*, b : ComplexFloat*, ldb : Int*, taub : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cggrqf(m : Int*, p : Int*, n : Int*, a : ComplexFloat*, lda : Int*, taua : ComplexFloat*, b : ComplexFloat*, ldb : Int*, taub : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cggsvd(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : Float*, beta : Float*, u : ComplexFloat*, ldu : Int*, v : ComplexFloat*, ldv : Int*, q : ComplexFloat*, ldq : Int*, work : ComplexFloat*, rwork : Float*, iwork : Int*, info : Int*) : Int
+    fun cggsvd3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : Float*, beta : Float*, u : ComplexFloat*, ldu : Int*, v : ComplexFloat*, ldv : Int*, q : ComplexFloat*, ldq : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, info : Int*)
+    fun cggsvp(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, tola : Float*, tolb : Float*, k : Int*, l : Int*, u : ComplexFloat*, ldu : Int*, v : ComplexFloat*, ldv : Int*, q : ComplexFloat*, ldq : Int*, iwork : Int*, rwork : Float*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*) : Int
+    fun cggsvp3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, tola : Float*, tolb : Float*, k : Int*, l : Int*, u : ComplexFloat*, ldu : Int*, v : ComplexFloat*, ldv : Int*, q : ComplexFloat*, ldq : Int*, iwork : Int*, rwork : Float*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgsvj0(jobv : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, d : ComplexFloat*, sva : Float*, mv : Int*, v : ComplexFloat*, ldv : Int*, eps : Float*, sfmin : Float*, tol : Float*, nsweep : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgsvj1(jobv : Char*, m : Int*, n : Int*, n1 : Int*, a : ComplexFloat*, lda : Int*, d : ComplexFloat*, sva : Float*, mv : Int*, v : ComplexFloat*, ldv : Int*, eps : Float*, sfmin : Float*, tol : Float*, nsweep : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cgtcon(norm : Char*, n : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, du2 : ComplexFloat*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun cgtrfs(trans : Char*, n : Int*, nrhs : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, dlf : ComplexFloat*, df : ComplexFloat*, duf : ComplexFloat*, du2 : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgtsv(n : Int*, nrhs : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cgtsvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, dlf : ComplexFloat*, df : ComplexFloat*, duf : ComplexFloat*, du2 : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cgttrf(n : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, du2 : ComplexFloat*, ipiv : Int*, info : Int*)
+    fun cgttrs(trans : Char*, n : Int*, nrhs : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, du2 : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cgtts2(itrans : Int*, n : Int*, nrhs : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, du2 : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*)
+    fun chb2st_kernels(uplo : Char*, wantz : Bool*, ttype : Int*, st : Int*, ed : Int*, sweep : Int*, n : Int*, nb : Int*, ib : Int*, a : ComplexFloat*, lda : Int*, v : ComplexFloat*, tau : ComplexFloat*, ldvt : Int*, work : ComplexFloat*)
+    fun chbev_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun chbev(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chbevd_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun chbevd(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun chbevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, q : ComplexFloat*, ldq : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun chbevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, q : ComplexFloat*, ldq : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun chbgst(vect : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexFloat*, ldab : Int*, bb : ComplexFloat*, ldbb : Int*, x : ComplexFloat*, ldx : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chbgv(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexFloat*, ldab : Int*, bb : ComplexFloat*, ldbb : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chbgvd(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexFloat*, ldab : Int*, bb : ComplexFloat*, ldbb : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun chbgvx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexFloat*, ldab : Int*, bb : ComplexFloat*, ldbb : Int*, q : ComplexFloat*, ldq : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun chbtrd(vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, d : Float*, e : Float*, q : ComplexFloat*, ldq : Int*, work : ComplexFloat*, info : Int*)
+    fun checon_3(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun checon_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun checon(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun cheequb(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, scond : Float*, amax : Float*, work : ComplexFloat*, info : Int*)
+    fun cheev_2stage(jobz : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, w : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cheev(jobz : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, w : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun cheevd_2stage(jobz : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, w : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun cheevd(jobz : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, w : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun cheevr_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, isuppz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun cheevr(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, isuppz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun cheevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun cheevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun chegs2(itype : Int*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chegst(itype : Int*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chegv_2stage(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, w : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun chegv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, w : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun chegvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, w : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun chegvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun cherfs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cherfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chesv_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, tb : ComplexFloat*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chesv_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chesv_rk(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chesv_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chesv(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chesvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun chesvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, equed : Char*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cheswapr(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, i1 : Int*, i2 : Int*)
+    fun chetd2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, d : Float*, e : Float*, tau : ComplexFloat*, info : Int*)
+    fun chetf2_rk(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, info : Int*)
+    fun chetf2_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, info : Int*)
+    fun chetf2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, info : Int*)
+    fun chetrd_2stage(vect : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, d : Float*, e : Float*, tau : ComplexFloat*, hous2 : ComplexFloat*, lhous2 : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrd_hb2st(stage1 : Char*, vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, d : Float*, e : Float*, hous : ComplexFloat*, lhous : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrd_he2hb(uplo : Char*, n : Int*, kd : Int*, a : ComplexFloat*, lda : Int*, ab : ComplexFloat*, ldab : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrd(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, d : Float*, e : Float*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrf_aa_2stage(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, tb : ComplexFloat*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrf_aa(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrf_rk(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrf_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrf(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetri_3(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetri_3x(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, nb : Int*, info : Int*)
+    fun chetri_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, info : Int*)
+    fun chetri(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, info : Int*)
+    fun chetri2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetri2x(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, nb : Int*, info : Int*)
+    fun chetrs_3(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chetrs_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, tb : ComplexFloat*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chetrs_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun chetrs_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chetrs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chetrs2(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, info : Int*)
+    fun chfrk(transr : Char*, uplo : Char*, trans : Char*, n : Int*, k : Int*, alpha : Float*, a : ComplexFloat*, lda : Int*, beta : Float*, c : ComplexFloat*)
+    fun chgeqz(job : Char*, compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexFloat*, ldh : Int*, t : ComplexFloat*, ldt : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun chla_transtype_(ret_val : Char*, ret_val_len : Int, trans : Int*)
+    fun chla_transtype(trans : Int*) : Char
+    fun chpcon(uplo : Char*, n : Int*, ap : ComplexFloat*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun chpev(jobz : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chpevd(jobz : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun chpevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun chpgst(itype : Int*, uplo : Char*, n : Int*, ap : ComplexFloat*, bp : ComplexFloat*, info : Int*)
+    fun chpgv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, bp : ComplexFloat*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chpgvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, bp : ComplexFloat*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun chpgvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, bp : ComplexFloat*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, rwork : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun chprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, afp : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chpsv(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chpsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, afp : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun chptrd(uplo : Char*, n : Int*, ap : ComplexFloat*, d : Float*, e : Float*, tau : ComplexFloat*, info : Int*)
+    fun chptrf(uplo : Char*, n : Int*, ap : ComplexFloat*, ipiv : Int*, info : Int*)
+    fun chptri(uplo : Char*, n : Int*, ap : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, info : Int*)
+    fun chptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun chsein(side : Char*, eigsrc : Char*, initv : Char*, select : Bool*, n : Int*, h : ComplexFloat*, ldh : Int*, w : ComplexFloat*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexFloat*, rwork : Float*, ifaill : Int*, ifailr : Int*, info : Int*)
+    fun chseqr(job : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexFloat*, ldh : Int*, w : ComplexFloat*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cla_gbamv_(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Float*, ab : ComplexFloat*, ldab : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_gbamv(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Float*, ab : ComplexFloat*, ldab : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_gbrcond_c_(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, c : Float*, capply : Char*, info : Int*, work : ComplexFloat*, rwork : Float*, trans_len : Int) : Double
+    fun cla_gbrcond_c(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, c : Float*, capply : Bool*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_gbrcond_x_(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*, trans_len : Int) : Double
+    fun cla_gbrcond_x(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_gbrfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, colequ : Char*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*)
+    fun cla_gbrfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, ipiv : Int*, colequ : Bool*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun cla_gbrpvgrw_(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*) : Double
+    fun cla_gbrpvgrw(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*) : FloatReturn
+    fun cla_geamv_(trans : Int*, m : Int*, n : Int*, alpha : Float*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_geamv(trans : Int*, m : Int*, n : Int*, alpha : Float*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_gercond_c_(trans : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, c : Float*, capply : Char*, info : Int*, work : ComplexFloat*, rwork : Float*, trans_len : Int) : Double
+    fun cla_gercond_c(trans : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, c : Float*, capply : Bool*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_gercond_x_(trans : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*, trans_len : Int) : Double
+    fun cla_gercond_x(trans : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_gerfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*)
+    fun cla_gerfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun cla_gerpvgrw(n : Int*, ncols : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*) : FloatReturn
+    fun cla_heamv_(uplo : Int*, n : Int*, alpha : Float*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_heamv(uplo : Int*, n : Int*, alpha : Float*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_hercond_c_(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, c : Float*, capply : Char*, info : Int*, work : ComplexFloat*, rwork : Float*, uplo_len : Int) : Double
+    fun cla_hercond_c(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, c : Float*, capply : Bool*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_hercond_x_(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*, uplo_len : Int) : Double
+    fun cla_hercond_x(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_herfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun cla_herfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun cla_herpvgrw_(uplo : Char*, n : Int*, info : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, work : Float*, uplo_len : Int) : Double
+    fun cla_herpvgrw(uplo : Char*, n : Int*, info : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, work : Float*) : FloatReturn
+    fun cla_lin_berr_(n : Int*, nz : Int*, nrhs : Int*, res : ComplexFloat*, ayb : Float*, berr : Float*)
+    fun cla_lin_berr(n : Int*, nz : Int*, nrhs : Int*, res : ComplexFloat*, ayb : Float*, berr : Float*)
+    fun cla_porcond_c_(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, c : Float*, capply : Char*, info : Int*, work : ComplexFloat*, rwork : Float*, uplo_len : Int) : Double
+    fun cla_porcond_c(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, c : Float*, capply : Bool*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_porcond_x_(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*, uplo_len : Int) : Double
+    fun cla_porcond_x(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_porfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, colequ : Char*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun cla_porfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, colequ : Bool*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun cla_porpvgrw_(uplo : Char*, ncols : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, work : Float*, uplo_len : Int) : Double
+    fun cla_porpvgrw(uplo : Char*, ncols : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, work : Float*) : FloatReturn
+    fun cla_rpvgrw_(n : Int*, ncols : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*) : Double
+    fun cla_syamv_(uplo : Int*, n : Int*, alpha : Float*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_syamv(uplo : Int*, n : Int*, alpha : Float*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun cla_syrcond_c_(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, c : Float*, capply : Char*, info : Int*, work : ComplexFloat*, rwork : Float*, uplo_len : Int) : Double
+    fun cla_syrcond_c(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, c : Float*, capply : Bool*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_syrcond_x_(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*, uplo_len : Int) : Double
+    fun cla_syrcond_x(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, x : ComplexFloat*, info : Int*, work : ComplexFloat*, rwork : Float*) : FloatReturn
+    fun cla_syrfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun cla_syrfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Float*, b : ComplexFloat*, ldb : Int*, y : ComplexFloat*, ldy : Int*, berr_out : Float*, n_norms : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, res : ComplexFloat*, ayb : Float*, dy : ComplexFloat*, y_tail : ComplexFloat*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun cla_syrpvgrw_(uplo : Char*, n : Int*, info : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, work : Float*, uplo_len : Int) : Double
+    fun cla_syrpvgrw(uplo : Char*, n : Int*, info : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, work : Float*) : FloatReturn
+    fun cla_wwaddw_(n : Int*, x : ComplexFloat*, y : ComplexFloat*, w : ComplexFloat*)
+    fun cla_wwaddw(n : Int*, x : ComplexFloat*, y : ComplexFloat*, w : ComplexFloat*)
+    fun clabrd(m : Int*, n : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, d : Float*, e : Float*, tauq : ComplexFloat*, taup : ComplexFloat*, x : ComplexFloat*, ldx : Int*, y : ComplexFloat*, ldy : Int*)
+    fun clacgv(n : Int*, x : ComplexFloat*, incx : Int*)
+    fun clacn2(n : Int*, v : ComplexFloat*, x : ComplexFloat*, est : Float*, kase : Int*, isave : Int*)
+    fun clacon(n : Int*, v : ComplexFloat*, x : ComplexFloat*, est : Float*, kase : Int*)
+    fun clacp2(uplo : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, b : ComplexFloat*, ldb : Int*)
+    fun clacpy(uplo : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*)
+    fun clacrm(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : Float*, ldb : Int*, c : ComplexFloat*, ldc : Int*, rwork : Float*)
+    fun clacrt(n : Int*, cx : ComplexFloat*, incx : Int*, cy : ComplexFloat*, incy : Int*, c : ComplexFloat*, s : ComplexFloat*)
+    fun cladiv(x : ComplexFloat*, y : ComplexFloat*) : ComplexFloat
+    fun claed0(qsiz : Int*, n : Int*, d : Float*, e : Float*, q : ComplexFloat*, ldq : Int*, qstore : ComplexFloat*, ldqs : Int*, rwork : Float*, iwork : Int*, info : Int*)
+    fun claed7(n : Int*, cutpnt : Int*, qsiz : Int*, tlvls : Int*, curlvl : Int*, curpbm : Int*, d : Float*, q : ComplexFloat*, ldq : Int*, rho : Float*, indxq : Int*, qstore : Float*, qptr : Int*, prmptr : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Float*, work : ComplexFloat*, rwork : Float*, iwork : Int*, info : Int*)
+    fun claed8(k : Int*, n : Int*, qsiz : Int*, q : ComplexFloat*, ldq : Int*, d : Float*, rho : Float*, cutpnt : Int*, z : Float*, dlamda : Float*, q2 : ComplexFloat*, ldq2 : Int*, w : Float*, indxp : Int*, indx : Int*, indxq : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Float*, info : Int*)
+    fun claein(rightv : Bool*, noinit : Bool*, n : Int*, h : ComplexFloat*, ldh : Int*, w : ComplexFloat*, v : ComplexFloat*, b : ComplexFloat*, ldb : Int*, rwork : Float*, eps3 : Float*, smlnum : Float*, info : Int*)
+    fun claesy(a : ComplexFloat*, b : ComplexFloat*, c : ComplexFloat*, rt1 : ComplexFloat*, rt2 : ComplexFloat*, evscal : ComplexFloat*, cs1 : ComplexFloat*, sn1 : ComplexFloat*)
+    fun claev2(a : ComplexFloat*, b : ComplexFloat*, c : ComplexFloat*, rt1 : Float*, rt2 : Float*, cs1 : Float*, sn1 : ComplexFloat*)
+    fun clag2z(m : Int*, n : Int*, sa : ComplexFloat*, ldsa : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun clagge(m : Int*, n : Int*, kl : Int*, ku : Int*, d : Float*, a : ComplexFloat*, lda : Int*, iseed : Int*, work : ComplexFloat*, info : Int*)
+    fun claghe(n : Int*, k : Int*, d : Float*, a : ComplexFloat*, lda : Int*, iseed : Int*, work : ComplexFloat*, info : Int*)
+    fun clags2(upper : Bool*, a1 : Float*, a2 : ComplexFloat*, a3 : Float*, b1 : Float*, b2 : ComplexFloat*, b3 : Float*, csu : Float*, snu : ComplexFloat*, csv : Float*, snv : ComplexFloat*, csq : Float*, snq : ComplexFloat*)
+    fun clagsy(n : Int*, k : Int*, d : Float*, a : ComplexFloat*, lda : Int*, iseed : Int*, work : ComplexFloat*, info : Int*)
+    fun clagtm(trans : Char*, n : Int*, nrhs : Int*, alpha : Float*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*, x : ComplexFloat*, ldx : Int*, beta : Float*, b : ComplexFloat*, ldb : Int*)
+    fun clahef_aa(uplo : Char*, j1 : Int*, m : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, h : ComplexFloat*, ldh : Int*, work : ComplexFloat*)
+    fun clahef_rk(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, w : ComplexFloat*, ldw : Int*, info : Int*)
+    fun clahef_rook(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, w : ComplexFloat*, ldw : Int*, info : Int*)
+    fun clahef(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, w : ComplexFloat*, ldw : Int*, info : Int*)
+    fun clahqr(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexFloat*, ldh : Int*, w : ComplexFloat*, iloz : Int*, ihiz : Int*, z : ComplexFloat*, ldz : Int*, info : Int*)
+    fun clahr2(n : Int*, k : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, t : ComplexFloat*, ldt : Int*, y : ComplexFloat*, ldy : Int*)
+    fun clahrd(n : Int*, k : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, t : ComplexFloat*, ldt : Int*, y : ComplexFloat*, ldy : Int*)
+    fun claic1(job : Int*, j : Int*, x : ComplexFloat*, sest : Float*, w : ComplexFloat*, gamma : ComplexFloat*, sestpr : Float*, s : ComplexFloat*, c : ComplexFloat*)
+    fun clals0(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, nrhs : Int*, b : ComplexFloat*, ldb : Int*, bx : ComplexFloat*, ldbx : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Float*, ldgnum : Int*, poles : Float*, difl : Float*, difr : Float*, z : Float*, k : Int*, c : Float*, s : Float*, rwork : Float*, info : Int*)
+    fun clalsa(icompq : Int*, smlsiz : Int*, n : Int*, nrhs : Int*, b : ComplexFloat*, ldb : Int*, bx : ComplexFloat*, ldbx : Int*, u : Float*, ldu : Int*, vt : Float*, k : Int*, difl : Float*, difr : Float*, z : Float*, poles : Float*, givptr : Int*, givcol : Int*, ldgcol : Int*, perm : Int*, givnum : Float*, c : Float*, s : Float*, rwork : Float*, iwork : Int*, info : Int*)
+    fun clalsd(uplo : Char*, smlsiz : Int*, n : Int*, nrhs : Int*, d : Float*, e : Float*, b : ComplexFloat*, ldb : Int*, rcond : Float*, rank : Int*, work : ComplexFloat*, rwork : Float*, iwork : Int*, info : Int*)
+    fun clamswlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun clamtsqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun clangb(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, work : Float*) : FloatReturn
+    fun clange(norm : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, work : Float*) : FloatReturn
+    fun clangt(norm : Char*, n : Int*, dl : ComplexFloat*, d : ComplexFloat*, du : ComplexFloat*) : FloatReturn
+    fun clanhb(norm : Char*, uplo : Char*, n : Int*, k : Int*, ab : ComplexFloat*, ldab : Int*, work : Float*) : FloatReturn
+    fun clanhe(norm : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, work : Float*) : FloatReturn
+    fun clanhf(norm : Char*, transr : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, work : Float*) : FloatReturn
+    fun clanhp(norm : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, work : Float*) : FloatReturn
+    fun clanhs(norm : Char*, n : Int*, a : ComplexFloat*, lda : Int*, work : Float*) : FloatReturn
+    fun clanht(norm : Char*, n : Int*, d : Float*, e : ComplexFloat*) : FloatReturn
+    fun clansb(norm : Char*, uplo : Char*, n : Int*, k : Int*, ab : ComplexFloat*, ldab : Int*, work : Float*) : FloatReturn
+    fun clansp(norm : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, work : Float*) : FloatReturn
+    fun clansy(norm : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, work : Float*) : FloatReturn
+    fun clantb(norm : Char*, uplo : Char*, diag : Char*, n : Int*, k : Int*, ab : ComplexFloat*, ldab : Int*, work : Float*) : FloatReturn
+    fun clantp(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : ComplexFloat*, work : Float*) : FloatReturn
+    fun clantr(norm : Char*, uplo : Char*, diag : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, work : Float*) : FloatReturn
+    fun clapll(n : Int*, x : ComplexFloat*, incx : Int*, y : ComplexFloat*, incy : Int*, ssmin : Float*)
+    fun clapmr(forwrd : Bool*, m : Int*, n : Int*, x : ComplexFloat*, ldx : Int*, k : Int*)
+    fun clapmt(forwrd : Bool*, m : Int*, n : Int*, x : ComplexFloat*, ldx : Int*, k : Int*)
+    fun claqgb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexFloat*, ldab : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, equed : Char*)
+    fun claqge(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, equed : Char*)
+    fun claqhb(uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun claqhe(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun claqhp(uplo : Char*, n : Int*, ap : ComplexFloat*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun claqp2(m : Int*, n : Int*, offset : Int*, a : ComplexFloat*, lda : Int*, jpvt : Int*, tau : ComplexFloat*, vn1 : Float*, vn2 : Float*, work : ComplexFloat*)
+    fun claqps(m : Int*, n : Int*, offset : Int*, nb : Int*, kb : Int*, a : ComplexFloat*, lda : Int*, jpvt : Int*, tau : ComplexFloat*, vn1 : Float*, vn2 : Float*, auxv : ComplexFloat*, f : ComplexFloat*, ldf : Int*)
+    fun claqr0(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexFloat*, ldh : Int*, w : ComplexFloat*, iloz : Int*, ihiz : Int*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun claqr1(n : Int*, h : ComplexFloat*, ldh : Int*, s1 : ComplexFloat*, s2 : ComplexFloat*, v : ComplexFloat*)
+    fun claqr2(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : ComplexFloat*, ldh : Int*, iloz : Int*, ihiz : Int*, z : ComplexFloat*, ldz : Int*, ns : Int*, nd : Int*, sh : ComplexFloat*, v : ComplexFloat*, ldv : Int*, nh : Int*, t : ComplexFloat*, ldt : Int*, nv : Int*, wv : ComplexFloat*, ldwv : Int*, work : ComplexFloat*, lwork : Int*)
+    fun claqr3(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : ComplexFloat*, ldh : Int*, iloz : Int*, ihiz : Int*, z : ComplexFloat*, ldz : Int*, ns : Int*, nd : Int*, sh : ComplexFloat*, v : ComplexFloat*, ldv : Int*, nh : Int*, t : ComplexFloat*, ldt : Int*, nv : Int*, wv : ComplexFloat*, ldwv : Int*, work : ComplexFloat*, lwork : Int*)
+    fun claqr4(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexFloat*, ldh : Int*, w : ComplexFloat*, iloz : Int*, ihiz : Int*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun claqr5(wantt : Bool*, wantz : Bool*, kacc22 : Int*, n : Int*, ktop : Int*, kbot : Int*, nshfts : Int*, s : ComplexFloat*, h : ComplexFloat*, ldh : Int*, iloz : Int*, ihiz : Int*, z : ComplexFloat*, ldz : Int*, v : ComplexFloat*, ldv : Int*, u : ComplexFloat*, ldu : Int*, nv : Int*, wv : ComplexFloat*, ldwv : Int*, nh : Int*, wh : ComplexFloat*, ldwh : Int*)
+    fun claqsb(uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun claqsp(uplo : Char*, n : Int*, ap : ComplexFloat*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun claqsy(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun claqz0(wants : Char*, wantq : Char*, wantz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, rec : Int*, info : Int*)
+    fun claqz1(ilq : Bool*, ilz : Bool*, k : Int*, istartm : Int*, istopm : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, nq : Int*, qstart : Int*, q : ComplexFloat*, ldq : Int*, nz : Int*, zstart : Int*, z : ComplexFloat*, ldz : Int*)
+    fun claqz2(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nw : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, ns : Int*, nd : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, qc : ComplexFloat*, ldqc : Int*, zc : ComplexFloat*, ldzc : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, rec : Int*, info : Int*)
+    fun claqz3(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nshifts : Int*, nblock_desired : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, qc : ComplexFloat*, ldqc : Int*, zc : ComplexFloat*, ldzc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun clar1v(n : Int*, b1 : Int*, bn : Int*, lambda : Float*, d : Float*, l : Float*, ld : Float*, lld : Float*, pivmin : Float*, gaptol : Float*, z : ComplexFloat*, wantnc : Bool*, negcnt : Int*, ztz : Float*, mingma : Float*, r : Int*, isuppz : Int*, nrminv : Float*, resid : Float*, rqcorr : Float*, work : Float*)
+    fun clar2v(n : Int*, x : ComplexFloat*, y : ComplexFloat*, z : ComplexFloat*, incx : Int*, c : Float*, s : ComplexFloat*, incc : Int*)
+    fun clarcm(m : Int*, n : Int*, a : Float*, lda : Int*, b : ComplexFloat*, ldb : Int*, c : ComplexFloat*, ldc : Int*, rwork : Float*)
+    fun clarf(side : Char*, m : Int*, n : Int*, v : ComplexFloat*, incv : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*)
+    fun clarfb_gett(ident : Char*, m : Int*, n : Int*, k : Int*, t : ComplexFloat*, ldt : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, ldwork : Int*)
+    fun clarfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, v : ComplexFloat*, ldv : Int*, t : ComplexFloat*, ldt : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, ldwork : Int*)
+    fun clarfg(n : Int*, alpha : ComplexFloat*, x : ComplexFloat*, incx : Int*, tau : ComplexFloat*)
+    fun clarfgp(n : Int*, alpha : ComplexFloat*, x : ComplexFloat*, incx : Int*, tau : ComplexFloat*)
+    fun clarfp(n : Int*, alpha : ComplexFloat*, x : ComplexFloat*, incx : Int*, tau : ComplexFloat*)
+    fun clarft(direct : Char*, storev : Char*, n : Int*, k : Int*, v : ComplexFloat*, ldv : Int*, tau : ComplexFloat*, t : ComplexFloat*, ldt : Int*)
+    fun clarfx(side : Char*, m : Int*, n : Int*, v : ComplexFloat*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*)
+    fun clarfy(uplo : Char*, n : Int*, v : ComplexFloat*, incv : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*)
+    fun clargv(n : Int*, x : ComplexFloat*, incx : Int*, y : ComplexFloat*, incy : Int*, c : Float*, incc : Int*)
+    fun clarnv(idist : Int*, iseed : Int*, n : Int*, x : ComplexFloat*)
+    fun clarrv(n : Int*, vl : Float*, vu : Float*, d : Float*, l : Float*, pivmin : Float*, isplit : Int*, m : Int*, dol : Int*, dou : Int*, minrgp : Float*, rtol1 : Float*, rtol2 : Float*, w : Float*, werr : Float*, wgap : Float*, iblock : Int*, indexw : Int*, gers : Float*, z : ComplexFloat*, ldz : Int*, isuppz : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun clarscl2(m : Int*, n : Int*, d : Float*, x : ComplexFloat*, ldx : Int*)
+    fun clartg(f : ComplexFloat*, g : ComplexFloat*, cs : Float*, sn : ComplexFloat*, r : ComplexFloat*)
+    fun clartv(n : Int*, x : ComplexFloat*, incx : Int*, y : ComplexFloat*, incy : Int*, c : Float*, s : ComplexFloat*, incc : Int*)
+    fun clarz(side : Char*, m : Int*, n : Int*, l : Int*, v : ComplexFloat*, incv : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*)
+    fun clarzb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : ComplexFloat*, ldv : Int*, t : ComplexFloat*, ldt : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, ldwork : Int*)
+    fun clarzt(direct : Char*, storev : Char*, n : Int*, k : Int*, v : ComplexFloat*, ldv : Int*, tau : ComplexFloat*, t : ComplexFloat*, ldt : Int*)
+    fun clascl(type_bn : Char*, kl : Int*, ku : Int*, cfrom : Float*, cto : Float*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun clascl2(m : Int*, n : Int*, d : Float*, x : ComplexFloat*, ldx : Int*)
+    fun claset(uplo : Char*, m : Int*, n : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, a : ComplexFloat*, lda : Int*)
+    fun clasr(side : Char*, pivot : Char*, direct : Char*, m : Int*, n : Int*, c : Float*, s : Float*, a : ComplexFloat*, lda : Int*)
+    fun classq(n : Int*, x : ComplexFloat*, incx : Int*, scale : Float*, sumsq : Float*)
+    fun claswlq(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun claswp(n : Int*, a : ComplexFloat*, lda : Int*, k1 : Int*, k2 : Int*, ipiv : Int*, incx : Int*)
+    fun clasyf_aa(uplo : Char*, j1 : Int*, m : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, h : ComplexFloat*, ldh : Int*, work : ComplexFloat*)
+    fun clasyf_rk(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, w : ComplexFloat*, ldw : Int*, info : Int*)
+    fun clasyf_rook(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, w : ComplexFloat*, ldw : Int*, info : Int*)
+    fun clasyf(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, w : ComplexFloat*, ldw : Int*, info : Int*)
+    fun clatbs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, x : ComplexFloat*, scale : Float*, cnorm : Float*, info : Int*)
+    fun clatdf(ijob : Int*, n : Int*, z : ComplexFloat*, ldz : Int*, rhs : ComplexFloat*, rdsum : Float*, rdscal : Float*, ipiv : Int*, jpiv : Int*)
+    fun clatms(m : Int*, n : Int*, dist : Char*, iseed : Int*, sym : Char*, d : Float*, mode : Int*, cond : Float*, dmax : Float*, kl : Int*, ku : Int*, pack : Char*, a : ComplexFloat*, lda : Int*, work : ComplexFloat*, info : Int*)
+    fun clatps(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, ap : ComplexFloat*, x : ComplexFloat*, scale : Float*, cnorm : Float*, info : Int*)
+    fun clatrd(uplo : Char*, n : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, e : Float*, tau : ComplexFloat*, w : ComplexFloat*, ldw : Int*)
+    fun clatrs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, scale : Float*, cnorm : Float*, info : Int*)
+    fun clatrs3(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, ldx : Int*, scale : Float*, cnorm : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun clatrz(m : Int*, n : Int*, l : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*)
+    fun clatsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun clatzm(side : Char*, m : Int*, n : Int*, v : ComplexFloat*, incv : Int*, tau : ComplexFloat*, c1 : ComplexFloat*, c2 : ComplexFloat*, ldc : Int*, work : ComplexFloat*)
+    fun claunhr_col_getrfnp(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, d : ComplexFloat*, info : Int*)
+    fun claunhr_col_getrfnp2(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, d : ComplexFloat*, info : Int*)
+    fun clauu2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun clauum(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun cpbcon(uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cpbequ(uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun cpbrfs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cpbstf(uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, info : Int*)
+    fun cpbsv(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cpbsvx(fact : Char*, uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, afb : ComplexFloat*, ldafb : Int*, equed : Char*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cpbtf2(uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, info : Int*)
+    fun cpbtrf(uplo : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, info : Int*)
+    fun cpbtrs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cpftrf(transr : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, info : Int*)
+    fun cpftri(transr : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, info : Int*)
+    fun cpftrs(transr : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cpocon(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cpoequ(n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun cpoequb(n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun cporfs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cporfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cposv(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cposvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, equed : Char*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cposvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, equed : Char*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cpotf2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun cpotrf(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun cpotrf2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun cpotri(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun cpotrs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cppcon(uplo : Char*, n : Int*, ap : ComplexFloat*, anorm : Float*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cppequ(uplo : Char*, n : Int*, ap : ComplexFloat*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun cpprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, afp : ComplexFloat*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cppsv(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cppsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, afp : ComplexFloat*, equed : Char*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cpptrf(uplo : Char*, n : Int*, ap : ComplexFloat*, info : Int*)
+    fun cpptri(uplo : Char*, n : Int*, ap : ComplexFloat*, info : Int*)
+    fun cpptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cpstf2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, piv : Int*, rank : Int*, tol : Float*, work : Float*, info : Int*)
+    fun cpstrf(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, piv : Int*, rank : Int*, tol : Float*, work : Float*, info : Int*)
+    fun cptcon(n : Int*, d : Float*, e : ComplexFloat*, anorm : Float*, rcond : Float*, rwork : Float*, info : Int*)
+    fun cpteqr(compz : Char*, n : Int*, d : Float*, e : Float*, z : ComplexFloat*, ldz : Int*, work : Float*, info : Int*)
+    fun cptrfs(uplo : Char*, n : Int*, nrhs : Int*, d : Float*, e : ComplexFloat*, df : Float*, ef : ComplexFloat*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cptsv(n : Int*, nrhs : Int*, d : Float*, e : ComplexFloat*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cptsvx(fact : Char*, n : Int*, nrhs : Int*, d : Float*, e : ComplexFloat*, df : Float*, ef : ComplexFloat*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cpttrf(n : Int*, d : Float*, e : ComplexFloat*, info : Int*)
+    fun cpttrs(uplo : Char*, n : Int*, nrhs : Int*, d : Float*, e : ComplexFloat*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cptts2(iuplo : Int*, n : Int*, nrhs : Int*, d : Float*, e : ComplexFloat*, b : ComplexFloat*, ldb : Int*)
+    fun crot(n : Int*, cx : ComplexFloat*, incx : Int*, cy : ComplexFloat*, incy : Int*, c : Float*, s : ComplexFloat*)
+    fun cspcon(uplo : Char*, n : Int*, ap : ComplexFloat*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun cspmv(uplo : Char*, n : Int*, alpha : ComplexFloat*, ap : ComplexFloat*, x : ComplexFloat*, incx : Int*, beta : ComplexFloat*, y : ComplexFloat*, incy : Int*)
+    fun cspr(uplo : Char*, n : Int*, alpha : ComplexFloat*, x : ComplexFloat*, incx : Int*, ap : ComplexFloat*)
+    fun csprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, afp : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun cspsv(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun cspsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, afp : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun csptrf(uplo : Char*, n : Int*, ap : ComplexFloat*, ipiv : Int*, info : Int*)
+    fun csptri(uplo : Char*, n : Int*, ap : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, info : Int*)
+    fun csptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun csrscl(n : Int*, sa : Float*, sx : ComplexFloat*, incx : Int*)
+    fun cstedc(compz : Char*, n : Int*, d : Float*, e : Float*, z : ComplexFloat*, ldz : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun cstegr(jobz : Char*, range : Char*, n : Int*, d : Float*, e : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, isuppz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun cstein(n : Int*, d : Float*, e : Float*, m : Int*, w : Float*, iblock : Int*, isplit : Int*, z : ComplexFloat*, ldz : Int*, work : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun cstemr(jobz : Char*, range : Char*, n : Int*, d : Float*, e : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, m : Int*, w : Float*, z : ComplexFloat*, ldz : Int*, nzc : Int*, isuppz : Int*, tryrac : Bool*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun csteqr(compz : Char*, n : Int*, d : Float*, e : Float*, z : ComplexFloat*, ldz : Int*, work : Float*, info : Int*)
+    fun csycon_3(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun csycon_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun csycon(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : ComplexFloat*, info : Int*)
+    fun csyconv(uplo : Char*, way : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, e : ComplexFloat*, info : Int*)
+    fun csyconvf_rook(uplo : Char*, way : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, info : Int*)
+    fun csyconvf(uplo : Char*, way : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, info : Int*)
+    fun csyequb(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, s : Float*, scond : Float*, amax : Float*, work : ComplexFloat*, info : Int*)
+    fun csymv(uplo : Char*, n : Int*, alpha : ComplexFloat*, a : ComplexFloat*, lda : Int*, x : ComplexFloat*, incx : Int*, beta : ComplexFloat*, y : ComplexFloat*, incy : Int*)
+    fun csyr(uplo : Char*, n : Int*, alpha : ComplexFloat*, x : ComplexFloat*, incx : Int*, a : ComplexFloat*, lda : Int*)
+    fun csyrfs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun csyrfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun csysv_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, tb : ComplexFloat*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csysv_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csysv_rk(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csysv_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csysv(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csysvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : ComplexFloat*, lwork : Int*, rwork : Float*, info : Int*)
+    fun csysvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, af : ComplexFloat*, ldaf : Int*, ipiv : Int*, equed : Char*, s : Float*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun csyswapr(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, i1 : Int*, i2 : Int*)
+    fun csytf2_rk(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, info : Int*)
+    fun csytf2_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, info : Int*)
+    fun csytf2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, info : Int*)
+    fun csytrf_aa_2stage(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, tb : ComplexFloat*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytrf_aa(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytrf_rk(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytrf_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytrf(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytri_3(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytri_3x(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, work : ComplexFloat*, nb : Int*, info : Int*)
+    fun csytri_rook(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, info : Int*)
+    fun csytri(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, info : Int*)
+    fun csytri2(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytri2x(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, work : ComplexFloat*, nb : Int*, info : Int*)
+    fun csytrs_3(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, e : ComplexFloat*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun csytrs_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, tb : ComplexFloat*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun csytrs_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun csytrs_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun csytrs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun csytrs2(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, ipiv : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, info : Int*)
+    fun ctbcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, kd : Int*, ab : ComplexFloat*, ldab : Int*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctbrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctbtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexFloat*, ldab : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun ctfsm(transr : Char*, side : Char*, uplo : Char*, trans : Char*, diag : Char*, m : Int*, n : Int*, alpha : ComplexFloat*, a : ComplexFloat*, b : ComplexFloat*, ldb : Int*)
+    fun ctftri(transr : Char*, uplo : Char*, diag : Char*, n : Int*, a : ComplexFloat*, info : Int*)
+    fun ctfttp(transr : Char*, uplo : Char*, n : Int*, arf : ComplexFloat*, ap : ComplexFloat*, info : Int*)
+    fun ctfttr(transr : Char*, uplo : Char*, n : Int*, arf : ComplexFloat*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun ctgevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, s : ComplexFloat*, lds : Int*, p : ComplexFloat*, ldp : Int*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctgex2(wantq : Bool*, wantz : Bool*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, j1 : Int*, info : Int*)
+    fun ctgexc(wantq : Bool*, wantz : Bool*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, ifst : Int*, ilst : Int*, info : Int*)
+    fun ctgsen(ijob : Int*, wantq : Bool*, wantz : Bool*, select : Bool*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, alpha : ComplexFloat*, beta : ComplexFloat*, q : ComplexFloat*, ldq : Int*, z : ComplexFloat*, ldz : Int*, m : Int*, pl : Float*, pr : Float*, dif : Float*, work : ComplexFloat*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ctgsja(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, k : Int*, l : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, tola : Float*, tolb : Float*, alpha : Float*, beta : Float*, u : ComplexFloat*, ldu : Int*, v : ComplexFloat*, ldv : Int*, q : ComplexFloat*, ldq : Int*, work : ComplexFloat*, ncycle : Int*, info : Int*)
+    fun ctgsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, s : Float*, dif : Float*, mm : Int*, m : Int*, work : ComplexFloat*, lwork : Int*, iwork : Int*, info : Int*)
+    fun ctgsy2(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, c : ComplexFloat*, ldc : Int*, d : ComplexFloat*, ldd : Int*, e : ComplexFloat*, lde : Int*, f : ComplexFloat*, ldf : Int*, scale : Float*, rdsum : Float*, rdscal : Float*, info : Int*)
+    fun ctgsyl(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, c : ComplexFloat*, ldc : Int*, d : ComplexFloat*, ldd : Int*, e : ComplexFloat*, lde : Int*, f : ComplexFloat*, ldf : Int*, scale : Float*, dif : Float*, work : ComplexFloat*, lwork : Int*, iwork : Int*, info : Int*)
+    fun ctpcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : ComplexFloat*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctplqt(m : Int*, n : Int*, l : Int*, mb : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, info : Int*)
+    fun ctplqt2(m : Int*, n : Int*, l : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, t : ComplexFloat*, ldt : Int*, info : Int*)
+    fun ctpmlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, mb : Int*, v : ComplexFloat*, ldv : Int*, t : ComplexFloat*, ldt : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, info : Int*)
+    fun ctpmqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, nb : Int*, v : ComplexFloat*, ldv : Int*, t : ComplexFloat*, ldt : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, info : Int*)
+    fun ctpqrt(m : Int*, n : Int*, l : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, info : Int*)
+    fun ctpqrt2(m : Int*, n : Int*, l : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, t : ComplexFloat*, ldt : Int*, info : Int*)
+    fun ctprfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : ComplexFloat*, ldv : Int*, t : ComplexFloat*, ldt : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, work : ComplexFloat*, ldwork : Int*)
+    fun ctprfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctptri(uplo : Char*, diag : Char*, n : Int*, ap : ComplexFloat*, info : Int*)
+    fun ctptrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : ComplexFloat*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun ctpttf(transr : Char*, uplo : Char*, n : Int*, ap : ComplexFloat*, arf : ComplexFloat*, info : Int*)
+    fun ctpttr(uplo : Char*, n : Int*, ap : ComplexFloat*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun ctrcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, a : ComplexFloat*, lda : Int*, rcond : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctrevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, t : ComplexFloat*, ldt : Int*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctrevc3(side : Char*, howmny : Char*, select : Int*, n : Int*, t : ComplexFloat*, ldt : Int*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, info : Int*)
+    fun ctrexc(compq : Char*, n : Int*, t : ComplexFloat*, ldt : Int*, q : ComplexFloat*, ldq : Int*, ifst : Int*, ilst : Int*, info : Int*)
+    fun ctrrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, x : ComplexFloat*, ldx : Int*, ferr : Float*, berr : Float*, work : ComplexFloat*, rwork : Float*, info : Int*)
+    fun ctrsen(job : Char*, compq : Char*, select : Bool*, n : Int*, t : ComplexFloat*, ldt : Int*, q : ComplexFloat*, ldq : Int*, w : ComplexFloat*, m : Int*, s : Float*, sep : Float*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun ctrsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, t : ComplexFloat*, ldt : Int*, vl : ComplexFloat*, ldvl : Int*, vr : ComplexFloat*, ldvr : Int*, s : Float*, sep : Float*, mm : Int*, m : Int*, work : ComplexFloat*, ldwork : Int*, rwork : Float*, info : Int*)
+    fun ctrsyl(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, c : ComplexFloat*, ldc : Int*, scale : Float*, info : Int*)
+    fun ctrsyl3(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, c : ComplexFloat*, ldc : Int*, scale : Float*, swork : Float*, ldswork : Int*, info : Int*)
+    fun ctrti2(uplo : Char*, diag : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun ctrtri(uplo : Char*, diag : Char*, n : Int*, a : ComplexFloat*, lda : Int*, info : Int*)
+    fun ctrtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : ComplexFloat*, lda : Int*, b : ComplexFloat*, ldb : Int*, info : Int*)
+    fun ctrttf(transr : Char*, uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, arf : ComplexFloat*, info : Int*)
+    fun ctrttp(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, ap : ComplexFloat*, info : Int*)
+    fun ctzrqf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, info : Int*)
+    fun ctzrzf(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunbdb(trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : ComplexFloat*, ldx11 : Int*, x12 : ComplexFloat*, ldx12 : Int*, x21 : ComplexFloat*, ldx21 : Int*, x22 : ComplexFloat*, ldx22 : Int*, theta : Float*, phi : Float*, taup1 : ComplexFloat*, taup2 : ComplexFloat*, tauq1 : ComplexFloat*, tauq2 : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunbdb1(m : Int*, p : Int*, q : Int*, x11 : ComplexFloat*, ldx11 : Int*, x21 : ComplexFloat*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : ComplexFloat*, taup2 : ComplexFloat*, tauq1 : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunbdb2(m : Int*, p : Int*, q : Int*, x11 : ComplexFloat*, ldx11 : Int*, x21 : ComplexFloat*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : ComplexFloat*, taup2 : ComplexFloat*, tauq1 : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunbdb3(m : Int*, p : Int*, q : Int*, x11 : ComplexFloat*, ldx11 : Int*, x21 : ComplexFloat*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : ComplexFloat*, taup2 : ComplexFloat*, tauq1 : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunbdb4(m : Int*, p : Int*, q : Int*, x11 : ComplexFloat*, ldx11 : Int*, x21 : ComplexFloat*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : ComplexFloat*, taup2 : ComplexFloat*, tauq1 : ComplexFloat*, phantom : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunbdb5(m1 : Int*, m2 : Int*, n : Int*, x1 : ComplexFloat*, incx1 : Int*, x2 : ComplexFloat*, incx2 : Int*, q1 : ComplexFloat*, ldq1 : Int*, q2 : ComplexFloat*, ldq2 : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunbdb6(m1 : Int*, m2 : Int*, n : Int*, x1 : ComplexFloat*, incx1 : Int*, x2 : ComplexFloat*, incx2 : Int*, q1 : ComplexFloat*, ldq1 : Int*, q2 : ComplexFloat*, ldq2 : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cuncsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : ComplexFloat*, ldx11 : Int*, x12 : ComplexFloat*, ldx12 : Int*, x21 : ComplexFloat*, ldx21 : Int*, x22 : ComplexFloat*, ldx22 : Int*, theta : Float*, u1 : ComplexFloat*, ldu1 : Int*, u2 : ComplexFloat*, ldu2 : Int*, v1t : ComplexFloat*, ldv1t : Int*, v2t : ComplexFloat*, ldv2t : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, info : Int*)
+    fun cuncsd2by1(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, m : Int*, p : Int*, q : Int*, x11 : ComplexFloat*, ldx11 : Int*, x21 : ComplexFloat*, ldx21 : Int*, theta : Float*, u1 : ComplexFloat*, ldu1 : Int*, u2 : ComplexFloat*, ldu2 : Int*, v1t : ComplexFloat*, ldv1t : Int*, work : ComplexFloat*, lwork : Int*, rwork : Float*, lrwork : Int*, iwork : Int*, info : Int*)
+    fun cung2l(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cung2r(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cungbr(vect : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunghr(n : Int*, ilo : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cungl2(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cunglq(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cungql(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cungqr(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cungr2(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, info : Int*)
+    fun cungrq(m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cungtr(uplo : Char*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cungtsqr_row(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cungtsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunhr_col(m : Int*, n : Int*, nb : Int*, a : ComplexFloat*, lda : Int*, t : ComplexFloat*, ldt : Int*, d : ComplexFloat*, info : Int*)
+    fun cunm22(side : Char*, trans : Char*, m : Int*, n : Int*, n1 : Int*, n2 : Int*, q : ComplexFloat*, ldq : Int*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunm2l(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun cunm2r(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun cunmbr(vect : Char*, side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunmhr(side : Char*, trans : Char*, m : Int*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunml2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun cunmlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunmql(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunmqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunmr2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun cunmr3(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun cunmrq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunmrz(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cunmtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, a : ComplexFloat*, lda : Int*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, lwork : Int*, info : Int*)
+    fun cupgtr(uplo : Char*, n : Int*, ap : ComplexFloat*, tau : ComplexFloat*, q : ComplexFloat*, ldq : Int*, work : ComplexFloat*, info : Int*)
+    fun cupmtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, ap : ComplexFloat*, tau : ComplexFloat*, c : ComplexFloat*, ldc : Int*, work : ComplexFloat*, info : Int*)
+    fun dbbcsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, m : Int*, p : Int*, q : Int*, theta : Double*, phi : Double*, u1 : Double*, ldu1 : Int*, u2 : Double*, ldu2 : Int*, v1t : Double*, ldv1t : Int*, v2t : Double*, ldv2t : Int*, b11d : Double*, b11e : Double*, b12d : Double*, b12e : Double*, b21d : Double*, b21e : Double*, b22d : Double*, b22e : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dbdsdc(uplo : Char*, compq : Char*, n : Int*, d : Double*, e : Double*, u : Double*, ldu : Int*, vt : Double*, ldvt : Int*, q : Double*, iq : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dbdsqr(uplo : Char*, n : Int*, ncvt : Int*, nru : Int*, ncc : Int*, d : Double*, e : Double*, vt : Double*, ldvt : Int*, u : Double*, ldu : Int*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dbdsvdx(uplo : Char*, jobz : Char*, range : Char*, n : Int*, d : Double*, e : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, ns : Int*, s : Double*, z : Double*, ldz : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun ddisna(job : Char*, m : Int*, n : Int*, d : Double*, sep : Double*, info : Int*)
+    fun dgbbrd(vect : Char*, m : Int*, n : Int*, ncc : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, d : Double*, e : Double*, q : Double*, ldq : Int*, pt : Double*, ldpt : Int*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dgbcon(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgbequ(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun dgbequb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun dgbrfs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgbrfsx(trans : Char*, equed : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, r : Double*, c : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgbsv(n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dgbsvx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgbsvxx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgbtf2(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun dgbtrf(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun dgbtrs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dgebak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, scale : Double*, m : Int*, v : Double*, ldv : Int*, info : Int*)
+    fun dgebal(job : Char*, n : Int*, a : Double*, lda : Int*, ilo : Int*, ihi : Int*, scale : Double*, info : Int*)
+    fun dgebd2(m : Int*, n : Int*, a : Double*, lda : Int*, d : Double*, e : Double*, tauq : Double*, taup : Double*, work : Double*, info : Int*)
+    fun dgebrd(m : Int*, n : Int*, a : Double*, lda : Int*, d : Double*, e : Double*, tauq : Double*, taup : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgecon(norm : Char*, n : Int*, a : Double*, lda : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgeequ(m : Int*, n : Int*, a : Double*, lda : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun dgeequb(m : Int*, n : Int*, a : Double*, lda : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun dgees(jobvs : Char*, sort : Char*, select : DSelect2, n : Int*, a : Double*, lda : Int*, sdim : Int*, wr : Double*, wi : Double*, vs : Double*, ldvs : Int*, work : Double*, lwork : Int*, bwork : Int*, info : Int*)
+    fun dgeesx(jobvs : Char*, sort : Char*, select : DSelect2, sense : Char*, n : Int*, a : Double*, lda : Int*, sdim : Int*, wr : Double*, wi : Double*, vs : Double*, ldvs : Int*, rconde : Double*, rcondv : Double*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, bwork : Int*, info : Int*)
+    fun dgeev(jobvl : Char*, jobvr : Char*, n : Int*, a : Double*, lda : Int*, wr : Double*, wi : Double*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgeevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : Double*, lda : Int*, wr : Double*, wi : Double*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, ilo : Int*, ihi : Int*, scale : Double*, abnrm : Double*, rconde : Double*, rcondv : Double*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dgegs(jobvsl : Char*, jobvsr : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, vsl : Double*, ldvsl : Int*, vsr : Double*, ldvsr : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgegv(jobvl : Char*, jobvr : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgehd2(n : Int*, ilo : Int*, ihi : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dgehrd(n : Int*, ilo : Int*, ihi : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgejsv(joba : Char*, jobu : Char*, jobv : Char*, jobr : Char*, jobt : Char*, jobp : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, sva : Double*, u : Double*, ldu : Int*, v : Double*, ldv : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dgelq(m : Int*, n : Int*, a : Double*, lda : Int*, t : Double*, tsize : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgelq2(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dgelqf(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgelqt(m : Int*, n : Int*, mb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, work : Double*, info : Int*)
+    fun dgelqt3(m : Int*, n : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, info : Int*)
+    fun dgels(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgelsd(m : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, s : Double*, rcond : Double*, rank : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dgelss(m : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, s : Double*, rcond : Double*, rank : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgelst(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgelsx(m : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, jpvt : Int*, rcond : Double*, rank : Int*, work : Double*, info : Int*)
+    fun dgelsy(m : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, jpvt : Int*, rcond : Double*, rank : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgemlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, t : Double*, tsize : Int*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgemlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, v : Double*, ldv : Int*, t : Double*, ldt : Int*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dgemqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, t : Double*, tsize : Int*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgemqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, nb : Int*, v : Double*, ldv : Int*, t : Double*, ldt : Int*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dgeql2(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dgeqlf(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgeqp3(m : Int*, n : Int*, a : Double*, lda : Int*, jpvt : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgeqpf(m : Int*, n : Int*, a : Double*, lda : Int*, jpvt : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dgeqr(m : Int*, n : Int*, a : Double*, lda : Int*, t : Double*, tsize : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgeqr2(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dgeqr2p(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dgeqrf(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgeqrfp(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgeqrt(m : Int*, n : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, work : Double*, info : Int*)
+    fun dgeqrt2(m : Int*, n : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, info : Int*)
+    fun dgeqrt3(m : Int*, n : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, info : Int*)
+    fun dgerfs(trans : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgerfsx(trans : Char*, equed : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, r : Double*, c : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgerq2(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dgerqf(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgesc2(n : Int*, a : Double*, lda : Int*, rhs : Double*, ipiv : Int*, jpiv : Int*, scale : Double*)
+    fun dgesdd(jobz : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, s : Double*, u : Double*, ldu : Int*, vt : Double*, ldvt : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dgesv(n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dgesvd(jobu : Char*, jobvt : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, s : Double*, u : Double*, ldu : Int*, vt : Double*, ldvt : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgesvdq(joba : Char*, jobp : Char*, jobr : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, s : Double*, u : Double*, ldu : Int*, v : Double*, ldv : Int*, numrank : Int*, iwork : Int*, liwork : Int*, work : Double*, lwork : Int*, rwork : Double*, lrwork : Int*, info : Int*)
+    fun dgesvdx(jobu : Char*, jobvt : Char*, range : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, ns : Int*, s : Double*, u : Double*, ldu : Int*, vt : Double*, ldvt : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dgesvj(joba : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, sva : Double*, mv : Int*, v : Double*, ldv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgesvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgesvxx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgetc2(n : Int*, a : Double*, lda : Int*, ipiv : Int*, jpiv : Int*, info : Int*)
+    fun dgetf2(m : Int*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, info : Int*)
+    fun dgetrf(m : Int*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, info : Int*)
+    fun dgetrf2(m : Int*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, info : Int*)
+    fun dgetri(n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgetrs(trans : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dgetsls(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgetsqrhrt(m : Int*, n : Int*, mb1 : Int*, nb1 : Int*, nb2 : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dggbak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, lscale : Double*, rscale : Double*, m : Int*, v : Double*, ldv : Int*, info : Int*)
+    fun dggbal(job : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, ilo : Int*, ihi : Int*, lscale : Double*, rscale : Double*, work : Double*, info : Int*)
+    fun dgges(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : DSelect3, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, sdim : Int*, alphar : Double*, alphai : Double*, beta : Double*, vsl : Double*, ldvsl : Int*, vsr : Double*, ldvsr : Int*, work : Double*, lwork : Int*, bwork : Int*, info : Int*)
+    fun dgges3(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : DSelect3, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, sdim : Int*, alphar : Double*, alphai : Double*, beta : Double*, vsl : Double*, ldvsl : Int*, vsr : Double*, ldvsr : Int*, work : Double*, lwork : Int*, bwork : Int*, info : Int*)
+    fun dggesx(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : DSelect3, sense : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, sdim : Int*, alphar : Double*, alphai : Double*, beta : Double*, vsl : Double*, ldvsl : Int*, vsr : Double*, ldvsr : Int*, rconde : Double*, rcondv : Double*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, bwork : Int*, info : Int*)
+    fun dggev(jobvl : Char*, jobvr : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dggev3(jobvl : Char*, jobvr : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dggevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, ilo : Int*, ihi : Int*, lscale : Double*, rscale : Double*, abnrm : Double*, bbnrm : Double*, rconde : Double*, rcondv : Double*, work : Double*, lwork : Int*, iwork : Int*, bwork : Bool*, info : Int*)
+    fun dggglm(n : Int*, m : Int*, p : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, d : Double*, x : Double*, y : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgghd3(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgghrd(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, info : Int*)
+    fun dgglse(m : Int*, n : Int*, p : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, c : Double*, d : Double*, x : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dggqrf(n : Int*, m : Int*, p : Int*, a : Double*, lda : Int*, taua : Double*, b : Double*, ldb : Int*, taub : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dggrqf(m : Int*, p : Int*, n : Int*, a : Double*, lda : Int*, taua : Double*, b : Double*, ldb : Int*, taub : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dggsvd(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alpha : Double*, beta : Double*, u : Double*, ldu : Int*, v : Double*, ldv : Int*, q : Double*, ldq : Int*, work : Double*, iwork : Int*, info : Int*) : Int
+    fun dggsvd3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alpha : Double*, beta : Double*, u : Double*, ldu : Int*, v : Double*, ldv : Int*, q : Double*, ldq : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dggsvp(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, tola : Double*, tolb : Double*, k : Int*, l : Int*, u : Double*, ldu : Int*, v : Double*, ldv : Int*, q : Double*, ldq : Int*, iwork : Int*, tau : Double*, work : Double*, info : Int*) : Int
+    fun dggsvp3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, tola : Double*, tolb : Double*, k : Int*, l : Int*, u : Double*, ldu : Int*, v : Double*, ldv : Int*, q : Double*, ldq : Int*, iwork : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dgsvj0(jobv : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, d : Double*, sva : Double*, mv : Int*, v : Double*, ldv : Int*, eps : Double*, sfmin : Double*, tol : Double*, nsweep : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgsvj1(jobv : Char*, m : Int*, n : Int*, n1 : Int*, a : Double*, lda : Int*, d : Double*, sva : Double*, mv : Int*, v : Double*, ldv : Int*, eps : Double*, sfmin : Double*, tol : Double*, nsweep : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dgtcon(norm : Char*, n : Int*, dl : Double*, d : Double*, du : Double*, du2 : Double*, ipiv : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgtrfs(trans : Char*, n : Int*, nrhs : Int*, dl : Double*, d : Double*, du : Double*, dlf : Double*, df : Double*, duf : Double*, du2 : Double*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgtsv(n : Int*, nrhs : Int*, dl : Double*, d : Double*, du : Double*, b : Double*, ldb : Int*, info : Int*)
+    fun dgtsvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, dl : Double*, d : Double*, du : Double*, dlf : Double*, df : Double*, duf : Double*, du2 : Double*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dgttrf(n : Int*, dl : Double*, d : Double*, du : Double*, du2 : Double*, ipiv : Int*, info : Int*)
+    fun dgttrs(trans : Char*, n : Int*, nrhs : Int*, dl : Double*, d : Double*, du : Double*, du2 : Double*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dgtts2(itrans : Int*, n : Int*, nrhs : Int*, dl : Double*, d : Double*, du : Double*, du2 : Double*, ipiv : Int*, b : Double*, ldb : Int*)
+    fun dhgeqz(job : Char*, compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : Double*, ldh : Int*, t : Double*, ldt : Int*, alphar : Double*, alphai : Double*, beta : Double*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dhsein(side : Char*, eigsrc : Char*, initv : Char*, select : Bool*, n : Int*, h : Double*, ldh : Int*, wr : Double*, wi : Double*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, mm : Int*, m : Int*, work : Double*, ifaill : Int*, ifailr : Int*, info : Int*)
+    fun dhseqr(job : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : Double*, ldh : Int*, wr : Double*, wi : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun disnan(din : Double*) : Bool
+    fun dla_gbamv_(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Double*, ab : Double*, ldab : Int*, x : Double*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun dla_gbamv(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Double*, ab : Double*, ldab : Int*, x : Double*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun dla_gbrcond_(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*, trans_len : Int) : Double
+    fun dla_gbrcond(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*) : Double
+    fun dla_gbrfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, colequ : Char*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*)
+    fun dla_gbrfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, ipiv : Int*, colequ : Bool*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun dla_gbrpvgrw_(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*) : Double
+    fun dla_gbrpvgrw(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*) : Double
+    fun dla_geamv_(trans : Int*, m : Int*, n : Int*, alpha : Double*, a : Double*, lda : Int*, x : Double*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun dla_geamv(trans : Int*, m : Int*, n : Int*, alpha : Double*, a : Double*, lda : Int*, x : Double*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun dla_gercond_(trans : Char*, n : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*, trans_len : Int) : Double
+    fun dla_gercond(trans : Char*, n : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*) : Double
+    fun dla_gerfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*)
+    fun dla_gerfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun dla_gerpvgrw(n : Int*, ncols : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*) : Double
+    fun dla_lin_berr_(n : Int*, nz : Int*, nrhs : Int*, res : Double*, ayb : Double*, berr : Double*)
+    fun dla_lin_berr(n : Int*, nz : Int*, nrhs : Int*, res : Double*, ayb : Double*, berr : Double*)
+    fun dla_porcond_(uplo : Char*, n : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*, uplo_len : Int) : Double
+    fun dla_porcond(uplo : Char*, n : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*) : Double
+    fun dla_porfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, colequ : Char*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun dla_porfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, colequ : Bool*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun dla_porpvgrw_(uplo : Char*, ncols : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, work : Double*, uplo_len : Int) : Double
+    fun dla_porpvgrw(uplo : Char*, ncols : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, work : Double*) : Double
+    fun dla_rpvgrw_(n : Int*, ncols : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*) : Double
+    fun dla_syamv_(uplo : Int*, n : Int*, alpha : Double*, a : Double*, lda : Int*, x : Double*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun dla_syamv(uplo : Int*, n : Int*, alpha : Double*, a : Double*, lda : Int*, x : Double*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun dla_syrcond_(uplo : Char*, n : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*, uplo_len : Int) : Double
+    fun dla_syrcond(uplo : Char*, n : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Double*, info : Int*, work : Double*, iwork : Int*) : Double
+    fun dla_syrfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun dla_syrfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Double*, b : Double*, ldb : Int*, y : Double*, ldy : Int*, berr_out : Double*, n_norms : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, res : Double*, ayb : Double*, dy : Double*, y_tail : Double*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun dla_syrpvgrw_(uplo : Char*, n : Int*, info : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, work : Double*, uplo_len : Int) : Double
+    fun dla_syrpvgrw(uplo : Char*, n : Int*, info : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, work : Double*) : Double
+    fun dla_wwaddw_(n : Int*, x : Double*, y : Double*, w : Double*)
+    fun dla_wwaddw(n : Int*, x : Double*, y : Double*, w : Double*)
+    fun dlabad(small : Double*, large : Double*)
+    fun dlabrd(m : Int*, n : Int*, nb : Int*, a : Double*, lda : Int*, d : Double*, e : Double*, tauq : Double*, taup : Double*, x : Double*, ldx : Int*, y : Double*, ldy : Int*)
+    fun dlacn2(n : Int*, v : Double*, x : Double*, isgn : Int*, est : Double*, kase : Int*, isave : Int*)
+    fun dlacon(n : Int*, v : Double*, x : Double*, isgn : Int*, est : Double*, kase : Int*)
+    fun dlacpy(uplo : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*)
+    fun dladiv(a : Double*, b : Double*, c : Double*, d : Double*, p : Double*, q : Double*)
+    fun dlae2(a : Double*, b : Double*, c : Double*, rt1 : Double*, rt2 : Double*)
+    fun dlaebz(ijob : Int*, nitmax : Int*, n : Int*, mmax : Int*, minp : Int*, nbmin : Int*, abstol : Double*, reltol : Double*, pivmin : Double*, d : Double*, e : Double*, e2 : Double*, nval : Int*, ab : Double*, c : Double*, mout : Int*, nab : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dlaed0(icompq : Int*, qsiz : Int*, n : Int*, d : Double*, e : Double*, q : Double*, ldq : Int*, qstore : Double*, ldqs : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dlaed1(n : Int*, d : Double*, q : Double*, ldq : Int*, indxq : Int*, rho : Double*, cutpnt : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dlaed2(k : Int*, n : Int*, n1 : Int*, d : Double*, q : Double*, ldq : Int*, indxq : Int*, rho : Double*, z : Double*, dlamda : Double*, w : Double*, q2 : Double*, indx : Int*, indxc : Int*, indxp : Int*, coltyp : Int*, info : Int*)
+    fun dlaed3(k : Int*, n : Int*, n1 : Int*, d : Double*, q : Double*, ldq : Int*, rho : Double*, dlamda : Double*, q2 : Double*, indx : Int*, ctot : Int*, w : Double*, s : Double*, info : Int*)
+    fun dlaed4(n : Int*, i : Int*, d : Double*, z : Double*, delta : Double*, rho : Double*, dlam : Double*, info : Int*)
+    fun dlaed5(i : Int*, d : Double*, z : Double*, delta : Double*, rho : Double*, dlam : Double*)
+    fun dlaed6(kniter : Int*, orgati : Bool*, rho : Double*, d : Double*, z : Double*, finit : Double*, tau : Double*, info : Int*)
+    fun dlaed7(icompq : Int*, n : Int*, qsiz : Int*, tlvls : Int*, curlvl : Int*, curpbm : Int*, d : Double*, q : Double*, ldq : Int*, indxq : Int*, rho : Double*, cutpnt : Int*, qstore : Double*, qptr : Int*, prmptr : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dlaed8(icompq : Int*, k : Int*, n : Int*, qsiz : Int*, d : Double*, q : Double*, ldq : Int*, indxq : Int*, rho : Double*, cutpnt : Int*, z : Double*, dlamda : Double*, q2 : Double*, ldq2 : Int*, w : Double*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Double*, indxp : Int*, indx : Int*, info : Int*)
+    fun dlaed9(k : Int*, kstart : Int*, kstop : Int*, n : Int*, d : Double*, q : Double*, ldq : Int*, rho : Double*, dlamda : Double*, w : Double*, s : Double*, lds : Int*, info : Int*)
+    fun dlaeda(n : Int*, tlvls : Int*, curlvl : Int*, curpbm : Int*, prmptr : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Double*, q : Double*, qptr : Int*, z : Double*, ztemp : Double*, info : Int*)
+    fun dlaein(rightv : Bool*, noinit : Bool*, n : Int*, h : Double*, ldh : Int*, wr : Double*, wi : Double*, vr : Double*, vi : Double*, b : Double*, ldb : Int*, work : Double*, eps3 : Double*, smlnum : Double*, bignum : Double*, info : Int*)
+    fun dlaev2(a : Double*, b : Double*, c : Double*, rt1 : Double*, rt2 : Double*, cs1 : Double*, sn1 : Double*)
+    fun dlaexc(wantq : Bool*, n : Int*, t : Double*, ldt : Int*, q : Double*, ldq : Int*, j1 : Int*, n1 : Int*, n2 : Int*, work : Double*, info : Int*)
+    fun dlag2(a : Double*, lda : Int*, b : Double*, ldb : Int*, safmin : Double*, scale1 : Double*, scale2 : Double*, wr1 : Double*, wr2 : Double*, wi : Double*)
+    fun dlag2s(m : Int*, n : Int*, a : Double*, lda : Int*, sa : Float*, ldsa : Int*, info : Int*)
+    fun dlagge(m : Int*, n : Int*, kl : Int*, ku : Int*, d : Double*, a : Double*, lda : Int*, iseed : Int*, work : Double*, info : Int*)
+    fun dlags2(upper : Bool*, a1 : Double*, a2 : Double*, a3 : Double*, b1 : Double*, b2 : Double*, b3 : Double*, csu : Double*, snu : Double*, csv : Double*, snv : Double*, csq : Double*, snq : Double*)
+    fun dlagsy(n : Int*, k : Int*, d : Double*, a : Double*, lda : Int*, iseed : Int*, work : Double*, info : Int*)
+    fun dlagtf(n : Int*, a : Double*, lambda : Double*, b : Double*, c : Double*, tol : Double*, d : Double*, in : Int*, info : Int*)
+    fun dlagtm(trans : Char*, n : Int*, nrhs : Int*, alpha : Double*, dl : Double*, d : Double*, du : Double*, x : Double*, ldx : Int*, beta : Double*, b : Double*, ldb : Int*)
+    fun dlagts(job : Int*, n : Int*, a : Double*, b : Double*, c : Double*, d : Double*, in : Int*, y : Double*, tol : Double*, info : Int*)
+    fun dlagv2(a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, csl : Double*, snl : Double*, csr : Double*, snr : Double*)
+    fun dlahqr(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : Double*, ldh : Int*, wr : Double*, wi : Double*, iloz : Int*, ihiz : Int*, z : Double*, ldz : Int*, info : Int*)
+    fun dlahr2(n : Int*, k : Int*, nb : Int*, a : Double*, lda : Int*, tau : Double*, t : Double*, ldt : Int*, y : Double*, ldy : Int*)
+    fun dlahrd(n : Int*, k : Int*, nb : Int*, a : Double*, lda : Int*, tau : Double*, t : Double*, ldt : Int*, y : Double*, ldy : Int*)
+    fun dlaic1(job : Int*, j : Int*, x : Double*, sest : Double*, w : Double*, gamma : Double*, sestpr : Double*, s : Double*, c : Double*)
+    fun dlaisnan(din1 : Double*, din2 : Double*) : Bool
+    fun dlaln2(ltrans : Bool*, na : Int*, nw : Int*, smin : Double*, ca : Double*, a : Double*, lda : Int*, d1 : Double*, d2 : Double*, b : Double*, ldb : Int*, wr : Double*, wi : Double*, x : Double*, ldx : Int*, scale : Double*, xnorm : Double*, info : Int*)
+    fun dlals0(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, nrhs : Int*, b : Double*, ldb : Int*, bx : Double*, ldbx : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Double*, ldgnum : Int*, poles : Double*, difl : Double*, difr : Double*, z : Double*, k : Int*, c : Double*, s : Double*, work : Double*, info : Int*)
+    fun dlalsa(icompq : Int*, smlsiz : Int*, n : Int*, nrhs : Int*, b : Double*, ldb : Int*, bx : Double*, ldbx : Int*, u : Double*, ldu : Int*, vt : Double*, k : Int*, difl : Double*, difr : Double*, z : Double*, poles : Double*, givptr : Int*, givcol : Int*, ldgcol : Int*, perm : Int*, givnum : Double*, c : Double*, s : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dlalsd(uplo : Char*, smlsiz : Int*, n : Int*, nrhs : Int*, d : Double*, e : Double*, b : Double*, ldb : Int*, rcond : Double*, rank : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dlamc1(beta : Int*, t : Int*, rnd : Char*, ieee1 : Char*)
+    fun dlamc2(beta : Int*, t : Int*, rnd : Char*, eps : Double*, emin : Int*, rmin : Double*, emax : Int*, rmax : Double*)
+    fun dlamc3(a : Double*, b : Double*) : Double
+    fun dlamc4(emin : Int*, start : Double*, base : Int*)
+    fun dlamc5(beta : Int*, p : Int*, emin : Int*, ieee : Char*, emax : Int*, rmax : Double*)
+    fun dlamch(cmach : Char*) : Double
+    fun dlamrg(n1 : Int*, n2 : Int*, a : Double*, dtrd1 : Int*, dtrd2 : Int*, index_bn : Int*)
+    fun dlamswlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dlamtsqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dlaneg(n : Int*, d : Double*, lld : Double*, sigma : Double*, pivmin : Double*, r : Int*) : Int
+    fun dlangb(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, work : Double*) : Double
+    fun dlange(norm : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, work : Double*) : Double
+    fun dlangt(norm : Char*, n : Int*, dl : Double*, d : Double*, du : Double*) : Double
+    fun dlanhs(norm : Char*, n : Int*, a : Double*, lda : Int*, work : Double*) : Double
+    fun dlansb(norm : Char*, uplo : Char*, n : Int*, k : Int*, ab : Double*, ldab : Int*, work : Double*) : Double
+    fun dlansf(norm : Char*, transr : Char*, uplo : Char*, n : Int*, a : Double*, work : Double*) : Double
+    fun dlansp(norm : Char*, uplo : Char*, n : Int*, ap : Double*, work : Double*) : Double
+    fun dlanst(norm : Char*, n : Int*, d : Double*, e : Double*) : Double
+    fun dlansy(norm : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, work : Double*) : Double
+    fun dlantb(norm : Char*, uplo : Char*, diag : Char*, n : Int*, k : Int*, ab : Double*, ldab : Int*, work : Double*) : Double
+    fun dlantp(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : Double*, work : Double*) : Double
+    fun dlantr(norm : Char*, uplo : Char*, diag : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, work : Double*) : Double
+    fun dlanv2(a : Double*, b : Double*, c : Double*, d : Double*, rt1r : Double*, rt1i : Double*, rt2r : Double*, rt2i : Double*, cs : Double*, sn : Double*)
+    fun dlaorhr_col_getrfnp(m : Int*, n : Int*, a : Double*, lda : Int*, d : Double*, info : Int*)
+    fun dlaorhr_col_getrfnp2(m : Int*, n : Int*, a : Double*, lda : Int*, d : Double*, info : Int*)
+    fun dlapll(n : Int*, x : Double*, incx : Int*, y : Double*, incy : Int*, ssmin : Double*)
+    fun dlapmr(forwrd : Bool*, m : Int*, n : Int*, x : Double*, ldx : Int*, k : Int*)
+    fun dlapmt(forwrd : Bool*, m : Int*, n : Int*, x : Double*, ldx : Int*, k : Int*)
+    fun dlapy2(x : Double*, y : Double*) : Double
+    fun dlapy3(x : Double*, y : Double*, z : Double*) : Double
+    fun dlaqgb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Double*, ldab : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, equed : Char*)
+    fun dlaqge(m : Int*, n : Int*, a : Double*, lda : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, equed : Char*)
+    fun dlaqp2(m : Int*, n : Int*, offset : Int*, a : Double*, lda : Int*, jpvt : Int*, tau : Double*, vn1 : Double*, vn2 : Double*, work : Double*)
+    fun dlaqps(m : Int*, n : Int*, offset : Int*, nb : Int*, kb : Int*, a : Double*, lda : Int*, jpvt : Int*, tau : Double*, vn1 : Double*, vn2 : Double*, auxv : Double*, f : Double*, ldf : Int*)
+    fun dlaqr0(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : Double*, ldh : Int*, wr : Double*, wi : Double*, iloz : Int*, ihiz : Int*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dlaqr1(n : Int*, h : Double*, ldh : Int*, sr1 : Double*, si1 : Double*, sr2 : Double*, si2 : Double*, v : Double*)
+    fun dlaqr2(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : Double*, ldh : Int*, iloz : Int*, ihiz : Int*, z : Double*, ldz : Int*, ns : Int*, nd : Int*, sr : Double*, si : Double*, v : Double*, ldv : Int*, nh : Int*, t : Double*, ldt : Int*, nv : Int*, wv : Double*, ldwv : Int*, work : Double*, lwork : Int*)
+    fun dlaqr3(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : Double*, ldh : Int*, iloz : Int*, ihiz : Int*, z : Double*, ldz : Int*, ns : Int*, nd : Int*, sr : Double*, si : Double*, v : Double*, ldv : Int*, nh : Int*, t : Double*, ldt : Int*, nv : Int*, wv : Double*, ldwv : Int*, work : Double*, lwork : Int*)
+    fun dlaqr4(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : Double*, ldh : Int*, wr : Double*, wi : Double*, iloz : Int*, ihiz : Int*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dlaqr5(wantt : Bool*, wantz : Bool*, kacc22 : Int*, n : Int*, ktop : Int*, kbot : Int*, nshfts : Int*, sr : Double*, si : Double*, h : Double*, ldh : Int*, iloz : Int*, ihiz : Int*, z : Double*, ldz : Int*, v : Double*, ldv : Int*, u : Double*, ldu : Int*, nv : Int*, wv : Double*, ldwv : Int*, nh : Int*, wh : Double*, ldwh : Int*)
+    fun dlaqsb(uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun dlaqsp(uplo : Char*, n : Int*, ap : Double*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun dlaqsy(uplo : Char*, n : Int*, a : Double*, lda : Int*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun dlaqtr(ltran : Bool*, lreal : Bool*, n : Int*, t : Double*, ldt : Int*, b : Double*, w : Double*, scale : Double*, x : Double*, work : Double*, info : Int*)
+    fun dlaqz0(wants : Char*, wantq : Char*, wantz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, rec : Int*, info : Int*)
+    fun dlaqz1(a : Double*, lda : Int*, b : Double*, ldb : Int*, sr1 : Double*, sr2 : Double*, si : Double*, beta1 : Double*, beta2 : Double*, v : Double*)
+    fun dlaqz2(ilq : Bool*, ilz : Bool*, k : Int*, istartm : Int*, istopm : Int*, ihi : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, nq : Int*, qstart : Int*, q : Double*, ldq : Int*, nz : Int*, zstart : Int*, z : Double*, ldz : Int*)
+    fun dlaqz3(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nw : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, ns : Int*, nd : Int*, alphar : Double*, alphai : Double*, beta : Double*, qc : Double*, ldqc : Int*, zc : Double*, ldzc : Int*, work : Double*, lwork : Int*, rec : Int*, info : Int*)
+    fun dlaqz4(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nshifts : Int*, nblock_desired : Int*, sr : Double*, si : Double*, ss : Double*, a : Double*, lda : Int*, b : Double*, ldb : Int*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, qc : Double*, ldqc : Int*, zc : Double*, ldzc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dlar1v(n : Int*, b1 : Int*, bn : Int*, lambda : Double*, d : Double*, l : Double*, ld : Double*, lld : Double*, pivmin : Double*, gaptol : Double*, z : Double*, wantnc : Bool*, negcnt : Int*, ztz : Double*, mingma : Double*, r : Int*, isuppz : Int*, nrminv : Double*, resid : Double*, rqcorr : Double*, work : Double*)
+    fun dlar2v(n : Int*, x : Double*, y : Double*, z : Double*, incx : Int*, c : Double*, s : Double*, incc : Int*)
+    fun dlarf(side : Char*, m : Int*, n : Int*, v : Double*, incv : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*)
+    fun dlarfb_gett(ident : Char*, m : Int*, n : Int*, k : Int*, t : Double*, ldt : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, work : Double*, ldwork : Int*)
+    fun dlarfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, v : Double*, ldv : Int*, t : Double*, ldt : Int*, c : Double*, ldc : Int*, work : Double*, ldwork : Int*)
+    fun dlarfg(n : Int*, alpha : Double*, x : Double*, incx : Int*, tau : Double*)
+    fun dlarfgp(n : Int*, alpha : Double*, x : Double*, incx : Int*, tau : Double*)
+    fun dlarfp(n : Int*, alpha : Double*, x : Double*, incx : Int*, tau : Double*)
+    fun dlarft(direct : Char*, storev : Char*, n : Int*, k : Int*, v : Double*, ldv : Int*, tau : Double*, t : Double*, ldt : Int*)
+    fun dlarfx(side : Char*, m : Int*, n : Int*, v : Double*, tau : Double*, c : Double*, ldc : Int*, work : Double*)
+    fun dlarfy(uplo : Char*, n : Int*, v : Double*, incv : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*)
+    fun dlargv(n : Int*, x : Double*, incx : Int*, y : Double*, incy : Int*, c : Double*, incc : Int*)
+    fun dlarmm(anorm : Double*, bnorm : Double*, cnorm : Double*) : Double
+    fun dlarnv(idist : Int*, iseed : Int*, n : Int*, x : Double*)
+    fun dlarra(n : Int*, d : Double*, e : Double*, e2 : Double*, spltol : Double*, tnrm : Double*, nsplit : Int*, isplit : Int*, info : Int*)
+    fun dlarrb(n : Int*, d : Double*, lld : Double*, ifirst : Int*, ilast : Int*, rtol1 : Double*, rtol2 : Double*, offset : Int*, w : Double*, wgap : Double*, werr : Double*, work : Double*, iwork : Int*, pivmin : Double*, spdiam : Double*, twist : Int*, info : Int*)
+    fun dlarrc(jobt : Char*, n : Int*, vl : Double*, vu : Double*, d : Double*, e : Double*, pivmin : Double*, eigcnt : Int*, lcnt : Int*, rcnt : Int*, info : Int*)
+    fun dlarrd(range : Char*, order : Char*, n : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, gers : Double*, reltol : Double*, d : Double*, e : Double*, e2 : Double*, pivmin : Double*, nsplit : Int*, isplit : Int*, m : Int*, w : Double*, werr : Double*, wl : Double*, wu : Double*, iblock : Int*, indexw : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dlarre(range : Char*, n : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, d : Double*, e : Double*, e2 : Double*, rtol1 : Double*, rtol2 : Double*, spltol : Double*, nsplit : Int*, isplit : Int*, m : Int*, w : Double*, werr : Double*, wgap : Double*, iblock : Int*, indexw : Int*, gers : Double*, pivmin : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dlarrf(n : Int*, d : Double*, l : Double*, ld : Double*, clstrt : Int*, clend : Int*, w : Double*, wgap : Double*, werr : Double*, spdiam : Double*, clgapl : Double*, clgapr : Double*, pivmin : Double*, sigma : Double*, dplus : Double*, lplus : Double*, work : Double*, info : Int*)
+    fun dlarrj(n : Int*, d : Double*, e2 : Double*, ifirst : Int*, ilast : Int*, rtol : Double*, offset : Int*, w : Double*, werr : Double*, work : Double*, iwork : Int*, pivmin : Double*, spdiam : Double*, info : Int*)
+    fun dlarrk(n : Int*, iw : Int*, gl : Double*, gu : Double*, d : Double*, e2 : Double*, pivmin : Double*, reltol : Double*, w : Double*, werr : Double*, info : Int*)
+    fun dlarrr(n : Int*, d : Double*, e : Double*, info : Int*)
+    fun dlarrv(n : Int*, vl : Double*, vu : Double*, d : Double*, l : Double*, pivmin : Double*, isplit : Int*, m : Int*, dol : Int*, dou : Int*, minrgp : Double*, rtol1 : Double*, rtol2 : Double*, w : Double*, werr : Double*, wgap : Double*, iblock : Int*, indexw : Int*, gers : Double*, z : Double*, ldz : Int*, isuppz : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dlarscl2(m : Int*, n : Int*, d : Double*, x : Double*, ldx : Int*)
+    fun dlartg(f : Double*, g : Double*, cs : Double*, sn : Double*, r : Double*)
+    fun dlartgp(f : Double*, g : Double*, cs : Double*, sn : Double*, r : Double*)
+    fun dlartgs(x : Double*, y : Double*, sigma : Double*, cs : Double*, sn : Double*)
+    fun dlartv(n : Int*, x : Double*, incx : Int*, y : Double*, incy : Int*, c : Double*, s : Double*, incc : Int*)
+    fun dlaruv(iseed : Int*, n : Int*, x : Double*)
+    fun dlarz(side : Char*, m : Int*, n : Int*, l : Int*, v : Double*, incv : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*)
+    fun dlarzb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : Double*, ldv : Int*, t : Double*, ldt : Int*, c : Double*, ldc : Int*, work : Double*, ldwork : Int*)
+    fun dlarzt(direct : Char*, storev : Char*, n : Int*, k : Int*, v : Double*, ldv : Int*, tau : Double*, t : Double*, ldt : Int*)
+    fun dlas2(f : Double*, g : Double*, h : Double*, ssmin : Double*, ssmax : Double*)
+    fun dlascl(type_bn : Char*, kl : Int*, ku : Int*, cfrom : Double*, cto : Double*, m : Int*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dlascl2(m : Int*, n : Int*, d : Double*, x : Double*, ldx : Int*)
+    fun dlasd0(n : Int*, sqre : Int*, d : Double*, e : Double*, u : Double*, ldu : Int*, vt : Double*, ldvt : Int*, smlsiz : Int*, iwork : Int*, work : Double*, info : Int*)
+    fun dlasd1(nl : Int*, nr : Int*, sqre : Int*, d : Double*, alpha : Double*, beta : Double*, u : Double*, ldu : Int*, vt : Double*, ldvt : Int*, idxq : Int*, iwork : Int*, work : Double*, info : Int*)
+    fun dlasd2(nl : Int*, nr : Int*, sqre : Int*, k : Int*, d : Double*, z : Double*, alpha : Double*, beta : Double*, u : Double*, ldu : Int*, vt : Double*, ldvt : Int*, dsigma : Double*, u2 : Double*, ldu2 : Int*, vt2 : Double*, ldvt2 : Int*, idxp : Int*, idx : Int*, idxc : Int*, idxq : Int*, coltyp : Int*, info : Int*)
+    fun dlasd3(nl : Int*, nr : Int*, sqre : Int*, k : Int*, d : Double*, q : Double*, ldq : Int*, dsigma : Double*, u : Double*, ldu : Int*, u2 : Double*, ldu2 : Int*, vt : Double*, ldvt : Int*, vt2 : Double*, ldvt2 : Int*, idxc : Int*, ctot : Int*, z : Double*, info : Int*)
+    fun dlasd4(n : Int*, i : Int*, d : Double*, z : Double*, delta : Double*, rho : Double*, sigma : Double*, work : Double*, info : Int*)
+    fun dlasd5(i : Int*, d : Double*, z : Double*, delta : Double*, rho : Double*, dsigma : Double*, work : Double*)
+    fun dlasd6(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, d : Double*, vf : Double*, vl : Double*, alpha : Double*, beta : Double*, idxq : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Double*, ldgnum : Int*, poles : Double*, difl : Double*, difr : Double*, z : Double*, k : Int*, c : Double*, s : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dlasd7(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, k : Int*, d : Double*, z : Double*, zw : Double*, vf : Double*, vfw : Double*, vl : Double*, vlw : Double*, alpha : Double*, beta : Double*, dsigma : Double*, idx : Int*, idxp : Int*, idxq : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Double*, ldgnum : Int*, c : Double*, s : Double*, info : Int*)
+    fun dlasd8(icompq : Int*, k : Int*, d : Double*, z : Double*, vf : Double*, vl : Double*, difl : Double*, difr : Double*, lddifr : Int*, dsigma : Double*, work : Double*, info : Int*)
+    fun dlasda(icompq : Int*, smlsiz : Int*, n : Int*, sqre : Int*, d : Double*, e : Double*, u : Double*, ldu : Int*, vt : Double*, k : Int*, difl : Double*, difr : Double*, z : Double*, poles : Double*, givptr : Int*, givcol : Int*, ldgcol : Int*, perm : Int*, givnum : Double*, c : Double*, s : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dlasdq(uplo : Char*, sqre : Int*, n : Int*, ncvt : Int*, nru : Int*, ncc : Int*, d : Double*, e : Double*, vt : Double*, ldvt : Int*, u : Double*, ldu : Int*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dlasdt(n : Int*, lvl : Int*, nd : Int*, inode : Int*, ndiml : Int*, ndimr : Int*, msub : Int*)
+    fun dlaset(uplo : Char*, m : Int*, n : Int*, alpha : Double*, beta : Double*, a : Double*, lda : Int*)
+    fun dlasq1(n : Int*, d : Double*, e : Double*, work : Double*, info : Int*)
+    fun dlasq2(n : Int*, z : Double*, info : Int*)
+    fun dlasq3(i0 : Int*, n0 : Int*, z : Double*, pp : Int*, dmin : Double*, sigma : Double*, desig : Double*, qmax : Double*, nfail : Int*, iter : Int*, ndiv : Int*, ieee : Bool*, ttype : Int*, dmin1 : Double*, dmin2 : Double*, dn : Double*, dn1 : Double*, dn2 : Double*, g : Double*, tau : Double*)
+    fun dlasq4(i0 : Int*, n0 : Int*, z : Double*, pp : Int*, n0in : Int*, dmin : Double*, dmin1 : Double*, dmin2 : Double*, dn : Double*, dn1 : Double*, dn2 : Double*, tau : Double*, ttype : Int*, g : Double*)
+    fun dlasq5(i0 : Int*, n0 : Int*, z : Double*, pp : Int*, tau : Double*, sigma : Double*, dmin : Double*, dmin1 : Double*, dmin2 : Double*, dn : Double*, dnm1 : Double*, dnm2 : Double*, ieee : Bool*, eps : Double*)
+    fun dlasq6(i0 : Int*, n0 : Int*, z : Double*, pp : Int*, dmin : Double*, dmin1 : Double*, dmin2 : Double*, dn : Double*, dnm1 : Double*, dnm2 : Double*)
+    fun dlasr(side : Char*, pivot : Char*, direct : Char*, m : Int*, n : Int*, c : Double*, s : Double*, a : Double*, lda : Int*)
+    fun dlasrt(id : Char*, n : Int*, d : Double*, info : Int*)
+    fun dlassq(n : Int*, x : Double*, incx : Int*, scale : Double*, sumsq : Double*)
+    fun dlasv2(f : Double*, g : Double*, h : Double*, ssmin : Double*, ssmax : Double*, snr : Double*, csr : Double*, snl : Double*, csl : Double*)
+    fun dlaswlq(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dlaswp(n : Int*, a : Double*, lda : Int*, k1 : Int*, k2 : Int*, ipiv : Int*, incx : Int*)
+    fun dlasy2(ltranl : Bool*, ltranr : Bool*, isgn : Int*, n1 : Int*, n2 : Int*, tl : Double*, ldtl : Int*, tr : Double*, ldtr : Int*, b : Double*, ldb : Int*, scale : Double*, x : Double*, ldx : Int*, xnorm : Double*, info : Int*)
+    fun dlasyf_aa(uplo : Char*, j1 : Int*, m : Int*, nb : Int*, a : Double*, lda : Int*, ipiv : Int*, h : Double*, ldh : Int*, work : Double*)
+    fun dlasyf_rk(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, w : Double*, ldw : Int*, info : Int*)
+    fun dlasyf_rook(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : Double*, lda : Int*, ipiv : Int*, w : Double*, ldw : Int*, info : Int*)
+    fun dlasyf(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : Double*, lda : Int*, ipiv : Int*, w : Double*, ldw : Int*, info : Int*)
+    fun dlat2s(uplo : Char*, n : Int*, a : Double*, lda : Int*, sa : Float*, ldsa : Int*, info : Int*)
+    fun dlatbs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, x : Double*, scale : Double*, cnorm : Double*, info : Int*)
+    fun dlatdf(ijob : Int*, n : Int*, z : Double*, ldz : Int*, rhs : Double*, rdsum : Double*, rdscal : Double*, ipiv : Int*, jpiv : Int*)
+    fun dlatms(m : Int*, n : Int*, dist : Char*, iseed : Int*, sym : Char*, d : Double*, mode : Int*, cond : Double*, dmax : Double*, kl : Int*, ku : Int*, pack : Char*, a : Double*, lda : Int*, work : Double*, info : Int*)
+    fun dlatps(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, ap : Double*, x : Double*, scale : Double*, cnorm : Double*, info : Int*)
+    fun dlatrd(uplo : Char*, n : Int*, nb : Int*, a : Double*, lda : Int*, e : Double*, tau : Double*, w : Double*, ldw : Int*)
+    fun dlatrs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, a : Double*, lda : Int*, x : Double*, scale : Double*, cnorm : Double*, info : Int*)
+    fun dlatrs3(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, x : Double*, ldx : Int*, scale : Double*, cnorm : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dlatrz(m : Int*, n : Int*, l : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*)
+    fun dlatsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dlatzm(side : Char*, m : Int*, n : Int*, v : Double*, incv : Int*, tau : Double*, c1 : Double*, c2 : Double*, ldc : Int*, work : Double*)
+    fun dlauu2(uplo : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dlauum(uplo : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dopgtr(uplo : Char*, n : Int*, ap : Double*, tau : Double*, q : Double*, ldq : Int*, work : Double*, info : Int*)
+    fun dopmtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, ap : Double*, tau : Double*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dorbdb(trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : Double*, ldx11 : Int*, x12 : Double*, ldx12 : Int*, x21 : Double*, ldx21 : Int*, x22 : Double*, ldx22 : Int*, theta : Double*, phi : Double*, taup1 : Double*, taup2 : Double*, tauq1 : Double*, tauq2 : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorbdb1(m : Int*, p : Int*, q : Int*, x11 : Double*, ldx11 : Int*, x21 : Double*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : Double*, taup2 : Double*, tauq1 : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorbdb2(m : Int*, p : Int*, q : Int*, x11 : Double*, ldx11 : Int*, x21 : Double*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : Double*, taup2 : Double*, tauq1 : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorbdb3(m : Int*, p : Int*, q : Int*, x11 : Double*, ldx11 : Int*, x21 : Double*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : Double*, taup2 : Double*, tauq1 : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorbdb4(m : Int*, p : Int*, q : Int*, x11 : Double*, ldx11 : Int*, x21 : Double*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : Double*, taup2 : Double*, tauq1 : Double*, phantom : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorbdb5(m1 : Int*, m2 : Int*, n : Int*, x1 : Double*, incx1 : Int*, x2 : Double*, incx2 : Int*, q1 : Double*, ldq1 : Int*, q2 : Double*, ldq2 : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dorbdb6(m1 : Int*, m2 : Int*, n : Int*, x1 : Double*, incx1 : Int*, x2 : Double*, incx2 : Int*, q1 : Double*, ldq1 : Int*, q2 : Double*, ldq2 : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dorcsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : Double*, ldx11 : Int*, x12 : Double*, ldx12 : Int*, x21 : Double*, ldx21 : Int*, x22 : Double*, ldx22 : Int*, theta : Double*, u1 : Double*, ldu1 : Int*, u2 : Double*, ldu2 : Int*, v1t : Double*, ldv1t : Int*, v2t : Double*, ldv2t : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dorcsd2by1(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, m : Int*, p : Int*, q : Int*, x11 : Double*, ldx11 : Int*, x21 : Double*, ldx21 : Int*, theta : Double*, u1 : Double*, ldu1 : Int*, u2 : Double*, ldu2 : Int*, v1t : Double*, ldv1t : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dorg2l(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dorg2r(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dorgbr(vect : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorghr(n : Int*, ilo : Int*, ihi : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorgl2(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dorglq(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorgql(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorgqr(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorgr2(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, info : Int*)
+    fun dorgrq(m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorgtr(uplo : Char*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dorgtsqr_row(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dorgtsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dorhr_col(m : Int*, n : Int*, nb : Int*, a : Double*, lda : Int*, t : Double*, ldt : Int*, d : Double*, info : Int*)
+    fun dorm22(side : Char*, trans : Char*, m : Int*, n : Int*, n1 : Int*, n2 : Int*, q : Double*, ldq : Int*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dorm2l(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dorm2r(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dormbr(vect : Char*, side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dormhr(side : Char*, trans : Char*, m : Int*, n : Int*, ilo : Int*, ihi : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dorml2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dormlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dormql(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dormqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dormr2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dormr3(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, info : Int*)
+    fun dormrq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dormrz(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dormtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, c : Double*, ldc : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dpbcon(uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dpbequ(uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun dpbrfs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dpbstf(uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, info : Int*)
+    fun dpbsv(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Double*, ldab : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dpbsvx(fact : Char*, uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Double*, ldab : Int*, afb : Double*, ldafb : Int*, equed : Char*, s : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dpbtf2(uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, info : Int*)
+    fun dpbtrf(uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, info : Int*)
+    fun dpbtrs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Double*, ldab : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dpftrf(transr : Char*, uplo : Char*, n : Int*, a : Double*, info : Int*)
+    fun dpftri(transr : Char*, uplo : Char*, n : Int*, a : Double*, info : Int*)
+    fun dpftrs(transr : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, b : Double*, ldb : Int*, info : Int*)
+    fun dpocon(uplo : Char*, n : Int*, a : Double*, lda : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dpoequ(n : Int*, a : Double*, lda : Int*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun dpoequb(n : Int*, a : Double*, lda : Int*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun dporfs(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dporfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, s : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dposv(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dposvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, equed : Char*, s : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dposvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, equed : Char*, s : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dpotf2(uplo : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dpotrf(uplo : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dpotrf2(uplo : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dpotri(uplo : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dpotrs(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dppcon(uplo : Char*, n : Int*, ap : Double*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dppequ(uplo : Char*, n : Int*, ap : Double*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun dpprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, afp : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dppsv(uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, b : Double*, ldb : Int*, info : Int*)
+    fun dppsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, afp : Double*, equed : Char*, s : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dpptrf(uplo : Char*, n : Int*, ap : Double*, info : Int*)
+    fun dpptri(uplo : Char*, n : Int*, ap : Double*, info : Int*)
+    fun dpptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, b : Double*, ldb : Int*, info : Int*)
+    fun dpstf2(uplo : Char*, n : Int*, a : Double*, lda : Int*, piv : Int*, rank : Int*, tol : Double*, work : Double*, info : Int*)
+    fun dpstrf(uplo : Char*, n : Int*, a : Double*, lda : Int*, piv : Int*, rank : Int*, tol : Double*, work : Double*, info : Int*)
+    fun dptcon(n : Int*, d : Double*, e : Double*, anorm : Double*, rcond : Double*, work : Double*, info : Int*)
+    fun dpteqr(compz : Char*, n : Int*, d : Double*, e : Double*, z : Double*, ldz : Int*, work : Double*, info : Int*)
+    fun dptrfs(n : Int*, nrhs : Int*, d : Double*, e : Double*, df : Double*, ef : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, info : Int*)
+    fun dptsv(n : Int*, nrhs : Int*, d : Double*, e : Double*, b : Double*, ldb : Int*, info : Int*)
+    fun dptsvx(fact : Char*, n : Int*, nrhs : Int*, d : Double*, e : Double*, df : Double*, ef : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, info : Int*)
+    fun dpttrf(n : Int*, d : Double*, e : Double*, info : Int*)
+    fun dpttrs(n : Int*, nrhs : Int*, d : Double*, e : Double*, b : Double*, ldb : Int*, info : Int*)
+    fun dptts2(n : Int*, nrhs : Int*, d : Double*, e : Double*, b : Double*, ldb : Int*)
+    fun droundup_lwork(lwork : Int*) : Double
+    fun drscl(n : Int*, sa : Double*, sx : Double*, incx : Int*)
+    fun dsb2st_kernels(uplo : Char*, wantz : Bool*, ttype : Int*, st : Int*, ed : Int*, sweep : Int*, n : Int*, nb : Int*, ib : Int*, a : Double*, lda : Int*, v : Double*, tau : Double*, ldvt : Int*, work : Double*)
+    fun dsbev_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsbev(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, info : Int*)
+    fun dsbevd_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsbevd(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsbevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, q : Double*, ldq : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsbevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, q : Double*, ldq : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsbgst(vect : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Double*, ldab : Int*, bb : Double*, ldbb : Int*, x : Double*, ldx : Int*, work : Double*, info : Int*)
+    fun dsbgv(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Double*, ldab : Int*, bb : Double*, ldbb : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, info : Int*)
+    fun dsbgvd(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Double*, ldab : Int*, bb : Double*, ldbb : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsbgvx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Double*, ldab : Int*, bb : Double*, ldbb : Int*, q : Double*, ldq : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsbtrd(vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, d : Double*, e : Double*, q : Double*, ldq : Int*, work : Double*, info : Int*)
+    fun dsecnd : Double
+    fun dsecnd : Double
+    fun dsfrk(transr : Char*, uplo : Char*, trans : Char*, n : Int*, k : Int*, alpha : Double*, a : Double*, lda : Int*, beta : Double*, c : Double*)
+    fun dsgesv(n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, work : Double*, swork : Float*, iter : Int*, info : Int*)
+    fun dspcon(uplo : Char*, n : Int*, ap : Double*, ipiv : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dspev(jobz : Char*, uplo : Char*, n : Int*, ap : Double*, w : Double*, z : Double*, ldz : Int*, work : Double*, info : Int*)
+    fun dspevd(jobz : Char*, uplo : Char*, n : Int*, ap : Double*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dspevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dspgst(itype : Int*, uplo : Char*, n : Int*, ap : Double*, bp : Double*, info : Int*)
+    fun dspgv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : Double*, bp : Double*, w : Double*, z : Double*, ldz : Int*, work : Double*, info : Int*)
+    fun dspgvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : Double*, bp : Double*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dspgvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : Double*, bp : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsposv(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, work : Double*, swork : Float*, iter : Int*, info : Int*)
+    fun dsprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, afp : Double*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dspsv(uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dspsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, afp : Double*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dsptrd(uplo : Char*, n : Int*, ap : Double*, d : Double*, e : Double*, tau : Double*, info : Int*)
+    fun dsptrf(uplo : Char*, n : Int*, ap : Double*, ipiv : Int*, info : Int*)
+    fun dsptri(uplo : Char*, n : Int*, ap : Double*, ipiv : Int*, work : Double*, info : Int*)
+    fun dsptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : Double*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dstebz(range : Char*, order : Char*, n : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, d : Double*, e : Double*, m : Int*, nsplit : Int*, w : Double*, iblock : Int*, isplit : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun dstedc(compz : Char*, n : Int*, d : Double*, e : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dstegr(jobz : Char*, range : Char*, n : Int*, d : Double*, e : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, isuppz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dstein(n : Int*, d : Double*, e : Double*, m : Int*, w : Double*, iblock : Int*, isplit : Int*, z : Double*, ldz : Int*, work : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dstemr(jobz : Char*, range : Char*, n : Int*, d : Double*, e : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, m : Int*, w : Double*, z : Double*, ldz : Int*, nzc : Int*, isuppz : Int*, tryrac : Bool*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsteqr(compz : Char*, n : Int*, d : Double*, e : Double*, z : Double*, ldz : Int*, work : Double*, info : Int*)
+    fun dsterf(n : Int*, d : Double*, e : Double*, info : Int*)
+    fun dstev(jobz : Char*, n : Int*, d : Double*, e : Double*, z : Double*, ldz : Int*, work : Double*, info : Int*)
+    fun dstevd(jobz : Char*, n : Int*, d : Double*, e : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dstevr(jobz : Char*, range : Char*, n : Int*, d : Double*, e : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, isuppz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dstevx(jobz : Char*, range : Char*, n : Int*, d : Double*, e : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsycon_3(uplo : Char*, n : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dsycon_rook(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dsycon(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dsyconv(uplo : Char*, way : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, e : Double*, info : Int*)
+    fun dsyconvf_rook(uplo : Char*, way : Char*, n : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, info : Int*)
+    fun dsyconvf(uplo : Char*, way : Char*, n : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, info : Int*)
+    fun dsyequb(uplo : Char*, n : Int*, a : Double*, lda : Int*, s : Double*, scond : Double*, amax : Double*, work : Double*, info : Int*)
+    fun dsyev_2stage(jobz : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, w : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dsyev(jobz : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, w : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dsyevd_2stage(jobz : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, w : Double*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsyevd(jobz : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, w : Double*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsyevr_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, isuppz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsyevr(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, isuppz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsyevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsyevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsygs2(itype : Int*, uplo : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dsygst(itype : Int*, uplo : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dsygv_2stage(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, w : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dsygv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, w : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dsygvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, w : Double*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dsygvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : Double*, ldz : Int*, work : Double*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun dsyrfs(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dsyrfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, s : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dsysv_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, tb : Double*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsysv_aa(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsysv_rk(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsysv_rook(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsysv(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsysvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dsysvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, af : Double*, ldaf : Int*, ipiv : Int*, equed : Char*, s : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dsyswapr(uplo : Char*, n : Int*, a : Double*, lda : Int*, i1 : Int*, i2 : Int*)
+    fun dsytd2(uplo : Char*, n : Int*, a : Double*, lda : Int*, d : Double*, e : Double*, tau : Double*, info : Int*)
+    fun dsytf2_rk(uplo : Char*, n : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, info : Int*)
+    fun dsytf2_rook(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, info : Int*)
+    fun dsytf2(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, info : Int*)
+    fun dsytrd_2stage(vect : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, d : Double*, e : Double*, tau : Double*, hous2 : Double*, lhous2 : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrd_sb2st(stage1 : Char*, vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, d : Double*, e : Double*, hous : Double*, lhous : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrd_sy2sb(uplo : Char*, n : Int*, kd : Int*, a : Double*, lda : Int*, ab : Double*, ldab : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrd(uplo : Char*, n : Int*, a : Double*, lda : Int*, d : Double*, e : Double*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrf_aa_2stage(uplo : Char*, n : Int*, a : Double*, lda : Int*, tb : Double*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrf_aa(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrf_rk(uplo : Char*, n : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrf_rook(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrf(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytri_3(uplo : Char*, n : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytri_3x(uplo : Char*, n : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, work : Double*, nb : Int*, info : Int*)
+    fun dsytri_rook(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, info : Int*)
+    fun dsytri(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, info : Int*)
+    fun dsytri2(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytri2x(uplo : Char*, n : Int*, a : Double*, lda : Int*, ipiv : Int*, work : Double*, nb : Int*, info : Int*)
+    fun dsytrs_3(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, e : Double*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dsytrs_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, tb : Double*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dsytrs_aa(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dsytrs_rook(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dsytrs(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dsytrs2(uplo : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, ipiv : Int*, b : Double*, ldb : Int*, work : Double*, info : Int*)
+    fun dtbcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, kd : Int*, ab : Double*, ldab : Int*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dtbrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Double*, ldab : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dtbtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Double*, ldab : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dtfsm(transr : Char*, side : Char*, uplo : Char*, trans : Char*, diag : Char*, m : Int*, n : Int*, alpha : Double*, a : Double*, b : Double*, ldb : Int*)
+    fun dtftri(transr : Char*, uplo : Char*, diag : Char*, n : Int*, a : Double*, info : Int*)
+    fun dtfttp(transr : Char*, uplo : Char*, n : Int*, arf : Double*, ap : Double*, info : Int*)
+    fun dtfttr(transr : Char*, uplo : Char*, n : Int*, arf : Double*, a : Double*, lda : Int*, info : Int*)
+    fun dtgevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, s : Double*, lds : Int*, p : Double*, ldp : Int*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, mm : Int*, m : Int*, work : Double*, info : Int*)
+    fun dtgex2(wantq : Bool*, wantz : Bool*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, j1 : Int*, n1 : Int*, n2 : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dtgexc(wantq : Bool*, wantz : Bool*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, ifst : Int*, ilst : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dtgsen(ijob : Int*, wantq : Bool*, wantz : Bool*, select : Bool*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, alphar : Double*, alphai : Double*, beta : Double*, q : Double*, ldq : Int*, z : Double*, ldz : Int*, m : Int*, pl : Double*, pr : Double*, dif : Double*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dtgsja(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, k : Int*, l : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, tola : Double*, tolb : Double*, alpha : Double*, beta : Double*, u : Double*, ldu : Int*, v : Double*, ldv : Int*, q : Double*, ldq : Int*, work : Double*, ncycle : Int*, info : Int*)
+    fun dtgsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, s : Double*, dif : Double*, mm : Int*, m : Int*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dtgsy2(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, c : Double*, ldc : Int*, d : Double*, ldd : Int*, e : Double*, lde : Int*, f : Double*, ldf : Int*, scale : Double*, rdsum : Double*, rdscal : Double*, iwork : Int*, pq : Int*, info : Int*)
+    fun dtgsyl(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, c : Double*, ldc : Int*, d : Double*, ldd : Int*, e : Double*, lde : Int*, f : Double*, ldf : Int*, scale : Double*, dif : Double*, work : Double*, lwork : Int*, iwork : Int*, info : Int*)
+    fun dtpcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : Double*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dtplqt(m : Int*, n : Int*, l : Int*, mb : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, t : Double*, ldt : Int*, work : Double*, info : Int*)
+    fun dtplqt2(m : Int*, n : Int*, l : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, t : Double*, ldt : Int*, info : Int*)
+    fun dtpmlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, mb : Int*, v : Double*, ldv : Int*, t : Double*, ldt : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, work : Double*, info : Int*)
+    fun dtpmqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, nb : Int*, v : Double*, ldv : Int*, t : Double*, ldt : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, work : Double*, info : Int*)
+    fun dtpqrt(m : Int*, n : Int*, l : Int*, nb : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, t : Double*, ldt : Int*, work : Double*, info : Int*)
+    fun dtpqrt2(m : Int*, n : Int*, l : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, t : Double*, ldt : Int*, info : Int*)
+    fun dtprfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : Double*, ldv : Int*, t : Double*, ldt : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, work : Double*, ldwork : Int*)
+    fun dtprfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : Double*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dtptri(uplo : Char*, diag : Char*, n : Int*, ap : Double*, info : Int*)
+    fun dtptrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : Double*, b : Double*, ldb : Int*, info : Int*)
+    fun dtpttf(transr : Char*, uplo : Char*, n : Int*, ap : Double*, arf : Double*, info : Int*)
+    fun dtpttr(uplo : Char*, n : Int*, ap : Double*, a : Double*, lda : Int*, info : Int*)
+    fun dtrcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, a : Double*, lda : Int*, rcond : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dtrevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, t : Double*, ldt : Int*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, mm : Int*, m : Int*, work : Double*, info : Int*)
+    fun dtrevc3(side : Char*, howmny : Char*, select : Int*, n : Int*, t : Double*, ldt : Int*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, mm : Int*, m : Int*, work : Double*, lwork : Int*, info : Int*)
+    fun dtrexc(compq : Char*, n : Int*, t : Double*, ldt : Int*, q : Double*, ldq : Int*, ifst : Int*, ilst : Int*, work : Double*, info : Int*)
+    fun dtrrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, x : Double*, ldx : Int*, ferr : Double*, berr : Double*, work : Double*, iwork : Int*, info : Int*)
+    fun dtrsen(job : Char*, compq : Char*, select : Bool*, n : Int*, t : Double*, ldt : Int*, q : Double*, ldq : Int*, wr : Double*, wi : Double*, m : Int*, s : Double*, sep : Double*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun dtrsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, t : Double*, ldt : Int*, vl : Double*, ldvl : Int*, vr : Double*, ldvr : Int*, s : Double*, sep : Double*, mm : Int*, m : Int*, work : Double*, ldwork : Int*, iwork : Int*, info : Int*)
+    fun dtrsyl(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, c : Double*, ldc : Int*, scale : Double*, info : Int*)
+    fun dtrsyl3(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, c : Double*, ldc : Int*, scale : Double*, iwork : Int*, liwork : Int*, swork : Double*, ldswork : Int*, info : Int*)
+    fun dtrti2(uplo : Char*, diag : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dtrtri(uplo : Char*, diag : Char*, n : Int*, a : Double*, lda : Int*, info : Int*)
+    fun dtrtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : Double*, lda : Int*, b : Double*, ldb : Int*, info : Int*)
+    fun dtrttf(transr : Char*, uplo : Char*, n : Int*, a : Double*, lda : Int*, arf : Double*, info : Int*)
+    fun dtrttp(uplo : Char*, n : Int*, a : Double*, lda : Int*, ap : Double*, info : Int*)
+    fun dtzrqf(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, info : Int*)
+    fun dtzrzf(m : Int*, n : Int*, a : Double*, lda : Int*, tau : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun dzsum1(n : Int*, cx : ComplexDouble*, incx : Int*) : Double
+    fun icmax1(n : Int*, cx : ComplexFloat*, incx : Int*) : Int
+    fun ieeeck(ispec : Int*, zero : Float*, one : Float*) : Int
+    fun ilaclc(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*) : Int
+    fun ilaclr(m : Int*, n : Int*, a : ComplexFloat*, lda : Int*) : Int
+    fun iladiag(diag : Char*) : Int
+    fun iladlc(m : Int*, n : Int*, a : Double*, lda : Int*) : Int
+    fun iladlr(m : Int*, n : Int*, a : Double*, lda : Int*) : Int
+    fun ilaenv(ispec : Int*, name : Char*, opts : Char*, n1 : Int*, n2 : Int*, n3 : Int*, n4 : Int*) : Int
+    fun ilaenv2stage(ispec : Int*, name : Char*, opts : Char*, n1 : Int*, n2 : Int*, n3 : Int*, n4 : Int*) : Int
+    fun ilaprec(prec : Char*) : Int
+    fun ilaslc(m : Int*, n : Int*, a : Float*, lda : Int*) : Int
+    fun ilaslr(m : Int*, n : Int*, a : Float*, lda : Int*) : Int
+    fun ilatrans(trans : Char*) : Int
+    fun ilauplo(uplo : Char*) : Int
+    fun ilaver(vers_major : Int*, vers_minor : Int*, vers_patch : Int*)
+    fun ilazlc(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*) : Int
+    fun ilazlr(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*) : Int
+    fun iparam2stage(ispec : Int*, name : Char*, opts : Char*, ni : Int*, nbi : Int*, ibi : Int*, nxi : Int*) : Int
+    fun iparmq(ispec : Int*, name : Char*, opts : Char*, n : Int*, ilo : Int*, ihi : Int*, lwork : Int*) : Int
+    fun izmax1(n : Int*, zx : ComplexDouble*, incx : Int*) : Int
+    fun lsame(ca : Char*, cb : Char*) : Bool
+    fun lsamen(n : Int*, ca : Char*, cb : Char*) : Bool
+    fun sbbcsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, m : Int*, p : Int*, q : Int*, theta : Float*, phi : Float*, u1 : Float*, ldu1 : Int*, u2 : Float*, ldu2 : Int*, v1t : Float*, ldv1t : Int*, v2t : Float*, ldv2t : Int*, b11d : Float*, b11e : Float*, b12d : Float*, b12e : Float*, b21d : Float*, b21e : Float*, b22d : Float*, b22e : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sbdsdc(uplo : Char*, compq : Char*, n : Int*, d : Float*, e : Float*, u : Float*, ldu : Int*, vt : Float*, ldvt : Int*, q : Float*, iq : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun sbdsqr(uplo : Char*, n : Int*, ncvt : Int*, nru : Int*, ncc : Int*, d : Float*, e : Float*, vt : Float*, ldvt : Int*, u : Float*, ldu : Int*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sbdsvdx(uplo : Char*, jobz : Char*, range : Char*, n : Int*, d : Float*, e : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, ns : Int*, s : Float*, z : Float*, ldz : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun sceil(a : Float*) : FloatReturn
+    fun scsum1(n : Int*, cx : ComplexFloat*, incx : Int*) : FloatReturn
+    fun sdisna(job : Char*, m : Int*, n : Int*, d : Float*, sep : Float*, info : Int*)
+    fun second : Double
+    fun second : FloatReturn
+    fun sgbbrd(vect : Char*, m : Int*, n : Int*, ncc : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, d : Float*, e : Float*, q : Float*, ldq : Int*, pt : Float*, ldpt : Int*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sgbcon(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgbequ(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun sgbequb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun sgbrfs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgbrfsx(trans : Char*, equed : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, r : Float*, c : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgbsv(n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sgbsvx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgbsvxx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgbtf2(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun sgbtrf(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun sgbtrs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sgebak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, scale : Float*, m : Int*, v : Float*, ldv : Int*, info : Int*)
+    fun sgebal(job : Char*, n : Int*, a : Float*, lda : Int*, ilo : Int*, ihi : Int*, scale : Float*, info : Int*)
+    fun sgebd2(m : Int*, n : Int*, a : Float*, lda : Int*, d : Float*, e : Float*, tauq : Float*, taup : Float*, work : Float*, info : Int*)
+    fun sgebrd(m : Int*, n : Int*, a : Float*, lda : Int*, d : Float*, e : Float*, tauq : Float*, taup : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgecon(norm : Char*, n : Int*, a : Float*, lda : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgeequ(m : Int*, n : Int*, a : Float*, lda : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun sgeequb(m : Int*, n : Int*, a : Float*, lda : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, info : Int*)
+    fun sgees(jobvs : Char*, sort : Char*, select : SSelect2, n : Int*, a : Float*, lda : Int*, sdim : Int*, wr : Float*, wi : Float*, vs : Float*, ldvs : Int*, work : Float*, lwork : Int*, bwork : Int*, info : Int*)
+    fun sgeesx(jobvs : Char*, sort : Char*, select : SSelect2, sense : Char*, n : Int*, a : Float*, lda : Int*, sdim : Int*, wr : Float*, wi : Float*, vs : Float*, ldvs : Int*, rconde : Float*, rcondv : Float*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, bwork : Int*, info : Int*)
+    fun sgeev(jobvl : Char*, jobvr : Char*, n : Int*, a : Float*, lda : Int*, wr : Float*, wi : Float*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgeevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : Float*, lda : Int*, wr : Float*, wi : Float*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, ilo : Int*, ihi : Int*, scale : Float*, abnrm : Float*, rconde : Float*, rcondv : Float*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sgegs(jobvsl : Char*, jobvsr : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, vsl : Float*, ldvsl : Int*, vsr : Float*, ldvsr : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgegv(jobvl : Char*, jobvr : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgehd2(n : Int*, ilo : Int*, ihi : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sgehrd(n : Int*, ilo : Int*, ihi : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgejsv(joba : Char*, jobu : Char*, jobv : Char*, jobr : Char*, jobt : Char*, jobp : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, sva : Float*, u : Float*, ldu : Int*, v : Float*, ldv : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sgelq(m : Int*, n : Int*, a : Float*, lda : Int*, t : Float*, tsize : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgelq2(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sgelqf(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgelqt(m : Int*, n : Int*, mb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, work : Float*, info : Int*)
+    fun sgelqt3(m : Int*, n : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, info : Int*)
+    fun sgels(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgelsd(m : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, s : Float*, rcond : Float*, rank : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sgelss(m : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, s : Float*, rcond : Float*, rank : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgelst(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgelsx(m : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, jpvt : Int*, rcond : Float*, rank : Int*, work : Float*, info : Int*)
+    fun sgelsy(m : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, jpvt : Int*, rcond : Float*, rank : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgemlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, t : Float*, tsize : Int*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgemlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, v : Float*, ldv : Int*, t : Float*, ldt : Int*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sgemqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, t : Float*, tsize : Int*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgemqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, nb : Int*, v : Float*, ldv : Int*, t : Float*, ldt : Int*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sgeql2(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sgeqlf(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgeqp3(m : Int*, n : Int*, a : Float*, lda : Int*, jpvt : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgeqpf(m : Int*, n : Int*, a : Float*, lda : Int*, jpvt : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sgeqr(m : Int*, n : Int*, a : Float*, lda : Int*, t : Float*, tsize : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgeqr2(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sgeqr2p(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sgeqrf(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgeqrfp(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgeqrt(m : Int*, n : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, work : Float*, info : Int*)
+    fun sgeqrt2(m : Int*, n : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, info : Int*)
+    fun sgeqrt3(m : Int*, n : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, info : Int*)
+    fun sgerfs(trans : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgerfsx(trans : Char*, equed : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, r : Float*, c : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgerq2(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sgerqf(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgesc2(n : Int*, a : Float*, lda : Int*, rhs : Float*, ipiv : Int*, jpiv : Int*, scale : Float*)
+    fun sgesdd(jobz : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, s : Float*, u : Float*, ldu : Int*, vt : Float*, ldvt : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sgesv(n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sgesvd(jobu : Char*, jobvt : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, s : Float*, u : Float*, ldu : Int*, vt : Float*, ldvt : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgesvdq(joba : Char*, jobp : Char*, jobr : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, s : Float*, u : Float*, ldu : Int*, v : Float*, ldv : Int*, numrank : Int*, iwork : Int*, liwork : Int*, work : Float*, lwork : Int*, rwork : Float*, lrwork : Int*, info : Int*)
+    fun sgesvdx(jobu : Char*, jobvt : Char*, range : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, ns : Int*, s : Float*, u : Float*, ldu : Int*, vt : Float*, ldvt : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sgesvj(joba : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, sva : Float*, mv : Int*, v : Float*, ldv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgesvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgesvxx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Float*, c : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgetc2(n : Int*, a : Float*, lda : Int*, ipiv : Int*, jpiv : Int*, info : Int*)
+    fun sgetf2(m : Int*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, info : Int*)
+    fun sgetrf(m : Int*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, info : Int*)
+    fun sgetrf2(m : Int*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, info : Int*)
+    fun sgetri(n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgetrs(trans : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sgetsls(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgetsqrhrt(m : Int*, n : Int*, mb1 : Int*, nb1 : Int*, nb2 : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sggbak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, lscale : Float*, rscale : Float*, m : Int*, v : Float*, ldv : Int*, info : Int*)
+    fun sggbal(job : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, ilo : Int*, ihi : Int*, lscale : Float*, rscale : Float*, work : Float*, info : Int*)
+    fun sgges(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : SSelect3, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, sdim : Int*, alphar : Float*, alphai : Float*, beta : Float*, vsl : Float*, ldvsl : Int*, vsr : Float*, ldvsr : Int*, work : Float*, lwork : Int*, bwork : Int*, info : Int*)
+    fun sgges3(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : SSelect3, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, sdim : Int*, alphar : Float*, alphai : Float*, beta : Float*, vsl : Float*, ldvsl : Int*, vsr : Float*, ldvsr : Int*, work : Float*, lwork : Int*, bwork : Int*, info : Int*)
+    fun sggesx(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : SSelect3, sense : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, sdim : Int*, alphar : Float*, alphai : Float*, beta : Float*, vsl : Float*, ldvsl : Int*, vsr : Float*, ldvsr : Int*, rconde : Float*, rcondv : Float*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, bwork : Int*, info : Int*)
+    fun sggev(jobvl : Char*, jobvr : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sggev3(jobvl : Char*, jobvr : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sggevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, ilo : Int*, ihi : Int*, lscale : Float*, rscale : Float*, abnrm : Float*, bbnrm : Float*, rconde : Float*, rcondv : Float*, work : Float*, lwork : Int*, iwork : Int*, bwork : Bool*, info : Int*)
+    fun sggglm(n : Int*, m : Int*, p : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, d : Float*, x : Float*, y : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgghd3(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgghrd(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, info : Int*)
+    fun sgglse(m : Int*, n : Int*, p : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, c : Float*, d : Float*, x : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sggqrf(n : Int*, m : Int*, p : Int*, a : Float*, lda : Int*, taua : Float*, b : Float*, ldb : Int*, taub : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sggrqf(m : Int*, p : Int*, n : Int*, a : Float*, lda : Int*, taua : Float*, b : Float*, ldb : Int*, taub : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sggsvd(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alpha : Float*, beta : Float*, u : Float*, ldu : Int*, v : Float*, ldv : Int*, q : Float*, ldq : Int*, work : Float*, iwork : Int*, info : Int*) : Int
+    fun sggsvd3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alpha : Float*, beta : Float*, u : Float*, ldu : Int*, v : Float*, ldv : Int*, q : Float*, ldq : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sggsvp(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, tola : Float*, tolb : Float*, k : Int*, l : Int*, u : Float*, ldu : Int*, v : Float*, ldv : Int*, q : Float*, ldq : Int*, iwork : Int*, tau : Float*, work : Float*, info : Int*) : Int
+    fun sggsvp3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, tola : Float*, tolb : Float*, k : Int*, l : Int*, u : Float*, ldu : Int*, v : Float*, ldv : Int*, q : Float*, ldq : Int*, iwork : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sgsvj0(jobv : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, d : Float*, sva : Float*, mv : Int*, v : Float*, ldv : Int*, eps : Float*, sfmin : Float*, tol : Float*, nsweep : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgsvj1(jobv : Char*, m : Int*, n : Int*, n1 : Int*, a : Float*, lda : Int*, d : Float*, sva : Float*, mv : Int*, v : Float*, ldv : Int*, eps : Float*, sfmin : Float*, tol : Float*, nsweep : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sgtcon(norm : Char*, n : Int*, dl : Float*, d : Float*, du : Float*, du2 : Float*, ipiv : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgtrfs(trans : Char*, n : Int*, nrhs : Int*, dl : Float*, d : Float*, du : Float*, dlf : Float*, df : Float*, duf : Float*, du2 : Float*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgtsv(n : Int*, nrhs : Int*, dl : Float*, d : Float*, du : Float*, b : Float*, ldb : Int*, info : Int*)
+    fun sgtsvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, dl : Float*, d : Float*, du : Float*, dlf : Float*, df : Float*, duf : Float*, du2 : Float*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sgttrf(n : Int*, dl : Float*, d : Float*, du : Float*, du2 : Float*, ipiv : Int*, info : Int*)
+    fun sgttrs(trans : Char*, n : Int*, nrhs : Int*, dl : Float*, d : Float*, du : Float*, du2 : Float*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sgtts2(itrans : Int*, n : Int*, nrhs : Int*, dl : Float*, d : Float*, du : Float*, du2 : Float*, ipiv : Int*, b : Float*, ldb : Int*)
+    fun shgeqz(job : Char*, compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : Float*, ldh : Int*, t : Float*, ldt : Int*, alphar : Float*, alphai : Float*, beta : Float*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun shsein(side : Char*, eigsrc : Char*, initv : Char*, select : Bool*, n : Int*, h : Float*, ldh : Int*, wr : Float*, wi : Float*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, mm : Int*, m : Int*, work : Float*, ifaill : Int*, ifailr : Int*, info : Int*)
+    fun shseqr(job : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : Float*, ldh : Int*, wr : Float*, wi : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sisnan(sin : Float*) : Bool
+    fun sla_gbamv_(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Float*, ab : Float*, ldab : Int*, x : Float*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun sla_gbamv(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Float*, ab : Float*, ldab : Int*, x : Float*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun sla_gbrcond_(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*, trans_len : Int) : Double
+    fun sla_gbrcond(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*) : FloatReturn
+    fun sla_gbrfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, colequ : Char*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*)
+    fun sla_gbrfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, ipiv : Int*, colequ : Bool*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun sla_gbrpvgrw_(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*) : Double
+    fun sla_gbrpvgrw(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*) : FloatReturn
+    fun sla_geamv_(trans : Int*, m : Int*, n : Int*, alpha : Float*, a : Float*, lda : Int*, x : Float*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun sla_geamv(trans : Int*, m : Int*, n : Int*, alpha : Float*, a : Float*, lda : Int*, x : Float*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun sla_gercond_(trans : Char*, n : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*, trans_len : Int) : Double
+    fun sla_gercond(trans : Char*, n : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*) : FloatReturn
+    fun sla_gerfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*)
+    fun sla_gerfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun sla_gerpvgrw(n : Int*, ncols : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*) : FloatReturn
+    fun sla_lin_berr_(n : Int*, nz : Int*, nrhs : Int*, res : Float*, ayb : Float*, berr : Float*)
+    fun sla_lin_berr(n : Int*, nz : Int*, nrhs : Int*, res : Float*, ayb : Float*, berr : Float*)
+    fun sla_porcond_(uplo : Char*, n : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*, uplo_len : Int) : Double
+    fun sla_porcond(uplo : Char*, n : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*) : FloatReturn
+    fun sla_porfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, colequ : Char*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun sla_porfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, colequ : Bool*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun sla_porpvgrw_(uplo : Char*, ncols : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, work : Float*, uplo_len : Int) : Double
+    fun sla_porpvgrw(uplo : Char*, ncols : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, work : Float*) : FloatReturn
+    fun sla_rpvgrw_(n : Int*, ncols : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*) : Double
+    fun sla_syamv_(uplo : Int*, n : Int*, alpha : Float*, a : Float*, lda : Int*, x : Float*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun sla_syamv(uplo : Int*, n : Int*, alpha : Float*, a : Float*, lda : Int*, x : Float*, incx : Int*, beta : Float*, y : Float*, incy : Int*)
+    fun sla_syrcond_(uplo : Char*, n : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*, uplo_len : Int) : Double
+    fun sla_syrcond(uplo : Char*, n : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, cmode : Int*, c : Float*, info : Int*, work : Float*, iwork : Int*) : FloatReturn
+    fun sla_syrfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, errs_n : Float*, errs_c : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun sla_syrfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Float*, b : Float*, ldb : Int*, y : Float*, ldy : Int*, berr_out : Float*, n_norms : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, res : Float*, ayb : Float*, dy : Float*, y_tail : Float*, rcond : Float*, ithresh : Int*, rthresh : Float*, dz_ub : Float*, ignore_cwise : Bool*, info : Int*)
+    fun sla_syrpvgrw_(uplo : Char*, n : Int*, info : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, work : Float*, uplo_len : Int) : Double
+    fun sla_syrpvgrw(uplo : Char*, n : Int*, info : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, work : Float*) : FloatReturn
+    fun sla_wwaddw_(n : Int*, x : Float*, y : Float*, w : Float*)
+    fun sla_wwaddw(n : Int*, x : Float*, y : Float*, w : Float*)
+    fun slabad(small : Float*, large : Float*)
+    fun slabrd(m : Int*, n : Int*, nb : Int*, a : Float*, lda : Int*, d : Float*, e : Float*, tauq : Float*, taup : Float*, x : Float*, ldx : Int*, y : Float*, ldy : Int*)
+    fun slacn2(n : Int*, v : Float*, x : Float*, isgn : Int*, est : Float*, kase : Int*, isave : Int*)
+    fun slacon(n : Int*, v : Float*, x : Float*, isgn : Int*, est : Float*, kase : Int*)
+    fun slacpy(uplo : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*)
+    fun sladiv(a : Float*, b : Float*, c : Float*, d : Float*, p : Float*, q : Float*)
+    fun slae2(a : Float*, b : Float*, c : Float*, rt1 : Float*, rt2 : Float*)
+    fun slaebz(ijob : Int*, nitmax : Int*, n : Int*, mmax : Int*, minp : Int*, nbmin : Int*, abstol : Float*, reltol : Float*, pivmin : Float*, d : Float*, e : Float*, e2 : Float*, nval : Int*, ab : Float*, c : Float*, mout : Int*, nab : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun slaed0(icompq : Int*, qsiz : Int*, n : Int*, d : Float*, e : Float*, q : Float*, ldq : Int*, qstore : Float*, ldqs : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun slaed1(n : Int*, d : Float*, q : Float*, ldq : Int*, indxq : Int*, rho : Float*, cutpnt : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun slaed2(k : Int*, n : Int*, n1 : Int*, d : Float*, q : Float*, ldq : Int*, indxq : Int*, rho : Float*, z : Float*, dlamda : Float*, w : Float*, q2 : Float*, indx : Int*, indxc : Int*, indxp : Int*, coltyp : Int*, info : Int*)
+    fun slaed3(k : Int*, n : Int*, n1 : Int*, d : Float*, q : Float*, ldq : Int*, rho : Float*, dlamda : Float*, q2 : Float*, indx : Int*, ctot : Int*, w : Float*, s : Float*, info : Int*)
+    fun slaed4(n : Int*, i : Int*, d : Float*, z : Float*, delta : Float*, rho : Float*, dlam : Float*, info : Int*)
+    fun slaed5(i : Int*, d : Float*, z : Float*, delta : Float*, rho : Float*, dlam : Float*)
+    fun slaed6(kniter : Int*, orgati : Bool*, rho : Float*, d : Float*, z : Float*, finit : Float*, tau : Float*, info : Int*)
+    fun slaed7(icompq : Int*, n : Int*, qsiz : Int*, tlvls : Int*, curlvl : Int*, curpbm : Int*, d : Float*, q : Float*, ldq : Int*, indxq : Int*, rho : Float*, cutpnt : Int*, qstore : Float*, qptr : Int*, prmptr : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun slaed8(icompq : Int*, k : Int*, n : Int*, qsiz : Int*, d : Float*, q : Float*, ldq : Int*, indxq : Int*, rho : Float*, cutpnt : Int*, z : Float*, dlamda : Float*, q2 : Float*, ldq2 : Int*, w : Float*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Float*, indxp : Int*, indx : Int*, info : Int*)
+    fun slaed9(k : Int*, kstart : Int*, kstop : Int*, n : Int*, d : Float*, q : Float*, ldq : Int*, rho : Float*, dlamda : Float*, w : Float*, s : Float*, lds : Int*, info : Int*)
+    fun slaeda(n : Int*, tlvls : Int*, curlvl : Int*, curpbm : Int*, prmptr : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Float*, q : Float*, qptr : Int*, z : Float*, ztemp : Float*, info : Int*)
+    fun slaein(rightv : Bool*, noinit : Bool*, n : Int*, h : Float*, ldh : Int*, wr : Float*, wi : Float*, vr : Float*, vi : Float*, b : Float*, ldb : Int*, work : Float*, eps3 : Float*, smlnum : Float*, bignum : Float*, info : Int*)
+    fun slaev2(a : Float*, b : Float*, c : Float*, rt1 : Float*, rt2 : Float*, cs1 : Float*, sn1 : Float*)
+    fun slaexc(wantq : Bool*, n : Int*, t : Float*, ldt : Int*, q : Float*, ldq : Int*, j1 : Int*, n1 : Int*, n2 : Int*, work : Float*, info : Int*)
+    fun slag2(a : Float*, lda : Int*, b : Float*, ldb : Int*, safmin : Float*, scale1 : Float*, scale2 : Float*, wr1 : Float*, wr2 : Float*, wi : Float*)
+    fun slag2d(m : Int*, n : Int*, sa : Float*, ldsa : Int*, a : Double*, lda : Int*, info : Int*)
+    fun slagge(m : Int*, n : Int*, kl : Int*, ku : Int*, d : Float*, a : Float*, lda : Int*, iseed : Int*, work : Float*, info : Int*)
+    fun slags2(upper : Bool*, a1 : Float*, a2 : Float*, a3 : Float*, b1 : Float*, b2 : Float*, b3 : Float*, csu : Float*, snu : Float*, csv : Float*, snv : Float*, csq : Float*, snq : Float*)
+    fun slagsy(n : Int*, k : Int*, d : Float*, a : Float*, lda : Int*, iseed : Int*, work : Float*, info : Int*)
+    fun slagtf(n : Int*, a : Float*, lambda : Float*, b : Float*, c : Float*, tol : Float*, d : Float*, in : Int*, info : Int*)
+    fun slagtm(trans : Char*, n : Int*, nrhs : Int*, alpha : Float*, dl : Float*, d : Float*, du : Float*, x : Float*, ldx : Int*, beta : Float*, b : Float*, ldb : Int*)
+    fun slagts(job : Int*, n : Int*, a : Float*, b : Float*, c : Float*, d : Float*, in : Int*, y : Float*, tol : Float*, info : Int*)
+    fun slagv2(a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, csl : Float*, snl : Float*, csr : Float*, snr : Float*)
+    fun slahqr(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : Float*, ldh : Int*, wr : Float*, wi : Float*, iloz : Int*, ihiz : Int*, z : Float*, ldz : Int*, info : Int*)
+    fun slahr2(n : Int*, k : Int*, nb : Int*, a : Float*, lda : Int*, tau : Float*, t : Float*, ldt : Int*, y : Float*, ldy : Int*)
+    fun slahrd(n : Int*, k : Int*, nb : Int*, a : Float*, lda : Int*, tau : Float*, t : Float*, ldt : Int*, y : Float*, ldy : Int*)
+    fun slaic1(job : Int*, j : Int*, x : Float*, sest : Float*, w : Float*, gamma : Float*, sestpr : Float*, s : Float*, c : Float*)
+    fun slaisnan(sin1 : Float*, sin2 : Float*) : Bool
+    fun slaln2(ltrans : Bool*, na : Int*, nw : Int*, smin : Float*, ca : Float*, a : Float*, lda : Int*, d1 : Float*, d2 : Float*, b : Float*, ldb : Int*, wr : Float*, wi : Float*, x : Float*, ldx : Int*, scale : Float*, xnorm : Float*, info : Int*)
+    fun slals0(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, nrhs : Int*, b : Float*, ldb : Int*, bx : Float*, ldbx : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Float*, ldgnum : Int*, poles : Float*, difl : Float*, difr : Float*, z : Float*, k : Int*, c : Float*, s : Float*, work : Float*, info : Int*)
+    fun slalsa(icompq : Int*, smlsiz : Int*, n : Int*, nrhs : Int*, b : Float*, ldb : Int*, bx : Float*, ldbx : Int*, u : Float*, ldu : Int*, vt : Float*, k : Int*, difl : Float*, difr : Float*, z : Float*, poles : Float*, givptr : Int*, givcol : Int*, ldgcol : Int*, perm : Int*, givnum : Float*, c : Float*, s : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun slalsd(uplo : Char*, smlsiz : Int*, n : Int*, nrhs : Int*, d : Float*, e : Float*, b : Float*, ldb : Int*, rcond : Float*, rank : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun slamc1(beta : Int*, t : Int*, rnd : Char*, ieee1 : Char*)
+    fun slamc2(beta : Int*, t : Int*, rnd : Char*, eps : Float*, emin : Int*, rmin : Float*, emax : Int*, rmax : Float*)
+    fun slamc3(a : Float*, b : Float*) : Double
+    fun slamc4(emin : Int*, start : Float*, base : Int*)
+    fun slamc5(beta : Int*, p : Int*, emin : Int*, ieee : Char*, emax : Int*, rmax : Float*)
+    fun slamch(cmach : Char*) : FloatReturn
+    fun slamrg(n1 : Int*, n2 : Int*, a : Float*, strd1 : Int*, strd2 : Int*, index_bn : Int*)
+    fun slamswlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun slamtsqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun slaneg(n : Int*, d : Float*, lld : Float*, sigma : Float*, pivmin : Float*, r : Int*) : Int
+    fun slangb(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, work : Float*) : FloatReturn
+    fun slange(norm : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, work : Float*) : FloatReturn
+    fun slangt(norm : Char*, n : Int*, dl : Float*, d : Float*, du : Float*) : FloatReturn
+    fun slanhs(norm : Char*, n : Int*, a : Float*, lda : Int*, work : Float*) : FloatReturn
+    fun slansb(norm : Char*, uplo : Char*, n : Int*, k : Int*, ab : Float*, ldab : Int*, work : Float*) : FloatReturn
+    fun slansf(norm : Char*, transr : Char*, uplo : Char*, n : Int*, a : Float*, work : Float*) : FloatReturn
+    fun slansp(norm : Char*, uplo : Char*, n : Int*, ap : Float*, work : Float*) : FloatReturn
+    fun slanst(norm : Char*, n : Int*, d : Float*, e : Float*) : FloatReturn
+    fun slansy(norm : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, work : Float*) : FloatReturn
+    fun slantb(norm : Char*, uplo : Char*, diag : Char*, n : Int*, k : Int*, ab : Float*, ldab : Int*, work : Float*) : FloatReturn
+    fun slantp(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : Float*, work : Float*) : FloatReturn
+    fun slantr(norm : Char*, uplo : Char*, diag : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, work : Float*) : FloatReturn
+    fun slanv2(a : Float*, b : Float*, c : Float*, d : Float*, rt1r : Float*, rt1i : Float*, rt2r : Float*, rt2i : Float*, cs : Float*, sn : Float*)
+    fun slaorhr_col_getrfnp(m : Int*, n : Int*, a : Float*, lda : Int*, d : Float*, info : Int*)
+    fun slaorhr_col_getrfnp2(m : Int*, n : Int*, a : Float*, lda : Int*, d : Float*, info : Int*)
+    fun slapll(n : Int*, x : Float*, incx : Int*, y : Float*, incy : Int*, ssmin : Float*)
+    fun slapmr(forwrd : Bool*, m : Int*, n : Int*, x : Float*, ldx : Int*, k : Int*)
+    fun slapmt(forwrd : Bool*, m : Int*, n : Int*, x : Float*, ldx : Int*, k : Int*)
+    fun slapy2(x : Float*, y : Float*) : FloatReturn
+    fun slapy3(x : Float*, y : Float*, z : Float*) : FloatReturn
+    fun slaqgb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : Float*, ldab : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, equed : Char*)
+    fun slaqge(m : Int*, n : Int*, a : Float*, lda : Int*, r : Float*, c : Float*, rowcnd : Float*, colcnd : Float*, amax : Float*, equed : Char*)
+    fun slaqp2(m : Int*, n : Int*, offset : Int*, a : Float*, lda : Int*, jpvt : Int*, tau : Float*, vn1 : Float*, vn2 : Float*, work : Float*)
+    fun slaqps(m : Int*, n : Int*, offset : Int*, nb : Int*, kb : Int*, a : Float*, lda : Int*, jpvt : Int*, tau : Float*, vn1 : Float*, vn2 : Float*, auxv : Float*, f : Float*, ldf : Int*)
+    fun slaqr0(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : Float*, ldh : Int*, wr : Float*, wi : Float*, iloz : Int*, ihiz : Int*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun slaqr1(n : Int*, h : Float*, ldh : Int*, sr1 : Float*, si1 : Float*, sr2 : Float*, si2 : Float*, v : Float*)
+    fun slaqr2(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : Float*, ldh : Int*, iloz : Int*, ihiz : Int*, z : Float*, ldz : Int*, ns : Int*, nd : Int*, sr : Float*, si : Float*, v : Float*, ldv : Int*, nh : Int*, t : Float*, ldt : Int*, nv : Int*, wv : Float*, ldwv : Int*, work : Float*, lwork : Int*)
+    fun slaqr3(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : Float*, ldh : Int*, iloz : Int*, ihiz : Int*, z : Float*, ldz : Int*, ns : Int*, nd : Int*, sr : Float*, si : Float*, v : Float*, ldv : Int*, nh : Int*, t : Float*, ldt : Int*, nv : Int*, wv : Float*, ldwv : Int*, work : Float*, lwork : Int*)
+    fun slaqr4(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : Float*, ldh : Int*, wr : Float*, wi : Float*, iloz : Int*, ihiz : Int*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun slaqr5(wantt : Bool*, wantz : Bool*, kacc22 : Int*, n : Int*, ktop : Int*, kbot : Int*, nshfts : Int*, sr : Float*, si : Float*, h : Float*, ldh : Int*, iloz : Int*, ihiz : Int*, z : Float*, ldz : Int*, v : Float*, ldv : Int*, u : Float*, ldu : Int*, nv : Int*, wv : Float*, ldwv : Int*, nh : Int*, wh : Float*, ldwh : Int*)
+    fun slaqsb(uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun slaqsp(uplo : Char*, n : Int*, ap : Float*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun slaqsy(uplo : Char*, n : Int*, a : Float*, lda : Int*, s : Float*, scond : Float*, amax : Float*, equed : Char*)
+    fun slaqtr(ltran : Bool*, lreal : Bool*, n : Int*, t : Float*, ldt : Int*, b : Float*, w : Float*, scale : Float*, x : Float*, work : Float*, info : Int*)
+    fun slaqz0(wants : Char*, wantq : Char*, wantz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, rec : Int*, info : Int*)
+    fun slaqz1(a : Float*, lda : Int*, b : Float*, ldb : Int*, sr1 : Float*, sr2 : Float*, si : Float*, beta1 : Float*, beta2 : Float*, v : Float*)
+    fun slaqz2(ilq : Bool*, ilz : Bool*, k : Int*, istartm : Int*, istopm : Int*, ihi : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, nq : Int*, qstart : Int*, q : Float*, ldq : Int*, nz : Int*, zstart : Int*, z : Float*, ldz : Int*)
+    fun slaqz3(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nw : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, ns : Int*, nd : Int*, alphar : Float*, alphai : Float*, beta : Float*, qc : Float*, ldqc : Int*, zc : Float*, ldzc : Int*, work : Float*, lwork : Int*, rec : Int*, info : Int*)
+    fun slaqz4(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nshifts : Int*, nblock_desired : Int*, sr : Float*, si : Float*, ss : Float*, a : Float*, lda : Int*, b : Float*, ldb : Int*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, qc : Float*, ldqc : Int*, zc : Float*, ldzc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun slar1v(n : Int*, b1 : Int*, bn : Int*, lambda : Float*, d : Float*, l : Float*, ld : Float*, lld : Float*, pivmin : Float*, gaptol : Float*, z : Float*, wantnc : Bool*, negcnt : Int*, ztz : Float*, mingma : Float*, r : Int*, isuppz : Int*, nrminv : Float*, resid : Float*, rqcorr : Float*, work : Float*)
+    fun slar2v(n : Int*, x : Float*, y : Float*, z : Float*, incx : Int*, c : Float*, s : Float*, incc : Int*)
+    fun slarf(side : Char*, m : Int*, n : Int*, v : Float*, incv : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*)
+    fun slarfb_gett(ident : Char*, m : Int*, n : Int*, k : Int*, t : Float*, ldt : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, work : Float*, ldwork : Int*)
+    fun slarfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, v : Float*, ldv : Int*, t : Float*, ldt : Int*, c : Float*, ldc : Int*, work : Float*, ldwork : Int*)
+    fun slarfg(n : Int*, alpha : Float*, x : Float*, incx : Int*, tau : Float*)
+    fun slarfgp(n : Int*, alpha : Float*, x : Float*, incx : Int*, tau : Float*)
+    fun slarfp(n : Int*, alpha : Float*, x : Float*, incx : Int*, tau : Float*)
+    fun slarft(direct : Char*, storev : Char*, n : Int*, k : Int*, v : Float*, ldv : Int*, tau : Float*, t : Float*, ldt : Int*)
+    fun slarfx(side : Char*, m : Int*, n : Int*, v : Float*, tau : Float*, c : Float*, ldc : Int*, work : Float*)
+    fun slarfy(uplo : Char*, n : Int*, v : Float*, incv : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*)
+    fun slargv(n : Int*, x : Float*, incx : Int*, y : Float*, incy : Int*, c : Float*, incc : Int*)
+    fun slarmm(anorm : Float*, bnorm : Float*, cnorm : Float*) : FloatReturn
+    fun slarnv(idist : Int*, iseed : Int*, n : Int*, x : Float*)
+    fun slarra(n : Int*, d : Float*, e : Float*, e2 : Float*, spltol : Float*, tnrm : Float*, nsplit : Int*, isplit : Int*, info : Int*)
+    fun slarrb(n : Int*, d : Float*, lld : Float*, ifirst : Int*, ilast : Int*, rtol1 : Float*, rtol2 : Float*, offset : Int*, w : Float*, wgap : Float*, werr : Float*, work : Float*, iwork : Int*, pivmin : Float*, spdiam : Float*, twist : Int*, info : Int*)
+    fun slarrc(jobt : Char*, n : Int*, vl : Float*, vu : Float*, d : Float*, e : Float*, pivmin : Float*, eigcnt : Int*, lcnt : Int*, rcnt : Int*, info : Int*)
+    fun slarrd(range : Char*, order : Char*, n : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, gers : Float*, reltol : Float*, d : Float*, e : Float*, e2 : Float*, pivmin : Float*, nsplit : Int*, isplit : Int*, m : Int*, w : Float*, werr : Float*, wl : Float*, wu : Float*, iblock : Int*, indexw : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun slarre(range : Char*, n : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, d : Float*, e : Float*, e2 : Float*, rtol1 : Float*, rtol2 : Float*, spltol : Float*, nsplit : Int*, isplit : Int*, m : Int*, w : Float*, werr : Float*, wgap : Float*, iblock : Int*, indexw : Int*, gers : Float*, pivmin : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun slarrf(n : Int*, d : Float*, l : Float*, ld : Float*, clstrt : Int*, clend : Int*, w : Float*, wgap : Float*, werr : Float*, spdiam : Float*, clgapl : Float*, clgapr : Float*, pivmin : Float*, sigma : Float*, dplus : Float*, lplus : Float*, work : Float*, info : Int*)
+    fun slarrj(n : Int*, d : Float*, e2 : Float*, ifirst : Int*, ilast : Int*, rtol : Float*, offset : Int*, w : Float*, werr : Float*, work : Float*, iwork : Int*, pivmin : Float*, spdiam : Float*, info : Int*)
+    fun slarrk(n : Int*, iw : Int*, gl : Float*, gu : Float*, d : Float*, e2 : Float*, pivmin : Float*, reltol : Float*, w : Float*, werr : Float*, info : Int*)
+    fun slarrr(n : Int*, d : Float*, e : Float*, info : Int*)
+    fun slarrv(n : Int*, vl : Float*, vu : Float*, d : Float*, l : Float*, pivmin : Float*, isplit : Int*, m : Int*, dol : Int*, dou : Int*, minrgp : Float*, rtol1 : Float*, rtol2 : Float*, w : Float*, werr : Float*, wgap : Float*, iblock : Int*, indexw : Int*, gers : Float*, z : Float*, ldz : Int*, isuppz : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun slarscl2(m : Int*, n : Int*, d : Float*, x : Float*, ldx : Int*)
+    fun slartg(f : Float*, g : Float*, cs : Float*, sn : Float*, r : Float*)
+    fun slartgp(f : Float*, g : Float*, cs : Float*, sn : Float*, r : Float*)
+    fun slartgs(x : Float*, y : Float*, sigma : Float*, cs : Float*, sn : Float*)
+    fun slartv(n : Int*, x : Float*, incx : Int*, y : Float*, incy : Int*, c : Float*, s : Float*, incc : Int*)
+    fun slaruv(iseed : Int*, n : Int*, x : Float*)
+    fun slarz(side : Char*, m : Int*, n : Int*, l : Int*, v : Float*, incv : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*)
+    fun slarzb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : Float*, ldv : Int*, t : Float*, ldt : Int*, c : Float*, ldc : Int*, work : Float*, ldwork : Int*)
+    fun slarzt(direct : Char*, storev : Char*, n : Int*, k : Int*, v : Float*, ldv : Int*, tau : Float*, t : Float*, ldt : Int*)
+    fun slas2(f : Float*, g : Float*, h : Float*, ssmin : Float*, ssmax : Float*)
+    fun slascl(type_bn : Char*, kl : Int*, ku : Int*, cfrom : Float*, cto : Float*, m : Int*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun slascl2(m : Int*, n : Int*, d : Float*, x : Float*, ldx : Int*)
+    fun slasd0(n : Int*, sqre : Int*, d : Float*, e : Float*, u : Float*, ldu : Int*, vt : Float*, ldvt : Int*, smlsiz : Int*, iwork : Int*, work : Float*, info : Int*)
+    fun slasd1(nl : Int*, nr : Int*, sqre : Int*, d : Float*, alpha : Float*, beta : Float*, u : Float*, ldu : Int*, vt : Float*, ldvt : Int*, idxq : Int*, iwork : Int*, work : Float*, info : Int*)
+    fun slasd2(nl : Int*, nr : Int*, sqre : Int*, k : Int*, d : Float*, z : Float*, alpha : Float*, beta : Float*, u : Float*, ldu : Int*, vt : Float*, ldvt : Int*, dsigma : Float*, u2 : Float*, ldu2 : Int*, vt2 : Float*, ldvt2 : Int*, idxp : Int*, idx : Int*, idxc : Int*, idxq : Int*, coltyp : Int*, info : Int*)
+    fun slasd3(nl : Int*, nr : Int*, sqre : Int*, k : Int*, d : Float*, q : Float*, ldq : Int*, dsigma : Float*, u : Float*, ldu : Int*, u2 : Float*, ldu2 : Int*, vt : Float*, ldvt : Int*, vt2 : Float*, ldvt2 : Int*, idxc : Int*, ctot : Int*, z : Float*, info : Int*)
+    fun slasd4(n : Int*, i : Int*, d : Float*, z : Float*, delta : Float*, rho : Float*, sigma : Float*, work : Float*, info : Int*)
+    fun slasd5(i : Int*, d : Float*, z : Float*, delta : Float*, rho : Float*, dsigma : Float*, work : Float*)
+    fun slasd6(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, d : Float*, vf : Float*, vl : Float*, alpha : Float*, beta : Float*, idxq : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Float*, ldgnum : Int*, poles : Float*, difl : Float*, difr : Float*, z : Float*, k : Int*, c : Float*, s : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun slasd7(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, k : Int*, d : Float*, z : Float*, zw : Float*, vf : Float*, vfw : Float*, vl : Float*, vlw : Float*, alpha : Float*, beta : Float*, dsigma : Float*, idx : Int*, idxp : Int*, idxq : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Float*, ldgnum : Int*, c : Float*, s : Float*, info : Int*)
+    fun slasd8(icompq : Int*, k : Int*, d : Float*, z : Float*, vf : Float*, vl : Float*, difl : Float*, difr : Float*, lddifr : Int*, dsigma : Float*, work : Float*, info : Int*)
+    fun slasda(icompq : Int*, smlsiz : Int*, n : Int*, sqre : Int*, d : Float*, e : Float*, u : Float*, ldu : Int*, vt : Float*, k : Int*, difl : Float*, difr : Float*, z : Float*, poles : Float*, givptr : Int*, givcol : Int*, ldgcol : Int*, perm : Int*, givnum : Float*, c : Float*, s : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun slasdq(uplo : Char*, sqre : Int*, n : Int*, ncvt : Int*, nru : Int*, ncc : Int*, d : Float*, e : Float*, vt : Float*, ldvt : Int*, u : Float*, ldu : Int*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun slasdt(n : Int*, lvl : Int*, nd : Int*, inode : Int*, ndiml : Int*, ndimr : Int*, msub : Int*)
+    fun slaset(uplo : Char*, m : Int*, n : Int*, alpha : Float*, beta : Float*, a : Float*, lda : Int*)
+    fun slasq1(n : Int*, d : Float*, e : Float*, work : Float*, info : Int*)
+    fun slasq2(n : Int*, z : Float*, info : Int*)
+    fun slasq3(i0 : Int*, n0 : Int*, z : Float*, pp : Int*, dmin : Float*, sigma : Float*, desig : Float*, qmax : Float*, nfail : Int*, iter : Int*, ndiv : Int*, ieee : Bool*, ttype : Int*, dmin1 : Float*, dmin2 : Float*, dn : Float*, dn1 : Float*, dn2 : Float*, g : Float*, tau : Float*)
+    fun slasq4(i0 : Int*, n0 : Int*, z : Float*, pp : Int*, n0in : Int*, dmin : Float*, dmin1 : Float*, dmin2 : Float*, dn : Float*, dn1 : Float*, dn2 : Float*, tau : Float*, ttype : Int*, g : Float*)
+    fun slasq5(i0 : Int*, n0 : Int*, z : Float*, pp : Int*, tau : Float*, sigma : Float*, dmin : Float*, dmin1 : Float*, dmin2 : Float*, dn : Float*, dnm1 : Float*, dnm2 : Float*, ieee : Bool*, eps : Float*)
+    fun slasq6(i0 : Int*, n0 : Int*, z : Float*, pp : Int*, dmin : Float*, dmin1 : Float*, dmin2 : Float*, dn : Float*, dnm1 : Float*, dnm2 : Float*)
+    fun slasr(side : Char*, pivot : Char*, direct : Char*, m : Int*, n : Int*, c : Float*, s : Float*, a : Float*, lda : Int*)
+    fun slasrt(id : Char*, n : Int*, d : Float*, info : Int*)
+    fun slassq(n : Int*, x : Float*, incx : Int*, scale : Float*, sumsq : Float*)
+    fun slasv2(f : Float*, g : Float*, h : Float*, ssmin : Float*, ssmax : Float*, snr : Float*, csr : Float*, snl : Float*, csl : Float*)
+    fun slaswlq(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun slaswp(n : Int*, a : Float*, lda : Int*, k1 : Int*, k2 : Int*, ipiv : Int*, incx : Int*)
+    fun slasy2(ltranl : Bool*, ltranr : Bool*, isgn : Int*, n1 : Int*, n2 : Int*, tl : Float*, ldtl : Int*, tr : Float*, ldtr : Int*, b : Float*, ldb : Int*, scale : Float*, x : Float*, ldx : Int*, xnorm : Float*, info : Int*)
+    fun slasyf_aa(uplo : Char*, j1 : Int*, m : Int*, nb : Int*, a : Float*, lda : Int*, ipiv : Int*, h : Float*, ldh : Int*, work : Float*)
+    fun slasyf_rk(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, w : Float*, ldw : Int*, info : Int*)
+    fun slasyf_rook(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : Float*, lda : Int*, ipiv : Int*, w : Float*, ldw : Int*, info : Int*)
+    fun slasyf(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : Float*, lda : Int*, ipiv : Int*, w : Float*, ldw : Int*, info : Int*)
+    fun slatbs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, x : Float*, scale : Float*, cnorm : Float*, info : Int*)
+    fun slatdf(ijob : Int*, n : Int*, z : Float*, ldz : Int*, rhs : Float*, rdsum : Float*, rdscal : Float*, ipiv : Int*, jpiv : Int*)
+    fun slatms(m : Int*, n : Int*, dist : Char*, iseed : Int*, sym : Char*, d : Float*, mode : Int*, cond : Float*, dmax : Float*, kl : Int*, ku : Int*, pack : Char*, a : Float*, lda : Int*, work : Float*, info : Int*)
+    fun slatps(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, ap : Float*, x : Float*, scale : Float*, cnorm : Float*, info : Int*)
+    fun slatrd(uplo : Char*, n : Int*, nb : Int*, a : Float*, lda : Int*, e : Float*, tau : Float*, w : Float*, ldw : Int*)
+    fun slatrs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, a : Float*, lda : Int*, x : Float*, scale : Float*, cnorm : Float*, info : Int*)
+    fun slatrs3(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, x : Float*, ldx : Int*, scale : Float*, cnorm : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun slatrz(m : Int*, n : Int*, l : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*)
+    fun slatsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun slatzm(side : Char*, m : Int*, n : Int*, v : Float*, incv : Int*, tau : Float*, c1 : Float*, c2 : Float*, ldc : Int*, work : Float*)
+    fun slauu2(uplo : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun slauum(uplo : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun smaxloc(a : Float*, dimm : Int*) : Int
+    fun sopgtr(uplo : Char*, n : Int*, ap : Float*, tau : Float*, q : Float*, ldq : Int*, work : Float*, info : Int*)
+    fun sopmtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, ap : Float*, tau : Float*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sorbdb(trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : Float*, ldx11 : Int*, x12 : Float*, ldx12 : Int*, x21 : Float*, ldx21 : Int*, x22 : Float*, ldx22 : Int*, theta : Float*, phi : Float*, taup1 : Float*, taup2 : Float*, tauq1 : Float*, tauq2 : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorbdb1(m : Int*, p : Int*, q : Int*, x11 : Float*, ldx11 : Int*, x21 : Float*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : Float*, taup2 : Float*, tauq1 : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorbdb2(m : Int*, p : Int*, q : Int*, x11 : Float*, ldx11 : Int*, x21 : Float*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : Float*, taup2 : Float*, tauq1 : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorbdb3(m : Int*, p : Int*, q : Int*, x11 : Float*, ldx11 : Int*, x21 : Float*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : Float*, taup2 : Float*, tauq1 : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorbdb4(m : Int*, p : Int*, q : Int*, x11 : Float*, ldx11 : Int*, x21 : Float*, ldx21 : Int*, theta : Float*, phi : Float*, taup1 : Float*, taup2 : Float*, tauq1 : Float*, phantom : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorbdb5(m1 : Int*, m2 : Int*, n : Int*, x1 : Float*, incx1 : Int*, x2 : Float*, incx2 : Int*, q1 : Float*, ldq1 : Int*, q2 : Float*, ldq2 : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sorbdb6(m1 : Int*, m2 : Int*, n : Int*, x1 : Float*, incx1 : Int*, x2 : Float*, incx2 : Int*, q1 : Float*, ldq1 : Int*, q2 : Float*, ldq2 : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sorcsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : Float*, ldx11 : Int*, x12 : Float*, ldx12 : Int*, x21 : Float*, ldx21 : Int*, x22 : Float*, ldx22 : Int*, theta : Float*, u1 : Float*, ldu1 : Int*, u2 : Float*, ldu2 : Int*, v1t : Float*, ldv1t : Int*, v2t : Float*, ldv2t : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sorcsd2by1(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, m : Int*, p : Int*, q : Int*, x11 : Float*, ldx11 : Int*, x21 : Float*, ldx21 : Int*, theta : Float*, u1 : Float*, ldu1 : Int*, u2 : Float*, ldu2 : Int*, v1t : Float*, ldv1t : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun sorg2l(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sorg2r(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sorgbr(vect : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorghr(n : Int*, ilo : Int*, ihi : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorgl2(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sorglq(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorgql(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorgqr(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorgr2(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, info : Int*)
+    fun sorgrq(m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorgtr(uplo : Char*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun sorgtsqr_row(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sorgtsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sorhr_col(m : Int*, n : Int*, nb : Int*, a : Float*, lda : Int*, t : Float*, ldt : Int*, d : Float*, info : Int*)
+    fun sorm22(side : Char*, trans : Char*, m : Int*, n : Int*, n1 : Int*, n2 : Int*, q : Float*, ldq : Int*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sorm2l(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sorm2r(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sormbr(vect : Char*, side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sormhr(side : Char*, trans : Char*, m : Int*, n : Int*, ilo : Int*, ihi : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sorml2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sormlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sormql(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sormqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sormr2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sormr3(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, info : Int*)
+    fun sormrq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sormrz(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun sormtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, c : Float*, ldc : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun spbcon(uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun spbequ(uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun spbrfs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun spbstf(uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, info : Int*)
+    fun spbsv(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Float*, ldab : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun spbsvx(fact : Char*, uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Float*, ldab : Int*, afb : Float*, ldafb : Int*, equed : Char*, s : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun spbtf2(uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, info : Int*)
+    fun spbtrf(uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, info : Int*)
+    fun spbtrs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Float*, ldab : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun spftrf(transr : Char*, uplo : Char*, n : Int*, a : Float*, info : Int*)
+    fun spftri(transr : Char*, uplo : Char*, n : Int*, a : Float*, info : Int*)
+    fun spftrs(transr : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, b : Float*, ldb : Int*, info : Int*)
+    fun spocon(uplo : Char*, n : Int*, a : Float*, lda : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun spoequ(n : Int*, a : Float*, lda : Int*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun spoequb(n : Int*, a : Float*, lda : Int*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun sporfs(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sporfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, s : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sposv(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sposvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, equed : Char*, s : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sposvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, equed : Char*, s : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun spotf2(uplo : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun spotrf(uplo : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun spotrf2(uplo : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun spotri(uplo : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun spotrs(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sppcon(uplo : Char*, n : Int*, ap : Float*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sppequ(uplo : Char*, n : Int*, ap : Float*, s : Float*, scond : Float*, amax : Float*, info : Int*)
+    fun spprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, afp : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sppsv(uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, b : Float*, ldb : Int*, info : Int*)
+    fun sppsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, afp : Float*, equed : Char*, s : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun spptrf(uplo : Char*, n : Int*, ap : Float*, info : Int*)
+    fun spptri(uplo : Char*, n : Int*, ap : Float*, info : Int*)
+    fun spptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, b : Float*, ldb : Int*, info : Int*)
+    fun spstf2(uplo : Char*, n : Int*, a : Float*, lda : Int*, piv : Int*, rank : Int*, tol : Float*, work : Float*, info : Int*)
+    fun spstrf(uplo : Char*, n : Int*, a : Float*, lda : Int*, piv : Int*, rank : Int*, tol : Float*, work : Float*, info : Int*)
+    fun sptcon(n : Int*, d : Float*, e : Float*, anorm : Float*, rcond : Float*, work : Float*, info : Int*)
+    fun spteqr(compz : Char*, n : Int*, d : Float*, e : Float*, z : Float*, ldz : Int*, work : Float*, info : Int*)
+    fun sptrfs(n : Int*, nrhs : Int*, d : Float*, e : Float*, df : Float*, ef : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, info : Int*)
+    fun sptsv(n : Int*, nrhs : Int*, d : Float*, e : Float*, b : Float*, ldb : Int*, info : Int*)
+    fun sptsvx(fact : Char*, n : Int*, nrhs : Int*, d : Float*, e : Float*, df : Float*, ef : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, info : Int*)
+    fun spttrf(n : Int*, d : Float*, e : Float*, info : Int*)
+    fun spttrs(n : Int*, nrhs : Int*, d : Float*, e : Float*, b : Float*, ldb : Int*, info : Int*)
+    fun sptts2(n : Int*, nrhs : Int*, d : Float*, e : Float*, b : Float*, ldb : Int*)
+    fun sroundup_lwork(lwork : Int*) : FloatReturn
+    fun srscl(n : Int*, sa : Float*, sx : Float*, incx : Int*)
+    fun ssb2st_kernels(uplo : Char*, wantz : Bool*, ttype : Int*, st : Int*, ed : Int*, sweep : Int*, n : Int*, nb : Int*, ib : Int*, a : Float*, lda : Int*, v : Float*, tau : Float*, ldvt : Int*, work : Float*)
+    fun ssbev_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssbev(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, info : Int*)
+    fun ssbevd_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssbevd(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssbevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, q : Float*, ldq : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssbevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, q : Float*, ldq : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssbgst(vect : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Float*, ldab : Int*, bb : Float*, ldbb : Int*, x : Float*, ldx : Int*, work : Float*, info : Int*)
+    fun ssbgv(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Float*, ldab : Int*, bb : Float*, ldbb : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, info : Int*)
+    fun ssbgvd(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Float*, ldab : Int*, bb : Float*, ldbb : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssbgvx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : Float*, ldab : Int*, bb : Float*, ldbb : Int*, q : Float*, ldq : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssbtrd(vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, d : Float*, e : Float*, q : Float*, ldq : Int*, work : Float*, info : Int*)
+    fun ssfrk(transr : Char*, uplo : Char*, trans : Char*, n : Int*, k : Int*, alpha : Float*, a : Float*, lda : Int*, beta : Float*, c : Float*)
+    fun sspcon(uplo : Char*, n : Int*, ap : Float*, ipiv : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sspev(jobz : Char*, uplo : Char*, n : Int*, ap : Float*, w : Float*, z : Float*, ldz : Int*, work : Float*, info : Int*)
+    fun sspevd(jobz : Char*, uplo : Char*, n : Int*, ap : Float*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun sspevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun sspgst(itype : Int*, uplo : Char*, n : Int*, ap : Float*, bp : Float*, info : Int*)
+    fun sspgv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : Float*, bp : Float*, w : Float*, z : Float*, ldz : Int*, work : Float*, info : Int*)
+    fun sspgvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : Float*, bp : Float*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun sspgvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : Float*, bp : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, afp : Float*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun sspsv(uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sspsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, afp : Float*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun ssptrd(uplo : Char*, n : Int*, ap : Float*, d : Float*, e : Float*, tau : Float*, info : Int*)
+    fun ssptrf(uplo : Char*, n : Int*, ap : Float*, ipiv : Int*, info : Int*)
+    fun ssptri(uplo : Char*, n : Int*, ap : Float*, ipiv : Int*, work : Float*, info : Int*)
+    fun ssptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : Float*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun sstebz(range : Char*, order : Char*, n : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, d : Float*, e : Float*, m : Int*, nsplit : Int*, w : Float*, iblock : Int*, isplit : Int*, work : Float*, iwork : Int*, info : Int*)
+    fun sstedc(compz : Char*, n : Int*, d : Float*, e : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun sstegr(jobz : Char*, range : Char*, n : Int*, d : Float*, e : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, isuppz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun sstein(n : Int*, d : Float*, e : Float*, m : Int*, w : Float*, iblock : Int*, isplit : Int*, z : Float*, ldz : Int*, work : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun sstemr(jobz : Char*, range : Char*, n : Int*, d : Float*, e : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, m : Int*, w : Float*, z : Float*, ldz : Int*, nzc : Int*, isuppz : Int*, tryrac : Bool*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssteqr(compz : Char*, n : Int*, d : Float*, e : Float*, z : Float*, ldz : Int*, work : Float*, info : Int*)
+    fun ssterf(n : Int*, d : Float*, e : Float*, info : Int*)
+    fun sstev(jobz : Char*, n : Int*, d : Float*, e : Float*, z : Float*, ldz : Int*, work : Float*, info : Int*)
+    fun sstevd(jobz : Char*, n : Int*, d : Float*, e : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun sstevr(jobz : Char*, range : Char*, n : Int*, d : Float*, e : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, isuppz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun sstevx(jobz : Char*, range : Char*, n : Int*, d : Float*, e : Float*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssycon_3(uplo : Char*, n : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun ssycon_rook(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun ssycon(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, anorm : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun ssyconv(uplo : Char*, way : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, e : Float*, info : Int*)
+    fun ssyconvf_rook(uplo : Char*, way : Char*, n : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, info : Int*)
+    fun ssyconvf(uplo : Char*, way : Char*, n : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, info : Int*)
+    fun ssyequb(uplo : Char*, n : Int*, a : Float*, lda : Int*, s : Float*, scond : Float*, amax : Float*, work : Float*, info : Int*)
+    fun ssyev_2stage(jobz : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, w : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun ssyev(jobz : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, w : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun ssyevd_2stage(jobz : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, w : Float*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssyevd(jobz : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, w : Float*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssyevr_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, isuppz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssyevr(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, isuppz : Int*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssyevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssyevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssygs2(itype : Int*, uplo : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun ssygst(itype : Int*, uplo : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun ssygv_2stage(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, w : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun ssygv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, w : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun ssygvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, w : Float*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ssygvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, vl : Float*, vu : Float*, il : Int*, iu : Int*, abstol : Float*, m : Int*, w : Float*, z : Float*, ldz : Int*, work : Float*, lwork : Int*, iwork : Int*, ifail : Int*, info : Int*)
+    fun ssyrfs(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun ssyrfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, s : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun ssysv_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, tb : Float*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssysv_aa(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssysv_rk(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssysv_rook(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssysv(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssysvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, ferr : Float*, berr : Float*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun ssysvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, af : Float*, ldaf : Int*, ipiv : Int*, equed : Char*, s : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, rcond : Float*, rpvgrw : Float*, berr : Float*, n_err_bnds : Int*, err_bnds_norm : Float*, err_bnds_comp : Float*, nparams : Int*, params : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun ssyswapr(uplo : Char*, n : Int*, a : Float*, lda : Int*, i1 : Int*, i2 : Int*)
+    fun ssytd2(uplo : Char*, n : Int*, a : Float*, lda : Int*, d : Float*, e : Float*, tau : Float*, info : Int*)
+    fun ssytf2_rk(uplo : Char*, n : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, info : Int*)
+    fun ssytf2_rook(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, info : Int*)
+    fun ssytf2(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, info : Int*)
+    fun ssytrd_2stage(vect : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, d : Float*, e : Float*, tau : Float*, hous2 : Float*, lhous2 : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrd_sb2st(stage1 : Char*, vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, d : Float*, e : Float*, hous : Float*, lhous : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrd_sy2sb(uplo : Char*, n : Int*, kd : Int*, a : Float*, lda : Int*, ab : Float*, ldab : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrd(uplo : Char*, n : Int*, a : Float*, lda : Int*, d : Float*, e : Float*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrf_aa_2stage(uplo : Char*, n : Int*, a : Float*, lda : Int*, tb : Float*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrf_aa(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrf_rk(uplo : Char*, n : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrf_rook(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrf(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytri_3(uplo : Char*, n : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytri_3x(uplo : Char*, n : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, work : Float*, nb : Int*, info : Int*)
+    fun ssytri_rook(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, info : Int*)
+    fun ssytri(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, info : Int*)
+    fun ssytri2(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytri2x(uplo : Char*, n : Int*, a : Float*, lda : Int*, ipiv : Int*, work : Float*, nb : Int*, info : Int*)
+    fun ssytrs_3(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, e : Float*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun ssytrs_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, tb : Float*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun ssytrs_aa(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun ssytrs_rook(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun ssytrs(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun ssytrs2(uplo : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, ipiv : Int*, b : Float*, ldb : Int*, work : Float*, info : Int*)
+    fun stbcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, kd : Int*, ab : Float*, ldab : Int*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun stbrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Float*, ldab : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun stbtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : Float*, ldab : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun stfsm(transr : Char*, side : Char*, uplo : Char*, trans : Char*, diag : Char*, m : Int*, n : Int*, alpha : Float*, a : Float*, b : Float*, ldb : Int*)
+    fun stftri(transr : Char*, uplo : Char*, diag : Char*, n : Int*, a : Float*, info : Int*)
+    fun stfttp(transr : Char*, uplo : Char*, n : Int*, arf : Float*, ap : Float*, info : Int*)
+    fun stfttr(transr : Char*, uplo : Char*, n : Int*, arf : Float*, a : Float*, lda : Int*, info : Int*)
+    fun stgevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, s : Float*, lds : Int*, p : Float*, ldp : Int*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, mm : Int*, m : Int*, work : Float*, info : Int*)
+    fun stgex2(wantq : Bool*, wantz : Bool*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, j1 : Int*, n1 : Int*, n2 : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun stgexc(wantq : Bool*, wantz : Bool*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, ifst : Int*, ilst : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun stgsen(ijob : Int*, wantq : Bool*, wantz : Bool*, select : Bool*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, alphar : Float*, alphai : Float*, beta : Float*, q : Float*, ldq : Int*, z : Float*, ldz : Int*, m : Int*, pl : Float*, pr : Float*, dif : Float*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun stgsja(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, k : Int*, l : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, tola : Float*, tolb : Float*, alpha : Float*, beta : Float*, u : Float*, ldu : Int*, v : Float*, ldv : Int*, q : Float*, ldq : Int*, work : Float*, ncycle : Int*, info : Int*)
+    fun stgsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, s : Float*, dif : Float*, mm : Int*, m : Int*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun stgsy2(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, c : Float*, ldc : Int*, d : Float*, ldd : Int*, e : Float*, lde : Int*, f : Float*, ldf : Int*, scale : Float*, rdsum : Float*, rdscal : Float*, iwork : Int*, pq : Int*, info : Int*)
+    fun stgsyl(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, c : Float*, ldc : Int*, d : Float*, ldd : Int*, e : Float*, lde : Int*, f : Float*, ldf : Int*, scale : Float*, dif : Float*, work : Float*, lwork : Int*, iwork : Int*, info : Int*)
+    fun stpcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : Float*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun stplqt(m : Int*, n : Int*, l : Int*, mb : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, t : Float*, ldt : Int*, work : Float*, info : Int*)
+    fun stplqt2(m : Int*, n : Int*, l : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, t : Float*, ldt : Int*, info : Int*)
+    fun stpmlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, mb : Int*, v : Float*, ldv : Int*, t : Float*, ldt : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, work : Float*, info : Int*)
+    fun stpmqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, nb : Int*, v : Float*, ldv : Int*, t : Float*, ldt : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, work : Float*, info : Int*)
+    fun stpqrt(m : Int*, n : Int*, l : Int*, nb : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, t : Float*, ldt : Int*, work : Float*, info : Int*)
+    fun stpqrt2(m : Int*, n : Int*, l : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, t : Float*, ldt : Int*, info : Int*)
+    fun stprfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : Float*, ldv : Int*, t : Float*, ldt : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, work : Float*, ldwork : Int*)
+    fun stprfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : Float*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun stptri(uplo : Char*, diag : Char*, n : Int*, ap : Float*, info : Int*)
+    fun stptrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : Float*, b : Float*, ldb : Int*, info : Int*)
+    fun stpttf(transr : Char*, uplo : Char*, n : Int*, ap : Float*, arf : Float*, info : Int*)
+    fun stpttr(uplo : Char*, n : Int*, ap : Float*, a : Float*, lda : Int*, info : Int*)
+    fun strcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, a : Float*, lda : Int*, rcond : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun strevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, t : Float*, ldt : Int*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, mm : Int*, m : Int*, work : Float*, info : Int*)
+    fun strevc3(side : Char*, howmny : Char*, select : Int*, n : Int*, t : Float*, ldt : Int*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, mm : Int*, m : Int*, work : Float*, lwork : Int*, info : Int*)
+    fun strexc(compq : Char*, n : Int*, t : Float*, ldt : Int*, q : Float*, ldq : Int*, ifst : Int*, ilst : Int*, work : Float*, info : Int*)
+    fun strrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, x : Float*, ldx : Int*, ferr : Float*, berr : Float*, work : Float*, iwork : Int*, info : Int*)
+    fun strsen(job : Char*, compq : Char*, select : Bool*, n : Int*, t : Float*, ldt : Int*, q : Float*, ldq : Int*, wr : Float*, wi : Float*, m : Int*, s : Float*, sep : Float*, work : Float*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun strsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, t : Float*, ldt : Int*, vl : Float*, ldvl : Int*, vr : Float*, ldvr : Int*, s : Float*, sep : Float*, mm : Int*, m : Int*, work : Float*, ldwork : Int*, iwork : Int*, info : Int*)
+    fun strsyl(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, c : Float*, ldc : Int*, scale : Float*, info : Int*)
+    fun strsyl3(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, c : Float*, ldc : Int*, scale : Float*, iwork : Int*, liwork : Int*, swork : Float*, ldswork : Int*, info : Int*)
+    fun strti2(uplo : Char*, diag : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun strtri(uplo : Char*, diag : Char*, n : Int*, a : Float*, lda : Int*, info : Int*)
+    fun strtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : Float*, lda : Int*, b : Float*, ldb : Int*, info : Int*)
+    fun strttf(transr : Char*, uplo : Char*, n : Int*, a : Float*, lda : Int*, arf : Float*, info : Int*)
+    fun strttp(uplo : Char*, n : Int*, a : Float*, lda : Int*, ap : Float*, info : Int*)
+    fun stzrqf(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, info : Int*)
+    fun stzrzf(m : Int*, n : Int*, a : Float*, lda : Int*, tau : Float*, work : Float*, lwork : Int*, info : Int*)
+    fun xerbla_array_(srname_array : Char*, srname_len : Int*, info : Int*, srname_array_len : Int)
+    fun xerbla_array(srname_array : Char*, srname_len : Int*, info : Int*)
+    fun xerbla(srname : Char*, info : Int*)
+    fun zabs
+    fun zbbcsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, m : Int*, p : Int*, q : Int*, theta : Double*, phi : Double*, u1 : ComplexDouble*, ldu1 : Int*, u2 : ComplexDouble*, ldu2 : Int*, v1t : ComplexDouble*, ldv1t : Int*, v2t : ComplexDouble*, ldv2t : Int*, b11d : Double*, b11e : Double*, b12d : Double*, b12e : Double*, b21d : Double*, b21e : Double*, b22d : Double*, b22e : Double*, rwork : Double*, lrwork : Int*, info : Int*)
+    fun zbdsqr(uplo : Char*, n : Int*, ncvt : Int*, nru : Int*, ncc : Int*, d : Double*, e : Double*, vt : ComplexDouble*, ldvt : Int*, u : ComplexDouble*, ldu : Int*, c : ComplexDouble*, ldc : Int*, rwork : Double*, info : Int*)
+    fun zcgesv(n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, work : ComplexDouble*, swork : ComplexFloat*, rwork : Double*, iter : Int*, info : Int*)
+    fun zcposv(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, work : ComplexDouble*, swork : ComplexFloat*, rwork : Double*, iter : Int*, info : Int*)
+    fun zdiv
+    fun zdrscl(n : Int*, sa : Double*, sx : ComplexDouble*, incx : Int*)
+    fun zgbbrd(vect : Char*, m : Int*, n : Int*, ncc : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, d : Double*, e : Double*, q : ComplexDouble*, ldq : Int*, pt : ComplexDouble*, ldpt : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgbcon(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgbequ(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun zgbequb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun zgbrfs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgbrfsx(trans : Char*, equed : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, r : Double*, c : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgbsv(n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zgbsvx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgbsvxx(fact : Char*, trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgbtf2(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun zgbtrf(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, ipiv : Int*, info : Int*)
+    fun zgbtrs(trans : Char*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zgebak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, scale : Double*, m : Int*, v : ComplexDouble*, ldv : Int*, info : Int*)
+    fun zgebal(job : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ilo : Int*, ihi : Int*, scale : Double*, info : Int*)
+    fun zgebd2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, d : Double*, e : Double*, tauq : ComplexDouble*, taup : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zgebrd(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, d : Double*, e : Double*, tauq : ComplexDouble*, taup : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgecon(norm : Char*, n : Int*, a : ComplexDouble*, lda : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgeequ(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun zgeequb(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, info : Int*)
+    fun zgees(jobvs : Char*, sort : Char*, select : ZSelect1, n : Int*, a : ComplexDouble*, lda : Int*, sdim : Int*, w : ComplexDouble*, vs : ComplexDouble*, ldvs : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, bwork : Int*, info : Int*)
+    fun zgeesx(jobvs : Char*, sort : Char*, select : ZSelect1, sense : Char*, n : Int*, a : ComplexDouble*, lda : Int*, sdim : Int*, w : ComplexDouble*, vs : ComplexDouble*, ldvs : Int*, rconde : Double*, rcondv : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, bwork : Int*, info : Int*)
+    fun zgeev(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexDouble*, lda : Int*, w : ComplexDouble*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgeevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : ComplexDouble*, lda : Int*, w : ComplexDouble*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, ilo : Int*, ihi : Int*, scale : Double*, abnrm : Double*, rconde : Double*, rcondv : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgegs(jobvsl : Char*, jobvsr : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vsl : ComplexDouble*, ldvsl : Int*, vsr : ComplexDouble*, ldvsr : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgegv(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgehd2(n : Int*, ilo : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zgehrd(n : Int*, ilo : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgejsv(joba : Char*, jobu : Char*, jobv : Char*, jobr : Char*, jobt : Char*, jobp : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, sva : Double*, u : ComplexDouble*, ldu : Int*, v : ComplexDouble*, ldv : Int*, cwork : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, info : Int*)
+    fun zgelq(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, tsize : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgelq2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zgelqf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgelqt(m : Int*, n : Int*, mb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, info : Int*)
+    fun zgelqt3(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, info : Int*)
+    fun zgels(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgelsd(m : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, s : Double*, rcond : Double*, rank : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zgelss(m : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, s : Double*, rcond : Double*, rank : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgelst(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgelsx(m : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, jpvt : Int*, rcond : Double*, rank : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgelsy(m : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, jpvt : Int*, rcond : Double*, rank : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgemlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, tsize : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgemlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, v : ComplexDouble*, ldv : Int*, t : ComplexDouble*, ldt : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
+    fun zgemqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, tsize : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgemqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, nb : Int*, v : ComplexDouble*, ldv : Int*, t : ComplexDouble*, ldt : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
+    fun zgeql2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zgeqlf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgeqp3(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, jpvt : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgeqpf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, jpvt : Int*, tau : ComplexDouble*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgeqr(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, tsize : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgeqr2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zgeqr2p(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zgeqrf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgeqrfp(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgeqrt(m : Int*, n : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, info : Int*)
+    fun zgeqrt2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, info : Int*)
+    fun zgeqrt3(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, info : Int*)
+    fun zgerfs(trans : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgerfsx(trans : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, r : Double*, c : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgerq2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zgerqf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgesc2(n : Int*, a : ComplexDouble*, lda : Int*, rhs : ComplexDouble*, ipiv : Int*, jpiv : Int*, scale : Double*)
+    fun zgesdd(jobz : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, u : ComplexDouble*, ldu : Int*, vt : ComplexDouble*, ldvt : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zgesv(n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zgesvd(jobu : Char*, jobvt : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, u : ComplexDouble*, ldu : Int*, vt : ComplexDouble*, ldvt : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zgesvdq(joba : Char*, jobp : Char*, jobr : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, u : ComplexDouble*, ldu : Int*, v : ComplexDouble*, ldv : Int*, numrank : Int*, iwork : Int*, liwork : Int*, cwork : ComplexDouble*, lcwork : Int*, rwork : Double*, lrwork : Int*, info : Int*)
+    fun zgesvdx(jobu : Char*, jobvt : Char*, range : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, ns : Int*, s : Double*, u : ComplexDouble*, ldu : Int*, vt : ComplexDouble*, ldvt : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zgesvj(joba : Char*, jobu : Char*, jobv : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, sva : Double*, mv : Int*, v : ComplexDouble*, ldv : Int*, cwork : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, info : Int*)
+    fun zgesvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgesvxx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, equed : Char*, r : Double*, c : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgetc2(n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, jpiv : Int*, info : Int*)
+    fun zgetf2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, info : Int*)
+    fun zgetrf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, info : Int*)
+    fun zgetrf2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, info : Int*)
+    fun zgetri(n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgetrs(trans : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zgetsls(trans : Char*, m : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgetsqrhrt(m : Int*, n : Int*, mb1 : Int*, nb1 : Int*, nb2 : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zggbak(job : Char*, side : Char*, n : Int*, ilo : Int*, ihi : Int*, lscale : Double*, rscale : Double*, m : Int*, v : ComplexDouble*, ldv : Int*, info : Int*)
+    fun zggbal(job : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, ilo : Int*, ihi : Int*, lscale : Double*, rscale : Double*, work : Double*, info : Int*)
+    fun zgges(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : ZSelect2, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, sdim : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vsl : ComplexDouble*, ldvsl : Int*, vsr : ComplexDouble*, ldvsr : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, bwork : Int*, info : Int*)
+    fun zgges3(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : ZSelect2, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, sdim : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vsl : ComplexDouble*, ldvsl : Int*, vsr : ComplexDouble*, ldvsr : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, bwork : Int*, info : Int*)
+    fun zggesx(jobvsl : Char*, jobvsr : Char*, sort : Char*, selctg : ZSelect2, sense : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, sdim : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vsl : ComplexDouble*, ldvsl : Int*, vsr : ComplexDouble*, ldvsr : Int*, rconde : Double*, rcondv : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, liwork : Int*, bwork : Int*, info : Int*)
+    fun zggev(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zggev3(jobvl : Char*, jobvr : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zggevx(balanc : Char*, jobvl : Char*, jobvr : Char*, sense : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, ilo : Int*, ihi : Int*, lscale : Double*, rscale : Double*, abnrm : Double*, bbnrm : Double*, rconde : Double*, rcondv : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, bwork : Bool*, info : Int*)
+    fun zggglm(n : Int*, m : Int*, p : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, d : ComplexDouble*, x : ComplexDouble*, y : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgghd3(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgghrd(compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, info : Int*)
+    fun zgglse(m : Int*, n : Int*, p : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, c : ComplexDouble*, d : ComplexDouble*, x : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zggqrf(n : Int*, m : Int*, p : Int*, a : ComplexDouble*, lda : Int*, taua : ComplexDouble*, b : ComplexDouble*, ldb : Int*, taub : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zggrqf(m : Int*, p : Int*, n : Int*, a : ComplexDouble*, lda : Int*, taua : ComplexDouble*, b : ComplexDouble*, ldb : Int*, taub : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zggsvd(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : Double*, beta : Double*, u : ComplexDouble*, ldu : Int*, v : ComplexDouble*, ldv : Int*, q : ComplexDouble*, ldq : Int*, work : ComplexDouble*, rwork : Double*, iwork : Int*, info : Int*) : Int
+    fun zggsvd3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, n : Int*, p : Int*, k : Int*, l : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : Double*, beta : Double*, u : ComplexDouble*, ldu : Int*, v : ComplexDouble*, ldv : Int*, q : ComplexDouble*, ldq : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zggsvp(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, tola : Double*, tolb : Double*, k : Int*, l : Int*, u : ComplexDouble*, ldu : Int*, v : ComplexDouble*, ldv : Int*, q : ComplexDouble*, ldq : Int*, iwork : Int*, rwork : Double*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*) : Int
+    fun zggsvp3(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, tola : Double*, tolb : Double*, k : Int*, l : Int*, u : ComplexDouble*, ldu : Int*, v : ComplexDouble*, ldv : Int*, q : ComplexDouble*, ldq : Int*, iwork : Int*, rwork : Double*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgsvj0(jobv : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, d : ComplexDouble*, sva : Double*, mv : Int*, v : ComplexDouble*, ldv : Int*, eps : Double*, sfmin : Double*, tol : Double*, nsweep : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgsvj1(jobv : Char*, m : Int*, n : Int*, n1 : Int*, a : ComplexDouble*, lda : Int*, d : ComplexDouble*, sva : Double*, mv : Int*, v : ComplexDouble*, ldv : Int*, eps : Double*, sfmin : Double*, tol : Double*, nsweep : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zgtcon(norm : Char*, n : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, du2 : ComplexDouble*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zgtrfs(trans : Char*, n : Int*, nrhs : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, dlf : ComplexDouble*, df : ComplexDouble*, duf : ComplexDouble*, du2 : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgtsv(n : Int*, nrhs : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zgtsvx(fact : Char*, trans : Char*, n : Int*, nrhs : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, dlf : ComplexDouble*, df : ComplexDouble*, duf : ComplexDouble*, du2 : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zgttrf(n : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, du2 : ComplexDouble*, ipiv : Int*, info : Int*)
+    fun zgttrs(trans : Char*, n : Int*, nrhs : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, du2 : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zgtts2(itrans : Int*, n : Int*, nrhs : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, du2 : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*)
+    fun zhb2st_kernels(uplo : Char*, wantz : Bool*, ttype : Int*, st : Int*, ed : Int*, sweep : Int*, n : Int*, nb : Int*, ib : Int*, a : ComplexDouble*, lda : Int*, v : ComplexDouble*, tau : ComplexDouble*, ldvt : Int*, work : ComplexDouble*)
+    fun zhbev_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zhbev(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhbevd_2stage(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zhbevd(jobz : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zhbevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, q : ComplexDouble*, ldq : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zhbevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, q : ComplexDouble*, ldq : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zhbgst(vect : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexDouble*, ldab : Int*, bb : ComplexDouble*, ldbb : Int*, x : ComplexDouble*, ldx : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhbgv(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexDouble*, ldab : Int*, bb : ComplexDouble*, ldbb : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhbgvd(jobz : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexDouble*, ldab : Int*, bb : ComplexDouble*, ldbb : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zhbgvx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ka : Int*, kb : Int*, ab : ComplexDouble*, ldab : Int*, bb : ComplexDouble*, ldbb : Int*, q : ComplexDouble*, ldq : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zhbtrd(vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, d : Double*, e : Double*, q : ComplexDouble*, ldq : Int*, work : ComplexDouble*, info : Int*)
+    fun zhecon_3(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zhecon_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zhecon(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zheequb(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, scond : Double*, amax : Double*, work : ComplexDouble*, info : Int*)
+    fun zheev_2stage(jobz : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, w : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zheev(jobz : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, w : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zheevd_2stage(jobz : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, w : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zheevd(jobz : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, w : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zheevr_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, isuppz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zheevr(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, isuppz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zheevx_2stage(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zheevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zhegs2(itype : Int*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhegst(itype : Int*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhegv_2stage(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, w : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zhegv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, w : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zhegvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, w : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zhegvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zherfs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zherfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhesv_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, tb : ComplexDouble*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhesv_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhesv_rk(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhesv_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhesv(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhesvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zhesvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, equed : Char*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zheswapr(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, i1 : Int*, i2 : Int*)
+    fun zhetd2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, d : Double*, e : Double*, tau : ComplexDouble*, info : Int*)
+    fun zhetf2_rk(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, info : Int*)
+    fun zhetf2_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, info : Int*)
+    fun zhetf2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, info : Int*)
+    fun zhetrd_2stage(vect : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, d : Double*, e : Double*, tau : ComplexDouble*, hous2 : ComplexDouble*, lhous2 : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrd_hb2st(stage1 : Char*, vect : Char*, uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, d : Double*, e : Double*, hous : ComplexDouble*, lhous : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrd_he2hb(uplo : Char*, n : Int*, kd : Int*, a : ComplexDouble*, lda : Int*, ab : ComplexDouble*, ldab : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrd(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, d : Double*, e : Double*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrf_aa_2stage(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, tb : ComplexDouble*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrf_aa(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrf_rk(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrf_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrf(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetri_3(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetri_3x(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, nb : Int*, info : Int*)
+    fun zhetri_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, info : Int*)
+    fun zhetri(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, info : Int*)
+    fun zhetri2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetri2x(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, nb : Int*, info : Int*)
+    fun zhetrs_3(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhetrs_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, tb : ComplexDouble*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhetrs_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zhetrs_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhetrs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhetrs2(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, info : Int*)
+    fun zhfrk(transr : Char*, uplo : Char*, trans : Char*, n : Int*, k : Int*, alpha : Double*, a : ComplexDouble*, lda : Int*, beta : Double*, c : ComplexDouble*)
+    fun zhgeqz(job : Char*, compq : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexDouble*, ldh : Int*, t : ComplexDouble*, ldt : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zhpcon(uplo : Char*, n : Int*, ap : ComplexDouble*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zhpev(jobz : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhpevd(jobz : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zhpevx(jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zhpgst(itype : Int*, uplo : Char*, n : Int*, ap : ComplexDouble*, bp : ComplexDouble*, info : Int*)
+    fun zhpgv(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, bp : ComplexDouble*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhpgvd(itype : Int*, jobz : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, bp : ComplexDouble*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zhpgvx(itype : Int*, jobz : Char*, range : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, bp : ComplexDouble*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, rwork : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zhprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, afp : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhpsv(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhpsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, afp : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zhptrd(uplo : Char*, n : Int*, ap : ComplexDouble*, d : Double*, e : Double*, tau : ComplexDouble*, info : Int*)
+    fun zhptrf(uplo : Char*, n : Int*, ap : ComplexDouble*, ipiv : Int*, info : Int*)
+    fun zhptri(uplo : Char*, n : Int*, ap : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, info : Int*)
+    fun zhptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zhsein(side : Char*, eigsrc : Char*, initv : Char*, select : Bool*, n : Int*, h : ComplexDouble*, ldh : Int*, w : ComplexDouble*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexDouble*, rwork : Double*, ifaill : Int*, ifailr : Int*, info : Int*)
+    fun zhseqr(job : Char*, compz : Char*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexDouble*, ldh : Int*, w : ComplexDouble*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zla_gbamv_(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Double*, ab : ComplexDouble*, ldab : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_gbamv(trans : Int*, m : Int*, n : Int*, kl : Int*, ku : Int*, alpha : Double*, ab : ComplexDouble*, ldab : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_gbrcond_c_(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, c : Double*, capply : Char*, info : Int*, work : ComplexDouble*, rwork : Double*, trans_len : Int) : Double
+    fun zla_gbrcond_c(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, c : Double*, capply : Bool*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_gbrcond_x_(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*, trans_len : Int) : Double
+    fun zla_gbrcond_x(trans : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_gbrfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, colequ : Char*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*)
+    fun zla_gbrfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, kl : Int*, ku : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, ipiv : Int*, colequ : Bool*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun zla_gbrpvgrw_(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*) : Double
+    fun zla_gbrpvgrw(n : Int*, kl : Int*, ku : Int*, ncols : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*) : Double
+    fun zla_geamv_(trans : Int*, m : Int*, n : Int*, alpha : Double*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_geamv(trans : Int*, m : Int*, n : Int*, alpha : Double*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_gercond_c_(trans : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, c : Double*, capply : Char*, info : Int*, work : ComplexDouble*, rwork : Double*, trans_len : Int) : Double
+    fun zla_gercond_c(trans : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, c : Double*, capply : Bool*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_gercond_x_(trans : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*, trans_len : Int) : Double
+    fun zla_gercond_x(trans : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_gerfsx_extended_(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*)
+    fun zla_gerfsx_extended(prec_type : Int*, trans_type : Int*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun zla_gerpvgrw(n : Int*, ncols : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*) : Double
+    fun zla_heamv_(uplo : Int*, n : Int*, alpha : Double*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_heamv(uplo : Int*, n : Int*, alpha : Double*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_hercond_c_(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, c : Double*, capply : Char*, info : Int*, work : ComplexDouble*, rwork : Double*, uplo_len : Int) : Double
+    fun zla_hercond_c(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, c : Double*, capply : Bool*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_hercond_x_(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*, uplo_len : Int) : Double
+    fun zla_hercond_x(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_herfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun zla_herfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun zla_herpvgrw_(uplo : Char*, n : Int*, info : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, work : Double*, uplo_len : Int) : Double
+    fun zla_herpvgrw(uplo : Char*, n : Int*, info : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, work : Double*) : Double
+    fun zla_lin_berr_(n : Int*, nz : Int*, nrhs : Int*, res : ComplexDouble*, ayb : Double*, berr : Double*)
+    fun zla_lin_berr(n : Int*, nz : Int*, nrhs : Int*, res : ComplexDouble*, ayb : Double*, berr : Double*)
+    fun zla_porcond_c_(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, c : Double*, capply : Char*, info : Int*, work : ComplexDouble*, rwork : Double*, uplo_len : Int) : Double
+    fun zla_porcond_c(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, c : Double*, capply : Bool*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_porcond_x_(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*, uplo_len : Int) : Double
+    fun zla_porcond_x(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_porfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, colequ : Char*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun zla_porfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, colequ : Bool*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun zla_porpvgrw_(uplo : Char*, ncols : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, work : Double*, uplo_len : Int) : Double
+    fun zla_porpvgrw(uplo : Char*, ncols : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, work : Double*) : Double
+    fun zla_rpvgrw_(n : Int*, ncols : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*) : Double
+    fun zla_syamv_(uplo : Int*, n : Int*, alpha : Double*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_syamv(uplo : Int*, n : Int*, alpha : Double*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, incx : Int*, beta : Double*, y : Double*, incy : Int*)
+    fun zla_syrcond_c_(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, c : Double*, capply : Char*, info : Int*, work : ComplexDouble*, rwork : Double*, uplo_len : Int) : Double
+    fun zla_syrcond_c(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, c : Double*, capply : Bool*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_syrcond_x_(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*, uplo_len : Int) : Double
+    fun zla_syrcond_x(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, x : ComplexDouble*, info : Int*, work : ComplexDouble*, rwork : Double*) : Double
+    fun zla_syrfsx_extended_(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, colequ : Char*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, errs_n : Double*, errs_c : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Char*, info : Int*, uplo_len : Int)
+    fun zla_syrfsx_extended(prec_type : Int*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, colequ : Bool*, c : Double*, b : ComplexDouble*, ldb : Int*, y : ComplexDouble*, ldy : Int*, berr_out : Double*, n_norms : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, res : ComplexDouble*, ayb : Double*, dy : ComplexDouble*, y_tail : ComplexDouble*, rcond : Double*, ithresh : Int*, rthresh : Double*, dz_ub : Double*, ignore_cwise : Bool*, info : Int*)
+    fun zla_syrpvgrw_(uplo : Char*, n : Int*, info : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, work : Double*, uplo_len : Int) : Double
+    fun zla_syrpvgrw(uplo : Char*, n : Int*, info : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, work : Double*) : Double
+    fun zla_wwaddw_(n : Int*, x : ComplexDouble*, y : ComplexDouble*, w : ComplexDouble*)
+    fun zla_wwaddw(n : Int*, x : ComplexDouble*, y : ComplexDouble*, w : ComplexDouble*)
+    fun zlabrd(m : Int*, n : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, d : Double*, e : Double*, tauq : ComplexDouble*, taup : ComplexDouble*, x : ComplexDouble*, ldx : Int*, y : ComplexDouble*, ldy : Int*)
+    fun zlacgv(n : Int*, x : ComplexDouble*, incx : Int*)
+    fun zlacn2(n : Int*, v : ComplexDouble*, x : ComplexDouble*, est : Double*, kase : Int*, isave : Int*)
+    fun zlacon(n : Int*, v : ComplexDouble*, x : ComplexDouble*, est : Double*, kase : Int*)
+    fun zlacp2(uplo : Char*, m : Int*, n : Int*, a : Double*, lda : Int*, b : ComplexDouble*, ldb : Int*)
+    fun zlacpy(uplo : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*)
+    fun zlacrm(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : Double*, ldb : Int*, c : ComplexDouble*, ldc : Int*, rwork : Double*)
+    fun zlacrt(n : Int*, cx : ComplexDouble*, incx : Int*, cy : ComplexDouble*, incy : Int*, c : ComplexDouble*, s : ComplexDouble*)
+    fun zladiv(x : ComplexDouble*, y : ComplexDouble*) : ComplexDouble
+    fun zlaed0(qsiz : Int*, n : Int*, d : Double*, e : Double*, q : ComplexDouble*, ldq : Int*, qstore : ComplexDouble*, ldqs : Int*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zlaed7(n : Int*, cutpnt : Int*, qsiz : Int*, tlvls : Int*, curlvl : Int*, curpbm : Int*, d : Double*, q : ComplexDouble*, ldq : Int*, rho : Double*, indxq : Int*, qstore : Double*, qptr : Int*, prmptr : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Double*, work : ComplexDouble*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zlaed8(k : Int*, n : Int*, qsiz : Int*, q : ComplexDouble*, ldq : Int*, d : Double*, rho : Double*, cutpnt : Int*, z : Double*, dlamda : Double*, q2 : ComplexDouble*, ldq2 : Int*, w : Double*, indxp : Int*, indx : Int*, indxq : Int*, perm : Int*, givptr : Int*, givcol : Int*, givnum : Double*, info : Int*)
+    fun zlaein(rightv : Bool*, noinit : Bool*, n : Int*, h : ComplexDouble*, ldh : Int*, w : ComplexDouble*, v : ComplexDouble*, b : ComplexDouble*, ldb : Int*, rwork : Double*, eps3 : Double*, smlnum : Double*, info : Int*)
+    fun zlaesy(a : ComplexDouble*, b : ComplexDouble*, c : ComplexDouble*, rt1 : ComplexDouble*, rt2 : ComplexDouble*, evscal : ComplexDouble*, cs1 : ComplexDouble*, sn1 : ComplexDouble*)
+    fun zlaev2(a : ComplexDouble*, b : ComplexDouble*, c : ComplexDouble*, rt1 : Double*, rt2 : Double*, cs1 : Double*, sn1 : ComplexDouble*)
+    fun zlag2c(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, sa : ComplexFloat*, ldsa : Int*, info : Int*)
+    fun zlagge(m : Int*, n : Int*, kl : Int*, ku : Int*, d : Double*, a : ComplexDouble*, lda : Int*, iseed : Int*, work : ComplexDouble*, info : Int*)
+    fun zlaghe(n : Int*, k : Int*, d : Double*, a : ComplexDouble*, lda : Int*, iseed : Int*, work : ComplexDouble*, info : Int*)
+    fun zlags2(upper : Bool*, a1 : Double*, a2 : ComplexDouble*, a3 : Double*, b1 : Double*, b2 : ComplexDouble*, b3 : Double*, csu : Double*, snu : ComplexDouble*, csv : Double*, snv : ComplexDouble*, csq : Double*, snq : ComplexDouble*)
+    fun zlagsy(n : Int*, k : Int*, d : Double*, a : ComplexDouble*, lda : Int*, iseed : Int*, work : ComplexDouble*, info : Int*)
+    fun zlagtm(trans : Char*, n : Int*, nrhs : Int*, alpha : Double*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*, x : ComplexDouble*, ldx : Int*, beta : Double*, b : ComplexDouble*, ldb : Int*)
+    fun zlahef_aa(uplo : Char*, j1 : Int*, m : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, h : ComplexDouble*, ldh : Int*, work : ComplexDouble*)
+    fun zlahef_rk(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, w : ComplexDouble*, ldw : Int*, info : Int*)
+    fun zlahef_rook(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, w : ComplexDouble*, ldw : Int*, info : Int*)
+    fun zlahef(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, w : ComplexDouble*, ldw : Int*, info : Int*)
+    fun zlahqr(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexDouble*, ldh : Int*, w : ComplexDouble*, iloz : Int*, ihiz : Int*, z : ComplexDouble*, ldz : Int*, info : Int*)
+    fun zlahr2(n : Int*, k : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, t : ComplexDouble*, ldt : Int*, y : ComplexDouble*, ldy : Int*)
+    fun zlahrd(n : Int*, k : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, t : ComplexDouble*, ldt : Int*, y : ComplexDouble*, ldy : Int*)
+    fun zlaic1(job : Int*, j : Int*, x : ComplexDouble*, sest : Double*, w : ComplexDouble*, gamma : ComplexDouble*, sestpr : Double*, s : ComplexDouble*, c : ComplexDouble*)
+    fun zlals0(icompq : Int*, nl : Int*, nr : Int*, sqre : Int*, nrhs : Int*, b : ComplexDouble*, ldb : Int*, bx : ComplexDouble*, ldbx : Int*, perm : Int*, givptr : Int*, givcol : Int*, ldgcol : Int*, givnum : Double*, ldgnum : Int*, poles : Double*, difl : Double*, difr : Double*, z : Double*, k : Int*, c : Double*, s : Double*, rwork : Double*, info : Int*)
+    fun zlalsa(icompq : Int*, smlsiz : Int*, n : Int*, nrhs : Int*, b : ComplexDouble*, ldb : Int*, bx : ComplexDouble*, ldbx : Int*, u : Double*, ldu : Int*, vt : Double*, k : Int*, difl : Double*, difr : Double*, z : Double*, poles : Double*, givptr : Int*, givcol : Int*, ldgcol : Int*, perm : Int*, givnum : Double*, c : Double*, s : Double*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zlalsd(uplo : Char*, smlsiz : Int*, n : Int*, nrhs : Int*, d : Double*, e : Double*, b : ComplexDouble*, ldb : Int*, rcond : Double*, rank : Int*, work : ComplexDouble*, rwork : Double*, iwork : Int*, info : Int*)
+    fun zlamswlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zlamtsqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, mb : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zlangb(norm : Char*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, work : Double*) : Double
+    fun zlange(norm : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, work : Double*) : Double
+    fun zlangt(norm : Char*, n : Int*, dl : ComplexDouble*, d : ComplexDouble*, du : ComplexDouble*) : Double
+    fun zlanhb(norm : Char*, uplo : Char*, n : Int*, k : Int*, ab : ComplexDouble*, ldab : Int*, work : Double*) : Double
+    fun zlanhe(norm : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, work : Double*) : Double
+    fun zlanhf(norm : Char*, transr : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, work : Double*) : Double
+    fun zlanhp(norm : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, work : Double*) : Double
+    fun zlanhs(norm : Char*, n : Int*, a : ComplexDouble*, lda : Int*, work : Double*) : Double
+    fun zlanht(norm : Char*, n : Int*, d : Double*, e : ComplexDouble*) : Double
+    fun zlansb(norm : Char*, uplo : Char*, n : Int*, k : Int*, ab : ComplexDouble*, ldab : Int*, work : Double*) : Double
+    fun zlansp(norm : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, work : Double*) : Double
+    fun zlansy(norm : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, work : Double*) : Double
+    fun zlantb(norm : Char*, uplo : Char*, diag : Char*, n : Int*, k : Int*, ab : ComplexDouble*, ldab : Int*, work : Double*) : Double
+    fun zlantp(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : ComplexDouble*, work : Double*) : Double
+    fun zlantr(norm : Char*, uplo : Char*, diag : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, work : Double*) : Double
+    fun zlapll(n : Int*, x : ComplexDouble*, incx : Int*, y : ComplexDouble*, incy : Int*, ssmin : Double*)
+    fun zlapmr(forwrd : Bool*, m : Int*, n : Int*, x : ComplexDouble*, ldx : Int*, k : Int*)
+    fun zlapmt(forwrd : Bool*, m : Int*, n : Int*, x : ComplexDouble*, ldx : Int*, k : Int*)
+    fun zlaqgb(m : Int*, n : Int*, kl : Int*, ku : Int*, ab : ComplexDouble*, ldab : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, equed : Char*)
+    fun zlaqge(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, r : Double*, c : Double*, rowcnd : Double*, colcnd : Double*, amax : Double*, equed : Char*)
+    fun zlaqhb(uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun zlaqhe(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun zlaqhp(uplo : Char*, n : Int*, ap : ComplexDouble*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun zlaqp2(m : Int*, n : Int*, offset : Int*, a : ComplexDouble*, lda : Int*, jpvt : Int*, tau : ComplexDouble*, vn1 : Double*, vn2 : Double*, work : ComplexDouble*)
+    fun zlaqps(m : Int*, n : Int*, offset : Int*, nb : Int*, kb : Int*, a : ComplexDouble*, lda : Int*, jpvt : Int*, tau : ComplexDouble*, vn1 : Double*, vn2 : Double*, auxv : ComplexDouble*, f : ComplexDouble*, ldf : Int*)
+    fun zlaqr0(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexDouble*, ldh : Int*, w : ComplexDouble*, iloz : Int*, ihiz : Int*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zlaqr1(n : Int*, h : ComplexDouble*, ldh : Int*, s1 : ComplexDouble*, s2 : ComplexDouble*, v : ComplexDouble*)
+    fun zlaqr2(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : ComplexDouble*, ldh : Int*, iloz : Int*, ihiz : Int*, z : ComplexDouble*, ldz : Int*, ns : Int*, nd : Int*, sh : ComplexDouble*, v : ComplexDouble*, ldv : Int*, nh : Int*, t : ComplexDouble*, ldt : Int*, nv : Int*, wv : ComplexDouble*, ldwv : Int*, work : ComplexDouble*, lwork : Int*)
+    fun zlaqr3(wantt : Bool*, wantz : Bool*, n : Int*, ktop : Int*, kbot : Int*, nw : Int*, h : ComplexDouble*, ldh : Int*, iloz : Int*, ihiz : Int*, z : ComplexDouble*, ldz : Int*, ns : Int*, nd : Int*, sh : ComplexDouble*, v : ComplexDouble*, ldv : Int*, nh : Int*, t : ComplexDouble*, ldt : Int*, nv : Int*, wv : ComplexDouble*, ldwv : Int*, work : ComplexDouble*, lwork : Int*)
+    fun zlaqr4(wantt : Bool*, wantz : Bool*, n : Int*, ilo : Int*, ihi : Int*, h : ComplexDouble*, ldh : Int*, w : ComplexDouble*, iloz : Int*, ihiz : Int*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zlaqr5(wantt : Bool*, wantz : Bool*, kacc22 : Int*, n : Int*, ktop : Int*, kbot : Int*, nshfts : Int*, s : ComplexDouble*, h : ComplexDouble*, ldh : Int*, iloz : Int*, ihiz : Int*, z : ComplexDouble*, ldz : Int*, v : ComplexDouble*, ldv : Int*, u : ComplexDouble*, ldu : Int*, nv : Int*, wv : ComplexDouble*, ldwv : Int*, nh : Int*, wh : ComplexDouble*, ldwh : Int*)
+    fun zlaqsb(uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun zlaqsp(uplo : Char*, n : Int*, ap : ComplexDouble*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun zlaqsy(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, scond : Double*, amax : Double*, equed : Char*)
+    fun zlaqz0(wants : Char*, wantq : Char*, wantz : Char*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, rec : Int*, info : Int*)
+    fun zlaqz1(ilq : Bool*, ilz : Bool*, k : Int*, istartm : Int*, istopm : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, nq : Int*, qstart : Int*, q : ComplexDouble*, ldq : Int*, nz : Int*, zstart : Int*, z : ComplexDouble*, ldz : Int*)
+    fun zlaqz2(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nw : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, ns : Int*, nd : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, qc : ComplexDouble*, ldqc : Int*, zc : ComplexDouble*, ldzc : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, rec : Int*, info : Int*)
+    fun zlaqz3(ilschur : Bool*, ilq : Bool*, ilz : Bool*, n : Int*, ilo : Int*, ihi : Int*, nshifts : Int*, nblock_desired : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, qc : ComplexDouble*, ldqc : Int*, zc : ComplexDouble*, ldzc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zlar1v(n : Int*, b1 : Int*, bn : Int*, lambda : Double*, d : Double*, l : Double*, ld : Double*, lld : Double*, pivmin : Double*, gaptol : Double*, z : ComplexDouble*, wantnc : Bool*, negcnt : Int*, ztz : Double*, mingma : Double*, r : Int*, isuppz : Int*, nrminv : Double*, resid : Double*, rqcorr : Double*, work : Double*)
+    fun zlar2v(n : Int*, x : ComplexDouble*, y : ComplexDouble*, z : ComplexDouble*, incx : Int*, c : Double*, s : ComplexDouble*, incc : Int*)
+    fun zlarcm(m : Int*, n : Int*, a : Double*, lda : Int*, b : ComplexDouble*, ldb : Int*, c : ComplexDouble*, ldc : Int*, rwork : Double*)
+    fun zlarf(side : Char*, m : Int*, n : Int*, v : ComplexDouble*, incv : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*)
+    fun zlarfb_gett(ident : Char*, m : Int*, n : Int*, k : Int*, t : ComplexDouble*, ldt : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, ldwork : Int*)
+    fun zlarfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, v : ComplexDouble*, ldv : Int*, t : ComplexDouble*, ldt : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, ldwork : Int*)
+    fun zlarfg(n : Int*, alpha : ComplexDouble*, x : ComplexDouble*, incx : Int*, tau : ComplexDouble*)
+    fun zlarfgp(n : Int*, alpha : ComplexDouble*, x : ComplexDouble*, incx : Int*, tau : ComplexDouble*)
+    fun zlarfp(n : Int*, alpha : ComplexDouble*, x : ComplexDouble*, incx : Int*, tau : ComplexDouble*)
+    fun zlarft(direct : Char*, storev : Char*, n : Int*, k : Int*, v : ComplexDouble*, ldv : Int*, tau : ComplexDouble*, t : ComplexDouble*, ldt : Int*)
+    fun zlarfx(side : Char*, m : Int*, n : Int*, v : ComplexDouble*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*)
+    fun zlarfy(uplo : Char*, n : Int*, v : ComplexDouble*, incv : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*)
+    fun zlargv(n : Int*, x : ComplexDouble*, incx : Int*, y : ComplexDouble*, incy : Int*, c : Double*, incc : Int*)
+    fun zlarnv(idist : Int*, iseed : Int*, n : Int*, x : ComplexDouble*)
+    fun zlarrv(n : Int*, vl : Double*, vu : Double*, d : Double*, l : Double*, pivmin : Double*, isplit : Int*, m : Int*, dol : Int*, dou : Int*, minrgp : Double*, rtol1 : Double*, rtol2 : Double*, w : Double*, werr : Double*, wgap : Double*, iblock : Int*, indexw : Int*, gers : Double*, z : ComplexDouble*, ldz : Int*, isuppz : Int*, work : Double*, iwork : Int*, info : Int*)
+    fun zlarscl2(m : Int*, n : Int*, d : Double*, x : ComplexDouble*, ldx : Int*)
+    fun zlartg(f : ComplexDouble*, g : ComplexDouble*, cs : Double*, sn : ComplexDouble*, r : ComplexDouble*)
+    fun zlartv(n : Int*, x : ComplexDouble*, incx : Int*, y : ComplexDouble*, incy : Int*, c : Double*, s : ComplexDouble*, incc : Int*)
+    fun zlarz(side : Char*, m : Int*, n : Int*, l : Int*, v : ComplexDouble*, incv : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*)
+    fun zlarzb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : ComplexDouble*, ldv : Int*, t : ComplexDouble*, ldt : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, ldwork : Int*)
+    fun zlarzt(direct : Char*, storev : Char*, n : Int*, k : Int*, v : ComplexDouble*, ldv : Int*, tau : ComplexDouble*, t : ComplexDouble*, ldt : Int*)
+    fun zlascl(type_bn : Char*, kl : Int*, ku : Int*, cfrom : Double*, cto : Double*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun zlascl2(m : Int*, n : Int*, d : Double*, x : ComplexDouble*, ldx : Int*)
+    fun zlaset(uplo : Char*, m : Int*, n : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, a : ComplexDouble*, lda : Int*)
+    fun zlasr(side : Char*, pivot : Char*, direct : Char*, m : Int*, n : Int*, c : Double*, s : Double*, a : ComplexDouble*, lda : Int*)
+    fun zlassq(n : Int*, x : ComplexDouble*, incx : Int*, scale : Double*, sumsq : Double*)
+    fun zlaswlq(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zlaswp(n : Int*, a : ComplexDouble*, lda : Int*, k1 : Int*, k2 : Int*, ipiv : Int*, incx : Int*)
+    fun zlasyf_aa(uplo : Char*, j1 : Int*, m : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, h : ComplexDouble*, ldh : Int*, work : ComplexDouble*)
+    fun zlasyf_rk(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, w : ComplexDouble*, ldw : Int*, info : Int*)
+    fun zlasyf_rook(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, w : ComplexDouble*, ldw : Int*, info : Int*)
+    fun zlasyf(uplo : Char*, n : Int*, nb : Int*, kb : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, w : ComplexDouble*, ldw : Int*, info : Int*)
+    fun zlat2c(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, sa : ComplexFloat*, ldsa : Int*, info : Int*)
+    fun zlatbs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, x : ComplexDouble*, scale : Double*, cnorm : Double*, info : Int*)
+    fun zlatdf(ijob : Int*, n : Int*, z : ComplexDouble*, ldz : Int*, rhs : ComplexDouble*, rdsum : Double*, rdscal : Double*, ipiv : Int*, jpiv : Int*)
+    fun zlatms(m : Int*, n : Int*, dist : Char*, iseed : Int*, sym : Char*, d : Double*, mode : Int*, cond : Double*, dmax : Double*, kl : Int*, ku : Int*, pack : Char*, a : ComplexDouble*, lda : Int*, work : ComplexDouble*, info : Int*)
+    fun zlatps(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, ap : ComplexDouble*, x : ComplexDouble*, scale : Double*, cnorm : Double*, info : Int*)
+    fun zlatrd(uplo : Char*, n : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, e : Double*, tau : ComplexDouble*, w : ComplexDouble*, ldw : Int*)
+    fun zlatrs(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, scale : Double*, cnorm : Double*, info : Int*)
+    fun zlatrs3(uplo : Char*, trans : Char*, diag : Char*, normin : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, ldx : Int*, scale : Double*, cnorm : Double*, work : Double*, lwork : Int*, info : Int*)
+    fun zlatrz(m : Int*, n : Int*, l : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*)
+    fun zlatsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zlatzm(side : Char*, m : Int*, n : Int*, v : ComplexDouble*, incv : Int*, tau : ComplexDouble*, c1 : ComplexDouble*, c2 : ComplexDouble*, ldc : Int*, work : ComplexDouble*)
+    fun zlaunhr_col_getrfnp(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, d : ComplexDouble*, info : Int*)
+    fun zlaunhr_col_getrfnp2(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, d : ComplexDouble*, info : Int*)
+    fun zlauu2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun zlauum(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun zmul
+    fun zpbcon(uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zpbequ(uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun zpbrfs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zpbstf(uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, info : Int*)
+    fun zpbsv(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zpbsvx(fact : Char*, uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, afb : ComplexDouble*, ldafb : Int*, equed : Char*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zpbtf2(uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, info : Int*)
+    fun zpbtrf(uplo : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, info : Int*)
+    fun zpbtrs(uplo : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zpftrf(transr : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, info : Int*)
+    fun zpftri(transr : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, info : Int*)
+    fun zpftrs(transr : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zpocon(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zpoequ(n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun zpoequb(n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun zporfs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zporfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zposv(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zposvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, equed : Char*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zposvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, equed : Char*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zpotf2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun zpotrf(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun zpotrf2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun zpotri(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun zpotrs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zppcon(uplo : Char*, n : Int*, ap : ComplexDouble*, anorm : Double*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zppequ(uplo : Char*, n : Int*, ap : ComplexDouble*, s : Double*, scond : Double*, amax : Double*, info : Int*)
+    fun zpprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, afp : ComplexDouble*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zppsv(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zppsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, afp : ComplexDouble*, equed : Char*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zpptrf(uplo : Char*, n : Int*, ap : ComplexDouble*, info : Int*)
+    fun zpptri(uplo : Char*, n : Int*, ap : ComplexDouble*, info : Int*)
+    fun zpptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zpstf2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, piv : Int*, rank : Int*, tol : Double*, work : Double*, info : Int*)
+    fun zpstrf(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, piv : Int*, rank : Int*, tol : Double*, work : Double*, info : Int*)
+    fun zptcon(n : Int*, d : Double*, e : ComplexDouble*, anorm : Double*, rcond : Double*, rwork : Double*, info : Int*)
+    fun zpteqr(compz : Char*, n : Int*, d : Double*, e : Double*, z : ComplexDouble*, ldz : Int*, work : Double*, info : Int*)
+    fun zptrfs(uplo : Char*, n : Int*, nrhs : Int*, d : Double*, e : ComplexDouble*, df : Double*, ef : ComplexDouble*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zptsv(n : Int*, nrhs : Int*, d : Double*, e : ComplexDouble*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zptsvx(fact : Char*, n : Int*, nrhs : Int*, d : Double*, e : ComplexDouble*, df : Double*, ef : ComplexDouble*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zpttrf(n : Int*, d : Double*, e : ComplexDouble*, info : Int*)
+    fun zpttrs(uplo : Char*, n : Int*, nrhs : Int*, d : Double*, e : ComplexDouble*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zptts2(iuplo : Int*, n : Int*, nrhs : Int*, d : Double*, e : ComplexDouble*, b : ComplexDouble*, ldb : Int*)
+    fun zrot(n : Int*, cx : ComplexDouble*, incx : Int*, cy : ComplexDouble*, incy : Int*, c : Double*, s : ComplexDouble*)
+    fun zspcon(uplo : Char*, n : Int*, ap : ComplexDouble*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zspmv(uplo : Char*, n : Int*, alpha : ComplexDouble*, ap : ComplexDouble*, x : ComplexDouble*, incx : Int*, beta : ComplexDouble*, y : ComplexDouble*, incy : Int*)
+    fun zspr(uplo : Char*, n : Int*, alpha : ComplexDouble*, x : ComplexDouble*, incx : Int*, ap : ComplexDouble*)
+    fun zsprfs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, afp : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zspsv(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zspsvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, afp : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zsptrf(uplo : Char*, n : Int*, ap : ComplexDouble*, ipiv : Int*, info : Int*)
+    fun zsptri(uplo : Char*, n : Int*, ap : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, info : Int*)
+    fun zsptrs(uplo : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zstedc(compz : Char*, n : Int*, d : Double*, e : Double*, z : ComplexDouble*, ldz : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zstegr(jobz : Char*, range : Char*, n : Int*, d : Double*, e : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, abstol : Double*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, isuppz : Int*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zstein(n : Int*, d : Double*, e : Double*, m : Int*, w : Double*, iblock : Int*, isplit : Int*, z : ComplexDouble*, ldz : Int*, work : Double*, iwork : Int*, ifail : Int*, info : Int*)
+    fun zstemr(jobz : Char*, range : Char*, n : Int*, d : Double*, e : Double*, vl : Double*, vu : Double*, il : Int*, iu : Int*, m : Int*, w : Double*, z : ComplexDouble*, ldz : Int*, nzc : Int*, isuppz : Int*, tryrac : Bool*, work : Double*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun zsteqr(compz : Char*, n : Int*, d : Double*, e : Double*, z : ComplexDouble*, ldz : Int*, work : Double*, info : Int*)
+    fun zsycon_3(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zsycon_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zsycon(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, anorm : Double*, rcond : Double*, work : ComplexDouble*, info : Int*)
+    fun zsyconv(uplo : Char*, way : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, e : ComplexDouble*, info : Int*)
+    fun zsyconvf_rook(uplo : Char*, way : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, info : Int*)
+    fun zsyconvf(uplo : Char*, way : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, info : Int*)
+    fun zsyequb(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, s : Double*, scond : Double*, amax : Double*, work : ComplexDouble*, info : Int*)
+    fun zsymv(uplo : Char*, n : Int*, alpha : ComplexDouble*, a : ComplexDouble*, lda : Int*, x : ComplexDouble*, incx : Int*, beta : ComplexDouble*, y : ComplexDouble*, incy : Int*)
+    fun zsyr(uplo : Char*, n : Int*, alpha : ComplexDouble*, x : ComplexDouble*, incx : Int*, a : ComplexDouble*, lda : Int*)
+    fun zsyrfs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zsyrfsx(uplo : Char*, equed : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zsysv_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, tb : ComplexDouble*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsysv_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsysv_rk(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsysv_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsysv(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsysvx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, ferr : Double*, berr : Double*, work : ComplexDouble*, lwork : Int*, rwork : Double*, info : Int*)
+    fun zsysvxx(fact : Char*, uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, af : ComplexDouble*, ldaf : Int*, ipiv : Int*, equed : Char*, s : Double*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, rcond : Double*, rpvgrw : Double*, berr : Double*, n_err_bnds : Int*, err_bnds_norm : Double*, err_bnds_comp : Double*, nparams : Int*, params : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun zsyswapr(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, i1 : Int*, i2 : Int*)
+    fun zsytf2_rk(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, info : Int*)
+    fun zsytf2_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, info : Int*)
+    fun zsytf2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, info : Int*)
+    fun zsytrf_aa_2stage(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, tb : ComplexDouble*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytrf_aa(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytrf_rk(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytrf_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytrf(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytri_3(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytri_3x(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, work : ComplexDouble*, nb : Int*, info : Int*)
+    fun zsytri_rook(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, info : Int*)
+    fun zsytri(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, info : Int*)
+    fun zsytri2(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytri2x(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, work : ComplexDouble*, nb : Int*, info : Int*)
+    fun zsytrs_3(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, e : ComplexDouble*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zsytrs_aa_2stage(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, tb : ComplexDouble*, ltb : Int*, ipiv : Int*, ipiv2 : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zsytrs_aa(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zsytrs_rook(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zsytrs(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun zsytrs2(uplo : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, ipiv : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, info : Int*)
+    fun ztbcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, kd : Int*, ab : ComplexDouble*, ldab : Int*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztbrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztbtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, kd : Int*, nrhs : Int*, ab : ComplexDouble*, ldab : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun ztfsm(transr : Char*, side : Char*, uplo : Char*, trans : Char*, diag : Char*, m : Int*, n : Int*, alpha : ComplexDouble*, a : ComplexDouble*, b : ComplexDouble*, ldb : Int*)
+    fun ztftri(transr : Char*, uplo : Char*, diag : Char*, n : Int*, a : ComplexDouble*, info : Int*)
+    fun ztfttp(transr : Char*, uplo : Char*, n : Int*, arf : ComplexDouble*, ap : ComplexDouble*, info : Int*)
+    fun ztfttr(transr : Char*, uplo : Char*, n : Int*, arf : ComplexDouble*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun ztgevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, s : ComplexDouble*, lds : Int*, p : ComplexDouble*, ldp : Int*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztgex2(wantq : Bool*, wantz : Bool*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, j1 : Int*, info : Int*)
+    fun ztgexc(wantq : Bool*, wantz : Bool*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, ifst : Int*, ilst : Int*, info : Int*)
+    fun ztgsen(ijob : Int*, wantq : Bool*, wantz : Bool*, select : Bool*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, alpha : ComplexDouble*, beta : ComplexDouble*, q : ComplexDouble*, ldq : Int*, z : ComplexDouble*, ldz : Int*, m : Int*, pl : Double*, pr : Double*, dif : Double*, work : ComplexDouble*, lwork : Int*, iwork : Int*, liwork : Int*, info : Int*)
+    fun ztgsja(jobu : Char*, jobv : Char*, jobq : Char*, m : Int*, p : Int*, n : Int*, k : Int*, l : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, tola : Double*, tolb : Double*, alpha : Double*, beta : Double*, u : ComplexDouble*, ldu : Int*, v : ComplexDouble*, ldv : Int*, q : ComplexDouble*, ldq : Int*, work : ComplexDouble*, ncycle : Int*, info : Int*)
+    fun ztgsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, s : Double*, dif : Double*, mm : Int*, m : Int*, work : ComplexDouble*, lwork : Int*, iwork : Int*, info : Int*)
+    fun ztgsy2(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, c : ComplexDouble*, ldc : Int*, d : ComplexDouble*, ldd : Int*, e : ComplexDouble*, lde : Int*, f : ComplexDouble*, ldf : Int*, scale : Double*, rdsum : Double*, rdscal : Double*, info : Int*)
+    fun ztgsyl(trans : Char*, ijob : Int*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, c : ComplexDouble*, ldc : Int*, d : ComplexDouble*, ldd : Int*, e : ComplexDouble*, lde : Int*, f : ComplexDouble*, ldf : Int*, scale : Double*, dif : Double*, work : ComplexDouble*, lwork : Int*, iwork : Int*, info : Int*)
+    fun ztpcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, ap : ComplexDouble*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztplqt(m : Int*, n : Int*, l : Int*, mb : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, info : Int*)
+    fun ztplqt2(m : Int*, n : Int*, l : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, t : ComplexDouble*, ldt : Int*, info : Int*)
+    fun ztpmlqt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, mb : Int*, v : ComplexDouble*, ldv : Int*, t : ComplexDouble*, ldt : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, info : Int*)
+    fun ztpmqrt(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, nb : Int*, v : ComplexDouble*, ldv : Int*, t : ComplexDouble*, ldt : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, info : Int*)
+    fun ztpqrt(m : Int*, n : Int*, l : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, info : Int*)
+    fun ztpqrt2(m : Int*, n : Int*, l : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, t : ComplexDouble*, ldt : Int*, info : Int*)
+    fun ztprfb(side : Char*, trans : Char*, direct : Char*, storev : Char*, m : Int*, n : Int*, k : Int*, l : Int*, v : ComplexDouble*, ldv : Int*, t : ComplexDouble*, ldt : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, work : ComplexDouble*, ldwork : Int*)
+    fun ztprfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztptri(uplo : Char*, diag : Char*, n : Int*, ap : ComplexDouble*, info : Int*)
+    fun ztptrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, ap : ComplexDouble*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun ztpttf(transr : Char*, uplo : Char*, n : Int*, ap : ComplexDouble*, arf : ComplexDouble*, info : Int*)
+    fun ztpttr(uplo : Char*, n : Int*, ap : ComplexDouble*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun ztrcon(norm : Char*, uplo : Char*, diag : Char*, n : Int*, a : ComplexDouble*, lda : Int*, rcond : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztrevc(side : Char*, howmny : Char*, select : Bool*, n : Int*, t : ComplexDouble*, ldt : Int*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztrevc3(side : Char*, howmny : Char*, select : Int*, n : Int*, t : ComplexDouble*, ldt : Int*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, mm : Int*, m : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, info : Int*)
+    fun ztrexc(compq : Char*, n : Int*, t : ComplexDouble*, ldt : Int*, q : ComplexDouble*, ldq : Int*, ifst : Int*, ilst : Int*, info : Int*)
+    fun ztrrfs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, x : ComplexDouble*, ldx : Int*, ferr : Double*, berr : Double*, work : ComplexDouble*, rwork : Double*, info : Int*)
+    fun ztrsen(job : Char*, compq : Char*, select : Bool*, n : Int*, t : ComplexDouble*, ldt : Int*, q : ComplexDouble*, ldq : Int*, w : ComplexDouble*, m : Int*, s : Double*, sep : Double*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun ztrsna(job : Char*, howmny : Char*, select : Bool*, n : Int*, t : ComplexDouble*, ldt : Int*, vl : ComplexDouble*, ldvl : Int*, vr : ComplexDouble*, ldvr : Int*, s : Double*, sep : Double*, mm : Int*, m : Int*, work : ComplexDouble*, ldwork : Int*, rwork : Double*, info : Int*)
+    fun ztrsyl(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, c : ComplexDouble*, ldc : Int*, scale : Double*, info : Int*)
+    fun ztrsyl3(trana : Char*, tranb : Char*, isgn : Int*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, c : ComplexDouble*, ldc : Int*, scale : Double*, swork : Double*, ldswork : Int*, info : Int*)
+    fun ztrti2(uplo : Char*, diag : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun ztrtri(uplo : Char*, diag : Char*, n : Int*, a : ComplexDouble*, lda : Int*, info : Int*)
+    fun ztrtrs(uplo : Char*, trans : Char*, diag : Char*, n : Int*, nrhs : Int*, a : ComplexDouble*, lda : Int*, b : ComplexDouble*, ldb : Int*, info : Int*)
+    fun ztrttf(transr : Char*, uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, arf : ComplexDouble*, info : Int*)
+    fun ztrttp(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, ap : ComplexDouble*, info : Int*)
+    fun ztzrqf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, info : Int*)
+    fun ztzrzf(m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunbdb(trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : ComplexDouble*, ldx11 : Int*, x12 : ComplexDouble*, ldx12 : Int*, x21 : ComplexDouble*, ldx21 : Int*, x22 : ComplexDouble*, ldx22 : Int*, theta : Double*, phi : Double*, taup1 : ComplexDouble*, taup2 : ComplexDouble*, tauq1 : ComplexDouble*, tauq2 : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunbdb1(m : Int*, p : Int*, q : Int*, x11 : ComplexDouble*, ldx11 : Int*, x21 : ComplexDouble*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : ComplexDouble*, taup2 : ComplexDouble*, tauq1 : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunbdb2(m : Int*, p : Int*, q : Int*, x11 : ComplexDouble*, ldx11 : Int*, x21 : ComplexDouble*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : ComplexDouble*, taup2 : ComplexDouble*, tauq1 : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunbdb3(m : Int*, p : Int*, q : Int*, x11 : ComplexDouble*, ldx11 : Int*, x21 : ComplexDouble*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : ComplexDouble*, taup2 : ComplexDouble*, tauq1 : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunbdb4(m : Int*, p : Int*, q : Int*, x11 : ComplexDouble*, ldx11 : Int*, x21 : ComplexDouble*, ldx21 : Int*, theta : Double*, phi : Double*, taup1 : ComplexDouble*, taup2 : ComplexDouble*, tauq1 : ComplexDouble*, phantom : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunbdb5(m1 : Int*, m2 : Int*, n : Int*, x1 : ComplexDouble*, incx1 : Int*, x2 : ComplexDouble*, incx2 : Int*, q1 : ComplexDouble*, ldq1 : Int*, q2 : ComplexDouble*, ldq2 : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunbdb6(m1 : Int*, m2 : Int*, n : Int*, x1 : ComplexDouble*, incx1 : Int*, x2 : ComplexDouble*, incx2 : Int*, q1 : ComplexDouble*, ldq1 : Int*, q2 : ComplexDouble*, ldq2 : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zuncsd(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, jobv2t : Char*, trans : Char*, signs : Char*, m : Int*, p : Int*, q : Int*, x11 : ComplexDouble*, ldx11 : Int*, x12 : ComplexDouble*, ldx12 : Int*, x21 : ComplexDouble*, ldx21 : Int*, x22 : ComplexDouble*, ldx22 : Int*, theta : Double*, u1 : ComplexDouble*, ldu1 : Int*, u2 : ComplexDouble*, ldu2 : Int*, v1t : ComplexDouble*, ldv1t : Int*, v2t : ComplexDouble*, ldv2t : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, info : Int*)
+    fun zuncsd2by1(jobu1 : Char*, jobu2 : Char*, jobv1t : Char*, m : Int*, p : Int*, q : Int*, x11 : ComplexDouble*, ldx11 : Int*, x21 : ComplexDouble*, ldx21 : Int*, theta : Double*, u1 : ComplexDouble*, ldu1 : Int*, u2 : ComplexDouble*, ldu2 : Int*, v1t : ComplexDouble*, ldv1t : Int*, work : ComplexDouble*, lwork : Int*, rwork : Double*, lrwork : Int*, iwork : Int*, info : Int*)
+    fun zung2l(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zung2r(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zungbr(vect : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunghr(n : Int*, ilo : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zungl2(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zunglq(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zungql(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zungqr(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zungr2(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, info : Int*)
+    fun zungrq(m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zungtr(uplo : Char*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zungtsqr_row(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zungtsqr(m : Int*, n : Int*, mb : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunhr_col(m : Int*, n : Int*, nb : Int*, a : ComplexDouble*, lda : Int*, t : ComplexDouble*, ldt : Int*, d : ComplexDouble*, info : Int*)
+    fun zunm22(side : Char*, trans : Char*, m : Int*, n : Int*, n1 : Int*, n2 : Int*, q : ComplexDouble*, ldq : Int*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunm2l(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
+    fun zunm2r(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
+    fun zunmbr(vect : Char*, side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunmhr(side : Char*, trans : Char*, m : Int*, n : Int*, ilo : Int*, ihi : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunml2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
+    fun zunmlq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunmql(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunmqr(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunmr2(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
+    fun zunmr3(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
+    fun zunmrq(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunmrz(side : Char*, trans : Char*, m : Int*, n : Int*, k : Int*, l : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zunmtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, a : ComplexDouble*, lda : Int*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, lwork : Int*, info : Int*)
+    fun zupgtr(uplo : Char*, n : Int*, ap : ComplexDouble*, tau : ComplexDouble*, q : ComplexDouble*, ldq : Int*, work : ComplexDouble*, info : Int*)
+    fun zupmtr(side : Char*, uplo : Char*, trans : Char*, m : Int*, n : Int*, ap : ComplexDouble*, tau : ComplexDouble*, c : ComplexDouble*, ldc : Int*, work : ComplexDouble*, info : Int*)
   end
 {% end %}
