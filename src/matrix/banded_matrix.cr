@@ -104,7 +104,7 @@ module LA
     end
 
     def self.estimate(matrix : Matrix(T), tolerance = matrix.tolerance)
-      # TODO - scipy uses more effecient algorithm?
+      # TODO - scipy uses more efficient algorithm?
       upper_band = matrix.ncolumns - 1
       (matrix.ncolumns - 1).to(1) do |i|
         break unless matrix.diag(i).all? { |v| v.abs <= tolerance }
