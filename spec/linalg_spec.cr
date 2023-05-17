@@ -47,6 +47,38 @@ describe LA do
     (matrix1*matrix2).should eq Mat.identity(3)
   end
 
+  it "calls LAPACK functions with logical arguments correctly" do
+    a = GMat[
+      [-2, 4, 1],
+      [2, -4, 1],
+      [1, 1, 1],
+    ]
+    b = GMat[
+      [-2, 4, 0],
+      [2, -3, 1],
+      [2, 1, 1],
+    ]
+    aa, bb, vl, vr = LA.qz(a, b)
+    selected = [0, 0, 1].map { |v| LibLAPACK::Bool.new(v) }
+    alpha1 = [0.0, 0.0, 0.0]
+    alpha2 = [0.0, 0.0, 0.0]
+    beta = [0.0, 0.0, 0.0]
+    #     IJOB, WANTQ, WANTZ, SELECT, N, A, LDA, B, LDB,
+    # *                          ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, M, PL,
+    # *                          PR, DIF, WORK, LWORK, IWORK, LIWORK, INFO
+    WORK_POOL.use do |area|
+      ijob = 0
+      wantq = LibLAPACK::Bool.new(0)
+      wantz = LibLAPACK::Bool.new(0)
+      n = 3
+      lwork = 4*3 + 16
+      one = 1
+      a2, b2 = aa.clone, bb.clone
+      LibLAPACK.dtgsen(pointerof(ijob), pointerof(wantq), pointerof(wantz), selected, pointerof(n), a2, pointerof(n), b2, pointerof(n), alpha1, alpha2, beta, nil, pointerof(one), nil, pointerof(one), pointerof(one), nil, nil, nil, area.get_f64(lwork), pointerof(lwork), area.get_i32(one), pointerof(one), out info)
+      a2[0, 0].should be_close aa[2, 2], 1e-9
+    end
+  end
+
   it "calls functions using high level wrapper" do
     matrix1 = GMat[
       [1, 0, 1],
