@@ -408,17 +408,17 @@ module LA
               'M'
             end.ord.to_u8
 
-      worksize = kind.inf? ? nrows : 0
+      worksize = (kind.inf? || kind.one?) ? nrows : 0
 
       if flags.triangular?
-        lapack_util(lantr, worksize, let, uplo, 'N'.ord.to_u8, @nrows, @ncolumns, matrix(self), @nrows)
-      elsif flags.hermitian?
-        {% if T == Complex %}
-          lapack_util(lanhe, worksize, let, uplo, @nrows, matrix(self), @nrows)
-        {% else %}
-          lapack_util(lange, worksize, let, @nrows, @ncolumns, matrix(self), @nrows)
-        {% end %}
-      elsif flags.symmetric?
+        return lapack_util(lantr, worksize, let, uplo, 'N'.ord.to_u8, @nrows, @ncolumns, matrix(self), @nrows)
+      end
+      {% if T == Complex %}
+        if flags.hermitian?
+          return lapack_util(lanhe, worksize, let, uplo, @nrows, matrix(self), @nrows)
+        end
+      {% end %}
+      if flags.symmetric?
         lapack_util(lansy, worksize, let, uplo, @nrows, matrix(self), @nrows)
       else
         lapack_util(lange, worksize, let, @nrows, @ncolumns, matrix(self), @nrows)

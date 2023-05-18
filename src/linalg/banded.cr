@@ -16,8 +16,21 @@ module LA
               'M'
             end.ord.to_u8
 
-      worksize = kind.inf? ? nrows : 0
-      lapack_util(langb, worksize, let, @nrows, @lower_band, @upper_band, matrix(self), @lower_band + @upper_band + 1)
+      worksize = (kind.inf? || kind.one?) ? nrows : 0
+
+      if flags.triangular?
+        return lapack_util(lantb, worksize, let, uplo, 'N'.ord.to_u8, @nrows, @lower_band + @upper_band, matrix(self), @lower_band + @upper_band + 1)
+      end
+      {% if T == Complex %}
+        if flags.hermitian?
+          return lapack_util(lanhb, worksize, let, uplo, @nrows, @upper_band, matrix(self), @lower_band + @upper_band + 1)
+        end
+      {% end %}
+      if flags.symmetric?
+        return lapack_util(lansb, worksize, let, uplo, @nrows, @upper_band, matrix(self), @lower_band + @upper_band + 1)
+      else
+        lapack_util(langb, worksize, let, @nrows, @lower_band, @upper_band, matrix(self), @lower_band + @upper_band + 1)
+      end
     end
 
     def det(*, overwrite_a = false)
