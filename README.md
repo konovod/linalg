@@ -156,10 +156,15 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [x] ways to evade allocations during calculations
 - [x] Matrix exponent and trigonometric
 - [ ] other matrix functions
-- [ ] Banded matrices
+- [x] Banded matrices
+  - [ ] mostly done, but some LAPACK routines could be added
 - [x] Column-major storage (optional?)
-- [ ] Other missing features from LAPACK (mostly selectable and orderable eigenvalues)
-- [ ] Sparse matrices (perhaps out of scope/deserves separate shard)
+- [ ] Other missing features from LAPACK (selectable and orderable eigenvalues, generalized decompositions, new routines etc)
+- [x] Sparse matrices (perhaps out of scope/deserves separate shard)
+  - [x] COO Matrix
+  - [x] CSR Matrix (except `add` and `transpose`)
+  - [ ] CSC Matrix
+  - [ ] Separate shard for SparseSuite or other libs
 - [ ] Other missing features from scipy.linalg (lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
 - [x] Support multithreading\reenterability
 - [x] Allow matrices of unsupported types (use `check_type` only when actually needed)
