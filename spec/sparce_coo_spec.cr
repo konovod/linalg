@@ -166,10 +166,10 @@ describe COOMatrix do
     (mas - mb).should eq(ma - mb)
 
     banded = BMat.new(3, 4, 2, 1) { |i, j| (i + 1)*10 + j + 1 }
-    expect_raises(Exception) { mas + banded }
-    expect_raises(Exception) { banded + mas }
-    expect_raises(Exception) { mas - banded }
-    expect_raises(Exception) { banded - mas }
+    # expect_raises(Exception) { mas + banded } This is now compilation error
+    # expect_raises(Exception) { banded + mas } This is now compilation error
+    # expect_raises(Exception) { mas - banded } This is now compilation error
+    # expect_raises(Exception) { banded - mas } This is now compilation error
   end
 
   it "support #tril and #triu" do

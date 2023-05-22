@@ -58,6 +58,10 @@ module LA
                    MatrixFlags::Hermitian)
     end
 
+    def add(f2 : MatrixFlags, alpha, beta)
+      self.scale(alpha.is_a?(Complex) && alpha.imag != 0).sum(f2.scale(beta.is_a?(Complex) && beta.imag != 0))
+    end
+
     # :nodoc:
     def mult(f2 : MatrixFlags)
       self & f2 & (MatrixFlags::UpperTriangular |

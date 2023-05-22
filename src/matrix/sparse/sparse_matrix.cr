@@ -46,29 +46,8 @@ module LA::Sparse
       dup
     end
 
-    # returns element-wise sum
-    def +(m : Sparse::Matrix)
-      result = clone.add!(T.new(1), m)
-      result.flags = self.flags.sum(m.flags)
-      result
-    end
-
-    def -(m : Sparse::Matrix)
-      result = clone.add!(-T.new(1), m)
-      result.flags = self.flags.sum(m.flags)
-      result
-    end
-
-    def +(m : LA::Matrix)
-      m.clone.add! self
-    end
-
-    def -(m : LA::Matrix)
-      (-m).add! self
-    end
-
-    def add!(k : Number | Complex, m : LA::Matrix)
-      raise ArgumentError.new "can't `add!` dense matrix to sparse"
+    def add(m : DenseMatrix, *, alpha = 1, beta = 1)
+      m.add(self, alpha: beta, beta: alpha)
     end
 
     def triu!(k = 0)

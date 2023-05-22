@@ -111,7 +111,7 @@ module LA
           lapack(hetri, uplo, n, self, n, ipiv, worksize: [n])
           adjust_symmetric
         {% else %}
-          raise "error"
+          raise "error" # to prevent type inference of nil
         {% end %}
       elsif flags.symmetric?
         ipiv = Slice(Int32).new(n)

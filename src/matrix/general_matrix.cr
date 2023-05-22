@@ -8,6 +8,7 @@ module LA
   #
   # See `SUPPORTED_TYPES` for supported types
   class GeneralMatrix(T) < Matrix(T)
+    include DenseMatrix
     # Pointer to a raw data
     getter raw : Slice(T)
     # Count of rows in matrix
@@ -130,6 +131,16 @@ module LA
     # see `LA::Matrix#==`
     def ==(other : self)
       @nrows == other.nrows && @ncolumns == other.ncolumns && @raw == other.raw
+    end
+
+    # Perform inplace linear combination with matrix `m`
+    # `a.add!(m, alpha: alpha, beta: beta)` is equal to `a = alpha * a + beta * m`, but faster as no new matrix is allocated
+    def add!(m : Matrix, *, alpha = 1, beta = 1)
+      assert_same_size(m)
+      oldflags = flags
+      map_with_index! { |v, i, j| alpha * v + beta * m.unsafe_fetch(i, j) }
+      self.flags = oldflags.add(m.flags, alpha, beta)
+      self
     end
 
     # transposes matrix inplace

@@ -392,7 +392,7 @@ describe LA::BandedMatrix do
     ag = a.to_general
     ag.add! b
     ag.should eq(a + b)
-    expect_raises(ArgumentError) { a.add! b.to_general }
+    # expect_raises(ArgumentError) { a.add! b.to_general } This is now compilation error
   end
 
   it "support arithmetic operations with dense matrices" do

@@ -46,7 +46,7 @@ module LA
             blas_const(cbeta),
             self, self.nrows)
         {% else %}
-          raise "" # to prevent type inference of nil
+          raise "error" # to prevent type inference of nil
         {% end %}
       elsif a.flags.symmetric? || b.flags.symmetric?
         side = a.flags.symmetric? ? LibCBLAS::CblasSide::CblasLeft : LibCBLAS::CblasSide::CblasRight
@@ -76,7 +76,6 @@ module LA
     #
     # if `left` is true, `alpha*a*b` is calculated, otherwise `alpha*b*a`
     def tr_mult!(a : Matrix(T), *, alpha = 1.0, left = false)
-      raise "GeneralMatrix required for tr_mult!" unless self.is_a?(GeneralMatrix(T))
       raise ArgumentError.new("matrix size should match") if ncolumns != a.nrows
       raise "tr_mult! require square triangular matrix" unless a.square? && a.flags.triangular?
       aa = a.is_a?(GeneralMatrix(T)) ? a : a.to_general

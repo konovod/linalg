@@ -276,28 +276,15 @@ module LA
       self
     end
 
-    # returns element-wise sum
-    def +(m : BandedMatrix(T))
+    def add(m : BandedMatrix(T), *, alpha = 1, beta = 1)
       assert_same_size(m)
-      result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.sum(m.flags)) do |i, j|
-        self.unsafe_fetch(i, j) + m.unsafe_fetch(i, j)
+      result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.add(m.flags, alpha, beta)) do |i, j|
+        alpha*self.unsafe_fetch(i, j) + beta*m.unsafe_fetch(i, j)
       end
     end
 
-    # returns element-wise subtract
-    def -(m : BandedMatrix(T))
-      assert_same_size(m)
-      result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.sum(m.flags)) do |i, j|
-        self.unsafe_fetch(i, j) - m.unsafe_fetch(i, j)
-      end
-    end
-
-    def +(m : LA::Matrix)
-      m.clone.add! self
-    end
-
-    def -(m : LA::Matrix)
-      (-m).add! self
+    def add(m : DenseMatrix, *, alpha = 1, beta = 1)
+      m.add(self, alpha: beta, beta: alpha)
     end
 
     # returns transposed matrix
@@ -319,17 +306,13 @@ module LA
       end
     end
 
-    def add!(k : Number, m : BandedMatrix)
+    def add!(m : BandedMatrix(T), *, alpha = 1, beta = 1)
       assert_same_size(m)
       set_bands({upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max)
       oldflags = flags
-      map_with_index! { |v, i, j| v + k*m.unsafe_fetch(i, j) }
-      self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
+      map_with_index! { |v, i, j| alpha*v + beta*m.unsafe_fetch(i, j) }
+      self.flags = oldflags.add(m.flags, alpha, beta)
       self
-    end
-
-    def add!(k : Number, m : Matrix)
-      raise ArgumentError.new "can't add! non-banded matrix"
     end
 
     def self.rand(nrows, ncolumns, upper_band : Int32, lower_band : Int32, rng : Random = Random::DEFAULT)

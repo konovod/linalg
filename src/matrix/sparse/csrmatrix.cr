@@ -173,7 +173,7 @@ module LA::Sparse
     # def transpose! TODO
     # def transpose TODO
     # def conjtranspose TODO
-    # def add!(k : Number | Complex, m : Sparse::Matrix) TODO
+    # def add(k : Number | Complex, m : Sparse::Matrix) TODO
 
     def clear
       @raw_rows.fill(0)

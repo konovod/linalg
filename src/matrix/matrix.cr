@@ -8,6 +8,10 @@ module LA
     SUPPORTED_TYPES = {Float32, Float64, Complex}
   end
 
+  # :nodoc:
+  module DenseMatrix
+  end
+
   enum Enums::Axis
     Columns
     Rows
@@ -164,20 +168,14 @@ module LA
     #
     # This method raises if another matrix doesn't have same size
     def +(m : Matrix(T))
-      assert_same_size(m)
-      result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
-        self.unsafe_fetch(i, j) + m.unsafe_fetch(i, j)
-      end
+      add(m)
     end
 
     # Returns element-wise substract
     #
     # This method raises if another matrix doesn't have same size
     def -(m : Matrix(T))
-      assert_same_size(m)
-      result = GeneralMatrix(T).new(nrows, ncolumns, flags.sum(m.flags)) do |i, j|
-        self.unsafe_fetch(i, j) - m.unsafe_fetch(i, j)
-      end
+      add(m, beta: -1)
     end
 
     # Returns transposed matrix
@@ -669,18 +667,13 @@ module LA
     #
     # `a.add!(k, b)` is equal to `a = a + k * b`, but faster as no new matrix is allocated
     def add!(k : Number, m : Matrix)
-      assert_same_size(m)
-      oldflags = flags
-      map_with_index! { |v, i, j| v + k*m.unsafe_fetch(i, j) }
-      self.flags = oldflags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
-      self
+      add!(m, beta: k)
     end
 
-    # Performs inplace addition with matrix `m`
-    #
-    # `a.add!(b)` is equal to `a = a + b`, but faster as no new matrix is allocated
-    def add!(m)
-      add!(1, m)
+    # Calculate linear combination with matrix `m`
+    # `a.add(m, alpha: alpha, beta: beta)` is equal to `alpha * a + beta * k`, but faster as only one new matrix is allocated
+    def add(m : Matrix, *, alpha = 1, beta = 1)
+      clone.add!(m, alpha: alpha, beta: beta)
     end
 
     # Perform inplace multiplication to scalar `k`

@@ -212,12 +212,13 @@ module LA::Sparse
       COOMatrix(T).new(@ncolumns, @nrows, @raw_columns.dup, @raw_rows.dup, @raw_values.map(&.conj), flags: @flags.transpose, dont_clone: true)
     end
 
-    def add!(k : Number | Complex, m : Sparse::Matrix)
+    def add!(m : Sparse::Matrix, *, alpha = 1, beta = 1)
       assert_same_size(m)
+      scale! alpha
       m.each_with_index(all: false) do |v, i, j|
-        add_element(i, j, k*v)
+        add_element(i, j, beta*v)
       end
-      self.flags = self.flags.sum(m.flags.scale(k.is_a?(Complex) && k.imag != 0))
+      self.flags = self.flags.add(m.flags, alpha, beta)
       self
     end
 
