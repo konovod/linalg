@@ -58,14 +58,23 @@ module LA
 
     # :nodoc:
     def transpose!
-      # TODO - maybe it is possible for square?
-      raise "impossible for submatrix"
+      raise "impossible for non-square submatrix" unless self.square?
+      return self if flags.symmetric?
+      each_upper(diagonal: false) do |v, i, j|
+        unsafe_set(i, j, unsafe_fetch(j, i))
+        unsafe_set(j, i, v)
+      end
+      self
     end
 
     # :nodoc:
     def conjtranspose!
-      # TODO - maybe it is possible for square?
-      raise "impossible for submatrix"
+      {% if T != Complex %}
+        return transpose!
+      {% end %}
+      return self if flags.hermitian?
+      map! &.conj
+      transpose!
     end
   end
 end

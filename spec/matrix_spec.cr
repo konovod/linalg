@@ -590,6 +590,26 @@ describe LA::Matrix do
     m[..., ..].should eq m
   end
 
+  it "submatrix can be `transpose!`d" do
+    m = GMat[[1, 2, 3, 4]].kron(GMat[[1, 1, 1]].t).triu
+    expect_raises(Exception) { m[.., ..].transpose! }
+    m[0..2, 0..2].transpose!
+    m.should eq GMat[
+      [1, 0, 0, 4],
+      [2, 2, 0, 4],
+      [3, 3, 3, 4],
+    ]
+
+    m = GMatComplex[[1, 2.i, 3, 4.i]].kron(GMatComplex[[1, 1, 1]].t).triu
+    expect_raises(Exception) { m[.., ..].transpose! }
+    m[0..2, 0..2].conjtranspose!
+    m.should eq GMatComplex[
+      [1, 0, 0, 4.i],
+      [-2.i, -2.i, 0, 4.i],
+      [3, 3, 3, 4.i],
+    ]
+  end
+
   it "can be created with integer type" do
     a = GeneralMatrix(Int32).new([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
     a.tril(-1).should eq GeneralMatrix(Int32).new([
