@@ -192,4 +192,37 @@ describe CSRMatrix do
     (m1*m2).flags.should eq MatrixFlags::None
     expect_raises(ArgumentError) { m2*m1 }
   end
+
+  it "can be transposed" do
+    ma = CSRMatrix(Float32).new GMat[
+      [1, 2, 0, 0],
+      [0, 0, 5, 1],
+      [0, 1, 0, 0],
+    ]
+    mat = ma.t
+    mat.should be_a CSRMatrix(Float32)
+    mat.should eq GMat[
+      [1, 0, 0],
+      [2, 0, 1],
+      [0, 5, 0],
+      [0, 1, 0],
+    ]
+    mat.transpose.should eq ma
+  end
+  it "can be conjtransposed" do
+    ma = CSRMatrix(Complex).new GMatComplex[
+      [1, 2.i, 0, 0],
+      [0, 0, -5.i, 1],
+      [0, 1 - 3.i, 0, 0],
+    ]
+    mat = ma.conjt
+    mat.should be_a CSRMatrix(Complex)
+    mat.should eq GMatComplex[
+      [1, 0, 0],
+      [-2.i, 0, 1 + 3.i],
+      [0, 5.i, 0],
+      [0, 1, 0],
+    ]
+    mat.conjtranspose.should eq ma
+  end
 end

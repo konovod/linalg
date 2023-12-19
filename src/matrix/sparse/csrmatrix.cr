@@ -172,8 +172,36 @@ module LA::Sparse
     end
 
     # def transpose! TODO
-    # def transpose TODO
-    # def conjtranspose TODO
+
+    def transpose
+      return clone if flags.symmetric?
+      result = self.class.new(ncolumns, nrows, raw_rows: Array(Int32).new(ncolumns + 1, 0), raw_columns: Array(Int32).new(nonzeros, 0), raw_values: Array(T).new(nonzeros, T.new(0)))
+      t_row_pos = Slice(Int32).new(ncolumns, 0)
+      each_index do |row, col|
+        t_row_pos[col] += 1
+      end
+      ncolumns.times do |col|
+        result.raw_rows[col + 1] = result.raw_rows[col] + t_row_pos[col]
+      end
+      t_row_pos.fill(0)
+      each_with_index do |v, row, col|
+        index = t_row_pos[col] + result.raw_rows[col]
+        result.raw_values[index] = v
+        result.raw_columns[index] = row
+        t_row_pos[col] += 1
+      end
+      result.flags = self.flags.transpose
+      result
+    end
+
+    def conjtranspose
+      {% if T != Complex %}
+        return transpose
+      {% end %}
+      return clone if flags.hermitian?
+      transpose.map!(&.conj).tap { |r| r.flags = self.flags.transpose }
+    end
+
     # def add(k : Number | Complex, m : Sparse::Matrix) TODO
 
     def clear
