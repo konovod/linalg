@@ -291,38 +291,47 @@ module LA::Sparse
       self
     end
 
+    protected def scatter(vector : Slice(T?), scale : T, row : Int32, cols : Array(Int32))
+      row_start = raw_rows[row]
+      row_end = raw_rows[row + 1]
+      (row_start...row_end).each do |index|
+        col = raw_columns[index]
+        v = raw_values[index]*scale
+        old = vector[col]
+        if old.nil?
+          vector[col] = v
+          cols << col
+        else
+          vector[col] = old + v
+        end
+      end
+    end
+
     def *(b : self)
       if ncolumns != b.nrows
         raise ArgumentError.new("matrix size should match (#{shape_str} * #{b.shape_str}")
       end
       c = self.class.new(nrows, b.ncolumns, nonzeros + b.nonzeros)
-      row_ci = Slice(T).new(b.ncolumns, T.new(0))
+      row_ci = Slice(T?).new(b.ncolumns, value: nil.as(T?))
+      ci_cols = Array(Int32).new(b.ncolumns)
       nrows.times do |i|
-        row_ci.fill(T.new(0))
-        row_ci_nonzero = 0
+        row_ci.fill(nil.as(T?))
+        ci_cols.clear
         row_start = @raw_rows[i]
         row_end = @raw_rows[i + 1]
         (row_start...row_end).each do |index|
           k = @raw_columns[index]
           aik = @raw_values[index]
           # aik x bk* = ci*
-          b_row_start = b.raw_rows[k]
-          b_row_end = b.raw_rows[k + 1]
-          (b_row_start...b_row_end).each do |bindex|
-            j = b.raw_columns[bindex]
-            bkj = b.raw_values[bindex]
-            v = aik*bkj
-            row_ci_nonzero += 1 if row_ci[j].zero?
-            row_ci[j] += v
-          end
+          b.scatter(row_ci, aik, k, ci_cols)
         end
         # copy row to matrix c
-        row_ci.each_with_index do |v, j|
+        ci_cols.each do |col|
+          v = row_ci[col]
+          next unless v
           next if v.zero?
-          c.raw_columns << j
+          c.raw_columns << col
           c.raw_values << v
-          row_ci_nonzero -= 1
-          break if row_ci_nonzero == 0
         end
         c.raw_rows[i + 1] = c.raw_values.size
       end
