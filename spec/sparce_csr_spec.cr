@@ -124,6 +124,25 @@ describe CSRMatrix do
     m1.should eq m2
   end
 
+  it "support map!" do
+    a = CSRMatrix(Float64).new GMat[
+      [1, 2, 0, 0],
+      [0, 0, 5, 1],
+      [0, 1, 0, 0],
+    ]
+    a.map! { |v| v/2 }
+    a.should eq GMat[
+      [0.5, 1, 0, 0],
+      [0, 0, 2.5, 0.5],
+      [0, 0.5, 0, 0],
+    ]
+    a.map_with_index { |v, row, col| v*2 + row + col }.should eq GMat[
+      [1, 2 + 1, 0, 0],
+      [0, 0, 5 + 3, 1 + 4],
+      [0, 1 + 3, 0, 0],
+    ]
+  end
+
   it "support #tril! and #triu!" do
     m = COOMatrix(Float64).new(10, 10)
     m[0, 0] = 10
@@ -224,5 +243,26 @@ describe CSRMatrix do
       [0, 1, 0],
     ]
     mat.conjtranspose.should eq ma
+  end
+
+  it "can be added to other CSR" do
+    a = CSRMatrix(Float64).new GMat[
+      [1, 2, 0, 0],
+      [0, 0, 5, 1],
+      [0, 1, 0, 0],
+    ]
+    b = CSRMatrix(Float64).new GMat[
+      [0, -2, 0, 0],
+      [0, 1, -5, 1],
+      [0, 2, 0, 1],
+    ]
+    (a + b).should eq GMat[
+      [1, 0, 0, 0],
+      [0, 1, 0, 2],
+      [0, 3, 0, 1],
+    ]
+    (a + b).nonzeros.should eq 5
+    expect_raises(ArgumentError) { a.t + b }
+    (-a + b + a - b).nonzeros.should eq 0
   end
 end

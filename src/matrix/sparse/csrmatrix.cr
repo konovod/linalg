@@ -157,17 +157,39 @@ module LA::Sparse
     end
 
     def map_with_index(&block)
-      values = @raw_values.map_with_index { |v, i| T.new(yield(v, @raw_rows[i], @raw_columns[i])) }
+      row = 0
+      values = @raw_values.map_with_index do |v, i|
+        while i >= @raw_rows[row + 1]
+          row += 1
+        end
+        newv = yield(v, row, @raw_columns[i])
+        newv
+      end
       CSRMatrix(T).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true)
+      # clone.tap &.map_with_index! { |v, i, j| yield(v, i, j) }
     end
 
     def map_with_index_f64(&block)
-      values = @raw_values.map_with_index { |v, i| Float64.new(yield(v, @raw_rows[i], @raw_columns[i])) }
+      row = 0
+      values = @raw_values.map_with_index do |v, i|
+        while i >= @raw_rows[row + 1]
+          row += 1
+        end
+        newv = yield(v, row, @raw_columns[i])
+        Float64.new(newv)
+      end
       CSRMatrix(Float64).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true)
     end
 
     def map_with_index_complex(&block)
-      values = @raw_values.map_with_index { |v, i| Complex.new(yield(v, @raw_rows[i], @raw_columns[i])) }
+      row = 0
+      values = @raw_values.map_with_index do |v, i|
+        while i >= @raw_rows[row + 1]
+          row += 1
+        end
+        newv = yield(v, row, @raw_columns[i])
+        Complex.new(newv)
+      end
       CSRMatrix(Complex).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true)
     end
 
@@ -202,7 +224,29 @@ module LA::Sparse
       transpose.map!(&.conj).tap { |r| r.flags = self.flags.transpose }
     end
 
-    # def add(k : Number | Complex, m : Sparse::Matrix) TODO
+    def add(m : CSRMatrix(T), *, alpha = 1, beta = 1)
+      assert_same_size(m)
+      result = CSRMatrix(T).new(nrows, ncolumns, nonzeros + m.nonzeros)
+      row = Slice(T?).new(ncolumns, value: nil.as(T?))
+      cols = Array(Int32).new(ncolumns)
+      nrows.times do |i|
+        row.fill(nil.as(T?))
+        cols.clear
+        self.scatter(row, alpha, i, cols)
+        m.scatter(row, beta, i, cols)
+        cols.sort!
+        cols.each do |col|
+          v = row[col]
+          next unless v
+          next if v.zero?
+          result.raw_columns << col
+          result.raw_values << v
+        end
+        result.raw_rows[i + 1] = result.raw_values.size
+      end
+      result.flags = flags.add(m.flags, alpha, beta)
+      result
+    end
 
     def clear
       @raw_rows.fill(0)
