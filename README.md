@@ -162,9 +162,11 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [ ] Other missing features from LAPACK (selectable and orderable eigenvalues, generalized decompositions, new routines etc)
 - [x] Sparse matrices (perhaps out of scope/deserves separate shard)
   - [x] COO Matrix
-  - [x] CSR Matrix (except `add` and `transpose`)
-  - [ ] CSC Matrix
+  - [x] CSR Matrix
+  - [x] CSC Matrix (except CSC\CSR conversion)
+    - [ ] non-sorted mode
   - [ ] Separate shard for SparseSuite or other libs
+
 - [ ] Other missing features from scipy.linalg (lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
 - [x] Support multithreading\reenterability
 - [x] Allow matrices of unsupported types (use `check_type` only when actually needed)
