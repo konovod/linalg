@@ -382,5 +382,24 @@ module LA::Sparse
       c.flags = self.flags.mult(b.flags)
       c
     end
+
+    def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
+      result = T.additive_identity
+      case kind
+      when .inf?
+        nrows.times do |i|
+          rowsum = T.additive_identity
+          row_start = @raw_rows[i]
+          row_end = @raw_rows[i + 1]
+          (row_start...row_end).each do |index|
+            rowsum += @raw_values[index]
+          end
+          result = rowsum if result < rowsum
+        end
+        result
+      else
+        super(kind)
+      end
+    end
   end
 end

@@ -433,6 +433,8 @@ describe LA do
     a.norm(MatrixNorm::One).should eq 20
     b.norm(MatrixNorm::One).should eq 7
     GMatComplex.new(b).norm(MatrixNorm::Inf).should eq 9
+    a.norm(MatrixNorm::MaxAbs).should eq 4
+    b.norm(MatrixNorm::MaxAbs).should eq 4
   end
 
   it "high-level: calculate matrix norms for single precision" do

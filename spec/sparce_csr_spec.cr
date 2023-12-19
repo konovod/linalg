@@ -265,4 +265,17 @@ describe CSRMatrix do
     expect_raises(ArgumentError) { a.t + b }
     (-a + b + a - b).nonzeros.should eq 0
   end
+
+  it "support norms" do
+    m = CSRMatrix(Float64).new GMat[
+      [-4.0, -3.0, -2.0],
+      [-1.0, 0.0, 1.0],
+      [2.0, 3.0, 4.0],
+    ]
+    m.norm.should be_close(7.745966692414834, 1e-6)
+    m.norm(MatrixNorm::Frobenius).should be_close(7.745966692414834, 1e-6)
+    m.norm(MatrixNorm::Inf).should eq 9
+    m.norm(MatrixNorm::One).should eq 7
+    m.norm(MatrixNorm::MaxAbs).should eq 4
+  end
 end
