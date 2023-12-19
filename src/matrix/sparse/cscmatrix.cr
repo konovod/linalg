@@ -3,7 +3,7 @@ require "./sparse_matrix.cr"
 # TODO - inline docs
 
 module LA::Sparse
-  macro csxmatrix(name, arows, acolumns, index1, index2, norm)
+  macro csxmatrix(name, arows, acolumns, index1, index2, norm, other)
     class {{name}}Matrix(T) < Matrix(T)
         protected getter raw_{{acolumns}} : Array(Int32)
         protected getter raw_{{arows}} : Array(Int32)
@@ -17,21 +17,21 @@ module LA::Sparse
         end
 
         def initialize(@nrows, @ncolumns, raw_{{arows}} : Array(Int32), raw_{{acolumns}} : Array(Int32), raw_values : Array(T), @flags = MatrixFlags::None, *, dont_clone : Bool = false)
-        if raw_{{arows}}.size != @n{{arows}} + 1
+          if raw_{{arows}}.size != @n{{arows}} + 1
             raise ArgumentError.new("Can't construct #{self.class} from arrays of different size: {{arows}}.size(#{raw_{{arows}}.size}) != n{{arows}}+1 (#{@n{{arows}} + 1}")
-        end
-        if raw_{{acolumns}}.size != raw_values.size
+          end
+          if raw_{{acolumns}}.size != raw_values.size
             raise ArgumentError.new("Can't construct #{self.class} from arrays of different size: {{acolumns}}.size(#{raw_{{acolumns}}.size}) != values.size(#{raw_values.size})")
-        end
-        if dont_clone
+          end
+          if dont_clone
             @raw_{{arows}} = raw_{{arows}}
             @raw_{{acolumns}} = raw_{{acolumns}}
             @raw_values = raw_values
-        else
+          else
             @raw_{{arows}} = raw_{{arows}}.dup
             @raw_{{acolumns}} = raw_{{acolumns}}.dup
             @raw_values = raw_values.dup
-        end
+          end
         end
 
         def nonzeros : Int32
@@ -44,6 +44,11 @@ module LA::Sparse
 
         def self.new(matrix : {{name}}Matrix)
           new(matrix.nrows, matrix.ncolumns, matrix.raw_{{arows}}.dup, matrix.raw_{{acolumns}}.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, flags: matrix.flags)
+        end
+
+        def self.new(matrix : {{other}}Matrix)
+          tr = matrix.transpose
+          self.new(matrix.nrows, matrix.ncolumns, raw_{{arows}}: tr.raw_{{acolumns}},raw_{{acolumns}}: tr.raw_{{arows}}, raw_values: tr.raw_values, flags: matrix.flags, dont_clone: true)
         end
 
         def self.new(matrix : LA::Matrix)
@@ -413,9 +418,13 @@ module LA::Sparse
             super(kind)
         end
         end
+
+      def as_{{other.stringify.downcase.id}}
+        {{other}}Matrix(T).new(@ncolumns, @nrows, raw_{{arows}}: raw_{{acolumns}},raw_{{acolumns}}: raw_{{arows}}, raw_values: raw_values, flags: flags.transpose)
+      end  
     end
   end
 
-  csxmatrix(CSR, rows, columns, i, j, inf)
-  csxmatrix(CSC, columns, rows, j, i, one)
+  csxmatrix(CSR, rows, columns, i, j, inf, CSC)
+  csxmatrix(CSC, columns, rows, j, i, one, CSR)
 end

@@ -163,7 +163,7 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [x] Sparse matrices (perhaps out of scope/deserves separate shard)
   - [x] COO Matrix
   - [x] CSR Matrix
-  - [x] CSC Matrix (except CSC\CSR conversion)
+  - [x] CSC Matrix
     - [ ] non-sorted mode
   - [ ] Separate shard for SparseSuite or other libs
 

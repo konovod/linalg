@@ -41,6 +41,18 @@ describe CSRMatrix do
     ms.nonzeros.should eq 6
   end
 
+  it "can be created from CSC matrix" do
+    m_dense = GMat[
+      [-4.0, -3.0, -2.0, 0.0],
+      [-1.0, 0.0, 11.0, 0.0],
+      [20.0, 30.0, 4.0, 1.0],
+    ]
+    m_csc = CSCMatrix(Float64).new m_dense
+    m_csr = CSRMatrix(Float64).new m_csc
+    m_csc.should eq m_dense
+    m_csr.should eq m_dense
+  end
+
   it "can be cleared" do
     ms = CSRMatrix(Float64).new(4, 4, raw_rows: [0, 1, 2, 3, 4], raw_columns: [0, 1, 2, 1], raw_values: [5.0, 8.0, 3.0, 6.0])
     ms.clear
@@ -277,5 +289,16 @@ describe CSRMatrix do
     m.norm(MatrixNorm::Inf).should eq 9
     m.norm(MatrixNorm::One).should eq 7
     m.norm(MatrixNorm::MaxAbs).should eq 4
+  end
+
+  it "can be converted to CSC using as_csc" do
+    m = CSRMatrix(Float64).new GMat[
+      [-4.0, -3.0, -2.0],
+      [-1.0, 0.0, 1.0],
+      [2.0, 3.0, 4.0],
+    ]
+    mt = m.as_csc
+    mt.should be_a CSCMatrix(Float64)
+    mt.should eq m.t
   end
 end
