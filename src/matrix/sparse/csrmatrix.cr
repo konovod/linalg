@@ -63,6 +63,7 @@ module LA::Sparse
         end
         result.raw_rows[row + 1] = index
       end
+      result.flags = matrix.flags
       result
     end
 
@@ -260,6 +261,45 @@ module LA::Sparse
       @ncolumns = ancolumns
       clear_flags
       self
+    end
+
+    def *(b : self)
+      if ncolumns != b.nrows
+        raise ArgumentError.new("matrix size should match (#{shape_str} * #{b.shape_str}")
+      end
+      c = self.class.new(nrows, b.ncolumns, nonzeros + b.nonzeros)
+      row_ci = Slice(T).new(b.ncolumns, T.new(0))
+      nrows.times do |i|
+        row_ci.fill(T.new(0))
+        row_ci_nonzero = 0
+        row_start = @raw_rows[i]
+        row_end = @raw_rows[i + 1]
+        (row_start...row_end).each do |index|
+          k = @raw_columns[index]
+          aik = @raw_values[index]
+          # aik x bk* = ci*
+          b_row_start = b.raw_rows[k]
+          b_row_end = b.raw_rows[k + 1]
+          (b_row_start...b_row_end).each do |bindex|
+            j = b.raw_columns[bindex]
+            bkj = b.raw_values[bindex]
+            v = aik*bkj
+            row_ci_nonzero += 1 if row_ci[j].zero?
+            row_ci[j] += v
+          end
+        end
+        # copy row to matrix c
+        row_ci.each_with_index do |v, j|
+          next if v.zero?
+          c.raw_columns << j
+          c.raw_values << v
+          row_ci_nonzero -= 1
+          break if row_ci_nonzero == 0
+        end
+        c.raw_rows[i + 1] = c.raw_values.size
+      end
+      c.flags = self.flags.mult(b.flags)
+      c
     end
   end
 end

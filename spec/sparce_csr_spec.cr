@@ -171,4 +171,25 @@ describe CSRMatrix do
     mas.resize!(10, 10)
     mas.should eq ma
   end
+
+  it "can be multiplied to other CSR" do
+    m1_dense = GMat[
+      [5, 0, 0],
+      [0, 8, 0],
+      [0, 0, 3],
+      [0, 6, 0],
+    ]
+    m1 = CSRMatrix(Float64).new m1_dense
+    m2_dense = GMat[
+      [1, 0, 3, 0, 5],
+      [1, 2, 0, 1, 0],
+      [0, 2, 0, -6, 0],
+    ]
+    m2 = CSRMatrix(Float64).new m2_dense
+
+    (m1*m2).should eq m1_dense*m2_dense
+    (m1*m2).nonzeros.should eq 11
+    (m1*m2).flags.should eq MatrixFlags::None
+    expect_raises(ArgumentError) { m2*m1 }
+  end
 end
