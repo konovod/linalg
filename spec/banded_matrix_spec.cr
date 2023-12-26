@@ -563,7 +563,7 @@ describe LA::BandedMatrix do
       [0, 1, -1, 1],
       [0, 0, 2, 1]]
     b = GMat[[1, 2, 3, 4]].t!
-    BMat.new(a).solve(b).should eq a.solve(b)
+    BMat.new(a).solve(b).should almost_eq a.solve(b)
   end
 
   it "solves a linear equations (Complex)" do
@@ -603,7 +603,7 @@ describe LA::BandedMatrix do
     a = a*a.t
     a.detect?(MatrixFlags::PositiveDefinite).should be_true
     b = GMat[[1, 2, 7, 1]].t!
-    BMat.new(a).solve(b).should eq a.solve(b)
+    BMat.new(a).solve(b).should almost_eq a.solve(b)
 
     a = GMatComplex[
       [1, 0, 0, 0],
