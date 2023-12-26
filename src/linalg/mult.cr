@@ -111,17 +111,15 @@ module LA
         if m.square? && m.flags.triangular?
           result = self.to_general
           result.tr_mult!(m, left: false)
-          result
         else
           result = m.to_general
           result.tr_mult!(self, left: true)
-          result
         end
       else
         result = GeneralMatrix(T).zeros(nrows, m.ncolumns)
         result.add_mult(self, m)
-        result.tap { |r| r.flags = self.flags.mult(m.flags) }
       end
+      result.tap { |r| r.flags = self.flags.mult(m.flags) }
     end
   end
 end

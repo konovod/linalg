@@ -93,4 +93,10 @@ describe LA::Matrix do
     diag.tril!(-1)
     diag.flags.symmetric?.should be_true
   end
+
+  it "flags should be correct when multiplying triangular matrices" do
+    m1 = GMat[[1, 1e9], [0, 0.1]]
+    m1.detect MatrixFlags::UpperTriangular
+    (m1*m1).flags.should eq MatrixFlags::UpperTriangular
+  end
 end
