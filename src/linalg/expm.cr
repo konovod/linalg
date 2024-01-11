@@ -23,7 +23,7 @@ module LA
     4.250000000000000e+000,
   } # m_vals = 13
 
-  abstract class Matrix(T)
+  class GeneralMatrix(T) < Matrix(T)
     # Computes matrix exponential
     #
     # It exploits triangularity (if any) of A.

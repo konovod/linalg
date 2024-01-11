@@ -1,4 +1,18 @@
 module LA
+  class Matrix(T)
+    def lu
+      to_general.lu(overwrite_a: true)
+    end
+
+    # Compute pivoted LU decomposition of a matrix and returns it in a compact form,
+    # useful for solving linear equation systems.
+    #
+    # Uses `getrf` LAPACK routine
+    def lu_factor : LUMatrix(T)
+      to_general.lu_factor!
+    end
+  end
+
   class GeneralMatrix(T) < Matrix(T)
     # Compute pivoted LU decomposition of a matrix
     #
@@ -63,14 +77,6 @@ module LA
       lapack(getrf, nrows, ncolumns, self, nrows, ipiv)
       clear_flags
       LUMatrix(T).new(self, ipiv)
-    end
-
-    # Compute pivoted LU decomposition of a matrix and returns it in a compact form,
-    # useful for solving linear equation systems.
-    #
-    # Uses `getrf` LAPACK routine
-    def lu_factor : LUMatrix(T)
-      clone.lu_factor!
     end
   end
 

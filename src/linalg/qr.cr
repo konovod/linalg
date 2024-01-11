@@ -1,6 +1,20 @@
 # TODO - inline docs
 
 module LA
+  class Matrix(T)
+    def qr_raw(*, pivoting = false)
+      to_general.qr_raw(overwrite_a: true)
+    end
+
+    def qr_r(*, pivoting = false)
+      to_general.qr_r(overwrite_a: true)
+    end
+
+    def qr(*, pivoting = false)
+      to_general.qr(overwrite_a: true)
+    end
+  end
+
   class GeneralMatrix(T) < Matrix(T)
     private def qr_initial(a, pivoting)
       m = a.nrows

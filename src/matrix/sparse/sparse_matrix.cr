@@ -87,29 +87,5 @@ module LA::Sparse
     def select_index(& : (Int32, Int32) -> Bool)
       select_with_index { |v, i, j| yield(i, j) }
     end
-
-    def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
-      result = T.additive_identity
-      case kind
-      in .frobenius?
-        each { |v| result += v*v }
-        Math.sqrt(result)
-      in .one?
-        sums = Slice(T).new(ncolumns, T.additive_identity)
-        each_with_index do |v, row, col|
-          sums[col] += v.abs
-        end
-        sums.max
-      in .inf?
-        sums = Slice(T).new(nrows, T.additive_identity)
-        each_with_index do |v, row, col|
-          sums[row] += v.abs
-        end
-        sums.max
-      in .max_abs?
-        each { |v| result = v.abs if result < v }
-        result
-      end
-    end
   end
 end

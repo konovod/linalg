@@ -8,6 +8,24 @@ module LA
     a.eigs(b: b, need_left: need_left, need_right: need_right, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end
 
+  class Matrix(T)
+    def eigvals
+      to_general.eigvals(overwrite_a: true)
+    end
+
+    def eigs(*, left = false)
+      to_general.eigs(overwrite_a: true, left: left)
+    end
+
+    def eigs(*, need_left : Bool, need_right : Bool)
+      to_general.eigs(overwrite_a: true, need_left: need_left, need_right: need_right)
+    end
+
+    def eigs(*, b : self, need_left = false, need_right = false)
+      to_general.eigs(b: b.to_general, overwrite_a: true, overwrite_b: true, need_left: need_left, need_right: need_right)
+    end
+  end
+
   class GeneralMatrix(T) < Matrix(T)
     def eigvals(*, overwrite_a = false)
       vals, aleft, aright = eigs(overwrite_a: overwrite_a, need_left: false, need_right: false)
@@ -140,7 +158,7 @@ module LA
     end
 
     # generalized eigenvalues problem
-    def eigs(*, b : Matrix(T), need_left : Bool, need_right : Bool, overwrite_a = false, overwrite_b = false)
+    def eigs(*, b : GeneralMatrix(T), need_left : Bool, need_right : Bool, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("a matrix must be square") unless square?
       raise ArgumentError.new("b matrix must have same size as a") unless b.size == self.size
       {% if T == Complex %}

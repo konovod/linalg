@@ -85,6 +85,115 @@ module LA
       tril! if flags.lower_triangular?
     end
 
+    # Calculate matrix inversion
+    # See `#inv!` for details on algorithm
+    def inv
+      to_general.inv!
+    end
+
+    def svd
+      to_general.svd(overwrite_a: true)
+    end
+
+    def svdvals
+      to_general.svdvals(overwrite_a: true)
+    end
+
+    def solve(b : GeneralMatrix(T), *, overwrite_b = false)
+      to_general.solve(b, overwrite_b: overwrite_b)
+    end
+
+    def solve(b : self)
+      to_general.solve(b.to_general, overwrite_a: true, overwrite_b: true)
+    end
+
+    def det
+      to_general.det(overwrite_a: true)
+    end
+
+    def balance(*, permute = true, scale = true, separate = false)
+      a = to_general
+      s = a.balance!(permute: permute, scale: scale, separate: separate)
+      {a, s}
+    end
+
+    def hessenberg(*, calc_q = false)
+      x = to_general
+      x.hessenberg!(calc_q: calc_q)
+    end
+
+    def hessenberg
+      to_general.hessenberg!
+    end
+
+    # Calculate Moore–Penrose inverse of a matrix
+    #
+    # https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse
+    # Implemented using an svd decomposition
+    def pinv
+      # Pure Crystal implementation since LAPACK has no direct implementation of pseudo inverse
+      u, s, v = self.svd
+      v.conjtranspose!
+      u.conjtranspose!
+
+      s_inverse = s.map! { |e|
+        if e != 0
+          1.0 / e
+        else
+          e
+        end
+      }
+      s_dash = self.class.diag(s_inverse)
+
+      append_rows = 0
+      append_cols = 0
+
+      if v.ncolumns >= s_dash.nrows
+        append_rows = v.ncolumns - s_dash.nrows
+      else
+        puts "S` #{s_dash}"
+        puts "v #{v}"
+        raise Exception.new("Invalid dimension, S` larger than v")
+      end
+
+      if u.nrows >= s_dash.ncolumns
+        append_cols = u.nrows - s_dash.ncolumns
+      else
+        puts "S` #{s_dash}\nShape #{s_dash.size}"
+        puts "U #{u}\nShape #{u.size}"
+        raise Exception.new("Invalid dimension, S` larger than U")
+      end
+
+      s_dash.resize!(s_dash.nrows + append_rows, s_dash.ncolumns + append_cols)
+      return v * s_dash * u
+    end
+
+    def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
+      result = of_real_type(0)
+      case kind
+      in .frobenius?
+        each { |v| result += of_real_type(v*v) }
+        Math.sqrt(result)
+      in .one?
+        sums = of_real_type(Slice, ncolumns)
+        each_with_index do |v, row, col|
+          sums[col] += v.abs
+        end
+        sums.max
+      in .inf?
+        sums = of_real_type(Slice, nrows)
+        each_with_index do |v, row, col|
+          sums[row] += v.abs
+        end
+        sums.max
+      in .max_abs?
+        each { |v| result = v.abs if result < v.abs }
+        result
+      end
+    end
+  end
+
+  class GeneralMatrix(T) < Matrix(T)
     # Calculate matrix inversion inplace
     # Method selects optimal algorithm depending on `MatrixFlags`
     # `transpose` returned if matrix is orthogonal
@@ -124,54 +233,6 @@ module LA
         lapack(getri, n, self, n, ipiv)
       end
       self
-    end
-
-    # Calculate matrix inversion
-    # See `#inv!` for details on algorithm
-    def inv
-      clone.inv!
-    end
-
-    # Calculate Moore–Penrose inverse of a matrix
-    #
-    # https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse
-    # Implemented using an svd decomposition
-    def pinv
-      # Pure Crystal implementation since LAPACK has no direct implementation of pseudo inverse
-      u, s, v = self.svd
-      v.conjtranspose!
-      u.conjtranspose!
-
-      s_inverse = s.map! { |e|
-        if e != 0
-          1.0 / e
-        else
-          e
-        end
-      }
-      s_dash : GeneralMatrix(T) = GeneralMatrix(T).diag(s_inverse)
-
-      append_rows = 0
-      append_cols = 0
-
-      if v.ncolumns >= s_dash.nrows
-        append_rows = v.ncolumns - s_dash.nrows
-      else
-        puts "S` #{s_dash}"
-        puts "v #{v}"
-        raise Exception.new("Invalid dimension, S` larger than v")
-      end
-
-      if u.nrows >= s_dash.ncolumns
-        append_cols = u.nrows - s_dash.ncolumns
-      else
-        puts "S` #{s_dash}\nShape #{s_dash.size}"
-        puts "U #{u}\nShape #{u.size}"
-        raise Exception.new("Invalid dimension, S` larger than U")
-      end
-
-      s_dash.resize!(s_dash.nrows + append_rows, s_dash.ncolumns + append_cols)
-      return v * s_dash * u
     end
 
     # Solves matrix equation `self*x = b` and returns x
@@ -342,12 +403,6 @@ module LA
       separate ? s : Matrix(T).diag(s.raw)
     end
 
-    def balance(*, permute = true, scale = true, separate = false)
-      a = clone
-      s = a.balance!(permute: permute, scale: scale, separate: separate)
-      {a, s}
-    end
-
     def hessenberg!(*, calc_q = false)
       raise ArgumentError.new("matrix must be square") unless square?
       # idea from scipy.
@@ -379,15 +434,6 @@ module LA
     def hessenberg!
       q = hessenberg!(calc_q: false)
       self
-    end
-
-    def hessenberg(*, calc_q = false)
-      x = self.clone
-      x.hessenberg!(calc_q: calc_q)
-    end
-
-    def hessenberg
-      clone.hessenberg!
     end
 
     # returns matrix norm

@@ -37,7 +37,22 @@ end
 
 end
 
+private macro decomposition_wrap(letters)
+  def {{letters}}
+    to_general.{{letters}}(overwrite_a: true)
+  end
+  def {{letters}}_r
+    to_general.{{letters}}_r(overwrite_a: true)
+  end
+end
+
 module LA
+  class Matrix(T)
+    decomposition_wrap(rq)
+    decomposition_wrap(lq)
+    decomposition_wrap(ql)
+  end
+
   class GeneralMatrix(T) < Matrix(T)
     decomposition(rq, triu)
     decomposition(lq, tril)
