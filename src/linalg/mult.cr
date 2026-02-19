@@ -11,7 +11,7 @@ module LA
          elsif T == Complex
            typ = :z.id
          end %}
-       LibCBLAS.{{typ}}{{storage}}{{name}}(LibCBLAS::COL_MAJOR, {{*args}})
+       LibCBLAS.{{typ}}{{storage}}{{name}}(LibCBLAS::COL_MAJOR, {{args.splat}})
     end
 
     private macro blas_const(x)

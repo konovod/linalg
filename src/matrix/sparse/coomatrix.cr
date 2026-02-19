@@ -242,29 +242,29 @@ module LA::Sparse
       result
     end
 
-    def self.rand(nrows, ncolumns, *, nonzero_elements, rng : Random = Random::DEFAULT)
+    def self.rand(nrows, ncolumns, *, nonzero_elements, rng : Random? = nil)
       raise ArgumentError.new("Too many nonzero elements (#{nonzero_elements}), maximum is nrows*ncolumns/2 (#{nrows * ncolumns // 2})") if nonzero_elements > nrows * ncolumns // 2
       result = new(nrows, ncolumns, capacity: nonzero_elements)
       nonzero_elements.times do
         i = j = 0
         loop do
-          i = rng.rand(nrows)
-          j = rng.rand(ncolumns)
+          i = rng ? rng.rand(nrows) : rand(nrows)
+          j = rng ? rng.rand(ncolumns) : rand(ncolumns)
           break if !result.dictionary.has_key?({i, j})
         end
-        v = rng.rand
+        v = rng ? rng.rand : rand
         result.push_element(i, j, v)
       end
       result.clear_flags
       result
     end
 
-    def self.rand(nrows, ncolumns, *, fill_factor, rng : Random = Random::DEFAULT)
+    def self.rand(nrows, ncolumns, *, fill_factor, rng : Random? = nil)
       result = new(nrows, ncolumns, capacity: (nrows*ncolumns*fill_factor*1.1).to_i)
       nrows.times do |i|
         ncolumns.times do |j|
-          next if rng.rand >= fill_factor
-          v = rng.rand
+          next if (rng ? rng.rand : rand) >= fill_factor
+          v = rng ? rng.rand : rand
           result.push_element(i, j, v)
         end
       end

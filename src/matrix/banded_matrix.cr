@@ -307,11 +307,11 @@ module LA
       self
     end
 
-    def self.rand(nrows, ncolumns, upper_band : Int32, lower_band : Int32, rng : Random = Random::DEFAULT)
-      new(nrows, ncolumns, upper_band, lower_band) { |i, j| rng.rand }
+    def self.rand(nrows, ncolumns, upper_band : Int32, lower_band : Int32, rng : Random? = nil)
+      new(nrows, ncolumns, upper_band, lower_band) { |i, j| rng ? rng.rand : rand }
     end
 
-    def self.rand(nrows, ncolumns, upper_band : Int32, rng : Random = Random::DEFAULT)
+    def self.rand(nrows, ncolumns, upper_band : Int32, rng : Random? = nil)
       rand(nrows, ncolumns, upper_band, upper_band, rng)
     end
 

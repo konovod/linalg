@@ -240,8 +240,8 @@ module LA::Sparse
         @raw_{{acolumns}}.clear
         end
 
-        # def self.rand(n{{arows}}, n{{acolumns}}, *, nonzero_elements, rng : Random = Random::DEFAULT)
-        # def self.rand(n{{arows}}, n{{acolumns}}, *, fill_factor, rng : Random = Random::DEFAULT)
+        # def self.rand(n{{arows}}, n{{acolumns}}, *, nonzero_elements, rng : Random? = nil)
+        # def self.rand(n{{arows}}, n{{acolumns}}, *, fill_factor, rng : Random? = nil)
         def select!(& : T -> Bool)
           select_with_index! { |v, i, j| yield(v) }
         end

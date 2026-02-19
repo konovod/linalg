@@ -486,8 +486,8 @@ module LA
     end
 
     # Generate matrix of given size with elements randomly distributed from range 0.0..1.0
-    def self.rand(nrows, ncolumns, rng = Random::DEFAULT)
-      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| rng.rand }
+    def self.rand(nrows, ncolumns, rng : Random? = nil)
+      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| rng ? rng.rand : rand }
     end
 
     # Generate matrix of given size with all elements equal to zero
