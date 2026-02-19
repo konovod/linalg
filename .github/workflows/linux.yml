@@ -21,7 +21,7 @@ jobs:
           crystal: ${{matrix.crystal}}
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: sudo apt update && sudo apt install -y libopenblas-base liblapack3
+        run: sudo apt update && sudo apt install -y openblas liblapack3
       - name: create link to BLAS
         run: sudo ln -s /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 /usr/lib/x86_64-linux-gnu/libcblas.so
       - name: Install crystal land dependencies
