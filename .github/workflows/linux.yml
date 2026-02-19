@@ -5,8 +5,7 @@ on:
     branches: [master]
   pull_request:
     branches: ["**"]
-  schedule:
-    - cron: "0 6 * * 6"
+    
 jobs:
   build-ubuntu:
     strategy:

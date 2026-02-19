@@ -5,8 +5,7 @@ on:
     branches: [master]
   pull_request:
     branches: ["**"]
-  schedule:
-    - cron: "0 6 * * 6"
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -18,7 +17,7 @@ jobs:
         shell: powershell
         run:
           # release 0.3.22 is broken, release 0.3.23 is btter but has broken .lib file
-          Invoke-WebRequest -Uri "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.21/OpenBLAS-0.3.21-x64.zip" `
+          Invoke-WebRequest -Uri "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.31/OpenBLAS-0.3.31-x64.zip" `
           -OutFile ./OpenBLAS.zip
       - name: Unzip OpenBLAS
         shell: powershell
