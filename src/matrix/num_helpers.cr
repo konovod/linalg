@@ -1,16 +1,6 @@
 require "complex"
 
 struct Complex
-  # Creates complex number from real or complex number
-  def self.new(value)
-    case value
-    when Complex
-      new(value.real, value.imag)
-    else
-      new(value, 0.0)
-    end
-  end
-
   # Multiply scalar to matrix
   def *(m : LA::Matrix(Complex))
     m*self

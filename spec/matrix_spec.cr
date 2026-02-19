@@ -358,7 +358,7 @@ describe LA::Matrix do
     m2 = m.map { |x| -x }
     (m + m2).should eq Mat.zeros(10, 15)
 
-    m3 = m.map_with_index { |x, row, col| row < col ? -x : 0 }
+    m3 = m.map_with_index { |x, row, col| row < col ? -x : 0.0 }
     (m + m3).detect?(MatrixFlags::LowerTriangular).should be_true
   end
 
@@ -620,9 +620,10 @@ describe LA::Matrix do
     ])
   end
 
-  pending "can be created with totally wrong type" do
+  it "can be created with totally wrong type" do
     a = GeneralMatrix(Bool).new([[true, true], [true, false]])
-    p a.map { |x| x ? 0.0 : 1.0 }
+    b = a.map { |x| x ? 0.0 : 1.0 }
+    b.should eq GMat[[0, 0], [0, 1]]
   end
 
   it "have `shape_str` method" do

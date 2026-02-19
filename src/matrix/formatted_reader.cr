@@ -60,7 +60,7 @@ abstract class LA::Matrix(T)
     loop do
       token = Utils.multi_gets(io, scan)
       if token
-        data << T.new(token[1])
+        data << to_my_type(token[1])
         case token[0]
         when 0 # columns_separator
           raise MatrixParseError.new("row #{row} too long") if column >= last_column && row > 0

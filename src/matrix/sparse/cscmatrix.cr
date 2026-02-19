@@ -43,7 +43,7 @@ module LA::Sparse
         end
 
         def self.new(matrix : {{name}}Matrix)
-          new(matrix.nrows, matrix.ncolumns, matrix.raw_{{arows}}.dup, matrix.raw_{{acolumns}}.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, flags: matrix.flags)
+          new(matrix.nrows, matrix.ncolumns, matrix.raw_{{arows}}.dup, matrix.raw_{{acolumns}}.dup, matrix.raw_values.map { |v| to_my_type(v) }, dont_clone: true, flags: matrix.flags)
         end
 
         def self.new(matrix : {{other}}Matrix)
@@ -63,7 +63,7 @@ module LA::Sparse
             result.n{{acolumns}}.times do |j|
             v = matrix.unsafe_fetch({{index1}}, {{index2}})
             next if v.zero?
-            result.raw_values << T.new(v)
+            result.raw_values << to_my_type(v)
             result.raw_{{acolumns}} << j
             index += 1
             end
@@ -85,13 +85,13 @@ module LA::Sparse
         if index = ij2index({{index1}}, {{index2}})
             @raw_values.unsafe_fetch(index)
         else
-            T.new(0.0)
+            T.zero
         end
         end
 
         def unsafe_set(i, j, value)
         if index = ij2index({{index1}}, {{index2}})
-            @raw_values.unsafe_put(index, T.new(value))
+            @raw_values.unsafe_put(index, to_my_type(value))
         else
             raise "cannot add values to #{self.class}"
         end
@@ -106,7 +106,7 @@ module LA::Sparse
         new(nrows, ncolumns,
             Array(Int32).new(n{{arows}} + 1) { |i| i <= n ? i : n },
             Array(Int32).new(n) { |i| i },
-            Array(T).new(n) { |i| T.new(values[i]) },
+            Array(T).new(n) { |i| to_my_type(values[i]) },
             MatrixFlags.for_diag(n{{arows}} == n{{acolumns}}),
             dont_clone: true
         )
@@ -118,7 +118,7 @@ module LA::Sparse
         new(nrows, ncolumns,
             Array(Int32).new(n{{arows}} + 1) { |i| i <= n ? i : n },
             Array(Int32).new(n) { |i| i },
-            Array(T).new(n) { |i| T.new(yield(i)) },
+            Array(T).new(n) { |i| to_my_type(yield(i)) },
             MatrixFlags.for_diag(n{{arows}} == n{{acolumns}}),
             dont_clone: true
         )
@@ -160,12 +160,12 @@ module LA::Sparse
             row_end = @raw_{{arows}}[i + 1]
             (row_start...row_end).each do |index|
               j = @raw_{{acolumns}}[index]
-              @raw_values[index] = T.new(yield(@raw_values[index], {{index1}}, {{index2}}))
+              @raw_values[index] = to_my_type(yield(@raw_values[index], {{index1}}, {{index2}}))
             end
           end
         end
 
-        def map_with_index(&block)
+        def map_with_index(&block : T -> U) forall U
         row = 0
         values = @raw_values.map_with_index do |v, index|
           while index >= @raw_{{arows}}[row + 1]
@@ -175,41 +175,15 @@ module LA::Sparse
           newv = yield(v, {{index1}}, {{index2}})
           newv
         end
-        {{name}}Matrix(T).new(@nrows, @ncolumns, @raw_{{arows}}.dup, @raw_{{acolumns}}.dup, values, dont_clone: true)
+        {{name}}Matrix(U).new(@nrows, @ncolumns, @raw_{{arows}}.dup, @raw_{{acolumns}}.dup, values, dont_clone: true)
         # clone.tap &.map_with_index! { |v, i, j| yield(v, i, j) }
-        end
-
-        def map_with_index_f64(&block)
-          row = 0
-          values = @raw_values.map_with_index do |v, index|
-            while index >= @raw_{{arows}}[row + 1]
-              row += 1
-            end
-            i,j = row, @raw_{{acolumns}}[index]
-            newv = yield(v, {{index1}}, {{index2}})
-            Float64.new(newv)
-          end
-          {{name}}Matrix(Float64).new(@nrows, @ncolumns, @raw_{{arows}}.dup, @raw_{{acolumns}}.dup, values, dont_clone: true)
-        end
-
-        def map_with_index_complex(&block)
-          row = 0
-          values = @raw_values.map_with_index do |v, index|
-            while index >= @raw_{{arows}}[row + 1]
-              row += 1
-            end
-            i,j = row, @raw_{{acolumns}}[index]
-            newv = yield(v, {{index1}}, {{index2}})
-            Complex.new(newv)
-          end
-          {{name}}Matrix(Complex).new(@nrows, @ncolumns, @raw_{{arows}}.dup, @raw_{{acolumns}}.dup, values, dont_clone: true)
         end
 
         # def transpose! TODO
 
         def transpose
         return clone if flags.symmetric?
-        result = self.class.new(ncolumns, nrows, raw_{{arows}}: Array(Int32).new(n{{acolumns}} + 1, 0), raw_{{acolumns}}: Array(Int32).new(nonzeros, 0), raw_values: Array(T).new(nonzeros, T.new(0)))
+        result = self.class.new(ncolumns, nrows, raw_{{arows}}: Array(Int32).new(n{{acolumns}} + 1, 0), raw_{{acolumns}}: Array(Int32).new(nonzeros, 0), raw_values: Array(T).new(nonzeros, T.zero))
         t_row_pos = Slice(Int32).new(n{{acolumns}}, 0)
         each_index do |i,j|
             t_row_pos[{{index2}}] += 1

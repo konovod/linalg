@@ -4,7 +4,9 @@
 [![API Documentation](https://img.shields.io/website?down_color=red&down_message=Offline&label=API%20Documentation&up_message=Online&url=https%3A%2F%2Fkonovod.github.io%2Flinalg%2F)](https://konovod.github.io/linalg)
 
 # linalg
+
 Linear algebra library in Crystal, uses LAPACK.
+
 - direct access to LAPACK methods
 - convenient Matrix(T) class, supports T=Float32, Float64 and Complex.
 - high-level interface similar to scipy.linalg or MATLAB.
@@ -16,6 +18,7 @@ Killing SciPy, one module at a time.
 1. Install LAPACK and BLAS. `sudo apt install libopenblas-base liblapack3` for Ubuntu, `sudo pacman -S lapack` (for better performance use `openblas-lapack` package from AUR) for Arch. For Windows you need libopenblas.dll (and libopenblas.lib) from https://github.com/xianyi/OpenBLAS/releases
 
 2. (for Ubuntu 18) it seems package doesn't create symlink, so use
+
 - `sudo ln -s /usr/lib/lapack/liblapack.so.3 /usr/lib/liblapack.so`
 - `sudo ln -s /usr/lib/openblas-base/libblas.so.3 /usr/lib/libcblas.so`
 
@@ -26,13 +29,17 @@ dependencies:
   linalg:
     github: konovod/linalg
 ```
-4. Run `shards install` 
+
+4. Run `shards install`
+
 ## Usage
 
 ```crystal
 require "linalg"
 ```
+
 Basic type aliases are
+
 - Mat = Matrix(Float64)
 - Mat32 = Matrix(Float32)
 - MatComplex = Matrix(Complex)
@@ -92,10 +99,12 @@ y[0, 0] = 1 # m[1,1] is still 0
 pp m[1, 1]
 
 ```
+
 other present features:
 
 - svd (`Mat#svd` or `Mat#svdvals` for just values)
 - lu decomposition (`Mat#lu`)
+
 ```crystal
 # to just get P L U matrices
 p, l, u = a.lu
@@ -109,6 +118,7 @@ a = GMat32[
 lu = a.lu_factor # lu is LUMatrix(T) - immutable object that can return it's content and solve systems
 puts lu.solve(GMat32[[2], [4]])
 ```
+
 - matrix rank determination (using SVD or QRP)
 - linear least squares problem (`LA.solvels` to just get decision or `LA.lstsq` to also get rank and singular values (TODO - and residues))
 - cholesky decomposition (`#cholesky`, `#cholesky!`, `#cho_solve`)
@@ -120,10 +130,10 @@ puts lu.solve(GMat32[[2], [4]])
 - matrix exponent and trigonomertic functions
 - matrix exponentiation (to integer powers only atm (TODO - fractional))
 
-
 There is also concept of `Mat#flags` that represent properties of matrix (symmetric, positive definite etc), they are used to automatically select faster algorithms from LAPACK. Flags are partially enforced by runtime checks, with the possibility of user override. For example, if we say that `a.assume!(MatrixFlags::Symmetric)` then `a.transpose` or `a + Mat.diag(*a.size)` will also have this flag, so the LAPACK routines for symmetrical matrices will be used. In fact, `a.transpose` will return matrix clone as for symmetric matrices A=A'.
 
 Supported flags:
+
 ```crystal
 enum MatrixFlags
   Symmetric
@@ -134,9 +144,11 @@ enum MatrixFlags
   LowerTriangular
   Triangular      = UpperTriangular | LowerTriangular
 ```
+
 NOTE for complex matrices `Orthogonal` flag means `Unitary`.
 
 Main functions for flags are:
+
 ```crystal
   a.assume!(flag) # sets matrix flag without check, can lead to incorrect results if matrix do not have corresponding property.
   a.detect?(flag) # checks if matrix has property, if yes sets the flag. Returns true if check positive
@@ -144,6 +156,7 @@ Main functions for flags are:
   a.detect # detect all possible flags
   a.flags # returns matrix flags
 ```
+
 Most operations - matrix addition, multiplication, inversion, transposition and decompositions correctly update flags, but any direct access like `a[i,j] = 0` or `a.map!{|v| v+1}` resets flags to `None`, so use `a.detect` after them if you need to preserve flags (or `a.assume!(f)` if detection is too slow).
 
 ## Development
@@ -161,6 +174,7 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [x] Column-major storage (optional?)
 - [ ] Other missing features from LAPACK (selectable and orderable eigenvalues, generalized decompositions, new routines etc)
 - [x] Sparse matrices
+
   - [x] COO Matrix
   - [x] CSR Matrix
   - [x] CSC Matrix
@@ -171,8 +185,8 @@ Most operations - matrix addition, multiplication, inversion, transposition and 
 - [ ] Other missing features from scipy.linalg (lyapunov/ricatti/sylvester equations, other things i don't know algorithms for)
 - [x] Support multithreading\reenterability
 - [x] Allow matrices of unsupported types (use `check_type` only when actually needed)
-  - [ ] type still has to support `T.new(value)`, maybe this requirement can be relaxed
-  - [ ] also `map` signature has to be changed?
+  - [x] type still has to support `T.new(value)`, maybe this requirement can be relaxed
+  - [x] also `map` signature has to be changed?
 
 ##### Not so important
 

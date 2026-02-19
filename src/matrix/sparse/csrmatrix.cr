@@ -169,30 +169,6 @@ module LA::Sparse
   #     # clone.tap &.map_with_index! { |v, i, j| yield(v, i, j) }
   #   end
 
-  #   def map_with_index_f64(&block)
-  #     row = 0
-  #     values = @raw_values.map_with_index do |v, i|
-  #       while i >= @raw_rows[row + 1]
-  #         row += 1
-  #       end
-  #       newv = yield(v, row, @raw_columns[i])
-  #       Float64.new(newv)
-  #     end
-  #     CSRMatrix(Float64).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true)
-  #   end
-
-  #   def map_with_index_complex(&block)
-  #     row = 0
-  #     values = @raw_values.map_with_index do |v, i|
-  #       while i >= @raw_rows[row + 1]
-  #         row += 1
-  #       end
-  #       newv = yield(v, row, @raw_columns[i])
-  #       Complex.new(newv)
-  #     end
-  #     CSRMatrix(Complex).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true)
-  #   end
-
   #   # def transpose! TODO
 
   #   def transpose

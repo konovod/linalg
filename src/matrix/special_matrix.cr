@@ -137,8 +137,8 @@ module LA
     # ```
     def self.leslie(f, s)
       GeneralMatrix(T).new(s.size + 1, f.size).tap do |matrix|
-        f.each_with_index { |fi, i| matrix.unsafe_set 0, i, T.new(fi) }
-        s.each_with_index { |si, i| matrix.unsafe_set i + 1, i, T.new(si) }
+        f.each_with_index { |fi, i| matrix.unsafe_set 0, i, to_my_type(fi) }
+        s.each_with_index { |si, i| matrix.unsafe_set i + 1, i, to_my_type(si) }
       end
     end
 
@@ -157,8 +157,8 @@ module LA
     def self.companion(a)
       k = -1.0/a[0]
       GeneralMatrix(T).new(a.size - 1, a.size - 1).tap do |matrix|
-        (a.size - 1).times { |i| matrix.unsafe_set 0, i, T.new(a[i + 1]*k) }
-        (a.size - 2).times { |i| matrix.unsafe_set i + 1, i, T.new(1) }
+        (a.size - 1).times { |i| matrix.unsafe_set 0, i, to_my_type(a[i + 1]*k) }
+        (a.size - 2).times { |i| matrix.unsafe_set i + 1, i, to_my_type(1) }
       end
     end
 
@@ -258,7 +258,7 @@ module LA
       end
       # first row
       if full
-        result[0, 0...n] = T.new(Math.sqrt(1.0/n))
+        result[0, 0...n] = to_my_type(Math.sqrt(1.0/n))
         rowdelta = 1
       else
         rowdelta = 0
@@ -266,7 +266,7 @@ module LA
       # rest
       (n - 1).times do |i|
         x = i + 1
-        v = T.new(Math.sqrt(1.0/(x + x*x)))
+        v = to_my_type(Math.sqrt(1.0/(x + x*x)))
         result.unsafe_set i + rowdelta, i + 1, -v*x
         result[i + rowdelta, 0..i] = v
       end
@@ -290,7 +290,7 @@ module LA
     # ```
     def self.hilbert(n)
       GeneralMatrix(T).new(n, n, MatrixFlags::Symmetric | MatrixFlags::Hermitian | MatrixFlags::PositiveDefinite) do |i, j|
-        T.new(1.0) / (i + j + 1)
+        T.multiplicative_identity / (i + j + 1)
       end
     end
   end
@@ -337,7 +337,7 @@ module LA
 
   abstract class Matrix(T)
     private def self.n_choose_k(n, k)
-      (1..n).product(T.new(1.0)) / ((1..k).product(T.new(1.0)) * (1..n - k).product(T.new(1.0)))
+      (1..n).product(T.multiplicative_identity) / ((1..k).product(T.multiplicative_identity) * (1..n - k).product(T.multiplicative_identity))
     end
 
     # Returns the n x n Pascal matrix.
@@ -370,7 +370,7 @@ module LA
           m.each_index do |i, j|
             next if i > j
             if i == j || i == 0
-              m.unsafe_set(i, j, T.new(1.0))
+              m.unsafe_set(i, j, to_my_type(1.0))
             else
               m.unsafe_set(i, j, m.unsafe_fetch(i - 1, j - 1) + m.unsafe_fetch(i, j - 1))
             end
@@ -382,7 +382,7 @@ module LA
           m.each_index do |i, j|
             next if i < j
             if i == j || j == 0
-              m.unsafe_set(i, j, T.new(1.0))
+              m.unsafe_set(i, j, to_my_type(1.0))
             else
               m.unsafe_set(i, j, m.unsafe_fetch(i - 1, j - 1) + m.unsafe_fetch(i - 1, j))
             end
@@ -393,7 +393,7 @@ module LA
         zeros(n, n).tap do |m|
           m.each_index do |i, j|
             if i == 0 || j == 0
-              m.unsafe_set(i, j, T.new(1.0))
+              m.unsafe_set(i, j, to_my_type(1.0))
             else
               m.unsafe_set(i, j, m.unsafe_fetch(i - 1, j) + m.unsafe_fetch(i, j - 1))
             end

@@ -33,12 +33,12 @@ module LA
 
     # :nodoc:
     def self.zero
-      T.new(0)
+      T.zero
     end
 
     # :nodoc:
     def self.multiplicative_identity
-      T.new(1.0)
+      T.multiplicative_identity
     end
 
     # Used in constructors to limit T at compile-time
@@ -49,7 +49,7 @@ module LA
     end
 
     private macro of_real_type(container, size)
-      {% if T == Complex %} {{container}}(Float64).new({{size}}, 0.0) {% else %} {{container}}(T).new({{size}}, T.new(0)) {% end %}
+      {% if T == Complex %} {{container}}(Float64).new({{size}}, 0.0) {% else %} {{container}}(T).new({{size}}, T.zero) {% end %}
     end
 
     private macro of_real_type(value)
@@ -58,6 +58,26 @@ module LA
 
     private macro real_type_const(constant)
       {% if T == Complex %} Float64::{{constant}} {% else %} T::{{constant}} {% end %}
+    end
+
+    @[AlwaysInline]
+    protected def self.to_my_type(v) : T
+      {% if T < Number %}
+        T.new(v)
+      {% elsif T == Complex %}
+        case v
+        when Complex
+          v
+        else
+          Complex.new(v, 0.0)
+        end
+      {% else %}
+        v.as(T)
+      {% end %}
+    end
+
+    private def to_my_type(v) : T
+      self.class.to_my_type(v)
     end
 
     # Returns pointer to underlying data
@@ -96,7 +116,7 @@ module LA
         {% raise "Only complex matrices have #to_real" %}
       {% end %}
       new_flags = flags.real
-      map_f64(&.real).tap { |r| r.flags = new_flags }
+      map(&.real).tap { |r| r.flags = new_flags }
     end
 
     # Converts complex matrix to imaginary part
@@ -105,7 +125,7 @@ module LA
         {% raise "Only complex matrices have #to_imag" %}
       {% end %}
       new_flags = flags.imag
-      map_f64(&.imag).tap { |r| r.flags = new_flags }
+      map(&.imag).tap { |r| r.flags = new_flags }
     end
 
     # matrix product to given m
@@ -128,7 +148,7 @@ module LA
     # :ditto:
     def *(k : Complex)
       new_flags = self.flags.scale(k.imag != 0)
-      map_complex(&.*(k)).tap { |r| r.flags = new_flags }
+      map(&.*(k)).tap { |r| r.flags = new_flags }
     end
 
     # Multiplies matrix to -1
@@ -145,7 +165,7 @@ module LA
     # :ditto:
     def +(k : Complex)
       return clone if k.zero?
-      map_complex { |v| v + k }.tap { |result| result.flags = MatrixFlags::None }
+      map { |v| v + k }.tap { |result| result.flags = MatrixFlags::None }
     end
 
     # Substracts scalar value from every element
@@ -155,7 +175,7 @@ module LA
 
     # Divides matrix to scalar
     def /(k : Number | Complex)
-      self*(T.new(1.0) / k)
+      self*(T.multiplicative_identity / k)
     end
 
     protected def assert_same_size(m : Matrix)
@@ -616,30 +636,13 @@ module LA
     end
 
     # Returns result of appliyng block to every element with index
-    def map_with_index(&block)
-      GeneralMatrix(T).new(nrows, ncolumns) { |i, j| yield(unsafe_fetch(i, j), i, j) }
+    def map_with_index(&block : T -> U) forall U
+      GeneralMatrix(U).new(nrows, ncolumns) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     # Returns result of appliyng block to every element (without index)
-    def map(&block)
+    def map(&block : T -> U) forall U
       map_with_index { |v, i, j| yield(v) }
-    end
-
-    # TODO - macro magic?
-    protected def map_with_index_f64(&block)
-      GeneralMatrix(Float64).new(nrows, ncolumns) { |i, j| yield(unsafe_fetch(i, j), i, j) }
-    end
-
-    protected def map_with_index_complex(&block)
-      GeneralMatrix(Complex).new(nrows, ncolumns) { |i, j| yield(unsafe_fetch(i, j), i, j) }
-    end
-
-    protected def map_f64(&block)
-      map_with_index_f64 { |v, i, j| yield(v) }
-    end
-
-    protected def map_complex(&block)
-      map_with_index_complex { |v, i, j| yield(v) }
     end
 
     # Works like a tril in scipy - remove all elements above k-diagonal
@@ -689,13 +692,13 @@ module LA
       case axis
       in Axis::Columns
         GeneralMatrix(T).new(1, ncolumns) do |_, column|
-          result = T.new(initial)
+          result = to_my_type(initial)
           nrows.times { |row| result = yield(result, unsafe_fetch(row, column)) }
           result
         end
       in Axis::Rows
         GeneralMatrix(T).new(nrows, 1) do |row, _|
-          result = T.new(initial)
+          result = to_my_type(initial)
           ncolumns.times { |column| result = yield(result, unsafe_fetch(row, column)) }
           result
         end

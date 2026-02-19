@@ -59,7 +59,7 @@ module LA::Sparse
     end
 
     def self.new(matrix : COOMatrix)
-      new(matrix.nrows, matrix.ncolumns, matrix.raw_rows.dup, matrix.raw_columns.dup, matrix.raw_values.map { |v| T.new(v) }, dont_clone: true, dictionary: matrix.dictionary, flags: matrix.flags)
+      new(matrix.nrows, matrix.ncolumns, matrix.raw_rows.dup, matrix.raw_columns.dup, matrix.raw_values.map { |v| to_my_type(v) }, dont_clone: true, dictionary: matrix.dictionary, flags: matrix.flags)
     end
 
     def self.new(matrix : LA::Matrix)
@@ -79,20 +79,20 @@ module LA::Sparse
       if index = @dictionary[{i, j}]?
         @raw_values[index]
       else
-        T.new(0.0)
+        T.zero
       end
     end
 
     protected def push_element(i, j, v)
       @raw_rows << i
       @raw_columns << j
-      @raw_values << T.new(v)
+      @raw_values << to_my_type(v)
       @dictionary[{i, j}] = @raw_rows.size - 1
     end
 
     protected def add_element(i, j, v)
       if index = @dictionary[{i, j}]?
-        @raw_values[index] += T.new(v)
+        @raw_values[index] += to_my_type(v)
       else
         # TODO - delete elements?
         push_element(i, j, v)
@@ -102,10 +102,10 @@ module LA::Sparse
     def unsafe_set(i, j, value)
       clear_flags # TODO - not always?
       if index = @dictionary[{i, j}]?
-        if value == T.new(0)
+        if value.zero?
           remove_element(index)
         else
-          @raw_values[index] = T.new(value)
+          @raw_values[index] = to_my_type(value)
         end
       else
         push_element(i, j, value)
@@ -119,7 +119,7 @@ module LA::Sparse
       raise ArgumentError.new("Too much elements (#{values.size}) for diag matrix [#{nrows}x#{ncolumns}]") if values.size > {nrows, ncolumns}.min
       result = new(nrows, ncolumns, values.size)
       values.each_with_index do |v, i|
-        result.push_element(i, i, T.new(v))
+        result.push_element(i, i, to_my_type(v))
       end
       result.flags = MatrixFlags.for_diag(nrows == ncolumns)
       result
@@ -131,7 +131,7 @@ module LA::Sparse
       result = new(nrows, ncolumns, n)
       n.times do |i|
         value = yield(i)
-        result.push_element(i, i, T.new(value))
+        result.push_element(i, i, to_my_type(value))
       end
       result.flags = MatrixFlags.for_diag(nrows == ncolumns)
       result
@@ -159,24 +159,14 @@ module LA::Sparse
 
     def map_with_index!(&block)
       nonzeros.times do |i|
-        @raw_values[i] = T.new(yield(@raw_values[i], @raw_rows[i], @raw_columns[i]))
+        @raw_values[i] = to_my_type(yield(@raw_values[i], @raw_rows[i], @raw_columns[i]))
       end
       self
     end
 
-    def map_with_index(&block)
-      values = @raw_values.map_with_index { |v, i| T.new(yield(v, @raw_rows[i], @raw_columns[i])) }
-      COOMatrix(T).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: @dictionary)
-    end
-
-    def map_with_index_f64(&block)
-      values = @raw_values.map_with_index { |v, i| Float64.new(yield(v, @raw_rows[i], @raw_columns[i])) }
-      COOMatrix(Float64).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: @dictionary)
-    end
-
-    def map_with_index_complex(&block)
-      values = @raw_values.map_with_index { |v, i| Complex.new(yield(v, @raw_rows[i], @raw_columns[i])) }
-      COOMatrix(Complex).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: @dictionary)
+    def map_with_index(&block : T -> U) forall U
+      values = @raw_values.map_with_index { |v, i| yield(v, @raw_rows[i], @raw_columns[i]) }
+      COOMatrix(U).new(@nrows, @ncolumns, @raw_rows.dup, @raw_columns.dup, values, dont_clone: true, dictionary: @dictionary)
     end
 
     private def rebuild_dictionary

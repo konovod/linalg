@@ -163,16 +163,8 @@ module LA
       end
     end
 
-    def map_with_index(&block)
-      BandedMatrix(T).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_fetch(i, j), i, j) }
-    end
-
-    def map_with_index_f64(&block)
-      BandedMatrix(Float64).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_fetch(i, j), i, j) }
-    end
-
-    def map_with_index_complex(&block)
-      BandedMatrix(Complex).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_fetch(i, j), i, j) }
+    def map_with_index(&block : T -> U) forall U
+      BandedMatrix(U).new(nrows, ncolumns, upper_band, lower_band) { |i, j| yield(unsafe_fetch(i, j), i, j) }
     end
 
     def to_unsafe

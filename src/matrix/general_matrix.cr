@@ -23,7 +23,7 @@ module LA
     # Example: `LA::GMat.new(4,4)`
     def initialize(@nrows, @ncolumns, @flags = MatrixFlags::None)
       check_type
-      @raw = Slice(T).new(nrows*ncolumns, T.new(0))
+      @raw = Slice(T).new(nrows*ncolumns, T.zero)
     end
 
     # Creates matrix of given size and then call block to initialize each element
@@ -34,7 +34,7 @@ module LA
       @raw = Slice(T).new(@nrows*@ncolumns) do |index|
         i = index % @nrows
         j = index // @nrows
-        T.new(yield(i, j))
+        to_my_type(yield(i, j))
       end
     end
 
@@ -57,7 +57,7 @@ module LA
         i = index % @nrows
         j = index // @nrows
         raise IndexError.new("All rows must have same size") if j == 0 && values[i].size != @ncolumns
-        T.new(values[i][j])
+        to_my_type(values[i][j])
       end
     end
 
@@ -88,12 +88,12 @@ module LA
     def initialize(@nrows, @ncolumns, values : Indexable, col_major = false, @flags = MatrixFlags::None)
       check_type
       if col_major
-        @raw = Slice(T).new(nrows*ncolumns) { |i| T.new(values[i]) }
+        @raw = Slice(T).new(nrows*ncolumns) { |i| to_my_type(values[i]) }
       else
         @raw = Slice(T).new(nrows*ncolumns) do |i|
           row = i % nrows
           col = i // nrows
-          T.new(values[col + row*@ncolumns])
+          to_my_type(values[col + row*@ncolumns])
         end
       end
     end
@@ -106,7 +106,7 @@ module LA
     # sets element at row i and column j to value, without performing any checks
     def unsafe_set(i, j, value)
       clear_flags # TODO - not always?
-      @raw[i + j*nrows] = T.new(value)
+      @raw[i + j*nrows] = to_my_type(value)
     end
 
     # returns copy of matrix
@@ -157,7 +157,7 @@ module LA
         @nrows, @ncolumns = @ncolumns, @nrows
       else
         # TODO https://en.wikipedia.org/wiki/In-place_matrix_transposition
-        newraw = Slice(T).new(nrows*ncolumns, T.new(0))
+        newraw = Slice(T).new(nrows*ncolumns, T.zero)
         each_with_index { |v, r, c| newraw[c + r*ncolumns] = v }
         @raw = newraw
         @nrows, @ncolumns = @ncolumns, @nrows
@@ -241,7 +241,7 @@ module LA
         if j >= 0 && j < ncolumns && i >= 0 && i < nrows
           unsafe_fetch(i, j)
         else
-          T.new(0)
+          T.zero
         end
       end
       @nrows = anrows

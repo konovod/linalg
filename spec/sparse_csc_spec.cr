@@ -148,7 +148,7 @@ describe CSCMatrix do
       [0, 0, 2.5, 0.5],
       [0, 0.5, 0, 0],
     ]
-    a.map_with_index { |v, row, col| v*2 + row + col }.should eq GMat[
+    a.map_with_index { |v, row, col| (v*2 + row + col).as(Float64) }.should eq GMat[
       [1, 2 + 1, 0, 0],
       [0, 0, 5 + 3, 1 + 4],
       [0, 1 + 3, 0, 0],
