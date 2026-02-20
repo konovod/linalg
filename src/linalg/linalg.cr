@@ -40,30 +40,30 @@ module LA
   # Calculate matrix inversion
   #
   # if `overwrite_a` is true, source matrix isn't needed anymore and can be overriden in process
-  # See `#inv!` for details of algorithm
+  # See `GeneralMatrix#inv!` for details of algorithm
   def self.inv(matrix, *, overwrite_a = false)
     overwrite_a ? matrix.inv! : matrix.inv
   end
 
-  # See `#solve`
+  # See `Matrix#solve`
   # `Matrix.solve(a,b)` is an alias for `a.solve(b)`
   def self.solve(a, b, *, overwrite_a = false, overwrite_b = false)
     a.solve(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end
 
-  # See `#lstsq`
+  # See `Matrix#lstsq`
   # `Matrix.lstsq(a,b)` is an alias for `a.lstsq(b)`
   def self.lstsq(a, b, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
     a.lstsq(b, method, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
   end
 
-  # See `#solvels`
+  # See `Matrix#solvels`
   # `Matrix.solvels(a,b)` is an alias for `a.solvels(b)`
   def self.solvels(a, b, *, overwrite_a = false, overwrite_b = false, cond = -1)
     a.solvels(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
   end
 
-  # See `#svd`
+  # See `Matrix#svd`
   # `Matrix.svd(a)` is an alias for `a.svd`
   def self.svd(matrix, *, overwrite_a = false)
     matrix.svd(overwrite_a: overwrite_a)
@@ -86,7 +86,7 @@ module LA
     end
 
     # Calculate matrix inversion
-    # See `#inv!` for details on algorithm
+    # See `GeneralMatrix#inv!` for details on algorithm
     def inv
       to_general.inv!
     end

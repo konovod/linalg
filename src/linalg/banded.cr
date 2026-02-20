@@ -1,8 +1,12 @@
-# TODO - inline docs
-
 module LA
   class BandedMatrix(T) < Matrix(T)
-    # returns matrix norm
+    # Computes the norm of the banded matrix.
+    #
+    # Arguments:
+    #   - kind (MatrixNorm) : Type of norm to compute. Default is Frobenius.
+    #
+    # Returns:
+    #   - T : The computed norm value (same type as matrix elements).
     def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
       # TODO - check if not square
       let = case kind
@@ -33,6 +37,16 @@ module LA
       end
     end
 
+    # Computes the determinant of the square banded matrix.
+    #
+    # Arguments:
+    #   - overwrite_a (Bool) : If `true`, allows overwriting the matrix during factorization. Default: `false`.
+    #
+    # Returns:
+    #   - T : The determinant value.
+    #
+    # Raises:
+    #   - ArgumentError : If matrix is not square.
     def det(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       if flags.triangular?
@@ -46,6 +60,18 @@ module LA
       lru.diag.product
     end
 
+    # Solves the linear system A * X = B for X.
+    #
+    # Arguments:
+    #   - b (GeneralMatrix(T)) : Right-hand side matrix.
+    #   - overwrite_a (Bool) : Allow overwriting `self` during calculation. Default: `false`.
+    #   - overwrite_b (Bool) : Allow overwriting `b` during calculation. Default: `false`.
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : Solution matrix X.
+    #
+    # Raises:
+    #   - ArgumentError : If dimensions mismatch or `self` is not square.
     def solve(b : GeneralMatrix(T), *, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       raise ArgumentError.new("a must be square") unless square?
@@ -101,16 +127,36 @@ module LA
       {vals, vectors}
     end
 
-    def eigvals(*, overwrite_a = false)
-      vals, vectors = eigs_call(need_vectors: false, overwrite_a: overwrite_a)
-      return vals
-    end
-
+    # Computes eigenvalues and eigenvectors of a symmetric/Hermitian banded matrix.
+    #
+    # Arguments:
+    #   - overwrite_a (Bool) : Allow overwriting `self` during calculation. Default: `false`.
+    #
+    # Returns:
+    #     - Tuple(Array(Float), GeneralMatrix(T)) :
+    #       - Eigenvalues (Array)
+    #       - Eigenvectors as columns of the matrix
+    #
+    # Raises:
+    #   - Exception : If matrix is not symmetric (real) or Hermitian (complex).
     def eigs(*, overwrite_a = false)
       vals, vectors = eigs_call(need_vectors: true, overwrite_a: overwrite_a)
       return vals, vectors
     end
 
+    # same as `eigs`, but only eigenvalues are returned
+    def eigvals(*, overwrite_a = false)
+      vals, vectors = eigs_call(need_vectors: false, overwrite_a: overwrite_a)
+      return vals
+    end
+
+    # Computes singular values of the banded matrix.
+    #
+    # Arguments:
+    #   - overwrite_a (Bool) : Allow overwriting `self` during calculation. Default: `false`.
+    #
+    # Returns:
+    #   - Array(Float) : List of singular values in descending order.
     def svdvals(*, overwrite_a = false)
       # Convert to bidiagonal form
       a = overwrite_a ? self : self.clone
