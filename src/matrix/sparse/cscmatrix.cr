@@ -203,11 +203,12 @@ module LA::Sparse
         end
 
         def conjtranspose
-        \{% if T != Complex %}
-            return transpose
+        \{% if T == Complex %}
+          return clone if flags.hermitian?
+          transpose.map!(&.conj).tap { |r| r.flags = self.flags.transpose }
+        \{% else %}
+          return transpose
         \{% end %}
-        return clone if flags.hermitian?
-        transpose.map!(&.conj).tap { |r| r.flags = self.flags.transpose }
         end
 
         def add(m : self, *, alpha = 1, beta = 1)

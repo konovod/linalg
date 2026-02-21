@@ -69,12 +69,13 @@ module LA
 
     # :nodoc:
     def conjtranspose!
-      {% if T != Complex %}
+      {% if T == Complex %}
+        return self if flags.hermitian?
+        map! &.conj
+        transpose!
+      {% else %}
         return transpose!
       {% end %}
-      return self if flags.hermitian?
-      map! &.conj
-      transpose!
     end
   end
 end

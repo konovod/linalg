@@ -210,13 +210,14 @@ module LA
     #
     # result is same as `#transpose` for real matrices
     def conjtranspose
-      {% if T != Complex %}
+      {% if T == Complex %}
+        return clone if flags.hermitian?
+        GeneralMatrix(T).new(ncolumns, nrows, flags.transpose) do |i, j|
+          unsafe_fetch(j, i).conj
+        end
+      {% else %}
         return transpose
       {% end %}
-      return clone if flags.hermitian?
-      GeneralMatrix(T).new(ncolumns, nrows, flags.transpose) do |i, j|
-        unsafe_fetch(j, i).conj
-      end
     end
 
     # Returns kroneker product with matrix b

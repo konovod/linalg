@@ -97,7 +97,11 @@ module LA
           if k >= 0
             column[k]
           else
-            column[-k].conj
+            {% if T == Complex %}
+              column[-k].conj
+            {% else %}
+              column[-k]
+            {% end %}
           end
         end
       end

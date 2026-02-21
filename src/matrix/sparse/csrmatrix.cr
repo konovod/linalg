@@ -193,11 +193,12 @@ module LA::Sparse
   #   end
 
   #   def conjtranspose
-  #     {% if T != Complex %}
+  #     {% if T == Complex %}
+  #       return clone if flags.hermitian?
+  #       transpose.map!(&.conj).tap { |r| r.flags = self.flags.transpose }
+  #     {% else %}
   #       return transpose
   #     {% end %}
-  #     return clone if flags.hermitian?
-  #     transpose.map!(&.conj).tap { |r| r.flags = self.flags.transpose }
   #   end
 
   #   def add(m : CSRMatrix(T), *, alpha = 1, beta = 1)

@@ -32,11 +32,6 @@ struct Complex
   def chop
     self.imag.zero? ? self.real : nil
   end
-
-  # :nodoc:
-  def self.multiplicative_identity
-    new(1.0, 0.0)
-  end
 end
 
 abstract struct Number
@@ -59,9 +54,9 @@ abstract struct Number
   #
   # Because complex conjurgate for real numbers is number itself.
   # This method is useful to streamline work with complex and real numbers
-  def conj
-    self
-  end
+  # def conj
+  #   self
+  # end
 end
 
 module Math

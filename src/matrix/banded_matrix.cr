@@ -289,13 +289,14 @@ module LA
 
     # returns conjtransposed matrix
     def conjtranspose
-      {% if T != Complex %}
+      {% if T == Complex %}
+        return clone if flags.hermitian?
+        BandedMatrix(T).new(ncolumns, nrows, lower_band, upper_band, flags.transpose) do |i, j|
+          unsafe_fetch(j, i).conj
+        end
+      {% else %}
         return transpose
       {% end %}
-      return clone if flags.hermitian?
-      BandedMatrix(T).new(ncolumns, nrows, lower_band, upper_band, flags.transpose) do |i, j|
-        unsafe_fetch(j, i).conj
-      end
     end
 
     def add!(m : BandedMatrix(T), *, alpha = 1, beta = 1)

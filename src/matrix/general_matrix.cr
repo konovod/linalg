@@ -170,12 +170,13 @@ module LA
     #
     # Currently, transpose of non-square matrix still allocates temporary buffer
     def conjtranspose!
-      {% if T != Complex %}
+      {% if T == Complex %}
+        return self if flags.hermitian?
+        map! &.conj
+        transpose!
+      {% else %}
         return transpose!
       {% end %}
-      return self if flags.hermitian?
-      map! &.conj
-      transpose!
     end
 
     # Changes nrows and ncolumns of matrix (total number of elements must not change)

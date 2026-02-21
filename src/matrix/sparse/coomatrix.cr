@@ -195,11 +195,12 @@ module LA::Sparse
     end
 
     def conjtranspose
-      {% if T != Complex %}
+      {% if T == Complex %}
+        return clone if flags.hermitian?
+        COOMatrix(T).new(@ncolumns, @nrows, @raw_columns.dup, @raw_rows.dup, @raw_values.map(&.conj), flags: @flags.transpose, dont_clone: true)
+      {% else %}
         return transpose
       {% end %}
-      return clone if flags.hermitian?
-      COOMatrix(T).new(@ncolumns, @nrows, @raw_columns.dup, @raw_rows.dup, @raw_values.map(&.conj), flags: @flags.transpose, dont_clone: true)
     end
 
     def add!(m : Sparse::Matrix, *, alpha = 1, beta = 1)
