@@ -1,10 +1,17 @@
 require "../matrix/*"
 require "./lapack_helper"
 
-# TODO - inline docs
-
 module LA
   module Enums
+    # Enumeration of methods for solving least squares problems.
+    #
+    # - `Auto`: Automatically choose the best method (currently QR).
+    # - `QR`: Use QR factorization (fast, good for well-conditioned problems).
+    # - `Orthogonal`: Use orthogonal factorization with pivoting (good for rank-deficient problems).
+    # - `SVD`: Use singular value decomposition (most robust, handles rank deficiency well).
+    # - `LS`: Alias for QR.
+    # - `LSY`: Alias for Orthogonal.
+    # - `LSD`: Alias for SVD.
     enum LSMethod
       Auto       = 0
       QR
@@ -15,11 +22,21 @@ module LA
       LSD        = SVD
     end
 
+    # Enumeration of methods for rank estimation.
+    #
+    # - `SVD`: Use singular value decomposition (accurate but slower).
+    # - `QRP`: Use QR factorization with pivoting (faster but less accurate for ill-conditioned matrices).
     enum RankMethod
       SVD
       QRP
     end
 
+    # Enumeration of matrix norm types.
+    #
+    # - `Frobenius`: Frobenius norm (square root of sum of squares of all elements).
+    # - `One`: Maximum column sum (1-norm).
+    # - `Inf`: Maximum row sum (infinity-norm).
+    # - `MaxAbs`: Maximum absolute value of any element.
     enum MatrixNorm
       Frobenius
       One
@@ -29,107 +46,230 @@ module LA
     end
   end
 
+  # Exception raised for linear algebra errors.
   class Utils::LinAlgError < Exception
   end
 
+  # Returns the LAPACK version as a tuple {major, minor, patch}.
+  #
+  # LAPACK Routine:
+  #   - Uses `ilaver` (LAPACK version query).
   def self.lapack_version
     LibLAPACK.ilaver(out major, out minor, out patch)
     {major, minor, patch}
   end
 
-  # Calculate matrix inversion
+  # Calculate matrix inversion.
   #
-  # if `overwrite_a` is true, source matrix isn't needed anymore and can be overriden in process
-  # See `GeneralMatrix#inv!` for details of algorithm
+  # Arguments:
+  #   - matrix (Matrix(T)) : The matrix to invert.
+  #   - overwrite_a (Bool) : If `true`, allows overwriting the input matrix. Default: `false`.
+  #
+  # Returns:
+  #   - GeneralMatrix(T) : The inverted matrix.
+  #
+  # See `GeneralMatrix#inv!` for details of algorithm.
   def self.inv(matrix, *, overwrite_a = false)
     overwrite_a ? matrix.inv! : matrix.inv
   end
 
-  # See `Matrix#solve`
-  # `Matrix.solve(a,b)` is an alias for `a.solve(b)`
+  # Solves the linear system A * X = B.
+  #
+  # Arguments:
+  #   - a (Matrix(T)) : Coefficient matrix.
+  #   - b (Matrix(T)) : Right-hand side matrix.
+  #   - overwrite_a (Bool) : If `true`, allows overwriting `a`. Default: `false`.
+  #   - overwrite_b (Bool) : If `true`, allows overwriting `b`. Default: `false`.
+  #
+  # Returns:
+  #   - GeneralMatrix(T) : Solution matrix X.
+  #
+  # See `Matrix#solve` for details.
   def self.solve(a, b, *, overwrite_a = false, overwrite_b = false)
     a.solve(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end
 
-  # See `Matrix#lstsq`
-  # `Matrix.lstsq(a,b)` is an alias for `a.lstsq(b)`
+  # Solves the linear least squares problem min ||A*X - B||.
+  #
+  # Arguments:
+  #   - a (Matrix(T)) : Coefficient matrix.
+  #   - b (Matrix(T)) : Right-hand side matrix.
+  #   - method (LSMethod) : Algorithm to use. Default: `LSMethod::Auto`.
+  #   - overwrite_a (Bool) : If `true`, allows overwriting `a`. Default: `false`.
+  #   - overwrite_b (Bool) : If `true`, allows overwriting `b`. Default: `false`.
+  #   - cond (Number) : Cutoff for rank determination. Default: -1 (machine precision).
+  #
+  # Returns:
+  #   - Tuple(GeneralMatrix(T), Int32, Array(T)) : Solution X, effective rank, singular values (if applicable).
+  #
+  # See `Matrix#lstsq` for details.
   def self.lstsq(a, b, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
     a.lstsq(b, method, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
   end
 
-  # See `Matrix#solvels`
-  # `Matrix.solvels(a,b)` is an alias for `a.solvels(b)`
+  # Solves the linear least squares problem using QR factorization.
+  #
+  # Arguments:
+  #   - a (Matrix(T)) : Coefficient matrix.
+  #   - b (Matrix(T)) : Right-hand side matrix.
+  #   - overwrite_a (Bool) : If `true`, allows overwriting `a`. Default: `false`.
+  #   - overwrite_b (Bool) : If `true`, allows overwriting `b`. Default: `false`.
+  #   - cond (Number) : Cutoff for rank determination. Default: -1 (machine precision).
+  #
+  # Returns:
+  #   - GeneralMatrix(T) : Solution matrix X.
+  #
+  # See `Matrix#solvels` for details.
   def self.solvels(a, b, *, overwrite_a = false, overwrite_b = false, cond = -1)
     a.solvels(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b, cond: cond)
   end
 
-  # See `Matrix#svd`
-  # `Matrix.svd(a)` is an alias for `a.svd`
+  # Computes the singular value decomposition (SVD) of a matrix.
+  #
+  # Arguments:
+  #   - matrix (Matrix(T)) : Input matrix.
+  #   - overwrite_a (Bool) : If `true`, allows overwriting `matrix`. Default: `false`.
+  #
+  # Returns:
+  #   - Tuple(GeneralMatrix(T), Array(T), GeneralMatrix(T)) : U, singular values, V^T.
+  #
+  # See `Matrix#svd` for details.
   def self.svd(matrix, *, overwrite_a = false)
     matrix.svd(overwrite_a: overwrite_a)
   end
 
   abstract class Matrix(T)
+    # Returns the uplo character ('L' or 'U') based on matrix flags.
     private def uplo
       flags.lower_triangular? ? 'L'.ord.to_u8 : 'U'.ord.to_u8
     end
 
+    # Ensures symmetry by copying upper triangle to lower triangle.
     private def adjust_symmetric
       f = flags
       each_upper(diagonal: false) { |v, i, j| unsafe_set(j, i, v) }
       self.flags = f
     end
 
+    # Ensures triangular form by zeroing out the opposite triangle.
     private def adjust_triangular
       triu! if flags.upper_triangular?
       tril! if flags.lower_triangular?
     end
 
-    # Calculate matrix inversion
-    # See `GeneralMatrix#inv!` for details on algorithm
+    # Calculate matrix inversion.
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : The inverted matrix.
+    #
+    # See `GeneralMatrix#inv!` for details on algorithm.
     def inv
       to_general.inv!
     end
 
+    # Computes the singular value decomposition (SVD) of a matrix.
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), Array(T), GeneralMatrix(T)) : U, singular values, V.t.
+    #
+    # See `GeneralMatrix#svd` for details.
     def svd
       to_general.svd(overwrite_a: true)
     end
 
+    # Computes only the singular values of a matrix.
+    #
+    # Returns:
+    #   - Array(T) : Singular values.
+    #
+    # See `GeneralMatrix#svdvals` for details.
     def svdvals
       to_general.svdvals(overwrite_a: true)
     end
 
+    # Solves the linear system A * X = B.
+    #
+    # Arguments:
+    #   - b (GeneralMatrix(T)) : Right-hand side matrix.
+    #   - overwrite_b (Bool) : If `true`, allows overwriting `b`. Default: `false`.
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : Solution matrix X.
+    #
+    # See `GeneralMatrix#solve` for details.
     def solve(b : GeneralMatrix(T), *, overwrite_b = false)
       to_general.solve(b, overwrite_b: overwrite_b)
     end
 
+    # Solves the linear system A * X = B.
+    #
+    # Arguments:
+    #   - b (Matrix(T)) : Right-hand side matrix.
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : Solution matrix X.
     def solve(b : self)
       to_general.solve(b.to_general, overwrite_a: true, overwrite_b: true)
     end
 
+    # Calculates the determinant of a square matrix.
+    #
+    # Returns:
+    #   - T : Determinant value.
+    #
+    # See `GeneralMatrix#det` for details.
     def det
       to_general.det(overwrite_a: true)
     end
 
+    # Balances a square matrix to improve eigenvalue accuracy.
+    #
+    # Arguments:
+    #   - permute (Bool) : If `true`, permutes to isolate eigenvalues. Default: `true`.
+    #   - scale (Bool) : If `true`, scales to improve conditioning. Default: `true`.
+    #   - separate (Bool) : If `true`, returns scaling factors separately. Default: `false`.
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), GeneralMatrix(T)) : Balanced matrix and scaling factors (or diagonal).
+    #
+    # LAPACK Routine:
+    #   - Uses `gebal` (balance matrix).
     def balance(*, permute = true, scale = true, separate = false)
       a = to_general
       s = a.balance!(permute: permute, scale: scale, separate: separate)
       {a, s}
     end
 
+    # Computes the Hessenberg form of a matrix.
+    #
+    # Arguments:
+    #   - calc_q (Bool) : If `true`, also computes the orthogonal matrix Q. Default: `false`.
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), GeneralMatrix(T)) : Hessenberg matrix and optionally Q.
+    #
+    # See `GeneralMatrix#hessenberg!` for details.
     def hessenberg(*, calc_q = false)
       x = to_general
       x.hessenberg!(calc_q: calc_q)
     end
 
+    # Computes the Hessenberg form in-place.
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : Hessenberg matrix.
     def hessenberg
       to_general.hessenberg!
     end
 
-    # Calculate Moore–Penrose inverse of a matrix
+    # Calculate Moore–Penrose pseudo-inverse of a matrix.
     #
     # https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse
-    # Implemented using an svd decomposition
+    #
+    # Implemented using SVD decomposition.
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : Pseudo-inverse matrix.
     def pinv
       # Pure Crystal implementation since LAPACK has no direct implementation of pseudo inverse
       u, s, v = self.svd
@@ -168,6 +308,13 @@ module LA
       return v * s_dash * u
     end
 
+    # Computes the norm of the matrix.
+    #
+    # Arguments:
+    #   - kind (MatrixNorm) : Type of norm to compute. Default: `MatrixNorm::Frobenius`.
+    #
+    # Returns:
+    #   - Float : Norm value.
     def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
       result = of_real_type(0)
       case kind
@@ -194,14 +341,28 @@ module LA
   end
 
   class GeneralMatrix(T) < Matrix(T)
-    # Calculate matrix inversion inplace
-    # Method selects optimal algorithm depending on `MatrixFlags`
-    # `transpose` returned if matrix is orthogonal
-    # `trtri` is used if matrix is triangular
-    # `potrf`, `potri` are used if matrix is positive definite
-    # `hetrf`, `hetri` are used if matrix is hermitian
-    # `sytrf`, `sytri` are used if matrix is symmetric
-    # `getrf`, `getri` are used otherwise
+    # Calculate matrix inversion in-place.
+    #
+    # Method selects optimal algorithm depending on `MatrixFlags`:
+    #   - `transpose!` returned if matrix is orthogonal.
+    #   - `trtri` used if matrix is triangular.
+    #   - `potrf` + `potri` used if matrix is positive definite.
+    #   - `hetrf` + `hetri` used if matrix is hermitian (complex only).
+    #   - `sytrf` + `sytri` used if matrix is symmetric.
+    #   - `getrf` + `getri` used otherwise.
+    #
+    # Returns:
+    #   - self : On successful inversion, `self` becomes the inverse.
+    #
+    # Raises:
+    #   - ArgumentError : If matrix is not square.
+    #
+    # LAPACK Routines:
+    #   - `trtri` (triangular inverse)
+    #   - `potrf`/`potri` (positive definite)
+    #   - `hetrf`/`hetri` (hermitian)
+    #   - `sytrf`/`sytri` (symmetric)
+    #   - `getrf`/`getri` (general)
     def inv!
       raise ArgumentError.new("can't invert nonsquare matrix") unless square?
       return transpose! if flags.orthogonal?
@@ -235,17 +396,32 @@ module LA
       self
     end
 
-    # Solves matrix equation `self*x = b` and returns x
+    # Solves the linear system A * X = B.
     #
-    # Method returns matrix of same size as `b`
+    # Method selects optimal algorithm depending on `MatrixFlags`:
+    #   - `trtrs` used if matrix is triangular.
+    #   - `posv` used if matrix is positive definite.
+    #   - `hesv` used if matrix is hermitian (complex only).
+    #   - `sysv` used if matrix is symmetric.
+    #   - `gesv` used otherwise.
     #
-    # Matrix must be square, number of rows must match `b`
+    # Arguments:
+    #   - b (GeneralMatrix(T)) : Right-hand side matrix.
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
+    #   - overwrite_b (Bool) : If `true`, allows overwriting `b`. Default: `false`.
     #
-    # if overwrite_a is true, a will be overriden in process of calculation
+    # Returns:
+    #   - GeneralMatrix(T) : Solution matrix X.
     #
-    # if overwrite_b is true, b will be overriden in process of calculation
+    # Raises:
+    #   - ArgumentError : If `nrows` mismatch or matrix not square.
     #
-    # Uses LAPACK routines `trtrs`, `posv`, `hesv`, `sysv`, `gesv` depending on matrix `flags`
+    # LAPACK Routines:
+    #   - `trtrs` (triangular solve)
+    #   - `posv` (positive definite solve)
+    #   - `hesv` (hermitian solve)
+    #   - `sysv` (symmetric solve)
+    #   - `gesv` (general solve)
     def solve(b : self, *, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       raise ArgumentError.new("a must be square") unless square?
@@ -273,11 +449,19 @@ module LA
       x
     end
 
-    # Calculates determinant for a square matrix
+    # Calculates the determinant of a square matrix.
     #
-    # if overwrite_a is true, a will be overriden in process of calculation
+    # Arguments:
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
     #
-    # Uses `getrf` LAPACK routine
+    # Returns:
+    #   - T : Determinant value.
+    #
+    # Raises:
+    #   - ArgumentError : If matrix is not square.
+    #
+    # LAPACK Routine:
+    #   - Uses `getrf` (LU factorization).
     def det(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       if flags.triangular?
@@ -290,6 +474,22 @@ module LA
       lru.diag.product
     end
 
+    # Solves the linear least squares problem using QR factorization.
+    #
+    # Arguments:
+    #   - b (GeneralMatrix(T)) : Right-hand side matrix.
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
+    #   - overwrite_b (Bool) : If `true`, allows overwriting `b`. Default: `false`.
+    #   - cond (Number) : Cutoff for rank determination. Default: -1 (machine precision).
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : Solution matrix X (may include residuals).
+    #
+    # Raises:
+    #   - ArgumentError : If `nrows` mismatch.
+    #
+    # LAPACK Routine:
+    #   - Uses `gels` (QR least squares).
     def solvels(b : self, *, overwrite_a = false, overwrite_b = false, cond = -1)
       raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       a = overwrite_a ? self : self.clone
@@ -305,6 +505,25 @@ module LA
       x
     end
 
+    # Solves the linear least squares problem with multiple method options.
+    #
+    # Arguments:
+    #   - b (GeneralMatrix(T)) : Right-hand side matrix.
+    #   - method (LSMethod) : Algorithm to use. Default: `LSMethod::Auto`.
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
+    #   - overwrite_b (Bool) : If `true`, allows overwriting `b`. Default: `false`.
+    #   - cond (Number) : Cutoff for rank determination. Default: -1 (machine precision).
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), Int32, Array(T)) : Solution X, effective rank, singular values (if applicable).
+    #
+    # Raises:
+    #   - ArgumentError : If `nrows` mismatch.
+    #
+    # LAPACK Routines:
+    #   - `gels` (QR least squares)
+    #   - `gelsd` (SVD-based least squares)
+    #   - `gelsy` (QR with pivoting)
     def lstsq(b : self, method : LSMethod = LSMethod::Auto, *, overwrite_a = false, overwrite_b = false, cond = -1)
       raise ArgumentError.new("nrows of a and b must match") unless nrows == b.nrows
       if method.auto?
@@ -340,18 +559,23 @@ module LA
       {x, rank, s}
     end
 
-    # Calculates singular value decomposition for a matrix
+    # Computes the singular value decomposition (SVD) of a matrix.
     #
-    # If you call `u,s,vt = a.svd` for a matrix m*n `a` then
+    # For an m×n matrix A, returns:
+    #   - u : m×m orthogonal matrix
+    #   - s : Array of singular values of length min(m,n)
+    #   - vt : n×n orthogonal matrix
     #
-    #  - `u` will be m*m matrix
-    #  - `s` will be Array(T) with size equal to `{m, n}.min`
-    #  - `vt` will be n*n matrix
-    #  - `(u*Mat.diag(a.nrows, a.ncolumns, s)*vt)` will be equal to `a` (within calculation tolerance)
+    # Such that A = u * diag(s) * vt.
     #
-    # if overwrite_a is true, a will be overriden in process of calculation
+    # Arguments:
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
     #
-    # Uses `gesdd` LAPACK routine
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), Array(T), GeneralMatrix(T)) : U, singular values, V^T.
+    #
+    # LAPACK Routine:
+    #   - Uses `gesdd` (divide-and-conquer SVD).
     def svd(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
       m = nrows
@@ -366,11 +590,16 @@ module LA
       return {u, s, vt}
     end
 
-    # Calculates array of singular values for a matrix
+    # Computes only the singular values of a matrix.
     #
-    # if `overwrite_a` is true, a will be overriden in process of calculation
+    # Arguments:
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
     #
-    # Uses `gesdd` LAPACK routine
+    # Returns:
+    #   - Array(T) : Singular values.
+    #
+    # LAPACK Routine:
+    #   - Uses `gesdd` (SVD, singular values only).
     def svdvals(*, overwrite_a = false)
       a = overwrite_a ? self : self.clone
       m = nrows
@@ -383,6 +612,21 @@ module LA
       s
     end
 
+    # Balances a square matrix in-place to improve eigenvalue accuracy.
+    #
+    # Arguments:
+    #   - permute (Bool) : If `true`, performs permutations. Default: `true`.
+    #   - scale (Bool) : If `true`, performs scaling. Default: `true`.
+    #   - separate (Bool) : If `true`, returns scaling factors separately. Default: `false`.
+    #
+    # Returns:
+    #   - GeneralMatrix(T) : If `separate` is true, returns scaling factors; otherwise, returns diagonal matrix.
+    #
+    # Raises:
+    #   - ArgumentError : If matrix is not square.
+    #
+    # LAPACK Routine:
+    #   - Uses `gebal` (balance matrix).
     def balance!(*, permute = true, scale = true, separate = false)
       raise ArgumentError.new("matrix must be square") unless square?
       n = self.nrows
@@ -403,6 +647,21 @@ module LA
       separate ? s : Matrix(T).diag(s.raw)
     end
 
+    # Computes the Hessenberg form of a matrix in-place.
+    #
+    # Arguments:
+    #   - calc_q (Bool) : If `true`, also computes the orthogonal matrix Q. Default: `false`.
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), GeneralMatrix(T)) : Hessenberg matrix and optionally Q.
+    #
+    # Raises:
+    #   - ArgumentError : If matrix is not square.
+    #
+    # LAPACK Routines:
+    #   - `gebal` (balance)
+    #   - `gehrd` (Hessenberg reduction)
+    #   - `orghr` (generate Q)
     def hessenberg!(*, calc_q = false)
       raise ArgumentError.new("matrix must be square") unless square?
       # idea from scipy.
@@ -431,17 +690,34 @@ module LA
       {self, q}
     end
 
+    # Computes the Hessenberg form in-place (without Q).
+    #
+    # Returns:
+    #   - self : Hessenberg matrix.
     def hessenberg!
       q = hessenberg!(calc_q: false)
       self
     end
 
-    # returns matrix norm
+    # Computes the norm of the matrix.
     #
-    # `kind` defines type of norm
+    # Method selects optimal algorithm depending on `MatrixFlags`:
+    #   - `lantr` used for triangular matrices.
+    #   - `lanhe` used for hermitian matrices (complex only).
+    #   - `lansy` used for symmetric matrices.
+    #   - `lange` used for general matrices.
     #
-    # Uses LAPACK routines `lantr`, `lanhe`, `lansy`, `lange` depending on matrix `flags`
+    # Arguments:
+    #   - kind (MatrixNorm) : Type of norm to compute. Default: `MatrixNorm::Frobenius`.
     #
+    # Returns:
+    #   - T : Norm value.
+    #
+    # LAPACK Routines:
+    #   - `lantr` (triangular matrix norm)
+    #   - `lanhe` (hermitian matrix norm)
+    #   - `lansy` (symmetric matrix norm)
+    #   - `lange` (general matrix norm)
     def norm(kind : MatrixNorm = MatrixNorm::Frobenius)
       let = case kind
             in .frobenius?
@@ -471,16 +747,24 @@ module LA
       end
     end
 
-    # Alias for `#norm`
+    # Alias for `#norm`.
     def abs(kind : MatrixNorm = MatrixNorm::Frobenius)
       norm(kind)
     end
 
-    # determine effective rank either by SVD method or QR-factorization with pivoting
+    # Determines the effective rank of the matrix.
     #
-    # if overwrite_a is true, a will be overriden in process of calculation
+    # Arguments:
+    #   - eps (Number) : Tolerance for singular value comparison. Default: `self.tolerance`.
+    #   - method (RankMethod) : Method to use. Default: `RankMethod::SVD`.
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
     #
-    # QR method is faster, but could fail to determine rank in some cases
+    # Returns:
+    #   - Int32 : Estimated rank.
+    #
+    # LAPACK Routines:
+    #   - SVD method uses `gesdd` (singular values)
+    #   - QRP method uses QR with pivoting
     def rank(eps = self.tolerance, *, method : RankMethod = RankMethod::SVD, overwrite_a = false)
       # if matrix is triangular no check needed
       return diag.count { |v| v.abs > eps } if flags.triangular?
