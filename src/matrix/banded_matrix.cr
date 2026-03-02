@@ -103,6 +103,14 @@ module LA
       end
     end
 
+    # Estimates the bandwidth of a matrix.
+    #
+    # Arguments:
+    #   - matrix (Matrix(T)) : The matrix to estimate bandwidth for.
+    #   - tolerance (T) : Elements with absolute value <= tolerance are considered zero. Default: matrix.tolerance.
+    #
+    # Returns:
+    #   - Tuple(Int32, Int32) : Lower and upper bandwidth estimates.
     def self.estimate(matrix : Matrix(T), tolerance = matrix.tolerance)
       # TODO - scipy uses more efficient algorithm?
       upper_band = matrix.ncolumns - 1
@@ -188,6 +196,10 @@ module LA
       true
     end
 
+    # Transposes the matrix in-place, swapping upper and lower bandwidth.
+    #
+    # Returns:
+    #   - self : The transposed matrix.
     def transpose!
       return self if flags.symmetric?
       newraw = Slice(T).new({nrows, ncolumns + lower_band}.min*band_len) do |index|
@@ -242,6 +254,13 @@ module LA
       set_bands(@upper_band, value)
     end
 
+    # In-place: keeps only elements on or below the k-th diagonal.
+    #
+    # Arguments:
+    #   - k (Int32) : Diagonal offset. Default: 0.
+    #
+    # Returns:
+    #   - self : The modified matrix.
     def tril!(k = 0)
       if k >= 0
         # just update upper_band
@@ -255,6 +274,13 @@ module LA
       self
     end
 
+    # In-place: keeps only elements on or above the k-th diagonal.
+    #
+    # Arguments:
+    #   - k (Int32) : Diagonal offset. Default: 0.
+    #
+    # Returns:
+    #   - self : The modified matrix.
     def triu!(k = 0)
       if k <= 0
         # just update lower_band
@@ -268,6 +294,15 @@ module LA
       self
     end
 
+    # Adds another banded matrix with scaling.
+    #
+    # Arguments:
+    #   - m (BandedMatrix(T)) : Matrix to add.
+    #   - alpha (T) : Scale factor for `self`. Default: 1.
+    #   - beta (T) : Scale factor for `m`. Default: 1.
+    #
+    # Returns:
+    #   - BandedMatrix(T) : The result of alpha*self + beta*m.
     def add(m : BandedMatrix(T), *, alpha = 1, beta = 1)
       assert_same_size(m)
       result = BandedMatrix(T).new(nrows, ncolumns, {upper_band, m.upper_band}.max, {lower_band, m.lower_band}.max, flags.add(m.flags, alpha, beta)) do |i, j|
@@ -279,7 +314,10 @@ module LA
       m.add(self, alpha: beta, beta: alpha)
     end
 
-    # returns transposed matrix
+    # Returns a transposed copy of the matrix.
+    #
+    # Returns:
+    #   - BandedMatrix(T) : The transposed matrix with swapped dimensions and bandwidth.
     def transpose
       return clone if flags.symmetric?
       BandedMatrix(T).new(ncolumns, nrows, lower_band, upper_band, flags.transpose) do |i, j|
@@ -287,7 +325,13 @@ module LA
       end
     end
 
-    # returns conjtransposed matrix
+    # Returns a conjugate transpose of the matrix.
+    #
+    # For Complex matrices, returns the conjugate transpose.
+    # For real matrices, equivalent to transpose.
+    #
+    # Returns:
+    #   - BandedMatrix(T) : The conjugate transposed matrix.
     def conjtranspose
       {% if T == Complex %}
         return clone if flags.hermitian?
@@ -316,6 +360,13 @@ module LA
       rand(nrows, ncolumns, upper_band, upper_band, rng)
     end
 
+    # Returns a new matrix with elements below the k-th diagonal zeroed.
+    #
+    # Arguments:
+    #   - k (Int32) : Diagonal offset. Default: 0.
+    #
+    # Returns:
+    #   - BandedMatrix(T) : New matrix with elements below diagonal zeroed.
     def tril(k = 0)
       if k >= 0
         # just update upper_band
@@ -331,6 +382,13 @@ module LA
       end
     end
 
+    # Returns a new matrix with elements above the k-th diagonal zeroed.
+    #
+    # Arguments:
+    #   - k (Int32) : Diagonal offset. Default: 0.
+    #
+    # Returns:
+    #   - BandedMatrix(T) : New matrix with elements above diagonal zeroed.
     def triu(k = 0)
       if k <= 0
         # just update lower_band

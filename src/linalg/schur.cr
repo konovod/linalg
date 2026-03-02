@@ -1,24 +1,40 @@
 require "../matrix/*"
 require "./lapack_helper"
 
-# TODO - inline docs
-
 module LA
+  # See `GeneralMatrix#qz`
   def self.qz(a, b, *, overwrite_a = false, overwrite_b = false)
     a.qz(b, overwrite_a: overwrite_a, overwrite_b: overwrite_b)
   end
 
   class Matrix(T)
+    # See `GeneralMatrix#schur`
     def schur
       to_general.schur(overwrite_a: true)
     end
 
+    # See `GeneralMatrix#qz`
     def qz(b : self)
       to_general.qz(b, overwrite_a: true, overwrite_b: true)
     end
   end
 
   class GeneralMatrix(T) < Matrix(T)
+    # Performs in-place Schur decomposition.
+    #
+    # Arguments:
+    #   - overwrite_a (Bool) : If `true`, allows overwriting the matrix with its Schur form. Default: `false`.
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), GeneralMatrix(T)) : A tuple containing:
+    #     - Schur form matrix (upper triangular for complex, quasi-triangular for real).
+    #     - Orthogonal/unitary transformation matrix Z.
+    #
+    # Raises:
+    #   - ArgumentError : If matrix is not square.
+    #
+    # LAPACK Routine:
+    #   - Uses `gees` (Schur decomposition).
     def schur(*, overwrite_a = false)
       raise ArgumentError.new("matrix must be square") unless square?
       a = overwrite_a ? self : clone
@@ -42,6 +58,25 @@ module LA
       {% end %}
     end
 
+    # Performs in-place QZ (generalized Schur) decomposition.
+    #
+    # Arguments:
+    #   - b (GeneralMatrix(T)) : Second matrix in the generalized eigenvalue problem.
+    #   - overwrite_a (Bool) : If `true`, allows overwriting the first matrix. Default: `false`.
+    #   - overwrite_b (Bool) : If `true`, allows overwriting the second matrix. Default: `false`.
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), GeneralMatrix(T), GeneralMatrix(T), GeneralMatrix(T)) : A tuple containing:
+    #     - Generalized Schur form of A.
+    #     - Generalized Schur form of B.
+    #     - Left transformation matrix VSL.
+    #     - Right transformation matrix VSR.
+    #
+    # Raises:
+    #   - ArgumentError : If either matrix is not square.
+    #
+    # LAPACK Routine:
+    #   - Uses `gges` (generalized Schur decomposition).
     def qz(b : self, overwrite_a = false, overwrite_b = false)
       raise ArgumentError.new("matrix must be square") unless square?
       a = overwrite_a ? self : clone

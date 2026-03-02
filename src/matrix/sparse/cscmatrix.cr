@@ -1,9 +1,11 @@
 require "./sparse_matrix.cr"
 
-# TODO - inline docs
-
 module LA::Sparse
   macro csxmatrix(name, arows, acolumns, index1, index2, norm, other)
+    # Compressed Sparse {{arows.id.capitalize}} matrix format.
+    #
+    # {{name}} stores matrices by {{arows}}, with efficient {{arows}} access.
+    # Uses three arrays: {{arows}} indices, {{acolumns}} pointers, and values.
     class {{name}}Matrix(T) < Matrix(T)
         protected getter raw_{{acolumns}} : Array(Int32)
         protected getter raw_{{arows}} : Array(Int32)

@@ -1,8 +1,10 @@
 require "./sparse_matrix.cr"
 
-# TODO - inline docs
-
 module LA::Sparse
+  # Coordinate List (COO) sparse matrix format.
+  #
+  # COO stores matrices as lists of (row, column, value) tuples.
+  # Simple to construct but less memory-efficient for operations.
   class COOMatrix(T) < Matrix(T)
     protected getter raw_columns : Array(Int32)
     protected getter raw_rows : Array(Int32)

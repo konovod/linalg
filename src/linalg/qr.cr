@@ -1,15 +1,16 @@
-# TODO - inline docs
-
 module LA
   class Matrix(T)
+    # See `GeneralMatrix#qr_raw`
     def qr_raw(*, pivoting = false)
       to_general.qr_raw(overwrite_a: true)
     end
 
+    # See `GeneralMatrix#qr_r`
     def qr_r(*, pivoting = false)
       to_general.qr_r(overwrite_a: true)
     end
 
+    # See `GeneralMatrix#qr`
     def qr(*, pivoting = false)
       to_general.qr(overwrite_a: true)
     end
@@ -52,6 +53,18 @@ module LA
       {a, tau, pvt}
     end
 
+    # Performs in-place QR factorization, returning only the R factor.
+    #
+    # Arguments:
+    #   - overwrite_a (Bool) : If `true`, allows overwriting `self`. Default: `false`.
+    #   - pivoting (Bool) : If `true`, uses QR with column pivoting. Default: `false`.
+    #
+    # Returns:
+    #   - Tuple(GeneralMatrix(T), Array(Int32)) : Upper triangular matrix R and pivot indices.
+    #
+    # LAPACK Routines:
+    #   - `geqrf` (QR without pivoting)
+    #   - `geqp3` (QR with column pivoting)
     def qr_r(*, overwrite_a = false, pivoting = false)
       a = overwrite_a ? self : clone
       tau, pvt = qr_initial(a, pivoting)
